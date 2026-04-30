@@ -27,13 +27,13 @@ animateRing();
 // Hover effects
 document.querySelectorAll('a, button').forEach(el => {
   el.addEventListener('mouseenter', () => {
-    ring.style.width = '56px';
-    ring.style.height = '56px';
+    ring.style.width = '0';
+    ring.style.height = '0';
   });
 
   el.addEventListener('mouseleave', () => {
-    ring.style.width = '36px';
-    ring.style.height = '36px';
+    ring.style.width = '0';
+    ring.style.height = '0';
   });
 });
 
