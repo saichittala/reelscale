@@ -1225,7 +1225,7 @@ footer {
 /* MOBILE */
 @media (max-width: 900px) {
     header {
-        padding: 16px 24px;
+        padding: 8px 24px;
     }
 
     nav {
