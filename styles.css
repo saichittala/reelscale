@@ -4,6 +4,7 @@
     --bg3: #0D0D0D;
     --red: #C1121F;
     --red2: #d8212f;
+    --red-op: #C1121F50;
     --gold: #C6A969;
     --white: #F5F5F0;
     --muted: #F5F5F071;
@@ -457,14 +458,14 @@ h1 em {
 /* SECTION HEADER */
 .section-eyebrow {
     display: inline-block;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 300;
     text-transform: uppercase;
     color: var(--red);
     margin-bottom: 20px;
     padding: 6px 16px;
     border-radius: var(--border-radius-1);
-    border: 1px solid var(--red);
+    border: 0.7px solid var(--red-op);
 }
 
 .section-title {
@@ -593,7 +594,7 @@ h1 em {
 }
 
 .why-item:first-child {
-    border-top: 1px solid var(--border);
+    border-top: 0.7px solid var(--border);
 }
 
 .why-num {
@@ -657,7 +658,11 @@ h1 em {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(232, 37, 30, 0.12), transparent 70%);
+    background: url('https://images.unsplash.com/photo-1776549821543-dc2d97ec7804?q=80&w=2670&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.2;
 }
 
 /* PORTFOLIO */
@@ -693,6 +698,10 @@ h1 em {
     position: relative;
     cursor: pointer;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: url('https://images.unsplash.com/photo-1776549821543-dc2d97ec7804?q=80&w=2670&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .portfolio-item:hover {
@@ -858,7 +867,6 @@ h1 em {
     position: relative;
     overflow: hidden;
     transition: transform 0.3s, border-color 0.3s;
-    cursor: pointer;
     display: flex;
     flex-direction: column;
 }
@@ -1134,7 +1142,7 @@ h1 em {
 /* FOOTER */
 footer {
     padding: 60px 48px;
-    border-top: 1px solid var(--border);
+    border-top: 0.7px solid var(--border);
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -1193,7 +1201,7 @@ footer {
     align-items: center;
     justify-content: space-between;
     padding-top: 28px;
-    border-top: 1px solid var(--border);
+    border-top: 0.7px solid var(--border);
 }
 
 .footer-copy {
