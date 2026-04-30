@@ -49,9 +49,19 @@ header {
     display: flex;
     justify-content: space-between;
     backdrop-filter: blur(100px);
-    border-bottom: 0.78px solid var(--border);
     z-index: 1000;
     align-items: center;
+    border-bottom: 0.78px solid transparent;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+    transform: translateY(12px);
+
+}
+
+/* Active when scrolled */
+header.scrolled {
+    border-bottom: 0.78px solid var(--border);
+    transform: translateY(0px);
+
 }
 
 /* BUTTON */
