@@ -1363,7 +1363,7 @@ footer {
         .btn-primary,
         .btn-secondary {
             width: 100%;
-            padding: 20px 24px;
+            padding: 16px 24px;
             font-size: 18px;
 
         }
@@ -1400,7 +1400,7 @@ footer {
         .btn-primary,
         .btn-secondary {
             width: 100%;
-            padding: 20px 24px;
+            padding: 16px 24px;
             font-size: 18px;
         }
     }
