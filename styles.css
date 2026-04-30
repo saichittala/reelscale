@@ -1,7 +1,7 @@
 :root {
-    --bg: #0D0D0D;
-    --bg2: #0D0D0D;
-    --bg3: #0D0D0D;
+    --bg: #080808;
+    --bg2: #080808;
+    --bg3: #080808;
     --red: #C1121F;
     --red2: #d8212f;
     --red-op: #C1121F50;
@@ -686,11 +686,11 @@ h1 em {
 .portfolio-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 24px;
 }
 
 .portfolio-item {
-    aspect-ratio: 9/16;
+    aspect-ratio: 0.72;
     background: var(--bg3);
     border-radius: 12px;
     border: 0.78px solid var(--border);
