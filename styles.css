@@ -815,8 +815,8 @@ h1 em {
 }
 
 .process-step:hover .step-dot {
-    background: var(--red);
-    border-color: var(--red);
+    background: var(--red-op);
+    border-color: var(--red-op);
     color: var(--white);
 }
 
