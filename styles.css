@@ -21,6 +21,8 @@
     --border-radius-3: 8px;
     --border-radius-99: 99px;
     --white-10: rgba(255, 255, 255, 0.1);
+    --white-05: rgba(255, 255, 255, 0.05);
+    --white-03: rgba(255, 255, 255, 0.03);
 }
 
 
@@ -176,7 +178,7 @@ nav a {
     font-size: 16px;
     font-weight: 400;
     transition: color 0.2s;
-    padding: 8px 12px;
+    padding: 8px 16px;
 
 }
 
@@ -222,8 +224,8 @@ nav a:hover {
 }
 
 .btn-secondary:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--white);
+    background: var(--white-03);
 }
 
 /* HERO */
@@ -434,7 +436,7 @@ h1 em {
 }
 
 .metric-card:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--white-03);
 }
 
 .metric-card:hover::before {
@@ -521,12 +523,12 @@ h1 em {
     position: relative;
     overflow: hidden;
     transition: transform 0.3s, background 0.3s;
-    cursor: pointer;
     border-radius: var(--border-radius-1);
 }
 
 .service-card:hover {
-    background: rgba(232, 37, 30, 0.04);
+    background: var(--white-03);
+    /* background: rgba(232, 37, 30, 0.04); */
 }
 
 .service-num {
@@ -701,9 +703,6 @@ h1 em {
     background-repeat: no-repeat;
 }
 
-.portfolio-item:hover {
-    transform: scale(1.02);
-}
 
 .portfolio-item:hover .portfolio-overlay {
     opacity: 1;
@@ -943,11 +942,13 @@ h1 em {
 }
 
 .plan-features li::before {
-    content: '✓';
-    color: var(--red);
-    font-size: 13px;
-    font-weight: 600;
-    min-width: 16px;
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-image: url('./img/checkbox.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    border-radius: var(--border-radius-99);
 }
 
 .btn-plan {
@@ -1258,7 +1259,7 @@ footer {
         grid-template-columns: 1fr 1fr;
         gap: 40px;
     }
-    
+
 
     .process-steps::before {
         display: none;
