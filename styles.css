@@ -14,21 +14,45 @@
     --text-3xl: 40px;
     --text-4xl: 56px;
 
-    /* Colors */
+    /* ========= FALLBACK (Stable) ========= */
     --bg: #080808;
     --bg2: #080808;
     --bg3: #080808;
+
     --red: #C1121F;
     --red2: #9B0E18;
-    --red-op: #C1121F50;
+    --red-op: rgba(193, 18, 31, 0.31);
+
     --gold: #C6A969;
+
     --white: #EDEDE8;
     --muted: #EDEDE871;
     --border: #EDEDE820;
+
     --card: rgba(255, 255, 255, 0.01);
     --white-10: rgba(255, 255, 255, 0.1);
     --white-05: rgba(255, 255, 255, 0.05);
     --white-03: rgba(255, 255, 255, 0.03);
+
+    /* ========= MODERN (OKLCH) ========= */
+    --bg: oklch(0.09 0 0);
+    --bg2: oklch(0.09 0 0);
+    --bg3: oklch(0.09 0 0);
+
+    --red: oklch(0.52 0.22 25);
+    --red2: oklch(0.44 0.20 25);
+    --red-op: oklch(0.52 0.22 25 / 0.31);
+
+    --gold: oklch(0.75 0.10 85);
+
+    --white: oklch(0.92 0.01 95);
+    --muted: oklch(0.92 0.01 95 / 0.44);
+    --border: oklch(0.92 0.01 95 / 0.13);
+
+    --card: oklch(1 0 0 / 0.01);
+    --white-10: oklch(1 0 0 / 0.1);
+    --white-05: oklch(1 0 0 / 0.05);
+    --white-03: oklch(1 0 0 / 0.03);
 
 
     /* Other Stuff */
@@ -984,6 +1008,7 @@ h1 em {
     border: 0.6px solid var(--border);
     color: var(--white);
     background: transparent;
+    border-radius: var(--border-radius-99);
 }
 
 .btn-plan-outline:hover {
@@ -995,6 +1020,7 @@ h1 em {
     background: var(--red);
     color: var(--white);
     border: 0.6px solid var(--red);
+    border-radius: var(--border-radius-99);
 }
 
 .btn-plan-red:hover {
