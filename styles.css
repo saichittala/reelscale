@@ -599,7 +599,7 @@ h1 em {
 
 .why-num {
     font-family: var(--primary-font);
-    font-size: 12px;
+    font-size: 16px;
     color: var(--red);
     min-width: 28px;
     padding-top: 3px;
