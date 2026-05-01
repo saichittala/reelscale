@@ -461,13 +461,14 @@ h1 em {
 .section-eyebrow {
     display: inline-block;
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 500;
     text-transform: uppercase;
     color: var(--red);
     margin-bottom: 20px;
     padding: 6px 16px;
     border-radius: var(--border-radius-1);
     border: 0.6px solid var(--red-op);
+    letter-spacing: 0.05px;
 }
 
 .section-title {
