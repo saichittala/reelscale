@@ -55,14 +55,14 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    padding: 8px 48px;
+    padding: 8px 108px;
     display: flex;
     justify-content: space-between;
     backdrop-filter: blur(100px);
     z-index: 1000;
     align-items: center;
     border-bottom: 0.78px solid transparent;
-    transition: border-color 0.3s ease, transform 0.3s ease;
+    transition: border-color 0.3s ease, transform 0.5s ease, padding 0.5s ease;
     transform: translateY(12px);
 
 }
@@ -71,6 +71,7 @@ header {
 header.scrolled {
     border-bottom: 0.78px solid var(--border);
     transform: translateY(0px);
+    padding: 8px 56px;
 
 }
 
