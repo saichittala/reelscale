@@ -922,6 +922,10 @@ h1 em {
     flex-direction: column;
 }
 
+.pricing-card.luxe {
+    border: 0.6px solid var(--gold);
+}
+
 
 .pricing-card.featured {
     border-color: var(--red);
@@ -948,14 +952,45 @@ h1 em {
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 0px;
     background: linear-gradient(90deg, transparent, var(--red), transparent);
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, height 0.3s;
 }
 
 .pricing-card:hover::before {
     opacity: 1;
+    height: 3px;
+
+}
+
+
+.pricing-card.luxe::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s, height 0.3s;
+}
+
+.pricing-card.luxe:hover::before {
+    opacity: 1;
+    height: 4px;
+}
+
+.btn-plan-luxe {
+    border: unset !important;
+    background: var(--gold) !important;
+    color: var(--bg) !important;
+}
+
+.btn-plan-luxe:hover {
+    background: oklch(0.75 0.10 85 / 0.9) !important;
+    color: var(--bg) !important;
 }
 
 .plan-name {
