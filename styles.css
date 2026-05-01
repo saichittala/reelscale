@@ -1196,13 +1196,13 @@ footer {
 .footer-bottom {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding-top: 28px;
     border-top: 0.7px solid var(--border);
 }
 
 .footer-copy {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--muted);
     font-weight: 200;
 }
