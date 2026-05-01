@@ -1204,7 +1204,8 @@ footer {
 .footer-copy {
     font-size: 14px;
     color: var(--muted);
-    font-weight: 200;
+    font-weight: 300;
+    letter-spacing: unset !important;
 }
 
 /* SCROLL REVEAL */
