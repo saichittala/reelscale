@@ -113,7 +113,7 @@ html {
     position: fixed;
     width: 36px;
     height: 36px;
-    border: 0.78px solid rgba(232, 37, 30, 0.5);
+    border: 0.6px solid rgba(232, 37, 30, 0.5);
     border-radius: var(--border-radius-99);
     pointer-events: none;
     z-index: 9998;
@@ -210,7 +210,7 @@ nav a:hover {
 
 .btn-secondary {
     color: var(--white);
-    border: 0.78px solid rgba(255, 255, 255, 0.2);
+    border: 0.6px solid rgba(255, 255, 255, 0.2);
     padding: 11px 24px;
     border-radius: var(--border-radius-99);
     font-family: var(--primary-font);
@@ -263,7 +263,7 @@ nav a:hover {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 0.78px solid var(--red-op);
+    border: 0.6px solid var(--red-op);
     color: var(--red);
     font-size: 12px;
     font-weight: 500;
@@ -414,7 +414,7 @@ h1 em {
 }
 
 .metric-card {
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     padding: 32px;
     text-align: center;
     position: relative;
@@ -469,7 +469,7 @@ h1 em {
     margin-bottom: 20px;
     padding: 6px 16px;
     border-radius: var(--border-radius-1);
-    border: 0.7px solid var(--red-op);
+    border: 0.6px solid var(--red-op);
 }
 
 .section-title {
@@ -517,7 +517,7 @@ h1 em {
 
 .service-card {
     background: var(--bg);
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     padding: 32px;
     border-radius: 0;
     position: relative;
@@ -626,7 +626,7 @@ h1 em {
     aspect-ratio: 4/5;
     background: var(--bg2);
     border-radius: 16px;
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -692,7 +692,7 @@ h1 em {
     aspect-ratio: 0.72;
     background: var(--bg3);
     border-radius: 12px;
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     overflow: hidden;
     position: relative;
     cursor: pointer;
@@ -801,7 +801,7 @@ h1 em {
     height: 64px;
     border-radius: 50%;
     background: var(--bg2);
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -856,7 +856,7 @@ h1 em {
 
 .pricing-card {
     background: var(--bg);
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     border-radius: 16px;
     padding: 40px 36px;
     position: relative;
@@ -965,7 +965,7 @@ h1 em {
 }
 
 .btn-plan-outline {
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     color: var(--white);
     background: transparent;
 }
@@ -978,7 +978,7 @@ h1 em {
 .btn-plan-red {
     background: var(--red);
     color: var(--white);
-    border: 0.78px solid var(--red);
+    border: 0.6px solid var(--red);
 }
 
 .btn-plan-red:hover {
@@ -1001,7 +1001,7 @@ h1 em {
 
 .testi-card {
     background: var(--bg2);
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     border-radius: 16px;
     padding: 36px;
     transition: border-color 0.3s;
@@ -1066,7 +1066,7 @@ h1 em {
     font-size: 16px;
     font-weight: 500;
     background: var(--white-10);
-    /* border: 0.78px solid var(--white-10); */
+    /* border: 0.6px solid var(--white-10); */
 
 }
 
@@ -1174,7 +1174,7 @@ footer {
 .social-btn {
     width: 38px;
     height: 38px;
-    border: 0.78px solid var(--border);
+    border: 0.6px solid var(--border);
     border-radius: 8px;
     display: flex;
     align-items: center;
