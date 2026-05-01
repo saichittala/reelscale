@@ -596,7 +596,7 @@ h1 em {
 .service-name {
     font-family: var(--primary-font);
     font-size: var(--text-xl);
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 14px;
 }
 
@@ -651,7 +651,7 @@ h1 em {
 .why-content h4 {
     font-family: var(--primary-font);
     font-size: var(--text-lg);
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 6px;
 }
 
@@ -795,7 +795,7 @@ h1 em {
 .portfolio-client {
     font-family: var(--primary-font);
     font-size: var(--text-lg);
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .portfolio-stat {
@@ -863,7 +863,7 @@ h1 em {
 .step-title {
     font-family: var(--primary-font);
     font-size: var(--text-lg);
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 12px;
 }
 
