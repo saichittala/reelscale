@@ -888,7 +888,7 @@ h1 em {
 
 .plan-name {
     font-family: var(--primary-font);
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 300;
     text-transform: uppercase;
     color: var(--muted);
@@ -912,7 +912,7 @@ h1 em {
 }
 
 .plan-cadence {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--muted);
     margin-bottom: 32px;
 }
