@@ -7,7 +7,7 @@
     --bg2: #080808;
     --bg3: #080808;
     --red: #C1121F;
-    --red2: #d8213f;
+    --red2: #9B0E18;
     --red-op: #C1121F50;
     --gold: #C6A969;
     --white: #F5F5F0;
@@ -202,8 +202,8 @@ nav a:hover {
 }
 
 .btn-primary:hover {
-    background: var(--white);
-    color: var(--red);
+    background: var(--red2);
+    color: var(--white);
 }
 
 .btn-secondary {
