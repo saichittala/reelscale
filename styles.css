@@ -209,7 +209,7 @@ body::before {
 nav {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 4px;
 }
 
 nav a {
@@ -472,7 +472,7 @@ h1 em {
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--red), transparent);
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease, height 0.3s ease;
 }
 
 .metric-card:hover {
@@ -570,6 +570,22 @@ h1 em {
 .service-card:hover {
     background: var(--white-03);
     /* background: rgba(232, 37, 30, 0.04); */
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease, height 0.3s ease;
+}
+
+.service-card:hover::before {
+    opacity: 1;
 }
 
 .service-num {
@@ -926,6 +942,22 @@ h1 em {
     border-bottom-left-radius: var(--border-radius-1);
 }
 
+.pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.pricing-card:hover::before {
+    opacity: 1;
+}
+
 .plan-name {
     font-family: var(--primary-font);
     font-size: var(--text-md);
@@ -1049,9 +1081,6 @@ h1 em {
     transition: border-color 0.3s;
 }
 
-.testi-card:hover {
-    border-color: rgba(232, 37, 30, 0.3);
-}
 
 .testi-stars {
     display: flex;
@@ -1194,7 +1223,7 @@ footer {
 
 .footer-nav {
     display: flex;
-    gap: 12px;
+    gap: 4px;
 }
 
 .footer-nav a {
