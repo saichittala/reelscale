@@ -955,7 +955,7 @@ h1 em {
     padding: 13px;
     border-radius: 8px;
     font-family: var(--primary-font);
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 500;
     text-align: center;
     text-decoration: none;
@@ -1236,19 +1236,6 @@ footer {
         gap: 24px;
     }
 
-    .metric-card:first-child,
-    .metric-card:last-child {
-        border-radius: 0;
-    }
-
-    .metric-card:first-child {
-        border-radius: 12px 12px 0 0;
-    }
-
-    .metric-card:last-child {
-        border-radius: 0 0 12px 12px;
-    }
-
     .services-header {
         grid-template-columns: 1fr;
         gap: 24px;
@@ -1256,15 +1243,7 @@ footer {
 
     .services-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 2px;
-    }
-
-    .service-card:first-child {
-        border-radius: 12px 0 0 0;
-    }
-
-    .service-card:last-child {
-        border-radius: 0 0 12px 0;
+        gap: 24px;
     }
 
     .why-grid {
@@ -1279,9 +1258,22 @@ footer {
         grid-template-columns: 1fr 1fr;
         gap: 40px;
     }
+    
 
     .process-steps::before {
         display: none;
+    }
+
+    .process-step {
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    .step-dot {
+        margin: 0 0 32px 0;
     }
 
     .portfolio-grid {
@@ -1290,6 +1282,10 @@ footer {
 
     .pricing-grid {
         grid-template-columns: 1fr;
+    }
+
+    .btn-plan {
+        font-size: 16px;
     }
 
     .testi-grid {
