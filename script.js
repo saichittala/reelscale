@@ -59,3 +59,47 @@ window.addEventListener('scroll', () => {
     header.classList.remove('scrolled');
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const modal = document.getElementById("videoModal");
+  const wrapper = document.getElementById("videoWrapper");
+  const closeBtn = document.getElementById("closeVideo");
+
+  if (!modal || !wrapper) return; // 🛑 stop if modal not present
+
+  document.querySelectorAll(".portfolio-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const video = item.getAttribute("data-video");
+
+      if (!video) return;
+
+      wrapper.innerHTML = `
+  <iframe 
+    src="${video}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+`;
+
+      modal.classList.add("active");
+    });
+  });
+
+  function closeModal() {
+    modal.classList.remove("active");
+    wrapper.innerHTML = "";
+  }
+
+  // ✅ Safe bindings
+  closeBtn?.addEventListener("click", closeModal);
+  modal.querySelector(".video-backdrop")?.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+
+});

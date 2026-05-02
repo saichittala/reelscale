@@ -836,62 +836,63 @@ h1 em {
 
 
 .video-modal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
 }
 
 .video-modal.active {
-  display: flex;
+    display: flex;
 }
 
 .video-backdrop {
-  position: absolute;
-  inset: 0;
-  background: oklch(0 0 0 / 0.7);
-  backdrop-filter: blur(20px);
+    position: absolute;
+    inset: 0;
+    background: oklch(0 0 0 / 0.7);
+    backdrop-filter: blur(20px);
 }
 
 .video-content {
-  position: relative;
-  width: min(90%, 900px);
-  z-index: 2;
-  border-radius: var(--border-radius-1);
-  overflow: hidden;
-  background: var(--bg);
-  box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+    position: relative;
+    width: min(90%, 900px);
+    z-index: 2;
+    border-radius: var(--border-radius-1);
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
 }
 
 .video-wrapper {
-  position: relative;
-  width: 100%;
-  padding-top: 56.25%; /* 16:9 */
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    /* 16:9 */
 }
 
 .video-wrapper iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 .video-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 3;
-  background: var(--white-10);
-  color: var(--white);
-  border: none;
-  border-radius: var(--border-radius-99);
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    background: var(--white-10);
+    color: var(--white);
+    border: none;
+    border-radius: var(--border-radius-99);
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
 }
 
 /* PROCESS */
@@ -997,6 +998,11 @@ h1 em {
 
 .pricing-card.luxe {
     border: 0.6px solid var(--gold);
+    background: radial-gradient(ellipse 110% 90% at 50% 50%,
+            rgba(203, 169, 96, 0.22) 0%,
+            rgba(160, 130, 70, 0.12) 40%,
+            rgba(100, 80, 40, 0.05) 65%,
+            transparent 80%);
 }
 
 
