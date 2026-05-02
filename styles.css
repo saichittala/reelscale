@@ -106,7 +106,7 @@ header {
 
     .mob-btn-primary {
         background: transparent !important;
-        border: 0.6px solid var(--red) !important;
+        border: 1px solid var(--red) !important;
         color: var(--red) !important;
         transition: border-color 0.3s ease, transform 0.5s ease, padding 0.5s ease, background 0.3s ease, color 0.3s ease;
     }
@@ -121,7 +121,7 @@ header.scrolled {
 
     .mob-btn-primary {
         background: var(--red) !important;
-        border: 0.6px solid transparent !important;
+        border: 1px solid transparent !important;
         color: var(--white) !important;
     }
 
@@ -263,7 +263,7 @@ nav a:hover {
 
 .btn-secondary {
     color: var(--white);
-    border: 0.6px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 14px 24px;
     border-radius: var(--border-radius-99);
     font-family: var(--primary-font);
