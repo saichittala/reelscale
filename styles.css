@@ -75,6 +75,10 @@
 
 }
 
+html {
+    background: var(--bg) !important;
+}
+
 #cursor,
 #cursorRing {
     display: none;
