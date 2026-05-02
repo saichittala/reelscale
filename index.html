@@ -20,6 +20,14 @@
 </head>
 
 <body>
+  <div class="video-modal" id="videoModal">
+    <div class="video-backdrop"></div>
+
+    <div class="video-content">
+      <button class="video-close" id="closeVideo">✕</button>
+      <div class="video-wrapper" id="videoWrapper"></div>
+    </div>
+  </div>
 
   <div class="cursor" id="cursor"></div>
   <div class="cursor-ring" id="cursorRing"></div>
@@ -44,7 +52,7 @@
       </nav>
 
       <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
-        target="_blank" class="btn-primary">
+        target="_blank" class="btn-primary mob-btn-primary">
         Start your Reel
       </a>
 
@@ -209,10 +217,11 @@
         <a href="#" class="btn-secondary">View All Work</a>
       </div>
       <div class="portfolio-grid reveal">
-        <div class="portfolio-item" style="    background: url(https://images.unsplash.com/photo-1777014908321-322645585bb9?q=80&w=2670&auto=format&fit=crop);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;">
+        <div class="portfolio-item" data-video=" https://www.youtube.com/embed/YOUR_VIDEO_ID" style=" 
+          background:
+          url(https://images.unsplash.com/photo-1777014908321-322645585bb9?q=80&w=2670&auto=format&fit=crop);
+          background-size: cover; background-position: center; background-repeat: no-repeat;">
+
           <div class="portfolio-play">▶</div>
           <div class="portfolio-overlay">
             <div class="portfolio-client">FitLife Brand</div>
@@ -230,9 +239,9 @@
           </div>
         </div>
         <div class="portfolio-item" style="    background: url(https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=2671&auto=format&fit=crop);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;">
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;">
           <div class="portfolio-play">▶</div>
           <div class="portfolio-overlay">
             <div class="portfolio-client">StyleCo Fashion</div>
