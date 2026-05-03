@@ -232,7 +232,7 @@ nav {
 nav a {
     color: var(--muted);
     text-decoration: none;
-    font-size: var(--text-md);
+    font-size: var(--text-lg);
     font-weight: 400;
     transition: color 0.2s;
     padding: 8px 16px;
@@ -861,7 +861,7 @@ h1 em {
 
 .video-content {
     position: relative;
-    width: min(90%, 1140px);
+    width: min(90%, 1280px);
     z-index: 2;
     border-radius: var(--border-radius-1);
     overflow: hidden;
