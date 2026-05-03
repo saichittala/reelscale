@@ -908,6 +908,9 @@ h1 em {
     position: relative;
     width: 100%;
     padding-top: 56.25%;
+
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-1);
     /* 16:9 */
 }
 
@@ -1198,7 +1201,7 @@ h1 em {
 }
 
 .btn-plan-outline:hover {
-    border-color: rgba(255, 255, 255, 0.3); 
+    border-color: rgba(255, 255, 255, 0.3);
     background: var(--white-03);
 }
 
