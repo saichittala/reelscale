@@ -52,7 +52,7 @@
     --card: oklch(1 0 0 / 0.01);
     --white-10: oklch(1 0 0 / 0.1);
     --white-05: oklch(1 0 0 / 0.05);
-    --white-03: oklch(1 0 0 / 0.03);
+    --white-03: oklch(0.55 0.21 25 / 0.04);
 
 
     /* Other Stuff */
@@ -1198,8 +1198,8 @@ h1 em {
 }
 
 .btn-plan-outline:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.3); 
+    background: var(--white-03);
 }
 
 .btn-plan-red {
