@@ -785,7 +785,7 @@ h1 em {
 .portfolio-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.9) 100%);
+    background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.99) 100%);
     opacity: 0;
     transition: opacity 0.3s;
     display: flex;
