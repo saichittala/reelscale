@@ -71,10 +71,16 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".portfolio-item").forEach(item => {
     item.addEventListener("click", () => {
       const video = item.getAttribute("data-video");
+      const client = item.getAttribute("data-client");
+      const stat = item.getAttribute("data-stat");
 
       if (!video) return;
 
       wrapper.innerHTML = `
+      <div class="video-meta">
+        <div class="video-client">${client || ""}</div>
+        <div class="video-stat">${stat || ""}</div>
+      </div>
   <iframe 
     src="${video}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
     title="YouTube video player"
