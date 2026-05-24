@@ -286,7 +286,7 @@ nav a:hover {
     /* background: radial-gradient(ellipse 65% 55% at 50% 50%, rgba(193, 18, 31, 0.18) 0%, rgba(193, 18, 31, 0.10) 28%, rgba(193, 18, 31, 0.04) 55%, transparent 75%); */
     pointer-events: none;
     background-image: url('./assets/bg.png');
-    background-size: fit;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     }
