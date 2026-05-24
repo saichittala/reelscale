@@ -80,6 +80,7 @@ header {
     right: 0;
     padding: 8px 72px;
     display: flex;
+    height: 72px;
     justify-content: space-between;
     z-index: 1000;
     align-items: center;
@@ -1449,6 +1450,7 @@ footer {
 @media (max-width: 900px) {
     header {
         padding: 8px 24px;
+        height: 70px;
     }
 
     header.scrolled {
@@ -1582,9 +1584,9 @@ footer {
     }
 
     .hero-ctas {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        gap: 20px;
+        gap: 14px;
         width: 100%;
 
         .btn-primary,
