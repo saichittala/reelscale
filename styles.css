@@ -499,7 +499,6 @@ h1 em {
 .metric-label {
     font-size: var(--text-sm);
     font-weight: 400;
-    text-transform: uppercase;
     color: var(--muted);
 }
 
@@ -629,7 +628,7 @@ h1 em {
 
 /* WHY CHOOSE US */
 #why {
-    padding: 120px 48px;
+    padding: 120px 0px;
     max-width: 1200px;
     margin: 0 auto;
 }
