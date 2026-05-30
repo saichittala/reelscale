@@ -777,6 +777,77 @@ tr:hover td {
     color: var(--white)
 }
 
+
+.delete-modal {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-1);
+    padding: 32px;
+    text-align: center;
+    backdrop-filter: blur(40px);
+    animation: modalIn .2s ease;
+}
+
+.delete-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 999px;
+    background: var(--red-op);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-icon img {
+    width: 28px;
+    height: 28px;
+}
+
+.delete-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.delete-sub {
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.delete-actions button {
+    flex: 1;
+}
+
+.btn-danger {
+    background: var(--red);
+    color: var(--white);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: var(--red2);
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .form-group {
     margin-bottom: 16px
 }
