@@ -54,7 +54,8 @@
         data.phone,
         data.instagram,
         data.reels,
-        data.ppr
+        data.ppr,
+        data.image
       ]);
 
       return ContentService.createTextOutput("success");
@@ -110,7 +111,8 @@
           phone: row.phone,
           instagram: row.instagram,
           reels: row.reels,
-          ppr: row.pricePerReel
+          ppr: row.pricePerReel,
+          image: row.image
         }));
 
         console.log("Clients:", clients);
@@ -171,26 +173,28 @@
     let nextId = () => Date.now();
 
     async function addClient(data) {
-      const client = {
-        action: "add",
-        id: Date.now(),
-        clientName: data.name,
-        business: data.business,
-        phone: data.phone,
-        instagram: data.instagram,
-        reels: Number(data.reels),
-        pricePerReel: Number(data.ppr)
-      };
 
       await fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify(client)
+        body: JSON.stringify({
+          action: "add",
+          clientName: data.name,
+          business: data.business,
+          phone: data.phone,
+          instagram: data.instagram,
+          reels: Number(data.reels),
+          pricePerReel: Number(data.ppr),
+          image: data.image || ""
+        })
       });
 
       await loadGoogleSheetData();
+
       showToast("Client added successfully");
     }
+
     async function updateClient(id, data) {
+
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -201,23 +205,28 @@
           phone: data.phone,
           instagram: data.instagram,
           reels: Number(data.reels),
-          pricePerReel: Number(data.ppr)
+          pricePerReel: Number(data.ppr),
+          image: data.image || ""
         })
       });
 
       await loadGoogleSheetData();
+
       showToast("Client updated successfully");
     }
+
     async function deleteClient(id) {
+
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
           action: "delete",
-          id
+          id: id
         })
       });
 
       await loadGoogleSheetData();
+
       showToast("Client deleted successfully");
     }
 
@@ -241,8 +250,16 @@
       </div>
     </div>
     ${modal ? renderModal() : ''}
-    ${toast ? `<div class="toast ${toast.type}">${toast.type === 'success' ? '✓' : '✕'} ${toast.msg}</div>` : ''}
-  `;
+    ${toast ? `
+<div class="toast ${toast.type}">
+    <img
+        class="toast-icon"
+        src="../assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}"
+        alt="${toast.type}"
+    >
+    <span>${toast.msg}</span>
+</div>
+` : ''}  `;
       attachEvents();
       if (page === 'analytics') initCharts();
     }
@@ -319,7 +336,12 @@
       return `<div class="topbar">
     <div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div>
     <div class="topbar-actions">
-      <button class="btn btn-primary " id="add-client-btn">+ Add Client</button>
+      <button class="btn btn-primary " id="add-client-btn">
+        <span>
+          <img src="../assets/icons/add.svg" alt="Add" style="width:20px;">
+          </span>
+        <span>Add Client</span>
+      </button>
     </div>
   </div>`;
     }
@@ -348,23 +370,33 @@
         <div class="stat-icon">₹</div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px; height:100%;">
       <div class="glass-card">
         <div class="glass-card-label" >Top Clients by Revenue</div>
-        ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 5).map((c, i) => `
+        ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `
           <div class="top-client">
-            <div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.name[0]}</div>
-            <div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
+            <div class="client-avatar"
+     style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">
+  ${c.image
+          ? `<img
+            src="${c.image}"
+            alt="${c.name}"
+            style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+        `
+          : c.name[0]
+        }
+</div>   
+<div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
             <div class="client-rev">₹${fmt(getRevenue(c))}</div>
           </div>`).join('')}
       </div>
       <div class="glass-card">
         <div class="glass-card-label" >Recent Clients</div>
-        ${clients.slice(-5).reverse().map(c => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.6px solid var(--border)">
+        ${clients.slice(-9).reverse().map(c => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:0.6px solid var(--border)">
             <div>
-              <div style="font-size:13px;font-weight:500">${c.name}</div>
-              <div style="font-size:11px;color:var(--muted)">${c.instagram}</div>
+              <div class="client-name" style="font-size:13px;font-weight:500">${c.name}</div>
+              <div class="client-biz" style="color:var(--muted)">${c.instagram}</div>
             </div>
             <div style="text-align:right">
               <div class="badge badge-gold">₹${fmt(getRevenue(c))}</div>
@@ -403,12 +435,33 @@
         const rev = getRevenue(c);
         const pct = Math.round(rev / maxRev * 100);
         return `<tr>
-              <td><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  
+                  <div class="client-avatar">
+                    ${c.image
+                          ? `<img
+                          src="${c.image}"
+                          alt="${c.name}"
+                          style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                          : c.name[0]
+                        }
+                  </div>
+
+                  <div>
+                    <div style="font-weight:500">${c.name}</div>
+                    <div style="font-size:11px;color:var(--muted)">
+                      ${c.phone || '—'}
+                    </div>
+                  </div>
+
+                </div>
+              </td>              
               <td>${c.business}</td>
               <td style="color:var(--muted)">${c.instagram || '—'}</td>
               <td><span class="badge badge-red">${c.reels}</span></td>
               <td>₹${(c.ppr || 0).toLocaleString()}</td>
-              <td style="font-weight:700;color:var(--gold)">₹${rev.toLocaleString()}</td>
+              <td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td>
               <td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td>
               <td>
                 <div class="action-btns">
@@ -427,13 +480,14 @@
       const s = stats();
       const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
       return `
-    <div class="stat-grid" style="margin-bottom:20px">
+    <div class="stat-grid">
       <div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div>
       <div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div>
       <div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div>
     </div>
     <div class="analytics-grid">
-      <div class="chart-card" style="grid-column:1/-1"><div class="chart-title">Revenue Per Client</div><div class="chart-sub">Sorted by revenue · All clients</div><canvas id="rev-chart" height="260"></canvas></div>
+      <div class="chart-card" style="grid-column:1/-1"><div class="chart-title">Revenue Per Client</div>
+      <div class="chart-sub">Sorted by revenue · All clients</div><canvas id="rev-chart" height="260"></canvas></div>
     </div>
     <div class="glass-card">
       <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Client Revenue Breakdown</div>
@@ -442,8 +496,8 @@
         const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0;
         return `<div class="rev-bar-wrap" style="margin-bottom:14px">
           <div class="rev-bar-label">
-            <span style="font-weight:500;font-size:13px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span>
-            <span style="color:var(--gold);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span>
+            <span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span>
+            <span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span>
           </div>
           <div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div>
         </div>`;
@@ -458,7 +512,21 @@
     <div class="modal">
       <div class="modal-header">
         <div class="modal-title">${isEdit ? 'Edit Client' : 'Add New Client'}</div>
-        <button class="modal-close" id="modal-close">✕</button>
+<button class="modal-close" id="modal-close" aria-label="Close">
+    <img src="../assets/icons/close.svg" alt="" class="modal-close-icon">
+</button>        
+        
+      </div>
+      <div class="form-row dn">
+       <div class="form-group">
+  <label class="form-label">Client Image URL</label>
+  <input
+    class="form-input"
+    id="f-image"
+    placeholder="https://..."
+    value="${client?.image || ''}"
+  >
+</div>background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div>
@@ -472,9 +540,9 @@
         <div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div>
         <div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div>
       </div>
-      <div style="background:var(--white-05);border-radius:10px;padding:12px 14px;margin-top:4px">
+      <div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px">
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div>
-        <div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--gold)">₹0</div>
+        <div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div>
       </div>
       <div class="form-footer">
         <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
@@ -509,8 +577,21 @@
 
         render();
       }); document.getElementById('add-client-btn')?.addEventListener('click', () => { modal = 'add'; editId = null; render(); attachModalEvents() });
-      document.getElementById('search-input')?.addEventListener('input', e => { search = e.target.value; render() });
-      document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
+      document.getElementById('search-input')?.addEventListener('input', e => {
+        search = e.target.value;
+
+        const cursorPos = e.target.selectionStart;
+
+        render();
+
+        requestAnimationFrame(() => {
+          const input = document.getElementById('search-input');
+          if (input) {
+            input.focus();
+            input.setSelectionRange(cursorPos, cursorPos);
+          }
+        });
+      }); document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
         if (sortKey === b.dataset.sort) sortDir *= -1; else { sortKey = b.dataset.sort; sortDir = -1 }
         render();
       }));
@@ -540,6 +621,7 @@
           instagram: document.getElementById('f-instagram').value.trim(),
           reels: document.getElementById('f-reels').value,
           ppr: document.getElementById('f-ppr').value,
+          image: document.getElementById('f-image').value.trim()
         };
         if (!data.name || !data.business) { showToast('Name and business are required', 'error'); return }
         if (modal === 'edit') updateClient(editId, data); else addClient(data);
