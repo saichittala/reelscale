@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReelScale Dashboard</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="dashboard.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    const STORAGE_KEY = 'reelscale_clients_v2';
+    const AUTH_KEY = 'reelscale_auth';
+    const CRED = { email: 'admin@reelscale.com', password: 'surya@123' };
+    const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes
+    let logoutTimer = null;
+
+    function setAuth(v) {
+      v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY)
+    }
+    function resetLogoutTimer() {
+      if (!isLoggedIn()) return;
+
+      clearTimeout(logoutTimer);
+
+      logoutTimer = setTimeout(() => {
+        clearTimeout(logoutTimer);
+        setAuth(false);
+
+        modal = null;
+        editId = null;
+        page = 'dashboard';
+
+        alert('Session expired. Please login again.');
+        render();
+      }, AUTO_LOGOUT_TIME);
+    }
+
+    function startActivityTracking() {
+      ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
+        document.addEventListener(event, resetLogoutTimer);
+      });
+
+      resetLogoutTimer();
+    }
+
+    function loadClients() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] }
+    }
+    function saveClients(c) { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)) }
+    function isLoggedIn() { return localStorage.getItem(AUTH_KEY) === '1' }
+    function setAuth(v) { v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY) }
+
+    let clients = loadClients();
+    let page = 'dashboard';
+    let modal = null;
+    let editId = null;
+    let search = '';
+    let sortKey = 'revenue';
+    let sortDir = -1;
+    let toast = null;
+    let toastTimer = null;
+
+    const SAMPLE = [
+      { id: 1, name: 'Arjun Mehta', business: 'Spice Route Café', phone: '+91 98765 43210', instagram: '@spiceroutecafe', reels: 24, ppr: 3500 },
+      { id: 2, name: 'Priya Sharma', business: 'Glamify Studio', phone: '+91 91234 56789', instagram: '@glamifystudio', reels: 38, ppr: 2800 },
+      { id: 3, name: 'Rohit Nair', business: 'FitFlare Gym', phone: '+91 99001 12345', instagram: '@fitflaregym', reels: 52, ppr: 2200 },
+      { id: 4, name: 'Sneha Reddy', business: 'Bloom Florals', phone: '+91 87654 32109', instagram: '@bloomflorals', reels: 15, ppr: 4500 },
+      { id: 5, name: 'Karan Patel', business: 'TechVault Store', phone: '+91 93456 78901', instagram: '@techvaultstore', reels: 67, ppr: 1800 },
+    ];
+    if (clients.length === 0) { clients = SAMPLE.map(c => ({ ...c, revenue: c.reels * c.ppr })); saveClients(clients) }
+
+    function showToast(msg, type = 'success') {
+      if (toastTimer) clearTimeout(toastTimer);
+      toast = { msg, type }; render();
+      toastTimer = setTimeout(() => { toast = null; render() }, 2800);
+    }
+
+    function getRevenue(c) { return (c.reels || 0) * (c.ppr || 0) }
+
+    function filteredClients() {
+      let c = [...clients];
+      if (search) c = c.filter(x => (x.name + x.business + x.instagram).toLowerCase().includes(search.toLowerCase()));
+      c.sort((a, b) => {
+        let av = sortKey === 'revenue' ? getRevenue(a) : sortKey === 'reels' ? a.reels : 0;
+        let bv = sortKey === 'revenue' ? getRevenue(b) : sortKey === 'reels' ? b.reels : 0;
+        return (av - bv) * sortDir;
+      });
+      return c;
+    }
+
+    function stats() {
+      const total = clients.length;
+      const reels = clients.reduce((s, c) => s + (c.reels || 0), 0);
+      const rev = clients.reduce((s, c) => s + getRevenue(c), 0);
+      const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a))[0] || null;
+      return { total, reels, rev, top };
+    }
+
+    function fmt(n) { return n >= 100000 ? (n / 100000).toFixed(1) + 'L' : n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n }
+    function fmtFull(n) { return '₹' + n.toLocaleString('en-IN') }
+
+    let nextId = () => Date.now();
+
+    function addClient(data) {
+      const c = { id: nextId(), ...data, reels: parseInt(data.reels) || 0, ppr: parseInt(data.ppr) || 0 };
+      c.revenue = getRevenue(c);
+      clients.push(c); saveClients(clients); showToast('Client added successfully');
+    }
+    function updateClient(id, data) {
+      clients = clients.map(c => c.id === id ? { ...c, ...data, reels: parseInt(data.reels) || 0, ppr: parseInt(data.ppr) || 0, revenue: (parseInt(data.reels) || 0) * (parseInt(data.ppr) || 0) } : c);
+      saveClients(clients); showToast('Client updated');
+    }
+    function deleteClient(id) {
+      clients = clients.filter(c => c.id !== id); saveClients(clients); showToast('Client deleted', 'error');
+    }
+
+    // RENDER ENGINE
+    function render() {
+
+      if (isLoggedIn()) {
+        resetLogoutTimer();
+      }
+
+      const root = document.getElementById('root');
+      if (!isLoggedIn()) { root.innerHTML = renderLogin(); attachLogin(); return }
+      root.innerHTML = `
+    <div class="app">
+      ${renderSidebar()}
+      <div class="main">
+        ${renderTopbar()}
+        <div class="content">
+          ${page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : ''}
+        </div>
+      </div>
+    </div>
+    ${modal ? renderModal() : ''}
+    ${toast ? `<div class="toast ${toast.type}">${toast.type === 'success' ? '✓' : '✕'} ${toast.msg}</div>` : ''}
+  `;
+      attachEvents();
+      if (page === 'analytics') initCharts();
+    }
+
+    function renderLogin() {
+      return `<div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+<a href="#" class="logo">
+        <div>
+          <img src="../assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;">
+        </div>
+      </a>        
+      </div>
+      <div class="login-title">Welcome back</div>
+      <div class="login-sub">Sign in to manage your clients & revenue</div>
+      <div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email"
+         autocomplete="off"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password"
+         autocomplete="off"></div>
+      <button class="btn btn-primary" id="login-btn" style="width:100%;padding:12px;margin-top:8px;font-size:14px">Sign In →</button>
+    </div>
+  </div>`;
+    }
+
+    function renderSidebar() {
+      const nav = [
+        { id: 'dashboard', icon: '⊞', label: 'Dashboard' },
+        { id: 'clients', icon: '◎', label: 'Clients' },
+        { id: 'analytics', icon: '◈', label: 'Analytics' },
+      ];
+      return `<div class="sidebar">
+    <div class="logo">
+      <div class="logo-text">Reel<span>Scale</span></div>
+      <div class="logo-sub">Admin Panel</div>
+    </div>
+    <div class="nav">
+      ${nav.map(n => `<button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}"><span class="nav-icon">${n.icon}</span>${n.label}</button>`).join('')}
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">A</div>
+        <div class="user-info"><div class="user-name">Admin</div><div class="user-role">admin@reelscale.com</div></div>
+        <button class="logout-btn" id="logout-btn" title="Logout">⏏</button>
+      </div>
+    </div>
+  </div>`;
+    }
+
+    function renderTopbar() {
+      const titles = { dashboard: 'Dashboard', clients: 'Clients', analytics: 'Revenue Analytics' };
+      const subs = { dashboard: 'Overview of your business metrics', clients: 'Manage all client accounts', analytics: 'Detailed revenue insights' };
+      return `<div class="topbar">
+    <div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary " id="add-client-btn">+ Add Client</button>
+    </div>
+  </div>`;
+    }
+
+    function renderDashboard() {
+      const s = stats();
+      const fc = filteredClients().slice(0, 5);
+      return `
+    <div class="stat-grid">
+      <div class="stat-card red">
+        <div class="stat-label">Total Clients</div>
+        <div class="stat-value">${s.total}</div>
+        <div class="stat-sub">Active accounts</div>
+        <div class="stat-icon">◎</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Total Reels</div>
+        <div class="stat-value gold">${s.reels.toLocaleString()}</div>
+        <div class="stat-sub">Reels created</div>
+        <div class="stat-icon">▶</div>
+      </div>
+      <div class="stat-card white">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value red">₹${fmt(s.rev)}</div>
+        <div class="stat-sub">${fmtFull(s.rev)}</div>
+        <div class="stat-icon">₹</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="glass-card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Top Clients by Revenue</div>
+        ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 5).map((c, i) => `
+          <div class="top-client">
+            <div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.name[0]}</div>
+            <div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
+            <div class="client-rev">₹${fmt(getRevenue(c))}</div>
+          </div>`).join('')}
+      </div>
+      <div class="glass-card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Recent Clients</div>
+        ${clients.slice(-5).reverse().map(c => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">${c.name}</div>
+              <div style="font-size:11px;color:var(--muted)">${c.instagram}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="badge badge-gold">₹${fmt(getRevenue(c))}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+    }
+
+    function renderClients() {
+      const fc = filteredClients();
+      const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
+      return `
+    <div class="controls">
+      <div class="search-wrap"><span class="search-icon">⌕</span><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div>
+      <button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button>
+      <button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Client Name</th>
+          <th>Business</th>
+          <th>Instagram</th>
+          <th>Reels</th>
+          <th>Price/Reel</th>
+          <th>Revenue</th>
+          <th>Revenue Share</th>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          ${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}
+          ${fc.map(c => {
+        const rev = getRevenue(c);
+        const pct = Math.round(rev / maxRev * 100);
+        return `<tr>
+              <td><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></td>
+              <td>${c.business}</td>
+              <td style="color:var(--muted)">${c.instagram || '—'}</td>
+              <td><span class="badge badge-red">${c.reels}</span></td>
+              <td>₹${(c.ppr || 0).toLocaleString()}</td>
+              <td style="font-weight:700;color:var(--gold)">₹${rev.toLocaleString()}</td>
+              <td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td>
+              <td>
+                <div class="action-btns">
+                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-btn" data-id="${c.id}" title="Edit Client" style="width:20px;cursor:pointer">
+                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-btn" data-id="${c.id}" title="Delete Client" style="width:20px;cursor:pointer">
+                </div>
+              </td>
+            </tr>`;
+      }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+    }
+
+    function renderAnalytics() {
+      const s = stats();
+      const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
+      return `
+    <div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div>
+      <div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div>
+      <div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div>
+    </div>
+    <div class="analytics-grid">
+      <div class="chart-card" style="grid-column:1/-1"><div class="chart-title">Revenue Per Client</div><div class="chart-sub">Sorted by revenue · All clients</div><canvas id="rev-chart" height="260"></canvas></div>
+    </div>
+    <div class="glass-card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Client Revenue Breakdown</div>
+      ${top.map((c, i) => {
+        const rev = getRevenue(c);
+        const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0;
+        return `<div class="rev-bar-wrap" style="margin-bottom:14px">
+          <div class="rev-bar-label">
+            <span style="font-weight:500;font-size:13px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span>
+            <span style="color:var(--gold);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span>
+          </div>
+          <div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+    }
+
+    function renderModal() {
+      const isEdit = modal === 'edit';
+      const client = isEdit ? clients.find(c => c.id === editId) : null;
+      return `<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">${isEdit ? 'Edit Client' : 'Add New Client'}</div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div>
+        <div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div>
+        <div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div>
+        <div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div>
+      </div>
+      <div style="background:var(--white-05);border-radius:10px;padding:12px 14px;margin-top:4px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div>
+        <div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--gold)">₹0</div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button>
+      </div>
+    </div>
+  </div>`;
+    }
+
+    function attachLogin() {
+      document.getElementById('login-btn')?.addEventListener('click', () => {
+        const e = document.getElementById('l-email').value.trim();
+        const p = document.getElementById('l-pass').value;
+        if (e === CRED.email && p === CRED.password) {
+          setAuth(true);
+          render();
+          startActivityTracking();
+        } else { document.getElementById('login-err').style.display = 'block' }
+      });
+      document.getElementById('l-pass')?.addEventListener('keydown', ev => { if (ev.key === 'Enter') document.getElementById('login-btn').click() });
+    }
+
+    function attachEvents() {
+      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => { page = b.dataset.page; search = ''; render() }));
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearTimeout(logoutTimer);
+
+        setAuth(false);
+        modal = null;
+        editId = null;
+        page = 'dashboard';
+
+        render();
+      }); document.getElementById('add-client-btn')?.addEventListener('click', () => { modal = 'add'; editId = null; render(); attachModalEvents() });
+      document.getElementById('search-input')?.addEventListener('input', e => { search = e.target.value; render() });
+      document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
+        if (sortKey === b.dataset.sort) sortDir *= -1; else { sortKey = b.dataset.sort; sortDir = -1 }
+        render();
+      }));
+      document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
+      document.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
+      if (modal) attachModalEvents();
+    }
+
+    function attachModalEvents() {
+      const updatePreview = () => {
+        const r = parseInt(document.getElementById('f-reels')?.value) || 0;
+        const p = parseInt(document.getElementById('f-ppr')?.value) || 0;
+        const el = document.getElementById('rev-preview');
+        if (el) el.textContent = '₹' + (r * p).toLocaleString('en-IN');
+      };
+      document.getElementById('f-reels')?.addEventListener('input', updatePreview);
+      document.getElementById('f-ppr')?.addEventListener('input', updatePreview);
+      updatePreview();
+      document.getElementById('modal-close')?.addEventListener('click', () => { modal = null; render() });
+      document.getElementById('modal-cancel')?.addEventListener('click', () => { modal = null; render() });
+      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { modal = null; render() } });
+      document.getElementById('modal-save')?.addEventListener('click', () => {
+        const data = {
+          name: document.getElementById('f-name').value.trim(),
+          business: document.getElementById('f-biz').value.trim(),
+          phone: document.getElementById('f-phone').value.trim(),
+          instagram: document.getElementById('f-instagram').value.trim(),
+          reels: document.getElementById('f-reels').value,
+          ppr: document.getElementById('f-ppr').value,
+        };
+        if (!data.name || !data.business) { showToast('Name and business are required', 'error'); return }
+        if (modal === 'edit') updateClient(editId, data); else addClient(data);
+        modal = null; render();
+      });
+    }
+
+    function initCharts() {
+      const sorted = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
+      const ctx = document.getElementById('rev-chart');
+      if (!ctx) return;
+      if (window._reelChart) window._reelChart.destroy();
+      window._reelChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sorted.map(c => c.name.split(' ')[0]),
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: sorted.map(c => getRevenue(c)),
+            backgroundColor: sorted.map((_, i) => i === 0 ? 'oklch(0.75 0.10 85 / 0.7)' : 'oklch(52% 0.22 25 / 0.5)'),
+            borderColor: sorted.map((_, i) => i === 0 ? 'oklch(0.75 0.10 85)' : 'oklch(62.944% 0.25583 25.982)'),
+            borderWidth: 1.5,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '₹' + ctx.raw.toLocaleString('en-IN') } } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.45)', font: { size: 11 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.45)', font: { size: 11 }, callback: v => '₹' + v.toLocaleString('en-IN') } }
+          }
+        }
+      });
+    }
+
+    render();
+
+    if (isLoggedIn()) {
+      startActivityTracking();
+    }
+  </script>
+</body>
+
+</html>

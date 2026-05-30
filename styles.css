@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
 
@@ -102,7 +102,7 @@ header.scrolled {
     border-bottom: 0.78px solid var(--border);
     transform: translateY(0px);
     padding: 8px 56px;
-        backdrop-filter: blur(100px);
+    backdrop-filter: blur(100px);
 
 
     .mob-btn-primary {
@@ -289,7 +289,7 @@ nav a:hover {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    }
+}
 
 .hero-lines {
     position: absolute;
@@ -355,6 +355,13 @@ h1 em {
     font-style: normal;
     color: var(--red);
     -webkit-text-stroke: 0px;
+    font-family: 'Playfair Display', serif !important;
+}
+
+em {
+    font-family: 'Playfair Display', serif !important;
+    font-style: italic !important;
+    font-weight: 200;
 }
 
 .hero-sub {
@@ -407,7 +414,7 @@ h1 em {
     background: var(--bg1);
     width: 50%;
     margin: auto;
-        margin-top: 72px;
+    margin-top: 72px;
     /* border-radius: var(--border-radius-1); */
 }
 
@@ -908,8 +915,9 @@ h1 em {
     width: 100%;
     height: 100%;
     border: none;
-    header { 
-        display:none;
+
+    header {
+        display: none;
     }
 }
 
@@ -1237,6 +1245,7 @@ h1 em {
     color: var(--gold);
     font-size: var(--text-sm);
 }
+
 .testi-stars img {
     width: 24px;
     height: 24px;
