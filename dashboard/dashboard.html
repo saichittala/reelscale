@@ -514,8 +514,8 @@
         if (sortKey === b.dataset.sort) sortDir *= -1; else { sortKey = b.dataset.sort; sortDir = -1 }
         render();
       }));
-      document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
-      document.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
+      document.querySelectorAll('.edit-btn-td').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
+      document.querySelectorAll('.del-btn-td').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
       if (modal) attachModalEvents();
     }
 
