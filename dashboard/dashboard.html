@@ -215,25 +215,25 @@
       <div class="stat-card red">
         <div class="stat-label">Total Clients</div>
         <div class="stat-value">${s.total}</div>
-        <div class="stat-sub">Active accounts</div>
+        <div class="stat-sub dn">Active accounts</div>
         <div class="stat-icon">◎</div>
       </div>
       <div class="stat-card gold">
         <div class="stat-label">Total Reels</div>
         <div class="stat-value gold">${s.reels.toLocaleString()}</div>
-        <div class="stat-sub">Reels created</div>
+        <div class="stat-sub dn">Reels created</div>
         <div class="stat-icon">▶</div>
       </div>
       <div class="stat-card white">
         <div class="stat-label">Total Revenue</div>
         <div class="stat-value red">₹${fmt(s.rev)}</div>
-        <div class="stat-sub">${fmtFull(s.rev)}</div>
+        <div class="stat-sub dn">${fmtFull(s.rev)}</div>
         <div class="stat-icon">₹</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div class="glass-card">
-        <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Top Clients by Revenue</div>
+        <div class="glass-card-label" >Top Clients by Revenue</div>
         ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 5).map((c, i) => `
           <div class="top-client">
             <div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.name[0]}</div>
@@ -242,7 +242,7 @@
           </div>`).join('')}
       </div>
       <div class="glass-card">
-        <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Recent Clients</div>
+        <div class="glass-card-label" >Recent Clients</div>
         ${clients.slice(-5).reverse().map(c => `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
             <div>
