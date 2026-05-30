@@ -7,7 +7,9 @@
   <title>ReelScale Dashboard</title>
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="dashboard.css">
-
+  <link rel="icon" href="../assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
@@ -170,8 +172,14 @@
 
     async function addClient(data) {
       const client = {
+        action: "add",
         id: Date.now(),
-        ...data
+        clientName: data.name,
+        business: data.business,
+        phone: data.phone,
+        instagram: data.instagram,
+        reels: Number(data.reels),
+        pricePerReel: Number(data.ppr)
       };
 
       await fetch(SCRIPT_URL, {
@@ -186,19 +194,19 @@
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
-          action: "add",
-          id: Date.now(),
-          clientName,
-          business,
-          phone,
-          instagram,
-          reels,
-          pricePerReel
+          action: "update",
+          id: id,
+          clientName: data.name,
+          business: data.business,
+          phone: data.phone,
+          instagram: data.instagram,
+          reels: Number(data.reels),
+          pricePerReel: Number(data.ppr)
         })
       });
-    });
 
-    await loadGoogleSheetData();
+      await loadGoogleSheetData();
+      showToast("Client updated successfully");
     }
     async function deleteClient(id) {
       await fetch(SCRIPT_URL, {
@@ -210,6 +218,7 @@
       });
 
       await loadGoogleSheetData();
+      showToast("Client deleted successfully");
     }
 
     // RENDER ENGINE
@@ -262,26 +271,46 @@
 
     function renderSidebar() {
       const nav = [
-        { id: 'dashboard', icon: '⊞', label: 'Dashboard' },
-        { id: 'clients', icon: '◎', label: 'Clients' },
-        { id: 'analytics', icon: '◈', label: 'Analytics' },
+        { id: 'dashboard', icon: '../assets/icons/nav-dashboard.svg', label: 'Dashboard' },
+        { id: 'clients', icon: '../assets/icons/nav-clients.svg', label: 'Clients' },
+        { id: 'analytics', icon: '../assets/icons/nav-analytics.svg', label: 'Analytics' },
       ];
-      return `<div class="sidebar">
-    <div class="dashboard-logo">
-      <img src="../assets/logo.svg" alt="ReelScale Logo" style="">
-      <div class="logo-sub">Admin Panel</div>
-    </div>
-    <div class="nav">
-      ${nav.map(n => `<button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}"><span class="nav-icon">${n.icon}</span>${n.label}</button>`).join('')}
-    </div>
-    <div class="sidebar-footer">
-      <div class="user-pill">
-        <div class="user-avatar">A</div>
-        <div class="user-info"><div class="user-name">Admin</div><div class="user-role">admin@reelscale.com</div></div>
-        <img src="../assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout" style="width:24px;">
+
+      return `
+    <div class="sidebar">
+      <div class="dashboard-logo">
+        <img src="../assets/logo.svg" alt="ReelScale Logo">
+        <div class="logo-sub">Admin Panel</div>
+      </div>
+
+      <div class="nav">
+        ${nav.map(n => `
+          <button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}">
+            <img src="${n.icon}" alt="${n.label}" class="nav-icon">
+            <span>${n.label}</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name">Admin</div>
+            <div class="user-role">admin@reelscale.com</div>
+          </div>
+
+          <img
+            src="../assets/icons/log-out.svg"
+            alt="Logout"
+            class="logout-btn"
+            id="logout-btn"
+            title="Logout"
+          >
+        </div>
       </div>
     </div>
-  </div>`;
+  `;
     }
 
     function renderTopbar() {
@@ -314,7 +343,7 @@
       </div>
       <div class="stat-card white">
         <div class="stat-label">Total Revenue</div>
-        <div class="stat-value red">₹${fmt(s.rev)}</div>
+        <div class="stat-value green">₹${fmt(s.rev)}</div>
         <div class="stat-sub dn">${fmtFull(s.rev)}</div>
         <div class="stat-icon">₹</div>
       </div>
@@ -332,7 +361,7 @@
       <div class="glass-card">
         <div class="glass-card-label" >Recent Clients</div>
         ${clients.slice(-5).reverse().map(c => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.6px solid var(--border)">
             <div>
               <div style="font-size:13px;font-weight:500">${c.name}</div>
               <div style="font-size:11px;color:var(--muted)">${c.instagram}</div>
@@ -350,7 +379,9 @@
       const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
       return `
     <div class="controls">
-      <div class="search-wrap"><span class="search-icon">⌕</span><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div>
+      <div class="search-wrap">
+        <img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)">
+        <input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div>
       <button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button>
       <button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button>
     </div>
@@ -381,8 +412,8 @@
               <td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td>
               <td>
                 <div class="action-btns">
-                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-btn" data-id="${c.id}" title="Edit Client" style="width:20px;cursor:pointer">
-                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-btn" data-id="${c.id}" title="Delete Client" style="width:20px;cursor:pointer">
+                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-btn-td" data-id="${c.id}" title="Edit Client" >
+                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-btn-td" data-id="${c.id}" title="Delete Client">
                 </div>
               </td>
             </tr>`;
