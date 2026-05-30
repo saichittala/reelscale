@@ -59,6 +59,13 @@ body {
     overflow-x: hidden
 }
 
+.al-c {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+}
+
 
 .dn {
     display: none !important;
