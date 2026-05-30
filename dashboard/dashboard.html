@@ -18,11 +18,44 @@
 <body>
   <div id="root"></div>
   <script>
-    const STORAGE_KEY = 'reelscale_clients_v2';
     const AUTH_KEY = 'reelscale_auth';
     const CRED = { email: 'admin@reelscale.com', password: 'surya@123' };
     const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes
     let logoutTimer = null;
+
+    function doGet() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Clients");
+  const data = sheet.getDataRange().getValues();
+
+  const headers = data.shift();
+
+  const result = data.map(row => {
+    let obj = {};
+    headers.forEach((h, i) => obj[h] = row[i]);
+    return obj;
+  });
+
+  return ContentService.createTextOutput(
+    JSON.stringify(result)
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Clients");
+  const data = JSON.parse(e.postData.contents);
+
+  sheet.appendRow([
+    data.id,
+    data.name,
+    data.business,
+    data.phone,
+    data.instagram,
+    data.reels,
+    data.ppr
+  ]);
+
+  return ContentService.createTextOutput("success");
+}
 
     function setAuth(v) {
       v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY)
@@ -52,16 +85,36 @@
 
       resetLogoutTimer();
     }
-
-    function loadClients() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] }
-    }
-    function saveClients(c) { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)) }
     function isLoggedIn() { return localStorage.getItem(AUTH_KEY) === '1' }
     function setAuth(v) { v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY) }
 
-    let clients = loadClients();
-    let page = 'dashboard';
+    let clients = [];
+
+    async function loadGoogleSheetData() {
+      try {
+        const response = await fetch(
+          "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRO6tjPLhcsFSTC-MO7PpFjWjZbmvEuTu5ZwbzuqQ-Pi2-_1UP0GnIloIcEQ2xXaGmeQ8SMTTN33vjM81XKGbKU1XUqaZ1x0KXufwQccjLfgrFzfb2om3Z4goxHadgFjpufGYOwcWKcSalvxbDNl-4nzm12TOtSlli5TpyRVrwEHELKIWFZNLASpNlt_RJF6eam5gI1QTKmtPb4X3X8SHIe6wpQPf5tEwdaYlelUjGIMPhKk_hYCOkWeQY5KCTljnzi1vt7b8JGEUbsb0G_Etd33SK5Vg&lib=MzuopDirlPVpMZtpqRIRwhSuhMqpg5Jk9"
+        );
+
+        const data = await response.json();
+
+        clients = data.map((row) => ({
+          id: row["ID"] || Date.now(),
+          name: row["Client Name"] || "",
+          business: row["Business"] || "",
+          phone: row["Phone"] || "",
+          instagram: row["Instagram"] || "",
+          reels: parseInt(row["Reels"] || 0),
+          ppr: parseInt(row["Price Per Reel"] || 0)
+        }));
+
+        render();
+      } catch (error) {
+        console.error("SheetDB Error:", error);
+      }
+    }
+
+    loadGoogleSheetData(); let page = 'dashboard';
     let modal = null;
     let editId = null;
     let search = '';
@@ -77,7 +130,6 @@
       { id: 4, name: 'Sneha Reddy', business: 'Bloom Florals', phone: '+91 87654 32109', instagram: '@bloomflorals', reels: 15, ppr: 4500 },
       { id: 5, name: 'Karan Patel', business: 'TechVault Store', phone: '+91 93456 78901', instagram: '@techvaultstore', reels: 67, ppr: 1800 },
     ];
-    if (clients.length === 0) { clients = SAMPLE.map(c => ({ ...c, revenue: c.reels * c.ppr })); saveClients(clients) }
 
     function showToast(msg, type = 'success') {
       if (toastTimer) clearTimeout(toastTimer);
@@ -111,18 +163,39 @@
 
     let nextId = () => Date.now();
 
-    function addClient(data) {
-      const c = { id: nextId(), ...data, reels: parseInt(data.reels) || 0, ppr: parseInt(data.ppr) || 0 };
-      c.revenue = getRevenue(c);
-      clients.push(c); saveClients(clients); showToast('Client added successfully');
-    }
-    function updateClient(id, data) {
-      clients = clients.map(c => c.id === id ? { ...c, ...data, reels: parseInt(data.reels) || 0, ppr: parseInt(data.ppr) || 0, revenue: (parseInt(data.reels) || 0) * (parseInt(data.ppr) || 0) } : c);
-      saveClients(clients); showToast('Client updated');
-    }
-    function deleteClient(id) {
-      clients = clients.filter(c => c.id !== id); saveClients(clients); showToast('Client deleted', 'error');
-    }
+    async function addClient(data) {
+  const client = {
+    id: Date.now(),
+    ...data
+  };
+
+  await fetch("https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRO6tjPLhcsFSTC-MO7PpFjWjZbmvEuTu5ZwbzuqQ-Pi2-_1UP0GnIloIcEQ2xXaGmeQ8SMTTN33vjM81XKGbKU1XUqaZ1x0KXufwQccjLfgrFzfb2om3Z4goxHadgFjpufGYOwcWKcSalvxbDNl-4nzm12TOtSlli5TpyRVrwEHELKIWFZNLASpNlt_RJF6eam5gI1QTKmtPb4X3X8SHIe6wpQPf5tEwdaYlelUjGIMPhKk_hYCOkWeQY5KCTljnzi1vt7b8JGEUbsb0G_Etd33SK5Vg&lib=MzuopDirlPVpMZtpqRIRwhSuhMqpg5Jk9", {
+    method: "POST",
+    body: JSON.stringify(client)
+  });
+
+  await loadGoogleSheetData();
+  showToast("Client added successfully");
+}
+    async function updateClient(id, data) {
+  await fetch("https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRO6tjPLhcsFSTC-MO7PpFjWjZbmvEuTu5ZwbzuqQ-Pi2-_1UP0GnIloIcEQ2xXaGmeQ8SMTTN33vjM81XKGbKU1XUqaZ1x0KXufwQccjLfgrFzfb2om3Z4goxHadgFjpufGYOwcWKcSalvxbDNl-4nzm12TOtSlli5TpyRVrwEHELKIWFZNLASpNlt_RJF6eam5gI1QTKmtPb4X3X8SHIe6wpQPf5tEwdaYlelUjGIMPhKk_hYCOkWeQY5KCTljnzi1vt7b8JGEUbsb0G_Etd33SK5Vg&lib=MzuopDirlPVpMZtpqRIRwhSuhMqpg5Jk9", {
+    method: "PUT",
+    body: JSON.stringify({
+      id,
+      ...data
+    })
+  });
+
+  await loadGoogleSheetData();
+}
+    async function deleteClient(id) {
+  await fetch("https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRO6tjPLhcsFSTC-MO7PpFjWjZbmvEuTu5ZwbzuqQ-Pi2-_1UP0GnIloIcEQ2xXaGmeQ8SMTTN33vjM81XKGbKU1XUqaZ1x0KXufwQccjLfgrFzfb2om3Z4goxHadgFjpufGYOwcWKcSalvxbDNl-4nzm12TOtSlli5TpyRVrwEHELKIWFZNLASpNlt_RJF6eam5gI1QTKmtPb4X3X8SHIe6wpQPf5tEwdaYlelUjGIMPhKk_hYCOkWeQY5KCTljnzi1vt7b8JGEUbsb0G_Etd33SK5Vg&lib=MzuopDirlPVpMZtpqRIRwhSuhMqpg5Jk9", {
+    method: "DELETE",
+    body: JSON.stringify({ id })
+  });
+
+  await loadGoogleSheetData();
+}
 
     // RENDER ENGINE
     function render() {
