@@ -1211,6 +1211,11 @@ tr:hover td {
     .dashboard-logo {
         width: 100%;
     }
+
+    .login-card {
+        max-width: 100% !important;
+        padding: 20px !important;
+    }
 }
 
 
