@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ReelScale Login</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+
+    <div class="login-wrap">
+        <div class="login-card">
+
+            <div class="login-logo">
+                <img src="../assets/logo.svg" alt="ReelScale Logo" style="width:100%;height:20px;">
+            </div>
+
+            <div class="login-title">
+                Welcome back
+            </div>
+
+            <div class="login-sub">
+                Sign in to manage your clients & revenue
+            </div>
+
+            <div id="login-error" class="login-error" style="display:none">
+                Invalid credentials. Please try again.
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input id="email" class="form-input" type="email" placeholder="Enter your email" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input id="password" class="form-input" type="password" placeholder="Enter your password"
+                    autocomplete="off">
+            </div>
+
+            <button id="login-btn" class="btn btn-primary al-c"
+                style="width:100%;padding:12px;margin-top:32px;font-size:14px">
+                Sign In →
+            </button>
+
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
+
+</body>
+
+</html>

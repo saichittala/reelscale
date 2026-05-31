@@ -25,32 +25,45 @@
     const CRED = { email: 'admin@reelscale.com', password: 'surya@123' };
     const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes
     let logoutTimer = null;
-    const USERS_URL =
-      "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
-    const SALES_URL =
-      "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
 
-    async function loadUsers() {
-      try {
+    function doGet() {
+      const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Clients");
+      const data = sheet.getDataRange().getValues();
 
-        const response = await fetch(USERS_URL);
+      const headers = data.shift();
 
-        const data = await response.json();
+      const result = data.map(row => {
+        let obj = {};
+        headers.forEach((h, i) => obj[h] = row[i]);
+        return obj;
+      });
 
-        users = data.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }));
-
-        render();
-
-      } catch (error) {
-        console.error("Users Load Error:", error);
-      }
+      return ContentService.createTextOutput(
+        JSON.stringify(result)
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
+    function doPost(e) {
+      const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Clients");
+      const data = JSON.parse(e.postData.contents);
+
+      sheet.appendRow([
+        data.id,
+        data.name,
+        data.business,
+        data.phone,
+        data.instagram,
+        data.reels,
+        data.ppr,
+        data.image
+      ]);
+
+      return ContentService.createTextOutput("success");
+    }
+
+    function setAuth(v) {
+      v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY)
+    }
     function resetLogoutTimer() {
       if (!isLoggedIn()) return;
 
@@ -80,36 +93,7 @@
     function setAuth(v) { v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY) }
 
     let clients = [];
-    let users = [];
 
-    let sales = [];
-    let newLeadRow = false;
-
-    async function loadSales() {
-      try {
-
-        const response = await fetch(SALES_URL);
-        const result = await response.json();
-
-        sales = result.leads || [];
-
-        render();
-
-      } catch (error) {
-        console.error("Sales Load Error:", error);
-      }
-    }
-
-    async function init() {
-      await Promise.all([
-        loadGoogleSheetData(),
-        loadUsers(),
-        loadSales()
-      ]);
-
-      render();
-    }
-    init();
 
 
     async function loadGoogleSheetData() {
@@ -139,12 +123,7 @@
       }
     }
 
-    loadGoogleSheetData(); const user = getCurrentUser();
-
-    let page =
-      user?.role === "sales"
-        ? "sales"
-        : "dashboard";;
+    loadGoogleSheetData(); let page = 'dashboard';
     let modal = null;
     let editId = null;
     let search = '';
@@ -153,6 +132,13 @@
     let toast = null;
     let toastTimer = null;
 
+    const SAMPLE = [
+      { id: 1, name: 'Arjun Mehta', business: 'Spice Route Café', phone: '+91 98765 43210', instagram: '@spiceroutecafe', reels: 24, ppr: 3500 },
+      { id: 2, name: 'Priya Sharma', business: 'Glamify Studio', phone: '+91 91234 56789', instagram: '@glamifystudio', reels: 38, ppr: 2800 },
+      { id: 3, name: 'Rohit Nair', business: 'FitFlare Gym', phone: '+91 99001 12345', instagram: '@fitflaregym', reels: 52, ppr: 2200 },
+      { id: 4, name: 'Sneha Reddy', business: 'Bloom Florals', phone: '+91 87654 32109', instagram: '@bloomflorals', reels: 15, ppr: 4500 },
+      { id: 5, name: 'Karan Patel', business: 'TechVault Store', phone: '+91 93456 78901', instagram: '@techvaultstore', reels: 67, ppr: 1800 },
+    ];
 
     function showToast(msg, type = 'success') {
       if (toastTimer) clearTimeout(toastTimer);
@@ -244,67 +230,6 @@
       showToast("Client deleted successfully");
     }
 
-    async function addSale(data) {
-
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "add",
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted
-        })
-      });
-
-      await loadSales();
-
-      showToast("Lead added successfully");
-    }
-
-    async function updateSale(id, data) {
-
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          id,
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted
-        })
-      });
-
-      await loadSales();
-
-      showToast("Lead updated successfully");
-    }
-
-    async function deleteSale(id) {
-
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "delete",
-          id
-        })
-      });
-
-      sales = sales.filter(
-        item => String(item.id) !== String(id)
-      );
-
-      render();
-
-      showToast("Lead deleted successfully");
-
-    }
-
     // RENDER ENGINE
     function render() {
 
@@ -320,17 +245,8 @@
       <div class="main">
         ${renderTopbar()}
         <div class="content">
-${page === 'dashboard'
-          ? renderDashboard()
-          : page === 'clients'
-            ? renderClients()
-            : page === 'analytics'
-              ? renderAnalytics()
-              : page === 'users'
-                ? renderUsers()
-                : page === 'sales'
-                  ? renderSales()
-                  : ''}        </div>
+          ${page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : ''}
+        </div>
       </div>
     </div>
     ${modal ? renderModal() : ''}
@@ -371,50 +287,17 @@ ${page === 'dashboard'
     }
 
     function renderSidebar() {
-      const user = getCurrentUser();
-
-      const nav =
-        user?.role === "sales"
-          ? [
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ]
-          : [
-            {
-              id: "dashboard",
-              icon: "../assets/icons/nav-dashboard.svg",
-              label: "Dashboard"
-            },
-            {
-              id: "clients",
-              icon: "../assets/icons/nav-clients.svg",
-              label: "Clients"
-            },
-            {
-              id: "analytics",
-              icon: "../assets/icons/nav-analytics.svg",
-              label: "Analytics"
-            },
-            {
-              id: "users",
-              icon: "../assets/icons/nav-users.svg",
-              label: "Users"
-            },
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ];
+      const nav = [
+        { id: 'dashboard', icon: '../assets/icons/nav-dashboard.svg', label: 'Dashboard' },
+        { id: 'clients', icon: '../assets/icons/nav-clients.svg', label: 'Clients' },
+        { id: 'analytics', icon: '../assets/icons/nav-analytics.svg', label: 'Analytics' },
+      ];
 
       return `
     <div class="sidebar">
       <div class="dashboard-logo">
         <img src="../assets/logo.svg" alt="ReelScale Logo">
-        <div class="logo-sub">Reel Production House</div>
+        <div class="logo-sub">Admin Panel</div>
       </div>
 
       <div class="nav">
@@ -430,8 +313,8 @@ ${page === 'dashboard'
         <div class="user-pill">
           <div class="user-avatar">A</div>
           <div class="user-info">
-            <div class="user-name">${user?.name || ''}</div>
-<div class="user-role">${user?.email || ''}</div>
+            <div class="user-name">Admin</div>
+            <div class="user-role">admin@reelscale.com</div>
           </div>
 
           <img
@@ -451,17 +334,13 @@ ${page === 'dashboard'
       const titles = {
         dashboard: 'Dashboard',
         clients: 'Clients',
-        analytics: 'Revenue Analytics',
-        users: 'Users',
-        sales: 'Sales'
+        analytics: 'Revenue Analytics'
       };
 
       const subs = {
         dashboard: 'Overview of your business metrics',
         clients: 'Manage all client accounts',
-        analytics: 'Detailed revenue insights',
-        users: 'Manage system users',
-        sales: 'Manage sales leads'
+        analytics: 'Detailed revenue insights'
       };
 
       return `
@@ -484,32 +363,6 @@ ${page === 'dashboard'
           `
           : ''
         }
-          ${page === 'sales'
-          ? `
-<button
-  class="btn btn-primary"
-  id="add-sale-btn">
-  <img src="../assets/icons/add.svg" width="18">
-  Add Lead
-</button>
-`
-          : ''
-        }
-      ${page === 'users'
-          ? `
-  <button
-    class="btn btn-primary"
-    id="add-user-btn">
-
-    <img
-      src="../assets/icons/add.svg"
-      width="18">
-
-    Add User
-  </button>
-`
-          : ''
-        }
     </div>
   `;
     }
@@ -525,8 +378,7 @@ ${page === 'dashboard'
         <div class="stat-sub dn">Active accounts</div>
 <div class="stat-icon">
   <img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon">
-</div>      
-</div>
+</div>      </div>
       <div class="stat-card gold">
         <div class="stat-label">Total Reels</div>
         <div class="stat-value gold">${s.reels.toLocaleString()}</div>
@@ -550,17 +402,17 @@ ${page === 'dashboard'
         ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `
           <div class="top-client">
             <div class="client-avatar"
-              style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">
-                    ${c.image
+     style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">
+  ${c.image
           ? `<img
-                      src="${c.image}"
-                      alt="${c.name}"
-                      style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                  `
+            src="${c.image}"
+            alt="${c.name}"
+            style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+        `
           : c.name[0]
         }
-            </div> 
-      <div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
+</div>   
+<div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
             <div class="client-rev">₹${fmt(getRevenue(c))}</div>
           </div>`).join('')}
       </div>
@@ -578,12 +430,6 @@ ${page === 'dashboard'
           </div>`).join('')}
       </div>
     </div>`;
-    }
-
-    function getCurrentUser() {
-      return JSON.parse(
-        localStorage.getItem("reelscale_user") || "null"
-      );
     }
 
     function renderClients() {
@@ -607,7 +453,7 @@ ${page === 'dashboard'
           <th>Price/Reel</th>
           <th>Revenue</th>
           <th>Revenue Share</th>
-          <th style="width:120px">Actions</th>
+          <th>Actions</th>
         </tr></thead>
         <tbody>
           ${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}
@@ -642,10 +488,10 @@ ${page === 'dashboard'
               <td>₹${(c.ppr || 0).toLocaleString()}</td>
               <td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td>
               <td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td>
-              <td style="width:120px">
+              <td>
                 <div class="action-btns">
-                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client" >
-                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client">
+                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-btn-td" data-id="${c.id}" title="Edit Client" >
+                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-btn-td" data-id="${c.id}" title="Delete Client">
                 </div>
               </td>
             </tr>`;
@@ -673,7 +519,7 @@ ${page === 'dashboard'
       ${top.map((c, i) => {
         const rev = getRevenue(c);
         const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0;
-        return `<div class="rev-bar-wrap" style="margin-bottom:20px">
+        return `<div class="rev-bar-wrap" style="margin-bottom:14px">
           <div class="rev-bar-label">
             <span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span>
             <span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span>
@@ -682,233 +528,6 @@ ${page === 'dashboard'
         </div>`;
       }).join('')}
     </div>`;
-    }
-
-    function renderUsers() {
-
-      return `
-  <div class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th style="width:120px">Actions</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        ${users.map(user => `
-          <tr>
-            <td>${user.id}</td>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>
-              <span class="badge badge-gold">
-                ${user.role}
-              </span>
-            </td>
-
-            <td style="width:120px">
-              <div class="action-btns">
-                <img
-                  src="../assets/icons/edit.svg"
-                  class="edit-user edit-btn-td"
-                  data-id="${user.id}"
-                  
-                >
-
-                <img
-                  src="../assets/icons/delete.svg"
-                  class="delete-btn-td delete-user"
-                  data-id="${user.id}"
-                >
-              </div>
-            </td>
-          </tr>
-        `).join("")}
-
-      </tbody>
-
-    </table>
-
-  </div>
-  `;
-    }
-
-    function renderSales() {
-      return `
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-          <tr>
-            <th class="dn">ID</th>
-            <th class="dn">Category</th>
-            <th>Company Name</th>
-            <th class="dn">Contact Person</th>
-            <th>Phone Number</th>
-            <th>Notes</th>
-            <th class="dn">Created Date</th>
-            <th>Contacted</th>
-          <th style="width:120px">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-${newLeadRow ? `
-<tr class="new-lead-row">
-
-  <td class="dn"></td>
-  <td class="dn"></td>
-
-  <td>
-    <input
-      id="new-company"
-      class="company-input"
-      placeholder="Company Name">
-  </td>
-
-  <td class="dn"></td>
-
-  <td>
-    <input
-      id="new-phone"
-      class="phone-input"
-      placeholder="Phone Number">
-  </td>
-
-  <td>
-    <input
-      id="new-note"
-      class="note-input"
-      placeholder="Notes">
-  </td>
-
-  <td class="dn"></td>
-
-  <td>
-  <input
-    type="checkbox"
-    id="new-contacted"
-    class="contacted-toggle"
-  >
-</td>
-
-  <td>
-    <div class="action-btns">
-
-    <img
-      src="../assets/icons/check.svg"
-      class="create-lead-btn"
-      title="Create Lead"
-      style="cursor:pointer"
-    >
-
-    <img
-      src="../assets/icons/close.svg"
-      class="cancel-lead-btn"
-      title="Cancel"
-      style="cursor:pointer"
-    >
-
-  </div>
-  </td>
-
-</tr>
-` : ""}
-
-${sales.map(item => `            <tr>
-
-              <td class="dn">${item.id}</td>
-
-              <td class="dn">
-                <span class="badge badge-gold">
-                  ${item.category}
-                </span>
-              </td>
-
-<td>
-  <input
-    type="text"
-    class="company-input"
-    data-id="${item.id}"
-    value="${item.companyName || ''}"
-    placeholder="Company Name"
-  >
-</td>
-              <td class="dn">${item.contactPerson}</td>
-
-<td>
-  <input
-    type="text"
-    class="phone-input"
-    data-id="${item.id}"
-    value="${item.phoneNumber || ''}"
-    placeholder="Phone Number"
-  >
-</td>
-<td>
-  <input
-    type="text"
-    class="note-input"
-    data-id="${item.id}"
-    value="${item.notes || ''}"
-    placeholder="Add note..."
-    style="
-      width:220px;
-      padding:8px 12px;
-      border-radius:8px;
-          border:1px solid transparent;
-    background:transparent;
-      color:white;
-    "
-  >
-</td>
-<td class="dn">${item.createdDate}</td>
-              <td>
-  <input
-    type="checkbox"
-    class="contacted-toggle"
-    data-id="${item.id}"
-    ${item.contacted === "Yes" ? "checked" : ""}
-  >
-</td>
-
-              <td style="width:120px">
-                <div class="action-btns">
-
-                  <img
-                    src="../assets/icons/edit.svg"
-                    class="edit-sale edit-btn-td dn"
-                    data-id="${item.id}"
-                  >
-
-                  <img
-  src="../assets/icons/delete.svg"
-  class="delete-sale delete-btn-td"
-  data-id="${item.id}"
->
-
-                </div>
-              </td>
-
-            </tr>
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
     }
 
     function renderModal() {
@@ -959,265 +578,30 @@ ${sales.map(item => `            <tr>
     }
 
     function attachLogin() {
-
-      document.getElementById('login-btn')
-        ?.addEventListener('click', () => {
-
-          const email =
-            document.getElementById('l-email').value.trim();
-
-          const password =
-            document.getElementById('l-pass').value;
-
-          if (login(email, password)) {
-
-            const user = getCurrentUser();
-
-            page =
-              user.role === "sales"
-                ? "sales"
-                : "dashboard";
-
-            render();
-            startActivityTracking();
-
-          } else {
-
-            document.getElementById('login-err')
-              .style.display = 'block';
-          }
-        });
-
-      document.getElementById('l-pass')
-        ?.addEventListener('keydown', ev => {
-
-          if (ev.key === 'Enter') {
-            document.getElementById('login-btn').click();
-          }
-        });
+      document.getElementById('login-btn')?.addEventListener('click', () => {
+        const e = document.getElementById('l-email').value.trim();
+        const p = document.getElementById('l-pass').value;
+        if (e === CRED.email && p === CRED.password) {
+          setAuth(true);
+          render();
+          startActivityTracking();
+        } else { document.getElementById('login-err').style.display = 'block' }
+      });
+      document.getElementById('l-pass')?.addEventListener('keydown', ev => { if (ev.key === 'Enter') document.getElementById('login-btn').click() });
     }
 
     function attachEvents() {
-      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
-        const user = getCurrentUser();
+      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => { page = b.dataset.page; search = ''; render() }));
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearTimeout(logoutTimer);
 
-        if (
-          user.role === "sales" &&
-          b.dataset.page !== "sales"
-        ) {
-          return;
-        }
+        setAuth(false);
+        modal = null;
+        editId = null;
+        page = 'dashboard';
 
-        page = b.dataset.page; search = ''; render()
-      }));
-      document
-        .querySelector(".cancel-lead-btn")
-        ?.addEventListener("click", () => {
-
-          newLeadRow = false;
-
-          render();
-
-          showToast("Lead creation cancelled");
-
-        });
-      document
-        .querySelector(".create-lead-btn")
-        ?.addEventListener("click", async () => {
-
-          const company =
-            document.getElementById("new-company")
-              ?.value.trim();
-
-          const phone =
-            document.getElementById("new-phone")
-              ?.value.trim();
-
-          const notes =
-            document.getElementById("new-note")
-              ?.value.trim();
-
-          const contacted =
-            document.getElementById("new-contacted")
-              ?.checked
-              ? "Yes"
-              : "No";
-
-          if (!company) {
-            showToast(
-              "Company Name is required",
-              "error"
-            );
-            return;
-          }
-
-          await addSale({
-            category: "",
-            companyName: company,
-            contactPerson: "",
-            phoneNumber: phone,
-            notes,
-            contacted
-          });
-
-          newLeadRow = false;
-
-          await loadSales();
-
-        });
-      document
-        .querySelectorAll(".delete-sale")
-        .forEach(btn => {
-
-          btn.addEventListener("click", async () => {
-
-            const id = btn.dataset.id;
-
-            await deleteSale(id);
-
-          });
-
-        });
-      document
-        .getElementById("add-sale-btn")
-        ?.addEventListener("click", () => {
-
-          if (newLeadRow) return;
-
-          newLeadRow = true;
-
-          render();
-
-        });
-      document
-        .querySelectorAll(".note-input")
-        .forEach(input => {
-
-          input.addEventListener(
-            "blur",
-            async () => {
-
-              const id = input.dataset.id;
-
-              const lead =
-                sales.find(
-                  x => String(x.id) === String(id)
-                );
-
-              if (
-                input.value ===
-                (lead.notes || "")
-              ) {
-                return;
-              }
-
-              await updateSale(
-                id,
-                {
-                  ...lead,
-                  notes: input.value
-                }
-              );
-
-              showToast(
-                "Note updated"
-              );
-
-            }
-          );
-
-        });
-      document
-        .querySelectorAll(".company-input")
-        .forEach(input => {
-
-          input.addEventListener("blur", async () => {
-
-            const id = input.dataset.id;
-
-            const lead = sales.find(
-              x => String(x.id) === String(id)
-            );
-
-            if (input.value === lead.companyName)
-              return;
-
-            await updateSale(id, {
-              ...lead,
-              companyName: input.value
-            });
-
-          });
-
-        });
-
-      document
-        .querySelectorAll(".phone-input")
-        .forEach(input => {
-
-          input.addEventListener("blur", async () => {
-
-            const id = input.dataset.id;
-
-            const lead = sales.find(
-              x => String(x.id) === String(id)
-            );
-
-            if (input.value === lead.phoneNumber)
-              return;
-
-            await updateSale(id, {
-              ...lead,
-              phoneNumber: input.value
-            });
-
-          });
-
-        });
-      document
-        .querySelectorAll(".contacted-toggle")
-        .forEach(cb => {
-
-          cb.addEventListener("change", async () => {
-
-            const lead =
-              sales.find(
-                x => String(x.id) === cb.dataset.id
-              );
-
-            await updateSale(
-              lead.id,
-              {
-                ...lead,
-                contacted:
-                  cb.checked
-                    ? "Yes"
-                    : "No"
-              }
-            );
-
-            await loadSales();
-          });
-
-        });
-      document.getElementById('logout-btn')
-        ?.addEventListener('click', () => {
-
-          clearTimeout(logoutTimer);
-
-          localStorage.removeItem("reelscale_auth");
-          localStorage.removeItem("reelscale_user");
-
-          window.location.href = "login.html";
-        });
-      document.getElementById('add-client-btn')?.addEventListener('click', () => { modal = 'add'; editId = null; render(); attachModalEvents() });
-      document.getElementById('add-user-btn')
-        ?.addEventListener('click', () => {
-
-          modal = 'add-user';
-
-          render();
-        });
+        render();
+      }); document.getElementById('add-client-btn')?.addEventListener('click', () => { modal = 'add'; editId = null; render(); attachModalEvents() });
       document.getElementById('search-input')?.addEventListener('input', e => {
         search = e.target.value;
 
@@ -1236,8 +620,8 @@ ${sales.map(item => `            <tr>
         if (sortKey === b.dataset.sort) sortDir *= -1; else { sortKey = b.dataset.sort; sortDir = -1 }
         render();
       }));
-      document.querySelectorAll('.edit-client').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
-      document.querySelectorAll('.del-client').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
+      document.querySelectorAll('.edit-btn-td').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
+      document.querySelectorAll('.del-btn-td').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
       if (modal) attachModalEvents();
     }
 
@@ -1307,11 +691,11 @@ ${sales.map(item => `            <tr>
   </script>
   <script src="js/auth.js"></script>
 
-  <script>
-    if (!isLoggedIn()) {
-      window.location.href = "login.html";
-    }
-  </script>
+<script>
+if (!isLoggedIn()) {
+    window.location.href = "login.html";
+}
+</script>
 </body>
 
 </html>
