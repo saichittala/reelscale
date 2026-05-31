@@ -1172,6 +1172,45 @@ tr:hover td {
     .topbar {
         padding: 14px 16px
     }
+
+    .app {
+        flex-direction: column;
+    }
+
+    .nav {
+        display: none;
+    }
+
+    .sidebar {
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: nowrap;
+    }
+
+    .user-avatar {
+        display: none
+    }
+    .user-info {
+        display: none
+    }
+    
+     .sidebar-footer {
+        border-top: none !important;
+        border-bottom: 0.6px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logout-btn {
+        padding: 8px 14px;
+        background: var(--white-03);
+        border-radius: var(--border-radius-2);
+    }
+
+    .dashboard-logo {
+        width: 100%;
+    }
 }
 
 
