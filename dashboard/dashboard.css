@@ -1025,11 +1025,12 @@ tr:hover td {
 /* LOGIN */
 .login-wrap {
     min-height: 100vh;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
-    padding: 20px;
+    padding: 24px;
+
     background-image: url('../assets/bg.png');
     background-size: cover;
     background-position: center;
@@ -1037,12 +1038,13 @@ tr:hover td {
 }
 
 .login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+
     background: oklch(0.11 0 0);
     border: 0.6px solid var(--border);
     border-radius: var(--border-radius-2);
-    padding: 40px;
-    width: 400px;
-    max-width: 800%;
 }
 
 .login-logo {
@@ -1358,6 +1360,16 @@ tr:hover td {
     .mobile-close-btn img {
         width: 18px;
         height: 18px;
+    }
+
+    .login-wrap {
+        padding: 16px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 28px 20px;
     }
 
     @keyframes slideMenu {
