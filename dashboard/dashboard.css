@@ -1399,3 +1399,42 @@ tr:hover td {
         }
     }
 }
+
+@media (max-width: 768px) {
+
+    /* Sales table horizontal scroll */
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrap table {
+        min-width: 720px;
+    }
+
+    /* Sticky Actions column */
+    .sales-table th:last-child,
+    .sales-table td:last-child {
+        position: sticky;
+        right: 0;
+        background: var(--bg);
+        z-index: 10;
+        border-left: 0.6px solid var(--border);
+        width: 81px !important;
+    }
+
+        /* Contacted column */
+    .sales-table th:nth-last-child(2),
+    .sales-table td:nth-last-child(2) {
+        position: sticky;
+        right: 81px; /* Actions width */
+        background: var(--bg);
+        z-index: 9;
+        border-left: 0.6px solid var(--border);
+    }
+
+
+    .sales-table th:last-child {
+        z-index: 11;
+    }
+}
