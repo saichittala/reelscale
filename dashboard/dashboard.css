@@ -71,6 +71,7 @@ body {
 .dn {
     display: none !important;
 }
+
 /* LAYOUT */
 .app {
     display: flex;
@@ -104,6 +105,7 @@ body {
         flex-direction: row;
         flex-wrap: wrap
     }
+
     .main {
         margin-left: 0
     }
@@ -196,6 +198,8 @@ body {
 .user-avatar {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
     border-radius: 50%;
     background: var(--white-03);
     border: 0.6px solid var(--border);
@@ -558,46 +562,46 @@ tr:hover td {
 }
 
 .note-input {
-  border: 1px solid transparent !important;
-  background: transparent !important;
-  transition: all 0.2s ease;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    transition: all 0.2s ease;
 }
 
 .note-input:hover {
-  border-color: rgba(255,255,255,.12) !important;
-  background: rgba(255,255,255,.03) !important;
+    border-color: rgba(255, 255, 255, .12) !important;
+    background: rgba(255, 255, 255, .03) !important;
 }
 
 .note-input:focus {
-  border-color: rgba(255,255,255,.2) !important;
-  background: rgba(255,255,255,.05) !important;
+    border-color: rgba(255, 255, 255, .2) !important;
+    background: rgba(255, 255, 255, .05) !important;
 }
 
 .company-input,
 .phone-input,
 .note-input {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: white;
-  outline: none;
-  transition: all .2s ease;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: white;
+    outline: none;
+    transition: all .2s ease;
 }
 
 .company-input:hover,
 .phone-input:hover,
 .note-input:hover {
-  border-color: rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
+    border-color: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .03);
 }
 
 .company-input:focus,
 .phone-input:focus,
 .note-input:focus {
-  border-color: rgba(255,255,255,.2);
-  background: rgba(255,255,255,.05);
+    border-color: rgba(255, 255, 255, .2);
+    background: rgba(255, 255, 255, .05);
 }
 
 /* =========================
@@ -641,10 +645,10 @@ tr:hover td {
     background: var(--white);
 
     box-shadow:
-        0 2px 12px rgba(0,0,0,.4);
+        0 2px 12px rgba(0, 0, 0, .4);
 
     transition:
-        transform .35s cubic-bezier(.68,-0.55,.265,1.55),
+        transform .35s cubic-bezier(.68, -0.55, .265, 1.55),
         background .3s ease,
         width .2s ease;
 }
@@ -715,7 +719,11 @@ tr:hover td {
 
 
 
-.edit-btn-td, .del-btn-td, .delete-sale, .create-lead-btn, .cancel-lead-btn {
+.edit-btn-td,
+.del-btn-td,
+.delete-sale,
+.create-lead-btn,
+.cancel-lead-btn {
     width: 32px !important;
     height: 32px !important;
     opacity: .7;
@@ -723,11 +731,14 @@ tr:hover td {
     padding: 6px;
     border-radius: var(--border-radius-2);
     background: transparent;
-     transition: .15s
+    transition: .15s
 }
 
 .edit-btn-td:hover,
-.del-btn-td:hover, .delete-sale:hover, .create-lead-btn:hover, .cancel-lead-btn:hover {
+.del-btn-td:hover,
+.delete-sale:hover,
+.create-lead-btn:hover,
+.cancel-lead-btn:hover {
     opacity: 1;
     background: var(--white-05);
 }
@@ -1015,8 +1026,8 @@ tr:hover td {
     border: 0.6px solid var(--border);
     border-radius: var(--border-radius-2);
     padding: 40px;
-    width: 100%;
-    max-width: 400px
+    width: 400px;
+    max-width: 800%;
 }
 
 .login-logo {
@@ -1190,11 +1201,12 @@ tr:hover td {
     .user-avatar {
         display: none
     }
+
     .user-info {
         display: none
     }
-    
-     .sidebar-footer {
+
+    .sidebar-footer {
         border-top: none !important;
         border-bottom: 0.6px solid var(--border);
         display: flex;
@@ -1208,14 +1220,20 @@ tr:hover td {
         border-radius: var(--border-radius-2);
     }
 
+
+    .login-card {
+        background: oklch(0.11 0 0);
+        border: 0.6px solid var(--border);
+        border-radius: var(--border-radius-2);
+        padding: 40px;
+        width: 100%;
+    }
+
+
     .dashboard-logo {
         width: 100%;
     }
 
-    .login-card {
-        max-width: 100% !important;
-        padding: 20px !important;
-    }
 }
 
 
