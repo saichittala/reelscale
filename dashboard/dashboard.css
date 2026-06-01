@@ -576,6 +576,7 @@ tr:hover td {
     background: transparent !important;
     transition: all 0.2s ease;
     color: var(--white) !important;
+    width:100%;
 }
 
 .note-input:hover {
