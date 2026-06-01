@@ -725,7 +725,9 @@ tr:hover td {
 .del-btn-td,
 .delete-sale,
 .create-lead-btn,
-.cancel-lead-btn {
+.cancel-lead-btn,
+.edit-client,
+.del-client {
     width: 32px !important;
     height: 32px !important;
     opacity: .7;
@@ -740,7 +742,9 @@ tr:hover td {
 .del-btn-td:hover,
 .delete-sale:hover,
 .create-lead-btn:hover,
-.cancel-lead-btn:hover {
+.cancel-lead-btn:hover,
+.edit-client:hover,
+.del-client:hover {
     opacity: 1;
     background: var(--white-05);
 }
