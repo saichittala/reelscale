@@ -759,6 +759,19 @@ tr:hover td {
     background: var(--white-05);
 }
 
+
+.call-sale {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .call-sale {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .action-btns {
     display: flex;
     gap: 4px
