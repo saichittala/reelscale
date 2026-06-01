@@ -770,6 +770,9 @@ tr:hover td {
     align-items: center;
     justify-content: center;
   }
+  .delete-sale {
+    display: none;
+  }
 }
 
 .action-btns {
