@@ -407,15 +407,13 @@ em {
 
 /* TICKER */
 .ticker-wrap {
-    border-bottom: 0.78px solid var(--border);
-    border-top: 0.78px solid var(--border);
+    border-bottom: 0.6px solid var(--border);
+    border-top: 0.6px solid var(--border);
     overflow: hidden;
     padding: 14px 0;
     background: var(--bg1);
     width: 50%;
     margin: auto;
-    margin-top: 72px;
-    /* border-radius: var(--border-radius-1); */
 }
 
 .ticker {
@@ -432,7 +430,6 @@ em {
     padding-right: 28px;
     font-size: var(--text-sm);
     font-weight: 300;
-    text-transform: uppercase;
     color: var(--muted);
 }
 
@@ -455,24 +452,28 @@ em {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
 }
-    }
+}
 }
 
 /* METRICS */
 #metrics {
-    max-width: 848px;
-    margin: 0 auto;
-    padding: 72px;
 }
 
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+    width: 50%;
+    margin: auto;
+    max-width: 848px;
+    margin: 0 auto;
+    padding: 72px;
+
 }
 
 .metric-card {

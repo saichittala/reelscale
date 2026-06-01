@@ -7,8 +7,8 @@
 
 :root {
 
-    /* =========================
-       TYPOGRAPHY SYSTEM
+    /* ========================= 
+       TYPOGRAPHY SYSTEM         
     ========================== */
 
     --text-xs: 12px;
@@ -1382,9 +1382,3 @@ tr:hover td {
         }
     }
 }
-
-
-
-
-
-/* Skeleton */
