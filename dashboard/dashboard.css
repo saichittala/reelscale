@@ -562,19 +562,20 @@ tr:hover td {
 }
 
 .note-input {
-    border: 1px solid transparent !important;
+    border: 0.6px solid transparent !important;
     background: transparent !important;
     transition: all 0.2s ease;
+    color: var(--white) !important;
 }
 
 .note-input:hover {
-    border-color: rgba(255, 255, 255, .12) !important;
-    background: rgba(255, 255, 255, .03) !important;
+    border-color: var(--border) !important;
+    background: var(--white-03) !important;
 }
 
 .note-input:focus {
-    border-color: rgba(255, 255, 255, .2) !important;
-    background: rgba(255, 255, 255, .05) !important;
+    border-color: var(--border) !important;
+    background: var(--white-03) !important;
 }
 
 .company-input,
@@ -583,9 +584,9 @@ tr:hover td {
     width: 100%;
     padding: 8px 12px;
     border-radius: 8px;
-    border: 1px solid transparent;
+    border: 0.6px solid transparent;
     background: transparent;
-    color: white;
+    color: var(--white);
     outline: none;
     transition: all .2s ease;
 }
@@ -593,15 +594,15 @@ tr:hover td {
 .company-input:hover,
 .phone-input:hover,
 .note-input:hover {
-    border-color: rgba(255, 255, 255, .12);
-    background: rgba(255, 255, 255, .03);
+    border-color: var(--border);
+    background: var(--white-03);
 }
 
 .company-input:focus,
 .phone-input:focus,
 .note-input:focus {
-    border-color: rgba(255, 255, 255, .2);
-    background: rgba(255, 255, 255, .05);
+    border-color: var(--border);
+    background: var(--white-03);
 }
 
 /* =========================

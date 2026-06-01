@@ -861,13 +861,14 @@ ${sales.map(item => `            <tr>
     class="note-input"
     data-id="${item.id}"
     value="${item.notes || ''}"
+    title="${item.notes || 'No notes added'}"
     placeholder="Add note..."
     style="
       width:220px;
       padding:8px 12px;
       border-radius:8px;
-          border:1px solid transparent;
-    background:transparent;
+      border:1px solid transparent;
+      background:transparent;
       color:white;
     "
   >
