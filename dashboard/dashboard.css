@@ -619,10 +619,10 @@ tr:hover td {
 
     position: relative;
     cursor: pointer;
-    border-radius: 999px;
+    border-radius: var(--border-radius-99);
 
-    background: var(--white-05);
-    border: 1px solid var(--border);
+    background: var(--white-03);
+    border: 0.6px solid var(--border);
 
     transition:
         background .3s ease,
@@ -636,8 +636,8 @@ tr:hover td {
     content: "";
 
     position: absolute;
-    top: 2px;
-    left: 2px;
+    top: 2.5px;
+    left: 2.5px;
 
     width: 20px;
     height: 20px;
@@ -645,9 +645,9 @@ tr:hover td {
     border-radius: 50%;
 
     background: var(--white);
-
+/* 
     box-shadow:
-        0 2px 12px rgba(0, 0, 0, .4);
+        0 2px 12px rgba(0, 0, 0, .4); */
 
     transition:
         transform .35s cubic-bezier(.68, -0.55, .265, 1.55),
@@ -687,9 +687,9 @@ tr:hover td {
 }
 
 /* OPTIONAL SUCCESS PULSE */
-.contacted-toggle:checked {
+/* .contacted-toggle:checked {
     animation: contactedPulse .35s ease;
-}
+} */
 
 @keyframes contactedPulse {
     0% {
