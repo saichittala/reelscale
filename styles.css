@@ -457,12 +457,8 @@ em {
         transform: rotate(360deg);
     }
 }
-}
-}
 
 /* METRICS */
-#metrics {
-}
 
 .metrics-grid {
     display: grid;
@@ -1488,6 +1484,9 @@ footer {
     .metrics-grid {
         grid-template-columns: 1fr;
         gap: 24px;
+        width: 100%;
+        margin: unset ! IMPORTANT;
+        padding: unset;
     }
 
     .services-header {
