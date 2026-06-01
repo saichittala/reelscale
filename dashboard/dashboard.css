@@ -444,6 +444,15 @@ body {
     opacity: .35
 }
 
+
+
+.dash-clients-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    height: 100%;
+}
+
 /* SEARCH & FILTERS */
 .controls {
     display: flex;
@@ -645,7 +654,7 @@ tr:hover td {
     border-radius: 50%;
 
     background: var(--white);
-/* 
+    /* 
     box-shadow:
         0 2px 12px rgba(0, 0, 0, .4); */
 
@@ -1235,11 +1244,131 @@ tr:hover td {
         width: 100%;
     }
 
+    .filter-btn {
+        display: none;
+    }
+
 
     .dashboard-logo {
         width: 100%;
     }
 
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-clients-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width:768px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: var(--border-radius-99);
+        background: var(--white-03);
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    .mobile-topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mobile-menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .70);
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+    }
+
+    .mobile-menu {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 300px;
+        height: 100%;
+        background: var(--bg2);
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        animation: slideMenu .25s ease;
+    }
+
+    .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        background: transparent;
+        color: white;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .mobile-nav-item.active {
+        background: var(--white-05);
+    }
+
+    .mobile-close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        transition: .2s;
+    }
+
+    .mobile-close-btn:hover {
+        background: var(--white-05);
+    }
+
+    .mobile-close-btn img {
+        width: 18px;
+        height: 18px;
+    }
+
+    @keyframes slideMenu {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(0);
+        }
+    }
 }
 
 
