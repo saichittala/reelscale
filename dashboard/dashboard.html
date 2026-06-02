@@ -15,6 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -247,69 +248,214 @@
 
     async function addSale(data) {
 
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "add",
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted
-        })
-      });
+      const tempLead = {
+        id: Date.now(),
+        createdDate: new Date().toLocaleDateString(),
+        ...data
+      };
 
-      await loadSales();
+      // Show immediately
+      sales.unshift(tempLead);
 
-      showToast("Lead added successfully");
+      render();
+
+      try {
+
+        await fetch(SALES_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "add",
+            category: data.category,
+            companyName: data.companyName,
+            contactPerson: data.contactPerson,
+            phoneNumber: data.phoneNumber,
+            notes: data.notes,
+            contacted: data.contacted
+          })
+        });
+
+        showToast("Lead added successfully");
+
+      } catch (error) {
+
+        sales = sales.filter(
+          x => x.id !== tempLead.id
+        );
+
+        render();
+
+        showToast(
+          "Failed to add lead",
+          "error"
+        );
+
+        console.error(error);
+      }
     }
 
     async function updateSale(id, data) {
-
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          id,
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted
-        })
-      });
 
       const index = sales.findIndex(
         x => String(x.id) === String(id)
       );
 
-      if (index !== -1) {
-        sales[index] = data;
-      }
+      if (index === -1) return;
 
-      showToast("Lead updated successfully");
+      // Backup for rollback
+      const oldData = { ...sales[index] };
+
+      // Update UI instantly
+      sales[index] = {
+        ...sales[index],
+        ...data
+      };
+
+      render();
+
+      try {
+
+        await fetch(SALES_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "update",
+            id,
+            category: data.category,
+            companyName: data.companyName,
+            contactPerson: data.contactPerson,
+            phoneNumber: data.phoneNumber,
+            notes: data.notes,
+            contacted: data.contacted
+          })
+        });
+
+        showToast("Lead updated successfully");
+
+      } catch (error) {
+
+        // Rollback if API fails
+        sales[index] = oldData;
+
+        render();
+
+        showToast(
+          "Failed to save changes",
+          "error"
+        );
+
+        console.error(error);
+      }
     }
 
     async function deleteSale(id) {
 
-      await fetch(SALES_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "delete",
-          id
-        })
-      });
+      const deletedLead =
+        sales.find(
+          x => String(x.id) === String(id)
+        );
 
       sales = sales.filter(
-        item => String(item.id) !== String(id)
+        x => String(x.id) !== String(id)
       );
 
       render();
 
-      showToast("Lead deleted successfully");
+      try {
 
+        await fetch(SALES_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "delete",
+            id
+          })
+        });
+
+        showToast(
+          "Lead deleted successfully"
+        );
+
+      } catch (error) {
+
+        sales.unshift(deletedLead);
+
+        render();
+
+        showToast(
+          "Failed to delete lead",
+          "error"
+        );
+
+        console.error(error);
+      }
+    }
+    async function handleSalesImport(event) {
+
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = async (e) => {
+
+        const workbook =
+          XLSX.read(
+            e.target.result,
+            { type: "array" }
+          );
+
+        const sheet =
+          workbook.Sheets[
+          workbook.SheetNames[0]
+          ];
+
+        const rows =
+          XLSX.utils.sheet_to_json(sheet);
+
+        if (!rows.length) {
+          showToast(
+            "No records found",
+            "error"
+          );
+          return;
+        }
+
+        showToast(
+          `Importing ${rows.length} leads...`
+        );
+
+        for (const row of rows) {
+
+          await addSale({
+            category:
+              row.Category || "",
+
+            companyName:
+              row.CompanyName ||
+              row.Company ||
+              "",
+
+            contactPerson:
+              row.ContactPerson || "",
+
+            phoneNumber:
+              row.PhoneNumber ||
+              row.Phone ||
+              "",
+
+            notes:
+              row.Notes || "",
+
+            contacted:
+              row.Contacted || "No"
+          });
+        }
+
+        showToast(
+          `${rows.length} leads imported successfully`
+        );
+      };
+
+      reader.readAsArrayBuffer(file);
     }
 
     // RENDER ENGINE
@@ -574,12 +720,28 @@ ${page === 'dashboard'
         }
           ${page === 'sales'
           ? `
-<button
-  class="btn btn-primary"
-  id="add-sale-btn">
-  <img src="../assets/icons/add.svg" width="18">
-  Add Lead
-</button>
+<div class="topbar-actions">
+
+  <button
+    class="btn btn-ghost"
+    id="import-sales-btn">
+    <img src="../assets/icons/upload.svg" width="18">
+    Import XLS
+  </button>
+
+  <button
+    class="btn btn-primary"
+    id="add-sale-btn">
+    <img src="../assets/icons/add.svg" width="18">
+    Add Lead
+  </button>
+
+  <input
+    type="file"
+    id="sales-file-input"
+    accept=".xlsx,.xls,.csv"
+    style="display:none;">
+</div>
 `
           : ''
         }
@@ -1115,6 +1277,22 @@ ${sales.map(item => `            <tr>
         search = '';
         render();
       }));
+      document
+        .getElementById("import-sales-btn")
+        ?.addEventListener("click", () => {
+
+          document
+            .getElementById("sales-file-input")
+            .click();
+
+        });
+
+      document
+        .getElementById("sales-file-input")
+        ?.addEventListener(
+          "change",
+          handleSalesImport
+        );
       document
         .getElementById("mobile-menu-btn")
         ?.addEventListener("click", () => {

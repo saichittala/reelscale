@@ -293,7 +293,6 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-
     span {
         display: flex;
         align-items: center;
@@ -311,6 +310,12 @@ body {
     height: 100%;
     padding: 8px 14px;
     border: unset !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+     border-radius: var(--border-radius-99);
+     transition: .15s;
+     gap: 6px
 }
 
 .btn-ghost:hover {
