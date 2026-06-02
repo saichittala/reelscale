@@ -534,7 +534,7 @@ table {
 
 thead tr {
     background: var(--white-03);
-    border-bottom: 0.6px solid var(--border)
+    /* border-bottom: 0.6px solid var(--border) */
 }
 
 th {
