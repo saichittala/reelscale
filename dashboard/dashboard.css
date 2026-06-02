@@ -1334,6 +1334,7 @@ tr:hover td {
         flex-direction: column;
         gap: 8px;
         animation: slideMenu .25s ease;
+        border-right: 0.6px solid var(--border);
     }
 
     .mobile-menu-header {
