@@ -1139,6 +1139,7 @@ ${sales.map(item => `            <tr>
   <a
     href="tel:${item.phoneNumber}"
     class="call-sale"
+      data-id="${item.id}"
     title="Call"
   >
     <img
@@ -1148,6 +1149,16 @@ ${sales.map(item => `            <tr>
       height="18"
     >
   </a>
+  <a
+      href="${createWhatsAppLink(item.phoneNumber)}"
+      class="whatsapp-sale"
+      target="_blank"
+      title="WhatsApp">
+      <img
+        src="../assets/icons/whatsapp.svg"
+        width="18"
+        height="18">
+    </a>
 
                   <img
                     src="../assets/icons/edit.svg"
@@ -1173,6 +1184,29 @@ ${sales.map(item => `            <tr>
 
     </div>
   `;
+    }
+
+    function createWhatsAppLink(phone) {
+
+      const message = `Hey 👋
+
+We came across your brand and instantly saw huge potential 🚀
+
+Honestly, with the right content and visual presentation, your brand could stand out on a whole new level 📈
+
+We're ReelScale — a premium cinematic reel brand creating high-performing content that makes brands look more premium, more trusted, and more impactful ✨
+
+Feel like we could really elevate your brand's online presence 🔥
+
+We’d genuinely love to collaborate and create something visually powerful together.
+
+— Team ReelScale`;
+
+      const cleanPhone =
+        String(phone || "")
+          .replace(/\D/g, "");
+
+      return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
     }
 
     function renderModal() {
@@ -1277,6 +1311,56 @@ ${sales.map(item => `            <tr>
         search = '';
         render();
       }));
+
+      document
+        .querySelectorAll(".call-sale")
+        .forEach(btn => {
+
+          btn.addEventListener("click", async () => {
+
+            const id = btn.dataset.id;
+
+            const lead = sales.find(
+              x => String(x.id) === String(id)
+            );
+
+            if (!lead) return;
+
+            if (lead.contacted === "Yes") return;
+
+            updateSale(id, {
+              ...lead,
+              contacted: "Yes"
+            });
+
+          });
+
+        });
+      document
+        .querySelectorAll(".whatsapp-sale")
+        .forEach(btn => {
+
+          btn.addEventListener("click", async () => {
+
+            const id = btn.dataset.id;
+
+            const lead =
+              sales.find(
+                x => String(x.id) === String(id)
+              );
+
+            if (!lead) return;
+
+            await updateSale(
+              id,
+              {
+                ...lead,
+                contacted: "Yes"
+              }
+            );
+          });
+
+        });
       document
         .getElementById("import-sales-btn")
         ?.addEventListener("click", () => {

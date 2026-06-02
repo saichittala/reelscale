@@ -1450,4 +1450,20 @@ tr:hover td {
     .td, .th, .company-input, .phone-input, .note-input {
         font-size: 16px !important;
     }
+
+    .create-lead-btn {
+        display: none;
+    }
+}
+
+.whatsapp-sale {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-sale {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
