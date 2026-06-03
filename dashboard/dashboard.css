@@ -1468,4 +1468,7 @@ tr:hover td {
     align-items: center;
     justify-content: center;
   }
+  .sales-topbar-actions{
+    display: none;
+  }
 }
