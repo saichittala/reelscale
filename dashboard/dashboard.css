@@ -745,7 +745,7 @@ tr:hover td {
 .create-lead-btn,
 .cancel-lead-btn,
 .edit-client,
-.del-client {
+.del-client,.call-sale, .whatsapp-sale {
     width: 32px !important;
     height: 32px !important;
     opacity: .7;
@@ -762,7 +762,9 @@ tr:hover td {
 .create-lead-btn:hover,
 .cancel-lead-btn:hover,
 .edit-client:hover,
-.del-client:hover {
+.del-client:hover,
+.call-sale:hover,
+.whatsapp-sale:hover {
     opacity: 1;
     background: var(--white-05);
 }
