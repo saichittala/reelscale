@@ -15,57 +15,56 @@
     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
   <div id="root"></div>
   <script>
+    // ==============================
+    // CONSTANTS & CONFIGURATION
+    // ==============================
     const AUTH_KEY = 'reelscale_auth';
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
     const CRED = { email: 'admin@reelscale.com', password: 'surya@123' };
-    const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes
+    const AUTO_LOGOUT_TIME = 8 * 60 * 1000;
+    const USERS_URL = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+    const SALES_URL = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+
     let logoutTimer = null;
-    const USERS_URL =
-      "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
-    const SALES_URL =
-      "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+    let clients = [];
+    let users = [];
+    let sales = [];
+    let newLeadRow = false;
+    let mobileMenuOpen = false;
+    let page = "dashboard";
+    let modal = null;
+    let editId = null;
+    let search = '';
+    let sortKey = 'revenue';
+    let sortDir = -1;
+    let toast = null;
+    let toastTimer = null;
+    let dataLoaded = false;
+    let sessionExpired = false;
 
-    async function loadUsers() {
-      try {
-
-        const response = await fetch(USERS_URL);
-
-        const data = await response.json();
-
-        users = data.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }));
-
-        render();
-
-      } catch (error) {
-        console.error("Users Load Error:", error);
-      }
-    }
-
+    // ==============================
+    // UTILITY FUNCTIONS
+    // ==============================
     function resetLogoutTimer() {
       if (!isLoggedIn()) return;
-
       clearTimeout(logoutTimer);
-
       logoutTimer = setTimeout(() => {
         clearTimeout(logoutTimer);
-        setAuth(false);
+
+        sessionExpired = true;
+
+        localStorage.removeItem("reelscale_auth");
+        localStorage.removeItem("reelscale_user");
 
         modal = null;
         editId = null;
-        page = 'dashboard';
+        page = "dashboard";
 
-        alert('Session expired. Please login again.');
         render();
       }, AUTO_LOGOUT_TIME);
     }
@@ -74,99 +73,55 @@
       ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
         document.addEventListener(event, resetLogoutTimer);
       });
-
       resetLogoutTimer();
     }
-    function isLoggedIn() { return localStorage.getItem(AUTH_KEY) === '1' }
-    function setAuth(v) { v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY) }
 
-    let clients = [];
-    let users = [];
+    function isLoggedIn() {
+      return localStorage.getItem(AUTH_KEY) === '1';
+    }
 
-    let sales = [];
-    let newLeadRow = false;
-    let mobileMenuOpen = false;
+    function setAuth(v) {
+      v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY);
+    }
 
-    async function loadSales() {
-      try {
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem("reelscale_user") || "null");
+    }
 
-        const response = await fetch(SALES_URL);
-        const result = await response.json();
-
-        sales = result.leads || [];
-
-        render();
-
-      } catch (error) {
-        console.error("Sales Load Error:", error);
+    function login(email, password) {
+      if (email === CRED.email && password === CRED.password) {
+        setAuth(true);
+        localStorage.setItem("reelscale_user", JSON.stringify({ name: "Admin", email: email, role: "admin" }));
+        return true;
       }
-    }
-
-    async function init() {
-      await Promise.all([
-        loadGoogleSheetData(),
-        loadUsers(),
-        loadSales()
-      ]);
-
-      render();
-    }
-    init();
-
-
-    async function loadGoogleSheetData() {
-      try {
-        const response = await fetch(SCRIPT_URL);
-
-        const data = await response.json();
-
-        console.log("API Response:", data);
-
-        clients = data.map(row => ({
-          id: row.id,
-          name: row.clientName,
-          business: row.business,
-          phone: row.phone,
-          instagram: row.instagram,
-          reels: row.reels,
-          ppr: row.pricePerReel,
-          image: row.image
-        }));
-
-        console.log("Clients:", clients);
-
-        render();
-      } catch (error) {
-        console.error(error);
+      const user = users.find(u => u.email === email && u.password === password);
+      if (user) {
+        setAuth(true);
+        localStorage.setItem("reelscale_user", JSON.stringify({ name: user.name, email: user.email, role: user.role }));
+        return true;
       }
+      return false;
     }
-
-    const user = getCurrentUser();
-
-    let page =
-      user?.role === "sales"
-        ? "sales"
-        : "dashboard";;
-    let modal = null;
-    let editId = null;
-    let search = '';
-    let sortKey = 'revenue';
-    let sortDir = -1;
-    let toast = null;
-    let toastTimer = null;
-
 
     function showToast(msg, type = 'success') {
       if (toastTimer) clearTimeout(toastTimer);
-      toast = { msg, type }; render();
-      toastTimer = setTimeout(() => { toast = null; render() }, 2800);
+      toast = { msg, type };
+      render();
+      toastTimer = setTimeout(() => {
+        toast = null;
+        render();
+      }, 2800);
     }
 
-    function getRevenue(c) { return (c.reels || 0) * (c.ppr || 0) }
+    function getRevenue(c) {
+      return (c.reels || 0) * (c.ppr || 0);
+    }
 
     function filteredClients() {
       let c = [...clients];
-      if (search) c = c.filter(x => (x.name + x.business + x.instagram).toLowerCase().includes(search.toLowerCase()));
+      if (search) {
+        c = c.filter(x => (x.name + x.business + x.instagram).toLowerCase().includes(search.toLowerCase()));
+      }
       c.sort((a, b) => {
         let av = sortKey === 'revenue' ? getRevenue(a) : sortKey === 'reels' ? a.reels : 0;
         let bv = sortKey === 'revenue' ? getRevenue(b) : sortKey === 'reels' ? b.reels : 0;
@@ -183,13 +138,79 @@
       return { total, reels, rev, top };
     }
 
-    function fmt(n) { return n >= 100000 ? (n / 100000).toFixed(1) + 'L' : n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n }
-    function fmtFull(n) { return '₹' + n.toLocaleString('en-IN') }
+    function fmt(n) {
+      return n >= 100000 ? (n / 100000).toFixed(1) + 'L' : n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
+    }
+
+    function fmtFull(n) {
+      return '₹' + n.toLocaleString('en-IN');
+    }
 
     let nextId = () => Date.now();
 
-    async function addClient(data) {
+    function createWhatsAppLink(phone) {
+      const message = `Hey 👋\n\nWe came across your brand and instantly saw huge potential 🚀\n\nHonestly, with the right content and visual presentation, your brand could stand out on a whole new level 📈\n\nWe're ReelScale — a premium cinematic reel brand creating high-performing content that makes brands look more premium, more trusted, and more impactful ✨\n\nFeel like we could really elevate your brand's online presence 🔥\n\nWe'd genuinely love to collaborate and create something visually powerful together.\n\n— Team ReelScale`;
+      const cleanPhone = String(phone || "").replace(/\D/g, "");
+      return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+    }
 
+    // ==============================
+    // API FUNCTIONS
+    // ==============================
+    async function loadGoogleSheetData() {
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        localStorage.setItem(
+          "clients_cache",
+          JSON.stringify(data)
+        );
+        clients = data.map(row => ({
+          id: row.id,
+          name: row.clientName,
+          business: row.business,
+          phone: row.phone,
+          instagram: row.instagram,
+          reels: row.reels,
+          ppr: row.pricePerReel,
+          image: row.image
+        }));
+        render();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const response = await fetch(USERS_URL);
+        const data = await response.json();
+        users = data.map(user => ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          role: user.role
+        }));
+        render();
+      } catch (error) {
+        console.error("Users Load Error:", error);
+      }
+    }
+
+    async function loadSales() {
+      try {
+        const response = await fetch(SALES_URL);
+        const result = await response.json();
+        sales = result.leads || [];
+        dataLoaded = true;
+        render();
+      } catch (error) {
+        console.error("Sales Load Error:", error);
+      }
+    }
+
+    async function addClient(data) {
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -203,14 +224,11 @@
           image: data.image || ""
         })
       });
-
       await loadGoogleSheetData();
-
       showToast("Client added successfully");
     }
 
     async function updateClient(id, data) {
-
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -225,14 +243,11 @@
           image: data.image || ""
         })
       });
-
       await loadGoogleSheetData();
-
       showToast("Client updated successfully");
     }
 
     async function deleteClient(id) {
-
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -240,27 +255,19 @@
           id: id
         })
       });
-
       await loadGoogleSheetData();
-
       showToast("Client deleted successfully");
     }
 
     async function addSale(data) {
-
       const tempLead = {
         id: Date.now(),
         createdDate: new Date().toLocaleDateString(),
         ...data
       };
-
-      // Show immediately
       sales.unshift(tempLead);
-
       render();
-
       try {
-
         await fetch(SALES_URL, {
           method: "POST",
           body: JSON.stringify({
@@ -273,47 +280,22 @@
             contacted: data.contacted
           })
         });
-
         showToast("Lead added successfully");
-
       } catch (error) {
-
-        sales = sales.filter(
-          x => x.id !== tempLead.id
-        );
-
+        sales = sales.filter(x => x.id !== tempLead.id);
         render();
-
-        showToast(
-          "Failed to add lead",
-          "error"
-        );
-
+        showToast("Failed to add lead", "error");
         console.error(error);
       }
     }
 
     async function updateSale(id, data) {
-
-      const index = sales.findIndex(
-        x => String(x.id) === String(id)
-      );
-
+      const index = sales.findIndex(x => String(x.id) === String(id));
       if (index === -1) return;
-
-      // Backup for rollback
       const oldData = { ...sales[index] };
-
-      // Update UI instantly
-      sales[index] = {
-        ...sales[index],
-        ...data
-      };
-
+      sales[index] = { ...sales[index], ...data };
       render();
-
       try {
-
         await fetch(SALES_URL, {
           method: "POST",
           body: JSON.stringify({
@@ -327,40 +309,20 @@
             contacted: data.contacted
           })
         });
-
         showToast("Lead updated successfully");
-
       } catch (error) {
-
-        // Rollback if API fails
         sales[index] = oldData;
-
         render();
-
-        showToast(
-          "Failed to save changes",
-          "error"
-        );
-
+        showToast("Failed to save changes", "error");
         console.error(error);
       }
     }
 
     async function deleteSale(id) {
-
-      const deletedLead =
-        sales.find(
-          x => String(x.id) === String(id)
-        );
-
-      sales = sales.filter(
-        x => String(x.id) !== String(id)
-      );
-
+      const deletedLead = sales.find(x => String(x.id) === String(id));
+      sales = sales.filter(x => String(x.id) !== String(id));
       render();
-
       try {
-
         await fetch(SALES_URL, {
           method: "POST",
           body: JSON.stringify({
@@ -368,1299 +330,231 @@
             id
           })
         });
-
-        showToast(
-          "Lead deleted successfully"
-        );
-
+        showToast("Lead deleted successfully");
       } catch (error) {
-
         sales.unshift(deletedLead);
-
         render();
-
-        showToast(
-          "Failed to delete lead",
-          "error"
-        );
-
+        showToast("Failed to delete lead", "error");
         console.error(error);
       }
     }
+
     async function handleSalesImport(event) {
-
       const file = event.target.files[0];
-
       if (!file) return;
-
       const reader = new FileReader();
-
       reader.onload = async (e) => {
-
-        const workbook =
-          XLSX.read(
-            e.target.result,
-            { type: "array" }
-          );
-
-        const sheet =
-          workbook.Sheets[
-          workbook.SheetNames[0]
-          ];
-
-        const rows =
-          XLSX.utils.sheet_to_json(sheet);
-
+        const workbook = XLSX.read(e.target.result, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
         if (!rows.length) {
-          showToast(
-            "No records found",
-            "error"
-          );
+          showToast("No records found", "error");
           return;
         }
-
-        showToast(
-          `Importing ${rows.length} leads...`
-        );
-
+        showToast(`Importing ${rows.length} leads...`);
         for (const row of rows) {
-
           await addSale({
-            category:
-              row.Category || "",
-
-            companyName:
-              row.CompanyName ||
-              row.Company ||
-              "",
-
-            contactPerson:
-              row.ContactPerson || "",
-
-            phoneNumber:
-              row.PhoneNumber ||
-              row.Phone ||
-              "",
-
-            notes:
-              row.Notes || "",
-
-            contacted:
-              row.Contacted || "No"
+            category: row.Category || "",
+            companyName: row.CompanyName || row.Company || "",
+            contactPerson: row.ContactPerson || "",
+            phoneNumber: row.PhoneNumber || row.Phone || "",
+            notes: row.Notes || "",
+            contacted: row.Contacted || "No"
           });
         }
-
-        showToast(
-          `${rows.length} leads imported successfully`
-        );
+        showToast(`${rows.length} leads imported successfully`);
       };
-
       reader.readAsArrayBuffer(file);
     }
 
-    // RENDER ENGINE
+    // ==============================
+    // RENDER FUNCTIONS
+    // ==============================
     function render() {
+      const currentUser = getCurrentUser();
 
+      if (
+        currentUser?.role === "sales" &&
+        page !== "sales"
+      ) {
+        page = "sales";
+      }
       if (isLoggedIn()) {
         resetLogoutTimer();
       }
-
       const root = document.getElementById('root');
-      if (!isLoggedIn()) { root.innerHTML = renderLogin(); attachLogin(); return }
-      root.innerHTML = `
-    <div class="app">
-      ${renderSidebar()}
-      <div class="main">
-        ${renderTopbar()}
-        <div class="content">
-${page === 'dashboard'
-          ? renderDashboard()
-          : page === 'clients'
-            ? renderClients()
-            : page === 'analytics'
-              ? renderAnalytics()
-              : page === 'users'
-                ? renderUsers()
-                : page === 'sales'
-                  ? renderSales()
-                  : ''}        </div>
-      </div>
-    </div>
-    ${modal ? renderModal() : ''}
-      ${mobileMenuOpen ? renderMobileMenu() : ''}
+      if (!isLoggedIn()) {
 
-    ${toast ? `
-<div class="toast ${toast.type}">
-    <img
-        class="toast-icon"
-        src="../assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}"
-        alt="${toast.type}"
-    >
-    <span>${toast.msg}</span>
-</div>
-` : ''}  `;
+        root.innerHTML =
+          renderLogin() +
+          (sessionExpired
+            ? renderSessionExpiredModal()
+            : "");
+
+        attachLogin();
+        attachSessionExpiredEvents();
+
+        return;
+      }
+      root.innerHTML = `
+        <div class="app">
+          ${renderSidebar()}
+          <div class="main">
+            ${renderTopbar()}
+            <div class="content">
+              ${page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : ''}
+            </div>
+          </div>
+        </div>
+        ${modal ? renderModal() : ''}
+        ${mobileMenuOpen ? renderMobileMenu() : ''}
+        ${toast ? `<div class="toast ${toast.type}"><img class="toast-icon" src="../assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>` : ''}
+      `;
       attachEvents();
       if (page === 'analytics') initCharts();
     }
 
     function renderLogin() {
-      return `<div class="login-wrap">
-    <div class="login-card">
-      <div class="login-logo">
-<a href="#" class="logo">
-        <div>
-          <img src="../assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;">
+      return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><a href="#" class="logo"><div><img src="../assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;"></div></a></div><div class="login-title">Welcome back</div><div class="login-sub">Sign in to manage your clients & revenue</div><div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email" autocomplete="off"></div><div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password" autocomplete="off"></div><button class="btn btn-primary al-c" id="login-btn" style="width:100%;padding:12px;margin-top:32px;font-size:14px">Sign In</button></div></div>`;
+    }
+
+    function renderSessionExpiredModal() {
+      return `
+    <div class="modal-overlay">
+      <div class="modal" style="max-width:420px">
+
+        <div class=modal-icon>
+          <img src="../assets/icons/log-out.svg" alt="Info" width="24" height="24">
         </div>
-      </a>        
+
+        <div class="modal-header">
+          <div class="modal-title">
+            Session Expired
+          </div>
+        </div>
+
+        <div style="
+          color: var(--muted);
+          font-size: var(--text-sm);
+          line-height: 1.6;
+          margin-bottom: 24px;
+        ">
+          Your session expired due to inactivity.
+          Please sign in again to continue using ReelScale.
+        </div>
+
+        <div class="form-footer">
+          <button
+            id="session-login-btn"
+            class="btn btn-primary"
+          >
+            Login Again
+          </button>
+        </div>
+
       </div>
-      <div class="login-title">Welcome back</div>
-      <div class="login-sub">Sign in to manage your clients & revenue</div>
-      <div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email"
-         autocomplete="off"></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password"
-         autocomplete="off"></div>
-      <button class="btn btn-primary al-c" id="login-btn" style="width:100%;padding:12px;margin-top:32px;font-size:14px">Sign In</button>
     </div>
-  </div>`;
+  `;
     }
 
     function renderSidebar() {
       const user = getCurrentUser();
-
-      const nav =
-        user?.role === "sales"
-          ? [
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ]
-          : [
-            {
-              id: "dashboard",
-              icon: "../assets/icons/nav-dashboard.svg",
-              label: "Dashboard"
-            },
-            {
-              id: "clients",
-              icon: "../assets/icons/nav-clients.svg",
-              label: "Clients"
-            },
-            {
-              id: "analytics",
-              icon: "../assets/icons/nav-analytics.svg",
-              label: "Analytics"
-            },
-            {
-              id: "users",
-              icon: "../assets/icons/nav-users.svg",
-              label: "Users"
-            },
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ];
-
-      return `
-    <div class="sidebar">
-      <div class="dashboard-logo">
-        <img src="../assets/logo.svg" alt="ReelScale Logo">
-        <div class="logo-sub">Reel Production House</div>
-      </div>
-
-      <div class="nav">
-        ${nav.map(n => `
-          <button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}">
-            <img src="${n.icon}" alt="${n.label}" class="nav-icon">
-            <span>${n.label}</span>
-          </button>
-        `).join('')}
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="user-pill">
-          <div class="user-avatar">A</div>
-          <div class="user-info">
-            <div class="user-name">${user?.name || ''}</div>
-<div class="user-role">${user?.email || ''}</div>
-          </div>
-
-          <img
-            src="../assets/icons/log-out.svg"
-            alt="Logout"
-            class="logout-btn"
-            id="logout-btn"
-            title="Logout"
-          >
-        </div>
-      </div>
-    </div>
-  `;
+      const nav = user?.role === "sales" ? [{ id: "sales", icon: "../assets/icons/nav-sales.svg", label: "Sales" }] : [{ id: "dashboard", icon: "../assets/icons/nav-dashboard.svg", label: "Dashboard" }, { id: "clients", icon: "../assets/icons/nav-clients.svg", label: "Clients" }, { id: "analytics", icon: "../assets/icons/nav-analytics.svg", label: "Analytics" }, { id: "users", icon: "../assets/icons/nav-users.svg", label: "Users" }, { id: "sales", icon: "../assets/icons/nav-sales.svg", label: "Sales" }];
+      return `<div class="sidebar"><div class="dashboard-logo"><img src="../assets/logo.svg" alt="ReelScale Logo"><div class="logo-sub">Reel Production House</div></div><div class="nav">${nav.map(n => `<button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}"><img src="${n.icon}" alt="${n.label}" class="nav-icon"><span>${n.label}</span></button>`).join('')}</div><div class="sidebar-footer"><div class="user-pill"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">${user?.name || ''}</div><div class="user-role">${user?.email || ''}</div></div><img src="../assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout"></div></div></div>`;
     }
 
     function renderMobileMenu() {
       const user = getCurrentUser();
+      const isSales =
+        String(user?.role || "")
+          .trim()
+          .toLowerCase() === "sales";
 
-      const nav =
-        user?.role === "sales"
-          ? [
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ]
-          : [
-            {
-              id: "dashboard",
-              icon: "../assets/icons/nav-dashboard.svg",
-              label: "Dashboard"
-            },
-            {
-              id: "clients",
-              icon: "../assets/icons/nav-clients.svg",
-              label: "Clients"
-            },
-            {
-              id: "analytics",
-              icon: "../assets/icons/nav-analytics.svg",
-              label: "Analytics"
-            },
-            {
-              id: "users",
-              icon: "../assets/icons/nav-users.svg",
-              label: "Users"
-            },
-            {
-              id: "sales",
-              icon: "../assets/icons/nav-sales.svg",
-              label: "Sales"
-            }
-          ];
-
-      return `
-    <div class="mobile-menu-overlay" id="mobile-menu-overlay">
-      <div class="mobile-menu">
-
-        <div class="mobile-menu-header">
-          <img src="../assets/logo.svg" height="22">
-<button id="mobile-close-btn" class="mobile-close-btn">
-  <img
-    src="../assets/icons/close.svg"
-    alt="Close"
-    width="18"
-    height="18"
-  >
-</button>        </div>
-
-        ${nav.map(item => `
-          <button
-            class="mobile-nav-item ${page === item.id ? "active" : ""}"
-            data-page="${item.id}">
-            <img src="${item.icon}" width="18">
-            ${item.label}
-          </button>
-        `).join("")}
-
-      </div>
-    </div>
-  `;
+      const nav = isSales
+        ? [
+          {
+            id: "sales",
+            icon: "../assets/icons/nav-sales.svg",
+            label: "Sales"
+          }
+        ]
+        : [
+          {
+            id: "dashboard",
+            icon: "../assets/icons/nav-dashboard.svg",
+            label: "Dashboard"
+          },
+          {
+            id: "clients",
+            icon: "../assets/icons/nav-clients.svg",
+            label: "Clients"
+          },
+          {
+            id: "analytics",
+            icon: "../assets/icons/nav-analytics.svg",
+            label: "Analytics"
+          },
+          {
+            id: "users",
+            icon: "../assets/icons/nav-users.svg",
+            label: "Users"
+          },
+          {
+            id: "sales",
+            icon: "../assets/icons/nav-sales.svg",
+            label: "Sales"
+          }
+        ];
+      return `<div class="mobile-menu-overlay" id="mobile-menu-overlay"><div class="mobile-menu"><div class="mobile-menu-header"><img src="../assets/logo.svg" height="22"><button id="mobile-close-btn" class="mobile-close-btn"><img src="../assets/icons/close.svg" alt="Close" width="18" height="18"></button></div>${nav.map(item => `<button class="mobile-nav-item ${page === item.id ? "active" : ""}" data-page="${item.id}"><img src="${item.icon}" width="18">${item.label}</button>`).join("")}</div></div>`;
     }
 
     function renderTopbar() {
-      const titles = {
-        dashboard: 'Dashboard',
-        clients: 'Clients',
-        analytics: 'Revenue Analytics',
-        users: 'Users',
-        sales: 'Sales'
-      };
-
-      const subs = {
-        dashboard: 'Overview of your business metrics',
-        clients: 'Manage all client accounts',
-        analytics: 'Detailed revenue insights',
-        users: 'Manage system users',
-        sales: 'Manage sales leads'
-      };
-
-      return `
-    <div class="topbar">
-      <div class="mobile-topbar-left">
-  <button id="mobile-menu-btn" class="mobile-menu-btn">
-  <img
-    src="../assets/icons/menu.svg"
-    width="20"
-    alt="Menu"
-  >
-</button>
-
-  <div>
-    <div class="page-title">${titles[page] || ''}</div>
-    <div class="page-sub">${subs[page] || ''}</div>
-  </div>
-</div>
-
-      ${page === 'clients'
-          ? `
-          <div class="topbar-actions">
-            <button class="btn btn-primary" id="add-client-btn">
-              <span>
-                <img src="../assets/icons/add.svg" alt="Add" style="width:20px;">
-              </span>
-              <span>Add Client</span>
-            </button>
-          </div>
-          `
-          : ''
-        }
-          ${page === 'sales'
-          ? `
-<div class="topbar-actions sales-topbar-actions">
-
-  <button
-    class="btn btn-ghost"
-    id="import-sales-btn">
-    <img src="../assets/icons/upload.svg" width="18">
-    Import XLS
-  </button>
-
-  <button
-    class="btn btn-primary"
-    id="add-sale-btn">
-    <img src="../assets/icons/add.svg" width="18">
-    Add Lead
-  </button>
-
-  <input
-    type="file"
-    id="sales-file-input"
-    accept=".xlsx,.xls,.csv"
-    style="display:none;">
-</div>
-`
-          : ''
-        }
-      ${page === 'users'
-          ? `
-  <button
-    class="btn btn-primary"
-    id="add-user-btn">
-
-    <img
-      src="../assets/icons/add.svg"
-      width="18">
-
-    Add User
-  </button>
-`
-          : ''
-        }
-    </div>
-  `;
+      const titles = { dashboard: 'Dashboard', clients: 'Clients', analytics: 'Revenue Analytics', users: 'Users', sales: 'Sales' };
+      const subs = { dashboard: 'Overview of your business metrics', clients: 'Manage all client accounts', analytics: 'Detailed revenue insights', users: 'Manage system users', sales: 'Manage sales leads' };
+      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="../assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><button class="btn btn-primary" id="add-client-btn"><span><img src="../assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="import-sales-btn"><img src="../assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="../assets/icons/add.svg" width="18">Add Lead</button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<button class="btn btn-primary" id="add-user-btn"><img src="../assets/icons/add.svg" width="18">Add User</button>` : ''}</div>`;
     }
 
     function renderDashboard() {
       const s = stats();
-      const fc = filteredClients().slice(0, 5);
-      return `
-    <div class="stat-grid">
-      <div class="stat-card red">
-        <div class="stat-label">Total Clients</div>
-        <div class="stat-value">${s.total}</div>
-        <div class="stat-sub dn">Active accounts</div>
-<div class="stat-icon">
-  <img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon">
-</div>      
-</div>
-      <div class="stat-card gold">
-        <div class="stat-label">Total Reels</div>
-        <div class="stat-value gold">${s.reels.toLocaleString()}</div>
-        <div class="stat-sub dn">Reels created</div>
-        <div class="stat-icon">
-  <img src="../assets/icons/reels.svg" alt="Reels Icon">
-</div>
-      </div>
-      <div class="stat-card white">
-        <div class="stat-label">Total Revenue</div>
-        <div class="stat-value green">₹${fmt(s.rev)}</div>
-        <div class="stat-sub dn">${fmtFull(s.rev)}</div>
-        <div class="stat-icon">
-  <img src="../assets/icons/revenue.svg" alt="Revenue Icon">
-</div>
-      </div>
+      if (!dataLoaded) {
+        return `
+    <div class="glass-card height-100 width-100" style="display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted); width:100%; height:100%;">
+      Loading dashboard...
     </div>
-    <div class="dash-clients-grid">
-      <div class="glass-card">
-        <div class="glass-card-label" >Top Clients by Revenue</div>
-        ${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `
-          <div class="top-client">
-            <div class="client-avatar"
-              style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">
-                    ${c.image
-          ? `<img
-                      src="${c.image}"
-                      alt="${c.name}"
-                      style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                  `
-          : c.name[0]
-        }
-            </div> 
-      <div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div>
-            <div class="client-rev">₹${fmt(getRevenue(c))}</div>
-          </div>`).join('')}
-      </div>
-      <div class="glass-card">
-        <div class="glass-card-label" >Recent Clients</div>
-        ${clients.slice(-9).reverse().map(c => `
-          <div class="top-client">
-            <div style="display:flex; flex-direction:column; width:100%">
-              <div class="client-name" style="margin-left: 4px;">${c.name}</div>
-              <div class="client-biz" style="margin-left: 4px;">${c.instagram}</div>
-            </div>
-            <div style="text-align:right">
-              <div class="badge badge-gold">₹${fmt(getRevenue(c))}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
-    }
-
-    function getCurrentUser() {
-      return JSON.parse(
-        localStorage.getItem("reelscale_user") || "null"
-      );
+  `;
+      }
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="../assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="../assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
     }
 
     function renderClients() {
       const fc = filteredClients();
       const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
-      return `
-    <div class="controls">
-      <div class="search-wrap">
-        <img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)">
-        <input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div>
-      <button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button>
-      <button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Client Name</th>
-          <th>Business</th>
-          <th>Insta ID</th>
-          <th>Reels</th>
-          <th>Price/Reel</th>
-          <th>Revenue</th>
-          <th>Revenue Share</th>
-          <th style="width:120px">Actions</th>
-        </tr></thead>
-        <tbody>
-          ${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}
-          ${fc.map(c => {
-        const rev = getRevenue(c);
-        const pct = Math.round(rev / maxRev * 100);
-        return `<tr>
-              <td>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div class="client-avatar">
-                    ${c.image
-            ? `<img
-                          src="${c.image}"
-                          alt="${c.name}"
-                          style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-            : c.name[0]
-          }
-                  </div>
-
-                  <div>
-                    <div style="font-weight:500">${c.name}</div>
-                    <div style="font-size:11px;color:var(--muted)">
-                      ${c.phone || '—'}
-                    </div>
-                  </div>
-
-                </div>
-              </td>              
-              <td>${c.business}</td>
-              <td style="color:var(--muted)">${c.instagram || '—'}</td>
-              <td><span class="badge badge-red">${c.reels}</span></td>
-              <td>₹${(c.ppr || 0).toLocaleString()}</td>
-              <td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td>
-              <td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td>
-              <td style="width:120px">
-                <div class="action-btns">
-                  <img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client" >
-                  <img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client">
-                </div>
-              </td>
-            </tr>`;
-      }).join('')}
-        </tbody>
-      </table>
-    </div>`;
+      return `<div class="controls"><div class="search-wrap"><img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
     }
 
     function renderAnalytics() {
       const s = stats();
       const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
-      return `
-    <div class="stat-grid">
-      <div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div>
-      <div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div>
-      <div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div>
-    </div>
-    <div class="analytics-grid">
-      <div class="chart-card" style="grid-column:1/-1"><div class="chart-title">Revenue Per Client</div>
-      <div class="chart-sub">Sorted by revenue · All clients</div><canvas id="rev-chart" height="260"></canvas></div>
-    </div>
-    <div class="glass-card">
-      <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Client Revenue Breakdown</div>
-      ${top.map((c, i) => {
-        const rev = getRevenue(c);
-        const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0;
-        return `<div class="rev-bar-wrap" style="margin-bottom:20px">
-          <div class="rev-bar-label">
-            <span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span>
-            <span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span>
-          </div>
-          <div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div>
-        </div>`;
-      }).join('')}
-    </div>`;
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div><div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div><div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div></div><div class="analytics-grid"><div class="chart-card" style="grid-column:1/-1"><div class="chart-title">Revenue Per Client</div><div class="chart-sub">Sorted by revenue · All clients</div><canvas id="rev-chart" height="260"></canvas></div></div><div class="glass-card"><div style="font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Client Revenue Breakdown</div>${top.map((c, i) => { const rev = getRevenue(c); const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0; return `<div class="rev-bar-wrap" style="margin-bottom:20px"><div class="rev-bar-label"><span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span><span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span></div><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></div>`; }).join('')}</div>`;
     }
 
     function renderUsers() {
-
-      return `
-  <div class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th style="width:120px">Actions</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        ${users.map(user => `
-          <tr>
-            <td>${user.id}</td>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>
-              <span class="badge badge-gold">
-                ${user.role}
-              </span>
-            </td>
-
-            <td style="width:120px">
-              <div class="action-btns">
-                <img
-                  src="../assets/icons/edit.svg"
-                  class="edit-user edit-btn-td"
-                  data-id="${user.id}"
-                  
-                >
-
-                <img
-                  src="../assets/icons/delete.svg"
-                  class="delete-btn-td delete-user"
-                  data-id="${user.id}"
-                >
-              </div>
-            </td>
-          </tr>
-        `).join("")}
-
-      </tbody>
-
-    </table>
-
-  </div>
-  `;
+      return `<div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th style="width:120px">Actions</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.email}</td><td><span class="badge badge-gold">${user.role}</span></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" class="edit-user edit-btn-td" data-id="${user.id}"><img src="../assets/icons/delete.svg" class="delete-btn-td delete-user" data-id="${user.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
     }
 
     function renderSales() {
-      return `
-    <div class="table-wrap">
-
-      <table class="sales-table">
-
-        <thead>
-          <tr>
-            <th class="dn">ID</th>
-            <th class="dn">Category</th>
-            <th>Company Name</th>
-            <th class="dn">Contact Person</th>
-            <th>Phone Number</th>
-            <th>Notes</th>
-            <th class="dn">Created Date</th>
-            <th>Contacted</th>
-          <th style="width:120px">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-${newLeadRow ? `
-<tr class="new-lead-row">
-
-  <td class="dn"></td>
-  <td class="dn"></td>
-
-  <td>
-    <input
-      id="new-company"
-      class="company-input"
-      placeholder="Company Name">
-  </td>
-
-  <td class="dn"></td>
-
-  <td>
-    <input
-      id="new-phone"
-      class="phone-input"
-      placeholder="Phone Number">
-  </td>
-
-  <td>
-    <input
-      id="new-note"
-      class="note-input"
-      placeholder="Notes">
-  </td>
-
-  <td class="dn"></td>
-
-  <td>
-  <input
-    type="checkbox"
-    id="new-contacted"
-    class="contacted-toggle"
-  >
-</td>
-
-  <td>
-    <div class="action-btns">
-
-    <img
-      src="../assets/icons/check.svg"
-      class="create-lead-btn"
-      title="Create Lead"
-      style="cursor:pointer"
-    >
-
-    <img
-      src="../assets/icons/close.svg"
-      class="cancel-lead-btn"
-      title="Cancel"
-      style="cursor:pointer"
-    >
-
-  </div>
-  </td>
-
-</tr>
-` : ""}
-
-${sales.map(item => `            <tr>
-
-              <td class="dn">${item.id}</td>
-
-              <td class="dn">
-                <span class="badge badge-gold">
-                  ${item.category}
-                </span>
-              </td>
-
-<td>
-  <input
-    type="text"
-    class="company-input"
-    data-id="${item.id}"
-    value="${item.companyName || ''}"
-    placeholder="Company Name"
-  >
-</td>
-              <td class="dn">${item.contactPerson}</td>
-
-<td>
-  <input
-    type="text"
-    class="phone-input"
-    data-id="${item.id}"
-    value="${item.phoneNumber || ''}"
-    placeholder="Phone Number"
-  >
-</td>
-<td>
-  <input
-    type="text"
-    class="note-input"
-    data-id="${item.id}"
-    value="${item.notes || ''}"
-    title="${item.notes || 'No notes added'}"
-    placeholder="Add note..."
-    style="
-      width:100%;
-      padding:8px 12px;
-      border-radius:8px;
-      border:1px solid transparent;
-      background:transparent;
-      color:white;
-    "
-  >
-</td>
-<td class="dn">${item.createdDate}</td>
-              <td>
-  <input
-    type="checkbox"
-    class="contacted-toggle"
-    data-id="${item.id}"
-    ${item.contacted === "Yes" ? "checked" : ""}
-  >
-</td>
-
-              <td style="width:120px">
-                <div class="action-btns">
-                 
-  <a
-    href="tel:${item.phoneNumber}"
-    class="call-sale"
-      data-id="${item.id}"
-    title="Call"
-  >
-    <img
-      src="../assets/icons/phone.svg"
-      alt="Call"
-      width="18"
-      height="18"
-    >
-  </a>
-  <a
-      href="${createWhatsAppLink(item.phoneNumber)}"
-      class="whatsapp-sale"
-      target="_blank"
-      title="WhatsApp">
-      <img
-        src="../assets/icons/whatsapp.svg"
-        width="18"
-        height="18">
-    </a>
-
-                  <img
-                    src="../assets/icons/edit.svg"
-                    class="edit-sale edit-btn-td dn"
-                    data-id="${item.id}"
-                  >
-
-                  <img
-  src="../assets/icons/delete.svg"
-  class="delete-sale delete-btn-td"
-  data-id="${item.id}"
->
-
-                </div>
-              </td>
-
-            </tr>
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-    }
-
-    function createWhatsAppLink(phone) {
-
-      const message = `Hey 👋
-
-We came across your brand and instantly saw huge potential 🚀
-
-Honestly, with the right content and visual presentation, your brand could stand out on a whole new level 📈
-
-We're ReelScale — a premium cinematic reel brand creating high-performing content that makes brands look more premium, more trusted, and more impactful ✨
-
-Feel like we could really elevate your brand's online presence 🔥
-
-We’d genuinely love to collaborate and create something visually powerful together.
-
-— Team ReelScale`;
-
-      const cleanPhone =
-        String(phone || "")
-          .replace(/\D/g, "");
-
-      return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+      return `<div class="table-wrap"><table class="sales-table"><thead><tr><th class="dn">ID</th><th class="dn">Category</th><th>Company Name</th><th class="dn">Contact Person</th><th>Phone Number</th><th>Notes</th><th class="dn">Created Date</th><th>Contacted</th><th style="width:120px">Actions</th></tr></thead><tbody>${newLeadRow ? `<tr class="new-lead-row"><td class="dn"></td><td class="dn"></td><td><input id="new-company" class="company-input" placeholder="Company Name"></td><td class="dn"></td><td><input id="new-phone" class="phone-input" placeholder="Phone Number"></td><td><input id="new-note" class="note-input" placeholder="Notes"></td><td class="dn"></td><td><input type="checkbox" id="new-contacted" class="contacted-toggle"></td><td><div class="action-btns"><img src="../assets/icons/check.svg" class="create-lead-btn" title="Create Lead" style="cursor:pointer"><img src="../assets/icons/close.svg" class="cancel-lead-btn" title="Cancel" style="cursor:pointer"></div></td></tr>` : ""}${sales.map(item => `<tr><td class="dn">${item.id}</td><td class="dn"><span class="badge badge-gold">${item.category}</span></td><td><input type="text" class="company-input" data-id="${item.id}" value="${item.companyName || ''}" placeholder="Company Name"></td><td class="dn">${item.contactPerson}</td><td><input type="text" class="phone-input" data-id="${item.id}" value="${item.phoneNumber || ''}" placeholder="Phone Number"></td><td><input type="text" class="note-input" data-id="${item.id}" value="${item.notes || ''}" title="${item.notes || 'No notes added'}" placeholder="Add note..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:white;"></td><td class="dn">${item.createdDate}</td><td><input type="checkbox" class="contacted-toggle" data-id="${item.id}" ${item.contacted === "Yes" ? "checked" : ""}></td><td style="width:120px"><div class="action-btns"><a href="tel:${item.phoneNumber}" class="call-sale" data-id="${item.id}" title="Call"><img src="../assets/icons/phone.svg" alt="Call" width="18" height="18"></a><a href="${createWhatsAppLink(item.phoneNumber)}" class="whatsapp-sale" target="_blank" title="WhatsApp"><img src="../assets/icons/whatsapp.svg" width="18" height="18"></a><img src="../assets/icons/edit.svg" class="edit-sale edit-btn-td dn" data-id="${item.id}"><img src="../assets/icons/delete.svg" class="delete-sale delete-btn-td" data-id="${item.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
     }
 
     function renderModal() {
       const isEdit = modal === 'edit';
       const client = isEdit ? clients.find(c => c.id === editId) : null;
-      return `<div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div>
-<button class="modal-close" id="modal-close" aria-label="Close">
-    <img src="../assets/icons/close.svg" alt="" class="modal-close-icon">
-</button>        
-        
-      </div>
-      <div class="form-row dn">
-       <div class="form-group">
-  <label class="form-label">Client Image URL</label>
-  <input
-    class="form-input"
-    id="f-image"
-    placeholder="https://..."
-    value="${client?.image || ''}"
-  >
-</div>background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div>
-        <div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div>
-        <div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div>
-        <div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div>
-      </div>
-      <div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div>
-        <div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div>
-      </div>
-      <div class="form-footer">
-        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
-        <button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button>
-      </div>
-    </div>
-  </div>`;
+      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="../assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
     }
 
-    function attachLogin() {
-
-      document.getElementById('login-btn')
-        ?.addEventListener('click', () => {
-
-          const email =
-            document.getElementById('l-email').value.trim();
-
-          const password =
-            document.getElementById('l-pass').value;
-
-          if (login(email, password)) {
-
-            const user = getCurrentUser();
-
-            page =
-              user.role === "sales"
-                ? "sales"
-                : "dashboard";
-
-            render();
-            startActivityTracking();
-
-          } else {
-
-            document.getElementById('login-err')
-              .style.display = 'block';
-          }
-        });
-
-      document.getElementById('l-pass')
-        ?.addEventListener('keydown', ev => {
-
-          if (ev.key === 'Enter') {
-            document.getElementById('login-btn').click();
-          }
-        });
-    }
-
-    function attachEvents() {
-      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
-        const user = getCurrentUser();
-
-        if (
-          user.role === "sales" &&
-          b.dataset.page !== "sales"
-        ) {
-          return;
-        }
-
-        page = b.dataset.page;
-        mobileMenuOpen = false;
-        search = '';
-        render();
-      }));
-
-      document
-        .querySelectorAll(".call-sale")
-        .forEach(btn => {
-
-          btn.addEventListener("click", async () => {
-
-            const id = btn.dataset.id;
-
-            const lead = sales.find(
-              x => String(x.id) === String(id)
-            );
-
-            if (!lead) return;
-
-            if (lead.contacted === "Yes") return;
-
-            updateSale(id, {
-              ...lead,
-              contacted: "Yes"
-            });
-
-          });
-
-        });
-      document
-        .querySelectorAll(".whatsapp-sale")
-        .forEach(btn => {
-
-          btn.addEventListener("click", async () => {
-
-            const id = btn.dataset.id;
-
-            const lead =
-              sales.find(
-                x => String(x.id) === String(id)
-              );
-
-            if (!lead) return;
-
-            await updateSale(
-              id,
-              {
-                ...lead,
-                contacted: "Yes"
-              }
-            );
-          });
-
-        });
-      document
-        .getElementById("import-sales-btn")
-        ?.addEventListener("click", () => {
-
-          document
-            .getElementById("sales-file-input")
-            .click();
-
-        });
-
-      document
-        .getElementById("sales-file-input")
-        ?.addEventListener(
-          "change",
-          handleSalesImport
-        );
-      document
-        .getElementById("mobile-menu-btn")
-        ?.addEventListener("click", () => {
-
-          mobileMenuOpen = true;
-          render();
-
-        });
-
-      document
-        .getElementById("mobile-close-btn")
-        ?.addEventListener("click", () => {
-
-          mobileMenuOpen = false;
-          render();
-
-        });
-
-      document
-        .getElementById("mobile-menu-overlay")
-        ?.addEventListener("click", (e) => {
-
-          if (e.target.id === "mobile-menu-overlay") {
-            mobileMenuOpen = false;
-            render();
-          }
-
-        });
-      document
-        .querySelector(".cancel-lead-btn")
-        ?.addEventListener("click", () => {
-
-          newLeadRow = false;
-
-          render();
-
-          showToast("Lead creation cancelled");
-
-        });
-      document
-        .querySelector(".create-lead-btn")
-        ?.addEventListener("click", async () => {
-
-          const company =
-            document.getElementById("new-company")
-              ?.value.trim();
-
-          const phone =
-            document.getElementById("new-phone")
-              ?.value.trim();
-
-          const notes =
-            document.getElementById("new-note")
-              ?.value.trim();
-
-          const contacted =
-            document.getElementById("new-contacted")
-              ?.checked
-              ? "Yes"
-              : "No";
-
-          if (!company) {
-            showToast(
-              "Company Name is required",
-              "error"
-            );
-            return;
-          }
-
-          await addSale({
-            category: "",
-            companyName: company,
-            contactPerson: "",
-            phoneNumber: phone,
-            notes,
-            contacted
-          });
-
-          newLeadRow = false;
-
-        });
-      document
-        .querySelectorAll(".delete-sale")
-        .forEach(btn => {
-
-          btn.addEventListener("click", async () => {
-
-            const id = btn.dataset.id;
-
-            await deleteSale(id);
-
-          });
-
-        });
-      document
-        .getElementById("add-sale-btn")
-        ?.addEventListener("click", () => {
-
-          if (newLeadRow) return;
-
-          newLeadRow = true;
-
-          render();
-
-        });
-      document
-        .querySelectorAll(".note-input")
-        .forEach(input => {
-
-          input.addEventListener(
-            "blur",
-            async () => {
-
-              const id = input.dataset.id;
-
-              const lead =
-                sales.find(
-                  x => String(x.id) === String(id)
-                );
-
-              if (
-                input.value ===
-                (lead.notes || "")
-              ) {
-                return;
-              }
-
-              await updateSale(
-                id,
-                {
-                  ...lead,
-                  notes: input.value
-                }
-              );
-
-              showToast(
-                "Note updated"
-              );
-
-            }
-          );
-
-        });
-      document
-        .querySelectorAll(".company-input")
-        .forEach(input => {
-
-          input.addEventListener("blur", async () => {
-
-            const id = input.dataset.id;
-
-            const lead = sales.find(
-              x => String(x.id) === String(id)
-            );
-
-            if (input.value === lead.companyName)
-              return;
-
-            await updateSale(id, {
-              ...lead,
-              companyName: input.value
-            });
-
-          });
-
-        });
-
-      document
-        .querySelectorAll(".phone-input")
-        .forEach(input => {
-
-          input.addEventListener("blur", async () => {
-
-            const id = input.dataset.id;
-
-            const lead = sales.find(
-              x => String(x.id) === String(id)
-            );
-
-            if (input.value === lead.phoneNumber)
-              return;
-
-            await updateSale(id, {
-              ...lead,
-              phoneNumber: input.value
-            });
-
-          });
-
-        });
-      document
-        .querySelectorAll(".contacted-toggle")
-        .forEach(cb => {
-
-          cb.addEventListener("change", async () => {
-
-            const lead =
-              sales.find(
-                x => String(x.id) === cb.dataset.id
-              );
-
-            await updateSale(
-              lead.id,
-              {
-                ...lead,
-                contacted:
-                  cb.checked
-                    ? "Yes"
-                    : "No"
-              }
-            );
-          });
-
-        });
-      document.getElementById('logout-btn')
-        ?.addEventListener('click', () => {
-
-          clearTimeout(logoutTimer);
-
-          localStorage.removeItem("reelscale_auth");
-          localStorage.removeItem("reelscale_user");
-
-          window.location.href = "login.html";
-        });
-      document.getElementById('add-client-btn')?.addEventListener('click', () => { modal = 'add'; editId = null; render(); attachModalEvents() });
-      document.getElementById('add-user-btn')
-        ?.addEventListener('click', () => {
-
-          modal = 'add-user';
-
-          render();
-        });
-      document.getElementById('search-input')?.addEventListener('input', e => {
-        search = e.target.value;
-
-        const cursorPos = e.target.selectionStart;
-
-        render();
-
-        requestAnimationFrame(() => {
-          const input = document.getElementById('search-input');
-          if (input) {
-            input.focus();
-            input.setSelectionRange(cursorPos, cursorPos);
-          }
-        });
-      }); document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
-        if (sortKey === b.dataset.sort) sortDir *= -1; else { sortKey = b.dataset.sort; sortDir = -1 }
-        render();
-      }));
-      document.querySelectorAll('.edit-client').forEach(b => b.addEventListener('click', () => { editId = +b.dataset.id; modal = 'edit'; render(); attachModalEvents() }));
-      document.querySelectorAll('.del-client').forEach(b => b.addEventListener('click', () => { if (confirm('Delete this client?')) { deleteClient(+b.dataset.id); render() } }));
-      if (modal) attachModalEvents();
-    }
-
-    function attachModalEvents() {
-      const updatePreview = () => {
-        const r = parseInt(document.getElementById('f-reels')?.value) || 0;
-        const p = parseInt(document.getElementById('f-ppr')?.value) || 0;
-        const el = document.getElementById('rev-preview');
-        if (el) el.textContent = '₹' + (r * p).toLocaleString('en-IN');
-      };
-      document.getElementById('f-reels')?.addEventListener('input', updatePreview);
-      document.getElementById('f-ppr')?.addEventListener('input', updatePreview);
-      updatePreview();
-      document.getElementById('modal-close')?.addEventListener('click', () => { modal = null; render() });
-      document.getElementById('modal-cancel')?.addEventListener('click', () => { modal = null; render() });
-      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { modal = null; render() } });
-      document.getElementById('modal-save')?.addEventListener('click', () => {
-        const data = {
-          name: document.getElementById('f-name').value.trim(),
-          business: document.getElementById('f-biz').value.trim(),
-          phone: document.getElementById('f-phone').value.trim(),
-          instagram: document.getElementById('f-instagram').value.trim(),
-          reels: document.getElementById('f-reels').value,
-          ppr: document.getElementById('f-ppr').value,
-          image: document.getElementById('f-image').value.trim()
-        };
-        if (!data.name || !data.business) { showToast('Name and business are required', 'error'); return }
-        if (modal === 'edit') updateClient(editId, data); else addClient(data);
-        modal = null; render();
-      });
-    }
-
+    // ==============================
+    // CHART FUNCTIONS
+    // ==============================
     function initCharts() {
       const sorted = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
       const ctx = document.getElementById('rev-chart');
@@ -1690,14 +584,292 @@ We’d genuinely love to collaborate and create something visually powerful toge
       });
     }
 
-    render();
+    // ==============================
+    // EVENT ATTACHMENT FUNCTIONS
+    // ==============================
+    function attachLogin() {
+      document.getElementById('login-btn')?.addEventListener('click', () => {
+        const email = document.getElementById('l-email').value.trim();
+        const password = document.getElementById('l-pass').value;
+        if (login(email, password)) {
+          const user = getCurrentUser();
+          page = user.role === "sales" ? "sales" : "dashboard";
+          render();
+          startActivityTracking();
+        } else {
+          document.getElementById('login-err').style.display = 'block';
+        }
+      });
+      document.getElementById('l-pass')?.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') {
+          document.getElementById('login-btn').click();
+        }
+      });
+    }
+
+    function attachSessionExpiredEvents() {
+
+      document
+        .getElementById("session-login-btn")
+        ?.addEventListener("click", () => {
+
+          sessionExpired = false;
+
+          const email =
+            document.getElementById("l-email");
+
+          if (email) {
+            email.focus();
+          }
+
+          render();
+        });
+    }
+
+    function attachModalEvents() {
+      const updatePreview = () => {
+        const r = parseInt(document.getElementById('f-reels')?.value) || 0;
+        const p = parseInt(document.getElementById('f-ppr')?.value) || 0;
+        const el = document.getElementById('rev-preview');
+        if (el) el.textContent = '₹' + (r * p).toLocaleString('en-IN');
+      };
+      document.getElementById('f-reels')?.addEventListener('input', updatePreview);
+      document.getElementById('f-ppr')?.addEventListener('input', updatePreview);
+      updatePreview();
+      document.getElementById('modal-close')?.addEventListener('click', () => { modal = null; render(); });
+      document.getElementById('modal-cancel')?.addEventListener('click', () => { modal = null; render(); });
+      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { modal = null; render(); } });
+      document.getElementById('modal-save')?.addEventListener('click', () => {
+        const data = {
+          name: document.getElementById('f-name').value.trim(),
+          business: document.getElementById('f-biz').value.trim(),
+          phone: document.getElementById('f-phone').value.trim(),
+          instagram: document.getElementById('f-instagram').value.trim(),
+          reels: document.getElementById('f-reels').value,
+          ppr: document.getElementById('f-ppr').value,
+          image: document.getElementById('f-image').value.trim()
+        };
+        if (!data.name || !data.business) {
+          showToast('Name and business are required', 'error');
+          return;
+        }
+        if (modal === 'edit') updateClient(editId, data);
+        else addClient(data);
+        modal = null;
+        render();
+      });
+    }
+
+    function attachEvents() {
+      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+        const user = getCurrentUser();
+        if (user.role === "sales" && b.dataset.page !== "sales") {
+          return;
+        }
+        page = b.dataset.page;
+        mobileMenuOpen = false;
+        search = '';
+        render();
+      }));
+
+      document.querySelectorAll(".call-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (!lead) return;
+          if (lead.contacted === "Yes") return;
+          updateSale(id, { ...lead, contacted: "Yes" });
+        });
+      });
+
+      document.querySelectorAll(".whatsapp-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (!lead) return;
+          await updateSale(id, { ...lead, contacted: "Yes" });
+        });
+      });
+
+      document.getElementById("import-sales-btn")?.addEventListener("click", async () => {
+
+        await loadXLSXLibrary();
+
+        document.getElementById("sales-file-input").click();
+
+      });
+
+      document.getElementById("sales-file-input")?.addEventListener("change", handleSalesImport);
+
+      document.getElementById("mobile-menu-btn")?.addEventListener("click", () => {
+        mobileMenuOpen = true;
+        render();
+      });
+
+      document.getElementById("mobile-close-btn")?.addEventListener("click", () => {
+        mobileMenuOpen = false;
+        render();
+      });
+
+      document.getElementById("mobile-menu-overlay")?.addEventListener("click", (e) => {
+        if (e.target.id === "mobile-menu-overlay") {
+          mobileMenuOpen = false;
+          render();
+        }
+      });
+
+      document.querySelector(".cancel-lead-btn")?.addEventListener("click", () => {
+        newLeadRow = false;
+        render();
+        showToast("Lead creation cancelled");
+      });
+
+      document.querySelector(".create-lead-btn")?.addEventListener("click", async () => {
+        const company = document.getElementById("new-company")?.value.trim();
+        const phone = document.getElementById("new-phone")?.value.trim();
+        const notes = document.getElementById("new-note")?.value.trim();
+        const contacted = document.getElementById("new-contacted")?.checked ? "Yes" : "No";
+        if (!company) {
+          showToast("Company Name is required", "error");
+          return;
+        }
+        await addSale({ category: "", companyName: company, contactPerson: "", phoneNumber: phone, notes, contacted });
+        newLeadRow = false;
+      });
+
+      document.querySelectorAll(".delete-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          await deleteSale(id);
+        });
+      });
+
+      document.getElementById("add-sale-btn")?.addEventListener("click", () => {
+        if (newLeadRow) return;
+        newLeadRow = true;
+        render();
+      });
+
+      document.querySelectorAll(".note-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === (lead.notes || "")) return;
+          await updateSale(id, { ...lead, notes: input.value });
+          showToast("Note updated");
+        });
+      });
+
+      document.querySelectorAll(".company-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === lead.companyName) return;
+          await updateSale(id, { ...lead, companyName: input.value });
+        });
+      });
+
+      document.querySelectorAll(".phone-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === lead.phoneNumber) return;
+          await updateSale(id, { ...lead, phoneNumber: input.value });
+        });
+      });
+
+      document.querySelectorAll(".contacted-toggle").forEach(cb => {
+        cb.addEventListener("change", async () => {
+          const lead = sales.find(x => String(x.id) === cb.dataset.id);
+          await updateSale(lead.id, { ...lead, contacted: cb.checked ? "Yes" : "No" });
+        });
+      });
+
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearTimeout(logoutTimer);
+        localStorage.removeItem("reelscale_auth");
+        localStorage.removeItem("reelscale_user");
+        window.location.href = "login.html";
+      });
+
+      document.getElementById('add-client-btn')?.addEventListener('click', () => {
+        modal = 'add';
+        editId = null;
+        render();
+        attachModalEvents();
+      });
+
+      document.getElementById('add-user-btn')?.addEventListener('click', () => {
+        modal = 'add-user';
+        render();
+      });
+
+      document.getElementById('search-input')?.addEventListener('input', e => {
+        search = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        render();
+        requestAnimationFrame(() => {
+          const input = document.getElementById('search-input');
+          if (input) {
+            input.focus();
+            input.setSelectionRange(cursorPos, cursorPos);
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
+        if (sortKey === b.dataset.sort) sortDir *= -1;
+        else {
+          sortKey = b.dataset.sort;
+          sortDir = -1;
+        }
+        render();
+      }));
+
+      document.querySelectorAll('.edit-client').forEach(b => b.addEventListener('click', () => {
+        editId = +b.dataset.id;
+        modal = 'edit';
+        render();
+        attachModalEvents();
+      }));
+
+      document.querySelectorAll('.del-client').forEach(b => b.addEventListener('click', () => {
+        if (confirm('Delete this client?')) {
+          deleteClient(+b.dataset.id);
+          render();
+        }
+      }));
+
+      if (modal) attachModalEvents();
+    }
+
+    // ==============================
+    // INITIALIZATION
+    // ==============================
+    async function init() {
+
+      const user = getCurrentUser();
+
+      if (user?.role === "sales") {
+        page = "sales";
+      } else {
+        page = "dashboard";
+      }
+
+      render();
+
+      loadGoogleSheetData();
+      loadUsers();
+      loadSales();
+    }
+
+    init();
 
     if (isLoggedIn()) {
       startActivityTracking();
     }
   </script>
   <script src="js/auth.js"></script>
-
   <script>
     if (!isLoggedIn()) {
       window.location.href = "login.html";

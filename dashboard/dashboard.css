@@ -144,7 +144,7 @@ body {
 }
 
 .nav {
-    padding: 16px;
+    padding: 16px 10px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -155,7 +155,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 16px;
+    padding: 12px 16px;
     border-radius: var(--border-radius-2);
     cursor: pointer;
     font-size: var(--text-sm);
@@ -412,7 +412,7 @@ body {
 }
 
 .stat-label {
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     color: var(--muted);
     margin-bottom: var(--text-xs)
 }
@@ -818,19 +818,31 @@ tr:hover td {
     width: 100%;
     max-width: 550px;
     max-height: 90vh;
-    overflow-y: auto
+    overflow-y: auto;
+}
+
+.modal-icon {
+    background: var(--white-05);
+    margin-bottom: 20px;
+    width: fit-content;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-99);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px
+    margin-bottom: 20px;
 }
 
 .modal-title {
     font-size: var(--text-lg);
-    font-weight: 600
+    font-weight: 600;
 }
 
 .modal-close {
@@ -980,7 +992,6 @@ tr:hover td {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    margin-bottom: 24px
 }
 
 .chart-card {
@@ -1172,11 +1183,14 @@ tr:hover td {
     animation: slideIn .2s ease;
     display: flex;
     align-items: center;
-    gap: 10px
+    gap: 10px;
+    backdrop-filter: blur(20px);
 }
 
 .toast.success {
     /* border: 1px solid var(--green); */
+        backdrop-filter: blur(20px);
+
     background: #83E65820;
     /* box-shadow: 0px 0px 0px 3px oklch(47.834% 0.09751 164.881 / 0.3); */
 }
