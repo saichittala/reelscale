@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ReelScale</title>
+
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="dashboard.css">
 
     <link rel="icon" href="../assets/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon.png">
@@ -14,47 +17,75 @@
 <body>
 
     <div class="login-wrap">
+
         <div class="login-card">
 
             <div class="login-logo">
-                <img src="../assets/logo.svg" alt="ReelScale Logo" style="width:100%;height:20px;">
+                <img
+                    src="../assets/logo.svg"
+                    alt="ReelScale Logo"
+                    class="login-logo-img">
             </div>
 
             <div class="login-title">
                 Welcome back
             </div>
 
-            <div class="login-sub">
+            <p class="login-sub">
                 Sign in to manage your clients & revenue
-            </div>
+            </p>
 
-            <div id="login-error" class="login-error" style="display:none">
+            <div
+                id="login-error"
+                class="login-error"
+                role="alert"
+                style="display:none">
                 Invalid credentials. Please try again.
             </div>
 
-            <div class="form-group">
-                <label class="form-label">
-                    Email
-                </label>
+            <form id="login-form" autocomplete="off">
 
-                <input id="email" class="form-input" type="email" placeholder="Enter your email" autocomplete="off">
-            </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
 
-            <div class="form-group">
-                <label class="form-label">
-                    Password
-                </label>
+                    <input
+                        id="email"
+                        name="email"
+                        class="form-input"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+                </div>
 
-                <input id="password" class="form-input" type="password" placeholder="Enter your password"
-                    autocomplete="off">
-            </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        Password
+                    </label>
 
-            <button id="login-btn" class="btn btn-primary al-c"
-                style="width:100%;padding:12px;margin-top:32px;font-size:14px">
-                Sign In
-            </button>
+                    <input
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required>
+                </div>
+
+                <button
+                    id="login-btn"
+                    type="submit"
+                    class="btn btn-primary al-c login-btn">
+                    Sign In
+                </button>
+
+            </form>
 
         </div>
+
     </div>
 
     <script src="js/auth.js"></script>

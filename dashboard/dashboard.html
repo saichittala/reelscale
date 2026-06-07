@@ -47,6 +47,7 @@
     let dataLoaded = false;
     let sessionExpired = false;
     let newUserRow = false;
+    let usersLoaded = false;
 
     // ==============================
     // UTILITY FUNCTIONS
@@ -184,35 +185,46 @@
 
     async function loadUsers() {
       try {
-        const response = await fetch(USERS_URL);
-        const data = await response.json();
-        users = data.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          password: user.password,
-          role: user.role
-        }));
+
+        usersLoaded = false;
         render();
+
+        const response = await fetch(USERS_URL);
+
+        const data = await response.json();
+
+        console.log("Users:", data);
+
+        users = Array.isArray(data)
+          ? data
+          : [];
+
+        usersLoaded = true;
+
+        render();
+
       } catch (error) {
-        console.error("Users Load Error:", error);
+
+        console.error(
+          "Users Load Error:",
+          error
+        );
+
+        usersLoaded = true;
+
+        render();
       }
     }
 
     async function addUser(data) {
 
-      const tempUser = {
-        id: Date.now(),
-        ...data
-      };
-
-      users.unshift(tempUser);
-      render();
-
       try {
 
-        await fetch(USERS_URL, {
+        const response = await fetch(USERS_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             action: "add",
             name: data.name,
@@ -222,27 +234,28 @@
           })
         });
 
+        const result = await response.json();
+
+        console.log("ADD USER:", result);
+
+        if (!result.success) {
+          throw new Error(result.message || "Add failed");
+        }
+
         await loadUsers();
 
         showToast("User added successfully");
 
       } catch (error) {
 
-        users = users.filter(
-          x => x.id !== tempUser.id
-        );
-
-        render();
+        console.error(error);
 
         showToast(
-          "Failed to add user",
+          error.message || "Failed to add user",
           "error"
         );
-
-        console.error(error);
       }
     }
-
     async function updateUser(id, data) {
 
       const index =
@@ -263,17 +276,32 @@
 
       try {
 
-        await fetch(USERS_URL, {
+        const response = await fetch(USERS_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             action: "update",
-            id,
+            id: id,
             name: data.name,
             email: data.email,
             password: data.password,
             role: data.role
           })
         });
+
+        const result = await response.json();
+
+        console.log("UPDATE USER:", result);
+
+        if (!result.success) {
+          throw new Error(
+            result.message || "Update failed"
+          );
+        }
+
+        await loadUsers();
 
         showToast(
           "User updated successfully"
@@ -285,12 +313,12 @@
 
         render();
 
+        console.error(error);
+
         showToast(
-          "Failed to update user",
+          error.message || "Failed to update user",
           "error"
         );
-
-        console.error(error);
       }
     }
 
@@ -310,13 +338,28 @@
 
       try {
 
-        await fetch(USERS_URL, {
+        const response = await fetch(USERS_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             action: "delete",
-            id
+            id: id
           })
         });
+
+        const result = await response.json();
+
+        console.log("DELETE USER:", result);
+
+        if (!result.success) {
+          throw new Error(
+            result.message || "Delete failed"
+          );
+        }
+
+        await loadUsers();
 
         showToast(
           "User deleted successfully"
@@ -324,16 +367,18 @@
 
       } catch (error) {
 
-        users.unshift(deletedUser);
+        if (deletedUser) {
+          users.unshift(deletedUser);
+        }
 
         render();
 
+        console.error(error);
+
         showToast(
-          "Failed to delete user",
+          error.message || "Failed to delete user",
           "error"
         );
-
-        console.error(error);
       }
     }
 
@@ -694,6 +739,33 @@
     }
 
     function renderUsers() {
+      if (!usersLoaded) {
+
+        return `
+      <div class="dashboard-loader-wrap">
+        <div class="dashboard-loader">
+          <div class="loader">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+            <div class="bar8"></div>
+            <div class="bar9"></div>
+            <div class="bar10"></div>
+            <div class="bar11"></div>
+            <div class="bar12"></div>
+          </div>
+
+          <div class="loader-text">
+            Loading Users
+          </div>
+        </div>
+      </div>
+    `;
+      }
       return `
     <div class="table-wrap">
 <table class="users-table">        
