@@ -27,9 +27,12 @@
     --fw-bold: 700;
     --fw-extrabold: 800;
 
+    
+
     /* COLORS */
     --bg: oklch(0.09 0 0);
     --bg2: oklch(0.12 0 0);
+    --button-white: oklch(92.046% 0.01066 100.933); 
 
     --red: oklch(62.944% 0.25583 25.982);
     --red2: oklch(54.187% 0.21198 24.926);
@@ -52,6 +55,61 @@
     --white-30: oklch(1 0 0 / 0.30);
     --white-50: oklch(1 0 0 / 0.50);
     --font: 'Geist', system-ui, sans-serif;
+
+}
+
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg: #f2f2f2;
+  --bg2: #f2f2f2;
+  --button-white: oklch(100% 0.00011 271.152); 
+
+
+  --white: #282828;
+  --muted: #6b7280;
+
+  --border: rgba(15, 23, 42, 0.08);
+
+  --card: #ffffff;
+
+  --white-03: rgba(15, 23, 42, 0.02);
+  --white-05: rgba(15, 23, 42, 0.04);
+  --white-07: rgba(15, 23, 42, 0.06);
+  --white-10: rgba(15, 23, 42, 0.08);
+  --white-20: rgba(15, 23, 42, 0.12);
+  --white-30: rgba(15, 23, 42, 0.18);
+  --white-50: rgba(15, 23, 42, 0.50);
+  .nav-icon {
+    filter: brightness(0) saturate(100%) invert(7%) sepia(14%) saturate(2618%) hue-rotate(182deg) brightness(95%) contrast(93%);
+  }
+  .btn-ghost {
+    img {
+            filter: brightness(0) saturate(100%) invert(7%) sepia(14%) saturate(2618%) hue-rotate(182deg) brightness(95%) contrast(93%);
+
+    }
+  }
+  .edit-btn-td,
+.del-btn-td,
+.delete-sale,
+.create-lead-btn,
+.cancel-lead-btn,
+.edit-client,
+.del-client,
+.call-sale,
+.whatsapp-sale,
+.create-user-btn,
+.cancel-user-btn, .toggle-password, .delete-user, .logout-btn {
+            filter: brightness(0) saturate(100%) invert(7%) sepia(14%) saturate(2618%) hue-rotate(182deg) brightness(95%) contrast(93%);
+  }
+
+  
+}
+
+.topbar {
+    img {
+        /* filter: invert(100%) sepia(100%) hue-rotate(180deg); */
+    }
 }
 
 body {
@@ -74,6 +132,11 @@ body {
     display: none !important;
 }
 
+.df-g8 {
+    display: flex;
+    gap: 8px;
+}
+
 /* LAYOUT */
 .app {
     display: flex;
@@ -83,7 +146,7 @@ body {
 .sidebar {
     width: 220px;
     min-height: 100vh;
-    background: oklch(0.11 0 0);
+    background: var(--bg);
     border-right: 0.6px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -370,7 +433,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: oklch(0.095 0 0);
+    background: var(--bg);
     height: 83px;
 }
 
@@ -402,7 +465,7 @@ body {
 
 .btn-primary {
     background: var(--red);
-    color: var(--white);
+    color: var(--button-white);
     padding: 8px 14px;
     border-radius: var(--border-radius-99);
     text-decoration: none;
@@ -417,7 +480,8 @@ body {
 }
 
 .btn-primary:hover {
-    background: var(--red2)
+    background: var(--red2);
+    color: var(--button-white) !important;
 }
 
 .btn-ghost {
