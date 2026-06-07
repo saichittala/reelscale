@@ -138,7 +138,7 @@ body {
 .loader div {
     width: 5%;
     height: 15%;
-    background: var(--red);
+    background: var(--white);
     /* Use var(--white) if preferred */
     position: absolute;
     left: 50%;
