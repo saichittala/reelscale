@@ -23,12 +23,7 @@
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
-    const AUTH_KEY = 'reelscale_auth';
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
-    const CRED = { email: 'admin@reelscale.com', password: 'surya@123' };
     const AUTO_LOGOUT_TIME = 8 * 60 * 1000;
-    const USERS_URL = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
-    const SALES_URL = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
 
     let logoutTimer = null;
     let clients = [];
@@ -84,32 +79,7 @@
       resetLogoutTimer();
     }
 
-    function isLoggedIn() {
-      return localStorage.getItem(AUTH_KEY) === '1';
-    }
 
-    function setAuth(v) {
-      v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY);
-    }
-
-    function getCurrentUser() {
-      return JSON.parse(localStorage.getItem("reelscale_user") || "null");
-    }
-
-    function login(email, password) {
-      if (email === CRED.email && password === CRED.password) {
-        setAuth(true);
-        localStorage.setItem("reelscale_user", JSON.stringify({ name: "Admin", email: email, role: "admin" }));
-        return true;
-      }
-      const user = users.find(u => u.email === email && u.password === password);
-      if (user) {
-        setAuth(true);
-        localStorage.setItem("reelscale_user", JSON.stringify({ name: user.name, email: user.email, role: user.role }));
-        return true;
-      }
-      return false;
-    }
 
     function showToast(msg, type = 'success') {
       if (toastTimer) clearTimeout(toastTimer);
@@ -162,411 +132,7 @@
       return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
     }
 
-    // ==============================
-    // API FUNCTIONS
-    // ==============================
-    async function loadGoogleSheetData() {
-      try {
-        clientsLoaded = false;
-        render();
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
-        localStorage.setItem(
-          "clients_cache",
-          JSON.stringify(data)
-        );
-        clients = data.map(row => ({
-          id: row.id,
-          name: row.clientName,
-          business: row.business,
-          phone: row.phone,
-          instagram: row.instagram,
-          reels: row.reels,
-          ppr: row.pricePerReel,
-          image: row.image
-        }));
-        clientsLoaded = true;
-        render();
-      } catch (error) {
 
-        clientsLoaded = true;
-        render();
-        console.error(error);
-      }
-    }
-
-    async function loadUsers() {
-      try {
-
-        usersLoaded = false;
-        render();
-
-        const response = await fetch(USERS_URL);
-
-        const data = await response.json();
-
-        console.log("Users:", data);
-
-        users = Array.isArray(data)
-          ? data
-          : [];
-
-        usersLoaded = true;
-
-        render();
-
-      } catch (error) {
-
-        console.error(
-          "Users Load Error:",
-          error
-        );
-
-        usersLoaded = true;
-
-        render();
-      }
-    }
-
-    async function addUser(data) {
-
-      try {
-
-        const response = await fetch(USERS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "add",
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            role: data.role
-          })
-        });
-
-        const result = await response.json();
-
-        console.log("ADD USER:", result);
-
-        if (!result.success) {
-          throw new Error(result.message || "Add failed");
-        }
-
-        await loadUsers();
-
-        showToast("User added successfully");
-
-      } catch (error) {
-
-        console.error(error);
-
-        showToast(
-          error.message || "Failed to add user",
-          "error"
-        );
-      }
-    }
-    async function updateUser(id, data) {
-
-      const index =
-        users.findIndex(
-          x => String(x.id) === String(id)
-        );
-
-      if (index === -1) return;
-
-      const oldData = { ...users[index] };
-
-      users[index] = {
-        ...users[index],
-        ...data
-      };
-
-      render();
-
-      try {
-
-        const response = await fetch(USERS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "update",
-            id: id,
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            role: data.role
-          })
-        });
-
-        const result = await response.json();
-
-        console.log("UPDATE USER:", result);
-
-        if (!result.success) {
-          throw new Error(
-            result.message || "Update failed"
-          );
-        }
-
-        await loadUsers();
-
-        showToast(
-          "User updated successfully"
-        );
-
-      } catch (error) {
-
-        users[index] = oldData;
-
-        render();
-
-        console.error(error);
-
-        showToast(
-          error.message || "Failed to update user",
-          "error"
-        );
-      }
-    }
-
-    async function deleteUser(id) {
-
-      const deletedUser =
-        users.find(
-          x => String(x.id) === String(id)
-        );
-
-      users =
-        users.filter(
-          x => String(x.id) !== String(id)
-        );
-
-      render();
-
-      try {
-
-        const response = await fetch(USERS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "delete",
-            id: id
-          })
-        });
-
-        const result = await response.json();
-
-        console.log("DELETE USER:", result);
-
-        if (!result.success) {
-          throw new Error(
-            result.message || "Delete failed"
-          );
-        }
-
-        await loadUsers();
-
-        showToast(
-          "User deleted successfully"
-        );
-
-      } catch (error) {
-
-        if (deletedUser) {
-          users.unshift(deletedUser);
-        }
-
-        render();
-
-        console.error(error);
-
-        showToast(
-          error.message || "Failed to delete user",
-          "error"
-        );
-      }
-    }
-
-    async function loadSales() {
-      try {
-        salesLoaded = false;
-
-        const response = await fetch(SALES_URL);
-        const result = await response.json();
-        sales = result.leads || [];
-        dataLoaded = true;
-        salesLoaded = true;
-        render();
-      } catch (error) {
-        salesLoaded = true;
-        render();
-        console.error("Sales Load Error:", error);
-      }
-    }
-
-    async function addClient(data) {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "add",
-          clientName: data.name,
-          business: data.business,
-          phone: data.phone,
-          instagram: data.instagram,
-          reels: Number(data.reels),
-          pricePerReel: Number(data.ppr),
-          image: data.image || ""
-        })
-      });
-      await loadGoogleSheetData();
-      showToast("Client added successfully");
-    }
-
-    async function updateClient(id, data) {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          id: id,
-          clientName: data.name,
-          business: data.business,
-          phone: data.phone,
-          instagram: data.instagram,
-          reels: Number(data.reels),
-          pricePerReel: Number(data.ppr),
-          image: data.image || ""
-        })
-      });
-      await loadGoogleSheetData();
-      showToast("Client updated successfully");
-    }
-
-    async function deleteClient(id) {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "delete",
-          id: id
-        })
-      });
-      await loadGoogleSheetData();
-      showToast("Client deleted successfully");
-    }
-
-    async function addSale(data) {
-      const tempLead = {
-        id: Date.now(),
-        createdDate: new Date().toLocaleDateString(),
-        ...data
-      };
-      sales.unshift(tempLead);
-      render();
-      try {
-        await fetch(SALES_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "add",
-            category: data.category,
-            companyName: data.companyName,
-            contactPerson: data.contactPerson,
-            phoneNumber: data.phoneNumber,
-            notes: data.notes,
-            contacted: data.contacted
-          })
-        });
-        showToast("Lead added successfully");
-      } catch (error) {
-        sales = sales.filter(x => x.id !== tempLead.id);
-        render();
-        showToast("Failed to add lead", "error");
-        console.error(error);
-      }
-    }
-
-    async function updateSale(id, data) {
-      const index = sales.findIndex(x => String(x.id) === String(id));
-      if (index === -1) return;
-      const oldData = { ...sales[index] };
-      sales[index] = { ...sales[index], ...data };
-      render();
-      try {
-        await fetch(SALES_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "update",
-            id,
-            category: data.category,
-            companyName: data.companyName,
-            contactPerson: data.contactPerson,
-            phoneNumber: data.phoneNumber,
-            notes: data.notes,
-            contacted: data.contacted
-          })
-        });
-        showToast("Lead updated successfully");
-      } catch (error) {
-        sales[index] = oldData;
-        render();
-        showToast("Failed to save changes", "error");
-        console.error(error);
-      }
-    }
-
-    async function deleteSale(id) {
-      const deletedLead = sales.find(x => String(x.id) === String(id));
-      sales = sales.filter(x => String(x.id) !== String(id));
-      render();
-      try {
-        await fetch(SALES_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "delete",
-            id
-          })
-        });
-        showToast("Lead deleted successfully");
-      } catch (error) {
-        sales.unshift(deletedLead);
-        render();
-        showToast("Failed to delete lead", "error");
-        console.error(error);
-      }
-    }
-
-    async function handleSalesImport(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const workbook = XLSX.read(e.target.result, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet);
-        if (!rows.length) {
-          showToast("No records found", "error");
-          return;
-        }
-        showToast(`Importing ${rows.length} leads...`);
-        for (const row of rows) {
-          await addSale({
-            category: row.Category || "",
-            companyName: row.CompanyName || row.Company || "",
-            contactPerson: row.ContactPerson || "",
-            phoneNumber: row.PhoneNumber || row.Phone || "",
-            notes: row.Notes || "",
-            contacted: row.Contacted || "No"
-          });
-        }
-        showToast(`${rows.length} leads imported successfully`);
-      };
-      reader.readAsArrayBuffer(file);
-    }
 
     // ==============================
     // RENDER FUNCTIONS
@@ -1396,12 +962,8 @@
       });
 
       document.getElementById('logout-btn')?.addEventListener('click', () => {
-        clearTimeout(logoutTimer);
-        localStorage.removeItem("reelscale_auth");
-        localStorage.removeItem("reelscale_user");
+        logout();
         window.location.href = "login.html";
-        localStorage.removeItem("reelscale_current_page");
-
       });
 
       document.getElementById('add-client-btn')?.addEventListener('click', () => {
@@ -1483,18 +1045,22 @@
       }
       render();
 
-      loadGoogleSheetData();
-      loadUsers();
-      loadSales();
+      await loadGoogleSheetData();
+      await loadUsers();
+      await loadSales();
     }
-
+  </script>
+  <script src="js/auth.js"></script>
+  <script src="js/services/users.js"></script>
+  <script src="js/services/clients.js"></script>
+  <script src="js/services/sales.js"></script>
+  <script>
     init();
 
     if (isLoggedIn()) {
       startActivityTracking();
     }
   </script>
-  <script src="js/auth.js"></script>
   <script>
     if (!isLoggedIn()) {
       window.location.href = "login.html";
