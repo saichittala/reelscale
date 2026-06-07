@@ -48,7 +48,9 @@
     let sessionExpired = false;
     let newUserRow = false;
     let usersLoaded = false;
-    
+    let clientsLoaded = false;
+    let salesLoaded = false;
+
 
     // ==============================
     // UTILITY FUNCTIONS
@@ -64,8 +66,8 @@
         localStorage.removeItem("reelscale_auth");
         localStorage.removeItem("reelscale_user");
         localStorage.removeItem(
-  "reelscale_current_page"
-);
+          "reelscale_current_page"
+        );
 
         modal = null;
         editId = null;
@@ -165,6 +167,8 @@
     // ==============================
     async function loadGoogleSheetData() {
       try {
+        clientsLoaded = false;
+        render();
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         localStorage.setItem(
@@ -181,8 +185,12 @@
           ppr: row.pricePerReel,
           image: row.image
         }));
+        clientsLoaded = true;
         render();
       } catch (error) {
+
+        clientsLoaded = true;
+        render();
         console.error(error);
       }
     }
@@ -388,12 +396,17 @@
 
     async function loadSales() {
       try {
+        salesLoaded = false;
+
         const response = await fetch(SALES_URL);
         const result = await response.json();
         sales = result.leads || [];
         dataLoaded = true;
+        salesLoaded = true;
         render();
       } catch (error) {
+        salesLoaded = true;
+        render();
         console.error("Sales Load Error:", error);
       }
     }
@@ -731,6 +744,35 @@
     }
 
     function renderClients() {
+
+      if (!clientsLoaded) {
+
+        return `
+      <div class="dashboard-loader-wrap">
+        <div class="dashboard-loader">
+          <div class="loader">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+            <div class="bar8"></div>
+            <div class="bar9"></div>
+            <div class="bar10"></div>
+            <div class="bar11"></div>
+            <div class="bar12"></div>
+          </div>
+
+          <div class="loader-text">
+            Loading Clients
+          </div>
+        </div>
+      </div>
+    `;
+      }
+
       const fc = filteredClients();
       const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
       return `<div class="controls"><div class="search-wrap"><img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
@@ -908,6 +950,32 @@
     }
 
     function renderSales() {
+      if (!salesLoaded) {
+        return `
+      <div class="dashboard-loader-wrap">
+        <div class="dashboard-loader">
+          <div class="loader">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+            <div class="bar8"></div>
+            <div class="bar9"></div>
+            <div class="bar10"></div>
+            <div class="bar11"></div>
+            <div class="bar12"></div>
+          </div>
+
+          <div class="loader-text">
+            Loading Leads
+          </div>
+        </div>
+      </div>
+    `;
+      }
       return `<div class="table-wrap"><table class="sales-table"><thead><tr><th class="dn">ID</th><th class="dn">Category</th><th>Company Name</th><th class="dn">Contact Person</th><th>Phone Number</th><th>Notes</th><th class="dn">Created Date</th><th>Contacted</th><th style="width:120px">Actions</th></tr></thead><tbody>${newLeadRow ? `<tr class="new-lead-row"><td class="dn"></td><td class="dn"></td><td><input id="new-company" class="company-input" placeholder="Company Name"></td><td class="dn"></td><td><input id="new-phone" class="phone-input" placeholder="Phone Number"></td><td><input id="new-note" class="note-input" placeholder="Notes"></td><td class="dn"></td><td><input type="checkbox" id="new-contacted" class="contacted-toggle"></td><td><div class="action-btns"><img src="../assets/icons/check.svg" class="create-lead-btn" title="Create Lead" style="cursor:pointer"><img src="../assets/icons/close.svg" class="cancel-lead-btn" title="Cancel" style="cursor:pointer"></div></td></tr>` : ""}${sales.map(item => `<tr><td class="dn">${item.id}</td><td class="dn"><span class="badge badge-gold">${item.category}</span></td><td><input type="text" class="company-input" data-id="${item.id}" value="${item.companyName || ''}" placeholder="Company Name"></td><td class="dn">${item.contactPerson}</td><td><input type="text" class="phone-input" data-id="${item.id}" value="${item.phoneNumber || ''}" placeholder="Phone Number"></td><td><input type="text" class="note-input" data-id="${item.id}" value="${item.notes || ''}" title="${item.notes || 'No notes added'}" placeholder="Add note..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:white;"></td><td class="dn">${item.createdDate}</td><td><input type="checkbox" class="contacted-toggle" data-id="${item.id}" ${item.contacted === "Yes" ? "checked" : ""}></td><td style="width:120px"><div class="action-btns"><a href="tel:${item.phoneNumber}" class="call-sale" data-id="${item.id}" title="Call"><img src="../assets/icons/phone.svg" alt="Call" width="18" height="18"></a><a href="${createWhatsAppLink(item.phoneNumber)}" class="whatsapp-sale" target="_blank" title="WhatsApp"><img src="../assets/icons/whatsapp.svg" width="18" height="18"></a><img src="../assets/icons/edit.svg" class="edit-sale edit-btn-td dn" data-id="${item.id}"><img src="../assets/icons/delete.svg" class="delete-sale delete-btn-td" data-id="${item.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
     }
 
