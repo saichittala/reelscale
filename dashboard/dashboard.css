@@ -61,7 +61,7 @@
 
 /* LIGHT THEME */
 [data-theme="light"] {
-  --bg: #f2f2f2;
+  --bg: #fafafa;
   --bg2: #f2f2f2;
   --button-white: oklch(100% 0.00011 271.152); 
 
@@ -69,17 +69,17 @@
   --white: #282828;
   --muted: #6b7280;
 
-  --border: rgba(15, 23, 42, 0.08);
+  --border: oklch(27.685% 0.00003 271.152 / 0.129);
 
-  --card: #ffffff;
+  --card: oklch(100% 0.00011 271.152);
 
-  --white-03: rgba(15, 23, 42, 0.02);
-  --white-05: rgba(15, 23, 42, 0.04);
-  --white-07: rgba(15, 23, 42, 0.06);
-  --white-10: rgba(15, 23, 42, 0.08);
-  --white-20: rgba(15, 23, 42, 0.12);
-  --white-30: rgba(15, 23, 42, 0.18);
-  --white-50: rgba(15, 23, 42, 0.50);
+  --white-03: oklch(20.768% 0.03985 265.767 / 0.02);
+  --white-05: oklch(20.768% 0.03985 265.767 / 0.04);
+  --white-07: oklch(20.768% 0.03985 265.767 / 0.06);
+  --white-10: oklch(20.768% 0.03985 265.767 / 0.08);
+  --white-20: oklch(20.768% 0.03985 265.767 / 0.12);
+  --white-30: oklch(20.768% 0.03985 265.767 / 0.18);
+  --white-50: oklch(20.768% 0.03985 265.767 / 0.50);
   .nav-icon {
     filter: brightness(0) saturate(100%) invert(7%) sepia(14%) saturate(2618%) hue-rotate(182deg) brightness(95%) contrast(93%);
   }
