@@ -31,61 +31,37 @@
                 Welcome back
             </div>
 
-            <p class="login-sub">
+            <div class="login-sub">
                 Sign in to manage your clients & revenue
-            </p>
+            </div>
 
-            <div
-                id="login-error"
-                class="login-error"
-                role="alert"
-                style="display:none">
+            <div id="login-error" class="login-error" style="display:none">
                 Invalid credentials. Please try again.
             </div>
 
-            <form id="login-form" autocomplete="off">
+            <div class="form-group">
+                <label class="form-label">
+                    Email
+                </label>
 
-                <div class="form-group">
-                    <label for="email" class="form-label">
-                        Email
-                    </label>
+                <input id="email" class="form-input" type="email" placeholder="Enter your email" autocomplete="off">
+            </div>
 
-                    <input
-                        id="email"
-                        name="email"
-                        class="form-input"
-                        type="email"
-                        placeholder="Enter your email"
-                        autocomplete="email"
-                        required>
-                </div>
+            <div class="form-group">
+                <label class="form-label">
+                    Password
+                </label>
 
-                <div class="form-group">
-                    <label for="password" class="form-label">
-                        Password
-                    </label>
+                <input id="password" class="form-input" type="password" placeholder="Enter your password"
+                    autocomplete="off">
+            </div>
 
-                    <input
-                        id="password"
-                        name="password"
-                        class="form-input"
-                        type="password"
-                        placeholder="Enter your password"
-                        autocomplete="current-password"
-                        required>
-                </div>
-
-                <button
-                    id="login-btn"
-                    type="submit"
-                    class="btn btn-primary al-c login-btn">
-                    Sign In
-                </button>
-
-            </form>
+            <button id="login-btn" class="btn btn-primary al-c"
+                style="width:100%;padding:12px;margin-top:32px;font-size:14px">
+                Sign In
+            </button>
 
         </div>
-
     </div>
 
     <script src="js/auth.js"></script>
@@ -94,3 +70,4 @@
 </body>
 
 </html>
+
