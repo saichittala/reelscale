@@ -518,9 +518,12 @@
       const s = stats();
       if (!dataLoaded) {
         return `
-    <div class="glass-card height-100 width-100" style="display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted); width:100%; height:100%;">
-      Loading dashboard...
+    <div class="dashboard-loader-wrap">
+    <div class="dashboard-loader">
+        <div class="loader"></div>
+        <div class="loader-text">Loading Dashboard</div>
     </div>
+</div>
   `;
       }
       return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="../assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="../assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
