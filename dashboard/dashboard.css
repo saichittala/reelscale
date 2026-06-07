@@ -44,11 +44,13 @@
     --border: oklch(0.92 0.01 95 / 0.13);
 
     --card: oklch(1 0 0 / 0.04);
-    --white-10: oklch(1 0 0 / 0.1);
     --white-03: oklch(1 0 0 / 0.03);
     --white-05: oklch(1 0 0 / 0.05);
     --white-07: oklch(1 0 0 / 0.07);
     --white-10: oklch(1 0 0 / 0.10);
+    --white-20: oklch(1 0 0 / 0.20);
+    --white-30: oklch(1 0 0 / 0.30);
+    --white-50: oklch(1 0 0 / 0.50);
     --font: 'Geist', system-ui, sans-serif;
 }
 
@@ -138,7 +140,7 @@ body {
 .loader div {
     width: 5%;
     height: 15%;
-    background: var(--white);
+    background: var(--white-30);
     /* Use var(--white) if preferred */
     position: absolute;
     left: 50%;

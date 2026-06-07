@@ -48,6 +48,7 @@
     let sessionExpired = false;
     let newUserRow = false;
     let usersLoaded = false;
+    
 
     // ==============================
     // UTILITY FUNCTIONS
@@ -62,6 +63,9 @@
 
         localStorage.removeItem("reelscale_auth");
         localStorage.removeItem("reelscale_user");
+        localStorage.removeItem(
+  "reelscale_current_page"
+);
 
         modal = null;
         editId = null;
@@ -1028,6 +1032,12 @@
           return;
         }
         page = b.dataset.page;
+
+        localStorage.setItem(
+          "reelscale_current_page",
+          page
+        );
+
         mobileMenuOpen = false;
         search = '';
         render();
@@ -1322,6 +1332,8 @@
         localStorage.removeItem("reelscale_auth");
         localStorage.removeItem("reelscale_user");
         window.location.href = "login.html";
+        localStorage.removeItem("reelscale_current_page");
+
       });
 
       document.getElementById('add-client-btn')?.addEventListener('click', () => {
@@ -1386,12 +1398,21 @@
 
       const user = getCurrentUser();
 
-      if (user?.role === "sales") {
-        page = "sales";
-      } else {
-        page = "dashboard";
-      }
+      const savedPage =
+        localStorage.getItem(
+          "reelscale_current_page"
+        );
 
+      if (user?.role === "sales") {
+
+        page = "sales";
+
+      } else {
+
+        page =
+          savedPage || "dashboard";
+
+      }
       render();
 
       loadGoogleSheetData();
