@@ -46,6 +46,7 @@
     let toastTimer = null;
     let dataLoaded = false;
     let sessionExpired = false;
+    let newUserRow = false;
 
     // ==============================
     // UTILITY FUNCTIONS
@@ -195,6 +196,144 @@
         render();
       } catch (error) {
         console.error("Users Load Error:", error);
+      }
+    }
+
+    async function addUser(data) {
+
+      const tempUser = {
+        id: Date.now(),
+        ...data
+      };
+
+      users.unshift(tempUser);
+      render();
+
+      try {
+
+        await fetch(USERS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "add",
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            role: data.role
+          })
+        });
+
+        await loadUsers();
+
+        showToast("User added successfully");
+
+      } catch (error) {
+
+        users = users.filter(
+          x => x.id !== tempUser.id
+        );
+
+        render();
+
+        showToast(
+          "Failed to add user",
+          "error"
+        );
+
+        console.error(error);
+      }
+    }
+
+    async function updateUser(id, data) {
+
+      const index =
+        users.findIndex(
+          x => String(x.id) === String(id)
+        );
+
+      if (index === -1) return;
+
+      const oldData = { ...users[index] };
+
+      users[index] = {
+        ...users[index],
+        ...data
+      };
+
+      render();
+
+      try {
+
+        await fetch(USERS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "update",
+            id,
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            role: data.role
+          })
+        });
+
+        showToast(
+          "User updated successfully"
+        );
+
+      } catch (error) {
+
+        users[index] = oldData;
+
+        render();
+
+        showToast(
+          "Failed to update user",
+          "error"
+        );
+
+        console.error(error);
+      }
+    }
+
+    async function deleteUser(id) {
+
+      const deletedUser =
+        users.find(
+          x => String(x.id) === String(id)
+        );
+
+      users =
+        users.filter(
+          x => String(x.id) !== String(id)
+        );
+
+      render();
+
+      try {
+
+        await fetch(USERS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "delete",
+            id
+          })
+        });
+
+        showToast(
+          "User deleted successfully"
+        );
+
+      } catch (error) {
+
+        users.unshift(deletedUser);
+
+        render();
+
+        showToast(
+          "Failed to delete user",
+          "error"
+        );
+
+        console.error(error);
       }
     }
 
@@ -519,10 +658,23 @@
       if (!dataLoaded) {
         return `
     <div class="dashboard-loader-wrap">
-    <div class="dashboard-loader">
-        <div class="loader"></div>
-        <div class="loader-text">Loading Dashboard</div>
+  <div class="dashboard-loader">
+    <div class="loader">
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
+      <div class="bar4"></div>
+      <div class="bar5"></div>
+      <div class="bar6"></div>
+      <div class="bar7"></div>
+      <div class="bar8"></div>
+      <div class="bar9"></div>
+      <div class="bar10"></div>
+      <div class="bar11"></div>
+      <div class="bar12"></div>
     </div>
+    <div class="loader-text">Loading Dashboard</div>
+  </div>
 </div>
   `;
       }
@@ -542,7 +694,141 @@
     }
 
     function renderUsers() {
-      return `<div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th style="width:120px">Actions</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.email}</td><td><span class="badge badge-gold">${user.role}</span></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" class="edit-user edit-btn-td" data-id="${user.id}"><img src="../assets/icons/delete.svg" class="delete-btn-td delete-user" data-id="${user.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
+      return `
+    <div class="table-wrap">
+<table class="users-table">        
+  <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th style="width:120px">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${newUserRow ? `
+          <tr class="new-user-row">
+            <td>Auto</td>
+
+            <td>
+              <input id="new-user-name"
+                class="user-input"
+                placeholder="Name">
+            </td>
+
+            <td>
+              <input id="new-user-email"
+                class="user-input"
+                placeholder="Email">
+            </td>
+
+            <td>
+              <div class="password-wrap">
+                <input
+                  id="new-user-password"
+                  type="password"
+                  class="user-input password-input"
+                  placeholder="Password">
+
+                <img
+                  src="../assets/icons/eye.svg"
+                  class="toggle-password"
+                  data-target="new-user-password">
+              </div>
+            </td>
+
+            <td>
+              <select id="new-user-role" class="user-input">
+                <option value="admin">Admin</option>
+                <option value="sales">Sales</option>
+              </select>
+            </td>
+
+            <td>
+              <div class="action-btns">
+                <img src="../assets/icons/check.svg"
+                  class="create-user-btn">
+
+                <img src="../assets/icons/close.svg"
+                  class="cancel-user-btn">
+              </div>
+            </td>
+          </tr>
+          ` : ""}
+
+          ${users.map(user => `
+            <tr>
+
+              <td>${user.id}</td>
+
+              <td>
+                <input
+                  type="text"
+                  class="user-name-input"
+                  data-id="${user.id}"
+                  value="${user.name}">
+              </td>
+
+              <td>
+                <input
+                  type="email"
+                  class="user-email-input"
+                  data-id="${user.id}"
+                  value="${user.email}">
+              </td>
+
+              <td>
+                <div class="password-wrap">
+
+                  <input
+                    type="password"
+                    class="user-password-input"
+                    id="pass-${user.id}"
+                    data-id="${user.id}"
+                    value="${user.password}">
+
+                  <img
+                    src="../assets/icons/eye.svg"
+                    class="toggle-password"
+                    data-target="pass-${user.id}">
+                </div>
+              </td>
+
+              <td>
+                <select
+                  class="user-role-input"
+                  data-id="${user.id}">
+                  <option value="admin"
+                    ${user.role === "admin" ? "selected" : ""}>
+                    Admin
+                  </option>
+                  <option value="sales"
+                    ${user.role === "sales" ? "selected" : ""}>
+                    Sales
+                  </option>
+                </select>
+              </td>
+
+              <td>
+                <div class="action-btns">
+                  <img
+                    src="../assets/icons/delete.svg"
+                    class="delete-user"
+                    data-id="${user.id}">
+                </div>
+              </td>
+
+            </tr>
+          `).join("")}
+
+        </tbody>
+      </table>
+    </div>
+  `;
     }
 
     function renderSales() {
@@ -674,6 +960,177 @@
         search = '';
         render();
       }));
+      document.querySelectorAll(".toggle-password")
+        .forEach(btn => {
+
+          btn.addEventListener("click", () => {
+
+            const input =
+              document.getElementById(
+                btn.dataset.target
+              );
+
+            if (!input) return;
+
+            input.type =
+              input.type === "password"
+                ? "text"
+                : "password";
+
+            btn.src =
+              input.type === "password"
+                ? "../assets/icons/eye.svg"
+                : "../assets/icons/eye-off.svg";
+          });
+
+        });
+
+      document.querySelector(".create-user-btn")
+        ?.addEventListener("click", async () => {
+
+          const name =
+            document.getElementById("new-user-name")
+              ?.value.trim();
+
+          const email =
+            document.getElementById("new-user-email")
+              ?.value.trim();
+
+          const password =
+            document.getElementById("new-user-password")
+              ?.value.trim();
+
+          const role =
+            document.getElementById("new-user-role")
+              ?.value;
+
+          if (!name || !email || !password) {
+
+            showToast(
+              "All fields are required",
+              "error"
+            );
+
+            return;
+          }
+
+          await addUser({
+            name,
+            email,
+            password,
+            role
+          });
+
+          newUserRow = false;
+        });
+
+      document.querySelector(".cancel-user-btn")
+        ?.addEventListener("click", () => {
+
+          newUserRow = false;
+          render();
+
+        });
+
+      document.querySelectorAll(".user-name-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.name === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              name: input.value
+            });
+
+          });
+
+        });
+      document.querySelectorAll(".user-email-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.email === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              email: input.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".user-password-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.password === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              password: input.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".user-role-input")
+        .forEach(select => {
+
+          select.addEventListener("change", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === select.dataset.id
+              );
+
+            if (!user) return;
+
+            await updateUser(user.id, {
+              ...user,
+              role: select.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".delete-user")
+        .forEach(btn => {
+
+          btn.addEventListener("click", async () => {
+
+            await deleteUser(btn.dataset.id);
+
+          });
+
+        });
 
       document.querySelectorAll(".call-sale").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -803,8 +1260,12 @@
       });
 
       document.getElementById('add-user-btn')?.addEventListener('click', () => {
-        modal = 'add-user';
+
+        if (newUserRow) return;
+
+        newUserRow = true;
         render();
+
       });
 
       document.getElementById('search-input')?.addEventListener('input', e => {

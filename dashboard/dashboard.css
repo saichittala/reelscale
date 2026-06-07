@@ -112,61 +112,114 @@ body {
 }
 
 /* LOADER */
+/* LOADER */
 .dashboard-loader-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .dashboard-loader {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-items: center;
 }
 
+/* Uiverse Spinner */
 .loader {
-  width: 40px;
-  aspect-ratio: 1;
-  outline: 2px solid #fff;
-  background:
-    radial-gradient(farthest-side, #000 90%, #0000) 0 0/8px 8px no-repeat,
-    conic-gradient(from 90deg at 10px 10px, #0000 90deg, #fff 0),
-    conic-gradient(from -90deg at 30px 30px, #0000 90deg, #fff 0);
-  animation: l3 1.5s infinite;
+    position: relative;
+    width: 54px;
+    height: 54px;
+    border-radius: 10px;
 }
 
-@keyframes l3 {
-  0% {
-    background-position: 0 0;
-    clip-path: circle(15px at left 4px top 4px);
-  }
+.loader div {
+    width: 6%;
+    height: 18%;
+    background: var(--red);
+    /* Use var(--white) if preferred */
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    opacity: 0;
+    border-radius: 50px;
+    animation: fade458 1s linear infinite;
+}
 
-  25% {
-    background-position: 100% 0;
-    clip-path: circle(15px at right 4px top 4px);
-  }
+@keyframes fade458 {
+    from {
+        opacity: 1;
+    }
 
-  50% {
-    background-position: 100% 100%;
-    clip-path: circle(15px at right 4px bottom 4px);
-  }
+    to {
+        opacity: 0.25;
+    }
+}
 
-  75% {
-    background-position: 0 100%;
-    clip-path: circle(15px at left 4px bottom 4px);
-  }
+.loader .bar1 {
+    transform: rotate(0deg) translate(0, -130%);
+    animation-delay: 0s;
+}
 
-  100% {
-    background-position: 0 0;
-    clip-path: circle(15px at left 4px top 4px);
-  }
+.loader .bar2 {
+    transform: rotate(30deg) translate(0, -130%);
+    animation-delay: -1.1s;
+}
+
+.loader .bar3 {
+    transform: rotate(60deg) translate(0, -130%);
+    animation-delay: -1s;
+}
+
+.loader .bar4 {
+    transform: rotate(90deg) translate(0, -130%);
+    animation-delay: -0.9s;
+}
+
+.loader .bar5 {
+    transform: rotate(120deg) translate(0, -130%);
+    animation-delay: -0.8s;
+}
+
+.loader .bar6 {
+    transform: rotate(150deg) translate(0, -130%);
+    animation-delay: -0.7s;
+}
+
+.loader .bar7 {
+    transform: rotate(180deg) translate(0, -130%);
+    animation-delay: -0.6s;
+}
+
+.loader .bar8 {
+    transform: rotate(210deg) translate(0, -130%);
+    animation-delay: -0.5s;
+}
+
+.loader .bar9 {
+    transform: rotate(240deg) translate(0, -130%);
+    animation-delay: -0.4s;
+}
+
+.loader .bar10 {
+    transform: rotate(270deg) translate(0, -130%);
+    animation-delay: -0.3s;
+}
+
+.loader .bar11 {
+    transform: rotate(300deg) translate(0, -130%);
+    animation-delay: -0.2s;
+}
+
+.loader .bar12 {
+    transform: rotate(330deg) translate(0, -130%);
+    animation-delay: -0.1s;
 }
 
 .loader-text {
-    margin-top: 20px;
+    /* margin-top: 4px; */
     text-align: center;
     font-size: var(--text-sm);
     color: var(--muted);
@@ -354,6 +407,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+
     span {
         display: flex;
         align-items: center;
@@ -374,9 +428,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-     border-radius: var(--border-radius-99);
-     transition: .15s;
-     gap: 6px;
+    border-radius: var(--border-radius-99);
+    transition: .15s;
+    gap: 6px;
 }
 
 .btn-ghost:hover {
@@ -642,10 +696,10 @@ tr:hover td {
     background: transparent !important;
     transition: all 0.2s ease;
     color: var(--white) !important;
-    width:100%;
+    width: 100%;
     border-radius: var(--border-radius-2) !important;
-     padding: 8px !important;
-     outline: none !important;
+    padding: 8px 12px !important;
+    outline: none !important;
 }
 
 .note-input:hover {
@@ -662,7 +716,7 @@ tr:hover td {
 .phone-input,
 .note-input {
     width: 100%;
-    padding: 8px;
+    padding: 8px 12px;
     border-radius: var(--border-radius-2);
     border: 0.6px solid transparent;
     background: transparent;
@@ -806,7 +860,11 @@ tr:hover td {
 .create-lead-btn,
 .cancel-lead-btn,
 .edit-client,
-.del-client,.call-sale, .whatsapp-sale {
+.del-client,
+.call-sale,
+.whatsapp-sale,
+.create-user-btn,
+.cancel-user-btn {
     width: 32px !important;
     height: 32px !important;
     opacity: .7;
@@ -825,25 +883,28 @@ tr:hover td {
 .edit-client:hover,
 .del-client:hover,
 .call-sale:hover,
-.whatsapp-sale:hover {
+.whatsapp-sale:hover,
+.create-user-btn:hover,
+.cancel-user-btn:hover {
     opacity: 1;
     background: var(--white-05);
 }
 
 
 .call-sale {
-  display: none;
+    display: none;
 }
 
 @media (max-width: 768px) {
-  .call-sale {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .delete-sale {
-    display: none;
-  }
+    .call-sale {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .delete-sale {
+        display: none;
+    }
 }
 
 .action-btns {
@@ -1129,7 +1190,6 @@ tr:hover td {
     align-items: center;
     justify-content: center;
     padding: 24px;
-
     background-image: url('../assets/bg.png');
     background-size: cover;
     background-position: center;
@@ -1250,7 +1310,7 @@ tr:hover td {
 
 .toast.success {
     /* border: 1px solid var(--green); */
-        backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
 
     background: #83E65820;
     /* box-shadow: 0px 0px 0px 3px oklch(47.834% 0.09751 164.881 / 0.3); */
@@ -1510,11 +1570,12 @@ tr:hover td {
         width: 81px !important;
     }
 
-        /* Contacted column */
+    /* Contacted column */
     .sales-table th:nth-last-child(2),
     .sales-table td:nth-last-child(2) {
         position: sticky;
-        right: 81px; /* Actions width */
+        right: 81px;
+        /* Actions width */
         background: var(--bg);
         z-index: 9;
         border-left: 0.6px solid var(--border);
@@ -1524,7 +1585,12 @@ tr:hover td {
     .sales-table th:last-child {
         z-index: 11;
     }
-    .td, .th, .company-input, .phone-input, .note-input {
+
+    .td,
+    .th,
+    .company-input,
+    .phone-input,
+    .note-input {
         font-size: 16px !important;
     }
 
@@ -1534,16 +1600,120 @@ tr:hover td {
 }
 
 .whatsapp-sale {
-  display: none;
+    display: none;
 }
 
 @media (max-width: 768px) {
-  .whatsapp-sale {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sales-topbar-actions{
-    display: none;
-  }
+    .whatsapp-sale {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sales-topbar-actions {
+        display: none;
+    }
+}
+
+
+/* =========================
+   USERS PAGE - SALES STYLE
+========================= */
+
+.user-name-input,
+.user-email-input,
+.user-password-input,
+.user-role-input,
+.user-input {
+    width: 100%;
+    padding: 8px;
+    border-radius: var(--border-radius-2);
+    border: 0.6px solid transparent;
+    background: transparent;
+    color: var(--white);
+    outline: none;
+    transition: all .2s ease;
+    font-size: var(--text-sm);
+}
+
+.user-name-input:hover,
+.user-email-input:hover,
+.user-password-input:hover,
+.user-role-input:hover,
+.user-input:hover {
+    border-color: var(--border);
+    background: var(--white-03);
+}
+
+.user-name-input:focus,
+.user-email-input:focus,
+.user-password-input:focus,
+.user-role-input:focus,
+.user-input:focus {
+    border-color: var(--border);
+    background: var(--white-03);
+}
+
+.user-role-input,
+#new-user-role {
+    appearance: none;
+    cursor: pointer;
+}
+
+.password-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrap input {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    opacity: .7;
+    transition: .15s;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+}
+
+.delete-user {
+    width: 32px;
+    height: 32px;
+    opacity: .7;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--border-radius-2);
+    transition: .15s;
+}
+
+.delete-user:hover {
+    opacity: 1;
+    background: var(--white-05);
+}
+
+.new-user-row {
+    background: var(--white-03);
+}
+
+.new-user-row td {
+    border-bottom: 0.6px solid var(--border);
+}
+
+.users-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.users-table td,
+.users-table th {
+    vertical-align: middle;
 }
