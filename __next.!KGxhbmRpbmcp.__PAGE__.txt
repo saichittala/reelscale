@@ -1,9 +1,9 @@
 1:"$Sreact.fragment"
-2:I[91133,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/1luh7w22qmjyi.js"],"default"]
-a:I[79520,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/1luh7w22qmjyi.js"],""]
-b:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+2:I[91133,["/reelscale/_next/static/chunks/158myu8e_yme3.js","/reelscale/_next/static/chunks/1luh7w22qmjyi.js"],"default"]
+a:I[79520,["/reelscale/_next/static/chunks/158myu8e_yme3.js","/reelscale/_next/static/chunks/1luh7w22qmjyi.js"],""]
+b:I[97367,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 c:"$Sreact.suspense"
-3:T49b2,
+3:T49b1,
   <div class="video-modal" id="videoModal">
     <div class="video-backdrop"></div>
 
@@ -479,7 +479,7 @@ c:"$Sreact.suspense"
       <nav class="footer-nav">
         <a href="#work">Works</a>
         <a href="#pricing">Pricing</a>
-        <a href="/dashboard/login">Login</a>
+        <a href="dashboard/login">Login</a>
         <!-- <a href="#process">Process</a>
       <a href="#testimonials">Results</a> -->
       </nav>
@@ -500,11 +500,11 @@ c:"$Sreact.suspense"
 
   
 
-0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://reelscale.com/#organization\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://reelscale.com/assets/logo.png\",\"caption\":\"ReelScale Logo\"},\"sameAs\":[\"https://instagram.com/reelscale\"]},{\"@type\":\"WebSite\",\"@id\":\"https://reelscale.com/#website\",\"url\":\"https://reelscale.com\",\"name\":\"ReelScale\",\"publisher\":{\"@id\":\"https://reelscale.com/#organization\"}},{\"@type\":\"ProfessionalService\",\"@id\":\"https://reelscale.com/#service\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"image\":\"https://reelscale.com/assets/logo.png\",\"priceRange\":\"$$\",\"telephone\":\"+919966239433\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"IN\"}}]}"}}],["$","$L2",null,{}],["$","main",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],"$L4","$L5","$L6","$L7"],["$L8"],"$L9"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"ZE8Vs0WcfSTSO9-wgkRPt"}
+0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://reelscale.com/#organization\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://reelscale.com/assets/logo.png\",\"caption\":\"ReelScale Logo\"},\"sameAs\":[\"https://instagram.com/reelscale\"]},{\"@type\":\"WebSite\",\"@id\":\"https://reelscale.com/#website\",\"url\":\"https://reelscale.com\",\"name\":\"ReelScale\",\"publisher\":{\"@id\":\"https://reelscale.com/#organization\"}},{\"@type\":\"ProfessionalService\",\"@id\":\"https://reelscale.com/#service\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"image\":\"https://reelscale.com/assets/logo.png\",\"priceRange\":\"$$\",\"telephone\":\"+919966239433\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"IN\"}}]}"}}],["$","$L2",null,{}],["$","main",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],"$L4","$L5","$L6","$L7"],["$L8"],"$L9"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"1Vxf8_NqvYvkxNmAa3tT4"}
 4:["$","$La",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
 5:["$","$La",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3"}]
 6:["$","$La",null,{"id":"google-analytics","children":"\n          window.dataLayer = window.dataLayer || [];\n          function gtag(){dataLayer.push(arguments);}\n          gtag('js', new Date());\n          gtag('config', 'G-2F6CKK0MY3');\n        "}]
 7:["$","$La",null,{"id":"clarity","children":"\n          (function(c,l,a,r,i,t,y){\n            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n            t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n          })(window, document, \"clarity\", \"script\", \"wwiioh52bs\");\n        "}]
-8:["$","script","script-0",{"src":"/_next/static/chunks/1luh7w22qmjyi.js","async":true}]
+8:["$","script","script-0",{"src":"/reelscale/_next/static/chunks/1luh7w22qmjyi.js","async":true}]
 9:["$","$Lb",null,{"children":["$","$c",null,{"name":"Next.MetadataOutlet","children":"$@d"}]}]
 d:null
