@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { Metadata } from "next";
 import Script from "next/script";
 import LandingInteractions from "./components/LandingInteractions";
+import LatestBlogs from "./components/LatestBlogs";
 
 export const metadata: Metadata = {
   title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
@@ -188,7 +189,20 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
       <LandingInteractions />
-      <main dangerouslySetInnerHTML={{ __html: getLandingMarkup() }} />
+      {(() => {
+        const html = getLandingMarkup();
+        const parts = html.split('<section id="latest-blogs-section"></section>');
+        if (parts.length === 2) {
+          return (
+            <>
+              <div dangerouslySetInnerHTML={{ __html: parts[0] }} />
+              <LatestBlogs />
+              <div dangerouslySetInnerHTML={{ __html: parts[1] }} />
+            </>
+          );
+        }
+        return <main dangerouslySetInnerHTML={{ __html: html }} />;
+      })()}
       <Script async src="https://www.instagram.com/embed.js" />
       <Script async src="https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3" />
       <Script id="google-analytics">
