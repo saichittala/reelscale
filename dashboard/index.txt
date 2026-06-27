@@ -1,13 +1,13 @@
 1:"$Sreact.fragment"
-2:I[39756,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default"]
-3:I[37457,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default"]
-4:I[28895,["/reelscale/_next/static/chunks/158myu8e_yme3.js","/reelscale/_next/static/chunks/0zas1mm9-k65d.js"],"default"]
-a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
-:HL["/reelscale/_next/static/chunks/28aen3k8srpr4.css","style"]
-:HL["/reelscale/_next/static/chunks/3ita1byjbtj22.css","style"]
-:HL["/reelscale/_next/static/chunks/3na5d2g0pxufr.css","style"]
-:HL["/reelscale/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-5:T11476,
+2:I[39756,["/_next/static/chunks/158myu8e_yme3.js"],"default"]
+3:I[37457,["/_next/static/chunks/158myu8e_yme3.js"],"default"]
+4:I[28895,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/0zas1mm9-k65d.js"],"default"]
+a:I[68027,["/_next/static/chunks/158myu8e_yme3.js"],"default",1]
+:HL["/_next/static/chunks/28aen3k8srpr4.css","style"]
+:HL["/_next/static/chunks/3ita1byjbtj22.css","style"]
+:HL["/_next/static/chunks/3na5d2g0pxufr.css","style"]
+:HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
+5:T112be,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -656,14 +656,14 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
         </div>
         ${modal ? renderModal() : ''}
         ${mobileMenuOpen ? renderMobileMenu() : ''}
-        ${toast ? `<div class="toast ${toast.type}"><img class="toast-icon" src="/reelscale/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>` : ''}
+        ${toast ? `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>` : ''}
       `;
       attachEvents();
       if (page === 'analytics') initCharts();
     }
 
     function renderLogin() {
-      return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><a href="#" class="logo"><div><img src="/reelscale/assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;"></div></a></div><div class="login-title">Welcome back</div><div class="login-sub">Sign in to manage your clients & revenue</div><div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email" autocomplete="off"></div><div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password" autocomplete="off"></div><button class="btn btn-primary al-c" id="login-btn" style="width:100%;padding:12px;margin-top:32px;font-size:14px">Sign In</button></div></div>`;
+      return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><a href="#" class="logo"><div><img src="/assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;"></div></a></div><div class="login-title">Welcome back</div><div class="login-sub">Sign in to manage your clients & revenue</div><div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email" autocomplete="off"></div><div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password" autocomplete="off"></div><button class="btn btn-primary al-c" id="login-btn" style="width:100%;padding:12px;margin-top:32px;font-size:14px">Sign In</button></div></div>`;
     }
 
     function renderSessionExpiredModal() {
@@ -672,7 +672,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
       <div class="modal" style="max-width:420px">
 
         <div class=modal-icon>
-          <img src="/reelscale/assets/icons/log-out.svg" alt="Info" width="24" height="24">
+          <img src="/assets/icons/log-out.svg" alt="Info" width="24" height="24">
         </div>
 
         <div class="modal-header">
@@ -708,7 +708,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
     function renderSidebar() {
       const user = getCurrentUser();
       const collapsed = sidebarCollapsed;
-      const baseIconPath = "/reelscale/assets/icons/";
+      const baseIconPath = "/assets/icons/";
 
       const nav = user?.role === "sales"
         ? [{ id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" }]
@@ -724,7 +724,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
         <div class="sidebar${collapsed ? ' collapsed' : ''}">
           <button class="sidebar-toggle" id="sidebar-toggle" aria-label="${collapsed ? 'Expand' : 'Collapse'} sidebar" title="${collapsed ? 'Expand' : 'Collapse'}"></button>
           <div class="dashboard-logo">
-            <img src="${collapsed ? '/reelscale/assets/r_light.svg' : '/reelscale/assets/logo.svg'}" alt="ReelScale Logo">
+            <img src="${collapsed ? '/assets/r_light.svg' : '/assets/logo.svg'}" alt="ReelScale Logo">
             <div class="logo-sub">Reel Production House</div>
           </div>
           <div class="nav">
@@ -742,7 +742,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
                 <div class="user-name">${user?.name || ''}</div>
                 <div class="user-role">${user?.email || ''}</div>
               </div>
-              <img src="/reelscale/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+              <img src="/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
             </div>
           </div>
         </div>
@@ -760,38 +760,38 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
         ? [
           {
             id: "sales",
-            icon: "/reelscale/assets/icons/nav-sales.svg",
+            icon: "/assets/icons/nav-sales.svg",
             label: "Sales"
           }
         ]
         : [
           {
             id: "dashboard",
-            icon: "/reelscale/assets/icons/nav-dashboard.svg",
+            icon: "/assets/icons/nav-dashboard.svg",
             label: "Dashboard"
           },
           {
             id: "clients",
-            icon: "/reelscale/assets/icons/nav-clients.svg",
+            icon: "/assets/icons/nav-clients.svg",
             label: "Clients"
           },
           {
             id: "analytics",
-            icon: "/reelscale/assets/icons/nav-analytics.svg",
+            icon: "/assets/icons/nav-analytics.svg",
             label: "Analytics"
           },
           {
             id: "users",
-            icon: "/reelscale/assets/icons/nav-users.svg",
+            icon: "/assets/icons/nav-users.svg",
             label: "Users"
           },
           {
             id: "sales",
-            icon: "/reelscale/assets/icons/nav-sales.svg",
+            icon: "/assets/icons/nav-sales.svg",
             label: "Sales"
           }
         ];
-      return `<div class="mobile-menu-overlay" id="mobile-menu-overlay"><div class="mobile-menu"><div class="mobile-menu-header"><img src="/reelscale/assets/logo.svg" height="22"><button id="mobile-close-btn" class="mobile-close-btn"><img src="/reelscale/assets/icons/close.svg" alt="Close" width="18" height="18"></button></div>${nav.map(item => `<button class="mobile-nav-item ${page === item.id ? "active" : ""}" data-page="${item.id}"><img src="${item.icon}" width="18">${item.label}</button>`).join("")}</div></div>`;
+      return `<div class="mobile-menu-overlay" id="mobile-menu-overlay"><div class="mobile-menu"><div class="mobile-menu-header"><img src="/assets/logo.svg" height="22"><button id="mobile-close-btn" class="mobile-close-btn"><img src="/assets/icons/close.svg" alt="Close" width="18" height="18"></button></div>${nav.map(item => `<button class="mobile-nav-item ${page === item.id ? "active" : ""}" data-page="${item.id}"><img src="${item.icon}" width="18">${item.label}</button>`).join("")}</div></div>`;
     }
 
     function renderSkeleton(type) {
@@ -914,7 +914,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
     function renderTopbar() {
       const titles = { dashboard: 'Dashboard', clients: 'Clients', analytics: 'Revenue Analytics', users: 'Users', sales: 'Sales' };
       const subs = { dashboard: 'Overview of your business metrics', clients: 'Manage all client accounts', analytics: 'Detailed revenue insights', users: 'Manage system users', sales: 'Manage sales leads' };
-      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="/reelscale/assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="add-client-btn"><span><img src="/reelscale/assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/reelscale/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="toggle-sales-filter" style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Filter by Date</span>${salesDateFrom || salesDateTo ? `<span class="badge badge-red" style="margin-left:4px;padding:2px 6px;font-size:10px;border-radius:6px;background:var(--red);color:white;">Active</span>` : ''}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;margin-left:4px;${salesFilterExpanded ? 'transform:rotate(180deg);' : ''}"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn btn-ghost" id="import-sales-btn"><img src="/reelscale/assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="/reelscale/assets/icons/add.svg" width="18">Add Lead</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/reelscale/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<div class="df-g8"><button class="btn btn-primary" id="add-user-btn"><img src="/reelscale/assets/icons/add.svg" width="18">Add User</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/reelscale/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div>` : ''}</div>`;
+      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="/assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="add-client-btn"><span><img src="/assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="toggle-sales-filter" style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Filter by Date</span>${salesDateFrom || salesDateTo ? `<span class="badge badge-red" style="margin-left:4px;padding:2px 6px;font-size:10px;border-radius:6px;background:var(--red);color:white;">Active</span>` : ''}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;margin-left:4px;${salesFilterExpanded ? 'transform:rotate(180deg);' : ''}"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn btn-ghost" id="import-sales-btn"><img src="/assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="/assets/icons/add.svg" width="18">Add Lead</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<div class="df-g8"><button class="btn btn-primary" id="add-user-btn"><img src="/assets/icons/add.svg" width="18">Add User</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div>` : ''}</div>`;
     }
 
     function renderDashboard() {
@@ -922,7 +922,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
         return renderSkeleton('dashboard');
       }
       const s = stats();
-      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="/reelscale/assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="/reelscale/assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="/reelscale/assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="/assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="/assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="/assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
     }
 
     function renderClients() {
@@ -934,7 +934,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
 
       const fc = filteredClients();
       const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
-      return `<div class="controls"><div class="search-wrap"><img src="/reelscale/assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="/reelscale/assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="/reelscale/assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
+      return `<div class="controls"><div class="search-wrap"><img src="/assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="/assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="/assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
     }
 
     function renderAnalytics() {
@@ -992,7 +992,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
                   placeholder="Password">
 
                 <img
-                  src="/reelscale/assets/icons/eye.svg"
+                  src="/assets/icons/eye.svg"
                   class="toggle-password"
                   data-target="new-user-password">
               </div>
@@ -1007,10 +1007,10 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
 
             <td>
               <div class="action-btns">
-                <img src="/reelscale/assets/icons/check.svg"
+                <img src="/assets/icons/check.svg"
                   class="create-user-btn">
 
-                <img src="/reelscale/assets/icons/close.svg"
+                <img src="/assets/icons/close.svg"
                   class="cancel-user-btn">
               </div>
             </td>
@@ -1049,7 +1049,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
                     value="${user.password}">
 
                   <img
-                    src="/reelscale/assets/icons/eye.svg"
+                    src="/assets/icons/eye.svg"
                     class="toggle-password"
                     data-target="pass-${user.id}">
                 </div>
@@ -1073,7 +1073,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
               <td>
                 <div class="action-btns">
                   <img
-                    src="/reelscale/assets/icons/delete.svg"
+                    src="/assets/icons/delete.svg"
                     class="delete-user"
                     data-id="${user.id}">
                 </div>
@@ -1123,13 +1123,13 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
             ${salesDateFrom || salesDateTo ? `<button id="clear-sales-date" class="btn btn-ghost btn-sm">Clear</button>` : ''}
           </div>
         </div>
-        <div class="table-wrap"><table class="sales-table"><thead><tr><th class="dn">ID</th><th class="dn">Category</th><th>Company Name</th><th class="dn">Contact Person</th><th>Phone Number</th><th>Notes</th><th>Created Date</th><th>Contacted</th><th style="width:120px">Actions</th></tr></thead><tbody>${newLeadRow ? `<tr class="new-lead-row"><td class="dn"></td><td class="dn"></td><td><input id="new-company" class="company-input" placeholder="Company Name"></td><td class="dn"></td><td><input id="new-phone" class="phone-input" placeholder="Phone Number"></td><td><input id="new-note" class="note-input" placeholder="Notes"></td><td></td><td><input type="checkbox" id="new-contacted" class="contacted-toggle"></td><td><div class="action-btns"><img src="/reelscale/assets/icons/check.svg" class="create-lead-btn" title="Create Lead" style="cursor:pointer"><img src="/reelscale/assets/icons/close.svg" class="cancel-lead-btn" title="Cancel" style="cursor:pointer"></div></td></tr>` : ""}${filteredSales.length === 0 ? `<tr><td colspan="9"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No leads found${salesDateFrom || salesDateTo ? ' for selected date range' : ''}</div></div></td></tr>` : filteredSales.map(item => `<tr><td class="dn">${item.id}</td><td class="dn"><span class="badge badge-gold">${item.category}</span></td><td><input type="text" class="company-input" data-id="${item.id}" value="${item.companyName || ''}" placeholder="Company Name"></td><td class="dn">${item.contactPerson}</td><td><input type="text" class="phone-input" data-id="${item.id}" value="${item.phoneNumber || ''}" placeholder="Phone Number"></td><td><input type="text" class="note-input" data-id="${item.id}" value="${item.notes || ''}" title="${item.notes || 'No notes added'}" placeholder="Add note..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:white;"></td><td style="white-space:nowrap;color:var(--muted);font-size:12px;">${formatDisplayDate(item.createdDate)}</td><td><input type="checkbox" class="contacted-toggle" data-id="${item.id}" ${item.contacted === "Yes" ? "checked" : ""}></td><td style="width:120px"><div class="action-btns"><a href="tel:${item.phoneNumber}" class="call-sale" data-id="${item.id}" title="Call"><img src="/reelscale/assets/icons/phone.svg" alt="Call" width="18" height="18"></a><a href="${createWhatsAppLink(item.phoneNumber)}" class="whatsapp-sale" target="_blank" title="WhatsApp"><img src="/reelscale/assets/icons/whatsapp.svg" width="18" height="18"></a><img src="/reelscale/assets/icons/edit.svg" class="edit-sale edit-btn-td dn" data-id="${item.id}"><img src="/reelscale/assets/icons/delete.svg" class="delete-sale delete-btn-td" data-id="${item.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
+        <div class="table-wrap"><table class="sales-table"><thead><tr><th class="dn">ID</th><th class="dn">Category</th><th>Company Name</th><th class="dn">Contact Person</th><th>Phone Number</th><th>Notes</th><th>Created Date</th><th>Contacted</th><th style="width:120px">Actions</th></tr></thead><tbody>${newLeadRow ? `<tr class="new-lead-row"><td class="dn"></td><td class="dn"></td><td><input id="new-company" class="company-input" placeholder="Company Name"></td><td class="dn"></td><td><input id="new-phone" class="phone-input" placeholder="Phone Number"></td><td><input id="new-note" class="note-input" placeholder="Notes"></td><td></td><td><input type="checkbox" id="new-contacted" class="contacted-toggle"></td><td><div class="action-btns"><img src="/assets/icons/check.svg" class="create-lead-btn" title="Create Lead" style="cursor:pointer"><img src="/assets/icons/close.svg" class="cancel-lead-btn" title="Cancel" style="cursor:pointer"></div></td></tr>` : ""}${filteredSales.length === 0 ? `<tr><td colspan="9"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No leads found${salesDateFrom || salesDateTo ? ' for selected date range' : ''}</div></div></td></tr>` : filteredSales.map(item => `<tr><td class="dn">${item.id}</td><td class="dn"><span class="badge badge-gold">${item.category}</span></td><td><input type="text" class="company-input" data-id="${item.id}" value="${item.companyName || ''}" placeholder="Company Name"></td><td class="dn">${item.contactPerson}</td><td><input type="text" class="phone-input" data-id="${item.id}" value="${item.phoneNumber || ''}" placeholder="Phone Number"></td><td><input type="text" class="note-input" data-id="${item.id}" value="${item.notes || ''}" title="${item.notes || 'No notes added'}" placeholder="Add note..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:white;"></td><td style="white-space:nowrap;color:var(--muted);font-size:12px;">${formatDisplayDate(item.createdDate)}</td><td><input type="checkbox" class="contacted-toggle" data-id="${item.id}" ${item.contacted === "Yes" ? "checked" : ""}></td><td style="width:120px"><div class="action-btns"><a href="tel:${item.phoneNumber}" class="call-sale" data-id="${item.id}" title="Call"><img src="/assets/icons/phone.svg" alt="Call" width="18" height="18"></a><a href="${createWhatsAppLink(item.phoneNumber)}" class="whatsapp-sale" target="_blank" title="WhatsApp"><img src="/assets/icons/whatsapp.svg" width="18" height="18"></a><img src="/assets/icons/edit.svg" class="edit-sale edit-btn-td dn" data-id="${item.id}"><img src="/assets/icons/delete.svg" class="delete-sale delete-btn-td" data-id="${item.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
     }
 
     function renderModal() {
       const isEdit = modal === 'edit';
       const client = isEdit ? clients.find(c => c.id === editId) : null;
-      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="/reelscale/assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
+      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="/assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
     }
 
     // ==============================
@@ -1311,8 +1311,8 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
 
             btn.src =
               input.type === "password"
-                ? "/reelscale/assets/icons/eye.svg"
-                : "/reelscale/assets/icons/eye-off.svg";
+                ? "/assets/icons/eye.svg"
+                : "/assets/icons/eye-off.svg";
           });
 
         });
@@ -1605,7 +1605,7 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
         clearTimeout(logoutTimer);
         localStorage.removeItem("reelscale_auth");
         localStorage.removeItem("reelscale_user");
-        window.location.href = "/reelscale/dashboard/login";
+        window.location.href = "/dashboard/login";
         localStorage.removeItem("reelscale_current_page");
       });
 
@@ -1709,17 +1709,17 @@ a:I[68027,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"default",1]
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/reelscale/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/reelscale/_next/static/chunks/158myu8e_yme3.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/reelscale/_next/static/chunks/3ita1byjbtj22.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/reelscale/_next/static/chunks/3na5d2g0pxufr.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"J8IETndKw2tHkv0wos5ru"}
-c:I[97367,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/158myu8e_yme3.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3ita1byjbtj22.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/3na5d2g0pxufr.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"9gqkSvYvY6iM_GUFRiPch"}
+c:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 d:"$Sreact.suspense"
-f:I[97367,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"ViewportBoundary"]
-11:I[97367,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"MetadataBoundary"]
-6:["$","link","0",{"rel":"stylesheet","href":"/reelscale/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
-7:["$","script","script-0",{"src":"/reelscale/_next/static/chunks/0zas1mm9-k65d.js","async":true,"nonce":"$undefined"}]
+f:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"ViewportBoundary"]
+11:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"MetadataBoundary"]
+6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true,"nonce":"$undefined"}]
 8:["$","$Lc",null,{"children":["$","$d",null,{"name":"Next.MetadataOutlet","children":"$@e"}]}]
 9:["$","$1","h",{"children":[null,["$","$Lf",null,{"children":"$L10"}],["$","div",null,{"hidden":true,"children":["$","$L11",null,{"children":["$","$d",null,{"name":"Next.Metadata","children":"$L12"}]}]}],null]}]
-b:["$","link","0",{"rel":"stylesheet","href":"/reelscale/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+b:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
 10:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-13:I[27201,["/reelscale/_next/static/chunks/158myu8e_yme3.js"],"IconMark"]
+13:I[27201,["/_next/static/chunks/158myu8e_yme3.js"],"IconMark"]
 e:null
-12:[["$","title","0",{"children":"ReelScale"}],["$","meta","1",{"name":"description","content":"High-retention reels that grow your brand and bring you clients."}],["$","link","2",{"rel":"manifest","href":"/reelscale/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/assets/favicon.ico","sizes":"any"}],["$","link","4",{"rel":"icon","href":"/assets/favicon.png","type":"image/png"}],["$","link","5",{"rel":"apple-touch-icon","href":"/assets/apple-touch-icon.png"}],["$","$L13","6",{}]]
+12:[["$","title","0",{"children":"ReelScale"}],["$","meta","1",{"name":"description","content":"High-retention reels that grow your brand and bring you clients."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/assets/favicon.ico","sizes":"any"}],["$","link","4",{"rel":"icon","href":"/assets/favicon.png","type":"image/png"}],["$","link","5",{"rel":"apple-touch-icon","href":"/assets/apple-touch-icon.png"}],["$","$L13","6",{}]]
