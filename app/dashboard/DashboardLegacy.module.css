@@ -1,0 +1,95 @@
+.skeletonContainer {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeletonHeader {
+  margin-bottom: 24px;
+}
+
+.skeletonTitle {
+  height: 28px;
+  width: 220px;
+  background: linear-gradient(90deg, var(--white-05) 25%, var(--white-10) 50%, var(--white-05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.skeletonSubtitle {
+  height: 16px;
+  width: 160px;
+  background: linear-gradient(90deg, var(--white-05) 25%, var(--white-10) 50%, var(--white-05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.skeletonCard {
+  background: var(--bg2);
+  border: 0.6px solid var(--border);
+  border-radius: var(--border-radius-1);
+  padding: 16px;
+}
+
+.skeletonLine {
+  height: 14px;
+  background: linear-gradient(90deg, var(--white-05) 25%, var(--white-10) 50%, var(--white-05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.skeletonBlock {
+  height: 64px;
+  background: linear-gradient(90deg, var(--white-05) 25%, var(--white-10) 50%, var(--white-05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeletonChart {
+  background: var(--bg2);
+  border: 0.6px solid var(--border);
+  border-radius: var(--border-radius-1);
+  padding: 16px;
+}
+
+.skeletonBlockLarge {
+  height: 320px;
+  background: linear-gradient(90deg, var(--white-05) 25%, var(--white-10) 50%, var(--white-05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonTitle,
+  .skeletonSubtitle,
+  .skeletonLine,
+  .skeletonBlock,
+  .skeletonBlockLarge {
+    animation: none;
+    background: var(--white-05);
+  }
+}

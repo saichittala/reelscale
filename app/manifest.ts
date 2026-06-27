@@ -1,0 +1,25 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "ReelScale",
+    short_name: "ReelScale",
+    description: "High-retention reels that grow your brand and bring you clients.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#0f0f0f",
+    theme_color: "#ff0025",
+    icons: [
+      {
+        src: "/assets/favicon.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        src: "/assets/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  };
+}
