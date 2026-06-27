@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "build:static": "NEXT_PUBLIC_STATIC_EXPORT=true next build",
+    "deploy": "npm run build:static && gh-pages -d out"
   },
   "dependencies": {
     "next": "^16.2.9",
@@ -17,6 +19,7 @@
     "@types/node": "22.15.30",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
+    "gh-pages": "^6.3.0",
     "typescript": "5.8.3"
   }
 }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-static";
+
 const GOOGLE_SCRIPT_USERS_URL = process.env.GOOGLE_SCRIPT_USERS_URL!;
 
 async function proxyToGoogleScript(body: Record<string, unknown>) {
@@ -15,6 +17,9 @@ async function proxyToGoogleScript(body: Record<string, unknown>) {
 }
 
 export async function GET() {
+  if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
+    return NextResponse.json({ success: true, users: [] });
+  }
   try {
     const response = await fetch(GOOGLE_SCRIPT_USERS_URL);
     const data = await response.json();
