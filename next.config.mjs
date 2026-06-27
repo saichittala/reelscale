@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
+const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true';
+
 const nextConfig = {
-  output: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? 'export' : undefined,
-  trailingSlash: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? true : undefined,
+  output: isStaticExport ? 'export' : undefined,
+  trailingSlash: isStaticExport ? true : undefined,
+  ...(isStaticExport && {
+    outputFileTracingExcludes: {
+      '*': ['./app/api/**'],
+    },
+  }),
   images: {
     remotePatterns: [
       {
