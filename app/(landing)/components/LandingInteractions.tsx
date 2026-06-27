@@ -120,6 +120,40 @@ export default function LandingInteractions() {
       portfolioHandlers.push([item, handler]);
     });
 
+    // FAQ Accordion Handler
+    const faqHandlers: Array<[Element, EventListener]> = [];
+    document.querySelectorAll(".faq-question").forEach((btn) => {
+      const handler = (() => {
+        const item = btn.parentElement;
+        if (!item) return;
+        
+        const answer = item.querySelector(".faq-answer") as HTMLElement;
+        if (!answer) return;
+
+        const isActive = item.classList.contains("active");
+
+        // Close all other FAQ items
+        document.querySelectorAll(".faq-item").forEach((otherItem) => {
+          if (otherItem !== item) {
+            otherItem.classList.remove("active");
+            const otherAnswer = otherItem.querySelector(".faq-answer") as HTMLElement;
+            if (otherAnswer) otherAnswer.style.maxHeight = "0px";
+          }
+        });
+
+        if (isActive) {
+          item.classList.remove("active");
+          answer.style.maxHeight = "0px";
+        } else {
+          item.classList.add("active");
+          answer.style.maxHeight = `${answer.scrollHeight}px`;
+        }
+      }) as EventListener;
+
+      btn.addEventListener("click", handler);
+      faqHandlers.push([btn, handler]);
+    });
+
     const backdrop = modal?.querySelector(".video-backdrop");
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeModal();
@@ -138,6 +172,7 @@ export default function LandingInteractions() {
       closeBtn?.removeEventListener("click", closeModal);
       backdrop?.removeEventListener("click", closeModal);
       portfolioHandlers.forEach(([item, handler]) => item.removeEventListener("click", handler));
+      faqHandlers.forEach(([btn, handler]) => btn.removeEventListener("click", handler));
     };
   }, []);
 
