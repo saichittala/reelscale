@@ -758,7 +758,9 @@
                 <div class="user-name">${user?.name || ''}</div>
                 <div class="user-role">${user?.email || ''}</div>
               </div>
-              <img src="../assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+              <span class="logout-btn-wrap"${collapsed ? ' data-tooltip="Logout"' : ''}>
+                <img src="../assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+              </span>
             </div>
           </div>
         </div>

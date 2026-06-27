@@ -512,7 +512,8 @@ body {
 
 /* Tooltips for collapsed state */
 .sidebar.collapsed .nav-item[data-tooltip]:hover::after,
-.sidebar.collapsed .nav-group-toggle[data-tooltip]:hover::after {
+.sidebar.collapsed .nav-group-toggle[data-tooltip]:hover::after,
+.sidebar.collapsed .logout-btn-wrap[data-tooltip]:hover::after {
     content: attr(data-tooltip);
     position: absolute;
     left: 100%;
