@@ -12,7 +12,7 @@ export function getDashboardScript() {
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
   const mainScript = scripts.find((script) => script.includes("async function init()")) ?? "";
 
-  const prefix = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true" ? "/reelscale" : "";
+  const prefix = "";
 
   const script = mainScript
     .replace(/window\.location\.href = "login\.html";/g, `window.location.href = "${prefix}/dashboard/login";`)

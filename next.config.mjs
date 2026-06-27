@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? 'export' : undefined,
-  basePath: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? '/reelscale' : undefined,
   trailingSlash: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? true : undefined,
   images: {
     remotePatterns: [
