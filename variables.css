@@ -1,0 +1,96 @@
+/*
+ * =============================================================
+ *  ReelScale Design System — Shared CSS Variables
+ *  Imported by: styles.css, dashboard/dashboard.css, app/globals.css
+ * =============================================================
+ */
+
+/* ─────────────────────────── FONTS ─────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* ─────────────────────────── ROOT TOKENS ─────────────────────────── */
+:root {
+
+    /* TYPOGRAPHY SCALE */
+    --text-xs:  12px;
+    --text-sm:  14px;
+    --text-md:  16px;
+    --text-lg:  18px;
+    --text-xl:  20px;
+    --text-2xl: 24px;
+    --text-3xl: 40px;
+    --text-4xl: 56px;
+
+    /* FONT WEIGHTS */
+    --fw-light:     300;
+    --fw-regular:   400;
+    --fw-medium:    500;
+    --fw-semibold:  600;
+    --fw-bold:      700;
+    --fw-extrabold: 800;
+
+    /* FONT FAMILIES */
+    --primary-font: -apple-system, BlinkMacSystemFont, 'Geist', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font:         -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
+
+    /* ─── COLORS ─── */
+
+    /* Backgrounds */
+    --bg:  oklch(0.09 0 0);
+    --bg2: oklch(0.12 0 0);
+    --bg3: oklch(0.09 0 0);
+
+    /* Accent — Red */
+    --red:    oklch(62.944% 0.25583 25.982);
+    --red2:   oklch(54.187% 0.21198 24.926);
+    --red-op: oklch(52% 0.22 25 / 0.31);
+
+    /* Accent — Gold */
+    --gold: oklch(0.75 0.10 85);
+
+    /* Accent — Green */
+    --green: oklch(83.515% 0.20131 137.512);
+
+    /* Neutrals */
+    --white:        oklch(92.046% 0.01066 100.933);
+    --muted:        oklch(0.92 0.01 95 / 0.44);
+    --border:       oklch(0.92 0.01 95 / 0.13);
+    --button-white: oklch(92.046% 0.01066 100.933);
+
+    /* Surface / alpha layers */
+    --card:     oklch(1 0 0 / 0.04);
+    --white-03: oklch(1 0 0 / 0.03);
+    --white-05: oklch(1 0 0 / 0.05);
+    --white-07: oklch(1 0 0 / 0.07);
+    --white-10: oklch(1 0 0 / 0.10);
+    --white-20: oklch(1 0 0 / 0.20);
+    --white-30: oklch(1 0 0 / 0.30);
+    --white-50: oklch(1 0 0 / 0.50);
+
+    /* BORDER RADII */
+    --border-radius-1:  16px;
+    --border-radius-2:  12px;
+    --border-radius-3:  8px;
+    --border-radius-99: 99px;
+}
+
+/* ─────────────────────────── LIGHT THEME ─────────────────────────── */
+[data-theme="light"] {
+    --bg:           oklch(98.511% 0.00011 271.152);
+    --bg2:          oklch(96.115% 0.00011 271.152);
+    --button-white: oklch(100% 0.00011 271.152);
+
+    --white: oklch(27.685% 0.00003 271.152);
+    --muted: oklch(27.685% 0.00003 271.152 / 0.502);
+
+    --border: oklch(27.685% 0.00003 271.152 / 0.129);
+
+    --card:     oklch(100% 0.00011 271.152);
+    --white-03: oklch(20.768% 0.03985 265.767 / 0.02);
+    --white-05: oklch(20.768% 0.03985 265.767 / 0.04);
+    --white-07: oklch(20.768% 0.03985 265.767 / 0.06);
+    --white-10: oklch(20.768% 0.03985 265.767 / 0.08);
+    --white-20: oklch(20.768% 0.03985 265.767 / 0.12);
+    --white-30: oklch(20.768% 0.03985 265.767 / 0.18);
+    --white-50: oklch(20.768% 0.03985 265.767 / 0.50);
+}
