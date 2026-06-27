@@ -3,4 +3,4 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /api/
 
-Sitemap: https://reelscale.com/sitemap.xml
+Sitemap: https://reelscale.in/sitemap.xml
