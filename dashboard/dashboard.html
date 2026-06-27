@@ -25,6 +25,11 @@
     const AUTH_KEY = 'reelscale_auth';
     const AUTO_LOGOUT_TIME = 5 * 60 * 1000;
 
+    // Google Apps Script endpoints — direct calls, work from any host
+    const GAS_USERS_URL   = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+    const GAS_CLIENTS_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
+    const GAS_SALES_URL   = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+
     let logoutTimer = null;
     let clients = [];
     let users = [];
@@ -98,7 +103,7 @@
 
     async function login(email, password) {
       try {
-        const response = await fetch("/api/auth", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -236,7 +241,7 @@
           clientsLoaded = false;
           render();
         }
-        const response = await fetch("/api/clients");
+        const response = await fetch(GAS_CLIENTS_URL);
         const data = await response.json();
         localStorage.setItem(
           "clients_cache",
@@ -280,7 +285,7 @@
           usersLoaded = false;
           render();
         }
-        const response = await fetch("/api/users");
+        const response = await fetch(GAS_USERS_URL);
         const data = await response.json();
         if (data.success) {
           users = data.users || [];
@@ -300,7 +305,7 @@
 
     async function addUser(data) {
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -331,7 +336,7 @@
       users[index] = { ...users[index], ...data };
       render();
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -363,7 +368,7 @@
       users = users.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -407,7 +412,7 @@
         if (!salesLoaded) {
           salesLoaded = false;
         }
-        const response = await fetch("/api/sales");
+        const response = await fetch(GAS_SALES_URL);
         const result = await response.json();
         sales = result.leads || [];
         localStorage.setItem("sales_cache", JSON.stringify(sales));
@@ -423,7 +428,7 @@
 
     async function addClient(data) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -451,7 +456,7 @@
 
     async function updateClient(id, data) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -480,7 +485,7 @@
 
     async function deleteClient(id) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -509,7 +514,7 @@
       sales.unshift(tempLead);
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -543,7 +548,7 @@
       sales[index] = { ...sales[index], ...data };
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -576,7 +581,7 @@
       sales = sales.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
