@@ -1,0 +1,510 @@
+1:"$Sreact.fragment"
+2:I[91133,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/1luh7w22qmjyi.js"],"default"]
+a:I[79520,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/1luh7w22qmjyi.js"],""]
+b:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+c:"$Sreact.suspense"
+3:T49b2,
+  <div class="video-modal" id="videoModal">
+    <div class="video-backdrop"></div>
+
+    <div class="video-content">
+      <button class="video-close" id="closeVideo">✕</button>
+      <div class="video-wrapper" id="videoWrapper"></div>
+    </div>
+  </div>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <a href="#" class="logo">
+      <!-- <div class="logo-mark">R</div> -->
+      <div>
+        <img src="assets/logo.svg" alt="ReelScale Logo" style="width:100%; height: 20px;">
+      </div>
+      <!-- <span class="logo-text">Reel<span>Scale</span> Co.</span> -->
+    </a>
+
+
+
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+
+      <nav>
+        <a href="#work">Works</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+
+      <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+        target="_blank" class="btn-primary mob-btn-primary">
+        Start your Reel
+      </a>
+
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-lines"></div>
+
+    <div class="hero-eyebrow">Scale Faster With Better Content</div>
+
+    <h1>Grow Your Brand<br><em>With Reels</em></h1>
+
+    <p class="hero-sub">
+      High-retention reels that grow your brand and bring you clients, not just views. </p>
+
+    <div class="hero-ctas">
+      <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+        target="_blank" class="btn-primary">
+        Start your Reel
+      </a>
+      <a href="#work" class="btn-secondary">View Work</a>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <div class="ticker-item">10M+ Views Delivered <span>✦</span></div>
+      <div class="ticker-item">Instagram Reels <span>✦</span></div>
+      <div class="ticker-item">YouTube Shorts <span>✦</span></div>
+      <!-- <div class="ticker-item">1–2h Turnaround <span>✦</span></div> -->
+      <div class="ticker-item">20+ Reels Created <span>✦</span></div>
+      <div class="ticker-item">2–4x Engagement Growth <span>✦</span></div>
+      <div class="ticker-item">Instagram Reels <span>✦</span></div>
+      <div class="ticker-item">YouTube Shorts <span>✦</span></div>
+      <div class="ticker-item">10M+ Views Delivered <span>✦</span></div>
+      <!-- <div class="ticker-item">1–2h Turnaround <span>✦</span></div> -->
+      <div class="ticker-item">20+ Reels Created <span>✦</span></div>
+      <div class="ticker-item">2–4x Engagement Growth <span>✦</span></div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <section id="metrics">
+    <div class="metrics-grid reveal">
+      <div class="metric-card">
+        <div class="metric-num">10M+</div>
+        <div class="metric-label">Total Views</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">20+</div>
+        <div class="metric-label">Reels Created</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">2-4x</div>
+        <div class="metric-label">Engagement Growth</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-inner">
+      <div class="services-header reveal">
+        <div>
+          <div class="section-eyebrow">What We Do</div>
+          <div class="section-title">End-to-end<br>Reel Production</div>
+        </div>
+        <p class="section-sub">From strategy to distribution - every reel engineered for maximum reach and conversion.
+
+        </p>
+      </div>
+      <div class="services-grid reveal">
+        <div class="service-card">
+          <div class="service-num">01</div>
+          <div class="service-name">Strategy</div>
+          <p class="service-desc">Data-driven content strategy tailored to your niche, audience, and growth goals. No
+            guesswork.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-num">02</div>
+          <div class="service-name">Shoot</div>
+          <p class="service-desc">Cinematic, on-brand shoot direction. We handle everything from scripting to on-camera
+            performance.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-num">03</div>
+          <div class="service-name">Edit</div>
+          <p class="service-desc">Fast-paced, hook-driven editing with motion graphics, captions, and sound design that
+            stops scrolls.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-num">04</div>
+          <div class="service-name">Optimization</div>
+          <p class="service-desc">A/B testing, analytics review, and iterative improvement. We scale what works and kill
+            what doesn't.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US -->
+  <section id="why">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow reveal">Why ReelScale Co.</div>
+        <div class="section-title reveal">Not just content.<br>Results.</div>
+        <div class="why-list reveal">
+          <div class="why-item">
+            <div class="why-num">01</div>
+            <div class="why-content">
+              <h4>24–48h Turnaround</h4>
+              <p>Move at the speed of the algorithm. Fast execution means you never miss a trend.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">02</div>
+            <div class="why-content">
+              <h4>Cinematic Quality</h4>
+              <p>Premium production values that position your brand as the authority in your space.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">03</div>
+            <div class="why-content">
+              <h4>Performance-Driven</h4>
+              <p>Every creative decision is backed by data. We optimize for views, saves, and conversions.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">04</div>
+            <div class="why-content">
+              <h4>Dedicated Team</h4>
+              <p>One point of contact. Full creative team behind you. Zero agency bloat.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-visual reveal">
+        <div class="why-visual-inner">
+          <div class="big-stat">2 hrs</div>
+          <div class="big-stat-label">Average Delivery Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="work">
+    <div class="work-inner">
+      <div class="work-header reveal">
+        <div>
+          <div class="section-eyebrow">Portfolio</div>
+          <div class="section-title">Reels that<br>perform.</div>
+        </div>
+        <a href="#" class="btn-secondary">View All Work</a>
+      </div>
+      <div class="portfolio-grid reveal">
+
+        <a class="portfolio-item" href="https://www.instagram.com/reels/DY3bF7xPJ5_/" target="_blank"
+          rel="noopener noreferrer" style="
+        background: url(./assets/clients/avinash-salon.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        ">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Avinash Unisex Beauty Salon</div>
+            <div class="portfolio-stat">Increased 2x leads in 24hrs</div>
+          </div>
+
+        </a>
+        <a class="portfolio-item" href="https://www.instagram.com/p/DYhpQstRCBU/" target="_blank"
+          rel="noopener noreferrer" style="
+        background: url(./assets/clients/maitrova.png);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        ">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Maitrova</div>
+            <div class="portfolio-stat">Increased 2x leads in 24hrs</div>
+          </div>
+
+        </a>
+
+        <!-- <div class="portfolio-item" data-video="https://www.youtube.com/embed/ziM_K-n6svk" data-client="TechLaunch"
+          data-stat="4.2x engagement lift" style="background: url(https://images.unsplash.com/photo-1776811798099-ff6d61bd6c7c?q=80&w=2670&auto=format&fit=crop);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">TechLaunch</div>
+            <div class="portfolio-stat">4.2x engagement lift</div>
+          </div>
+        </div> -->
+        <div class="portfolio-item" data-video="https://www.youtube.com/embed/ziM_K-n6svk" data-client="StyleCo Fashion"
+          data-stat="1.2M organic reach" style="    background: url(https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=2671&auto=format&fit=crop);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">StyleCo Fashion</div>
+            <div class="portfolio-stat">1.2M organic reach</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div style="text-align:center" class="reveal">
+      <div class="section-eyebrow">The Process</div>
+      <div class="section-title">Four steps to scale.</div>
+    </div>
+    <div class="process-steps reveal">
+      <div class="process-step">
+        <div class="step-dot">01</div>
+        <div class="step-title">Strategy</div>
+        <p class="step-desc">Deep-dive into your brand, audience, and goals. We map the content playbook before a single
+          frame is filmed.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">02</div>
+        <div class="step-title">Production</div>
+        <p class="step-desc">Scripting, shot lists, and cinematic execution. Every second of footage is intentional.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">03</div>
+        <div class="step-title">Delivery</div>
+        <p class="step-desc">Polished reels delivered in 24–48h. Ready to post, platform-optimized, and
+          conversion-ready.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">04</div>
+        <div class="step-title">Scale</div>
+        <p class="step-desc">We analyze performance data and double down on what drives growth. Rinse, repeat, dominate.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="pricing-inner">
+      <div class="reveal">
+        <div class="section-eyebrow">Pricing</div>
+        <div class="section-title">Simple. Scalable.<br>No surprises.</div>
+      </div>
+      <div class="pricing-grid reveal">
+        <div class="pricing-card">
+          <div class="plan-name">Plus</div>
+          <div class="plan-price"><sup>₹</sup>11,499</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>8 Reels Delivered / Month</li>
+            <li>Professional Reel Editing</li>
+            <li>Viral Style Transitions</li>
+            <li>Caption Optimization</li>
+            <li>Brand Consistency Styling</li>
+            <li>Instant Delivery</li>
+            <li>1 Revision Per Reel</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+            target="_blank" class="btn-plan btn-plan-outline">
+            Start Your Reel
+          </a>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><sup>₹</sup>19,999</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>12 Reels Delivered / Month</li>
+            <li>Professional + Cinematic Editing</li>
+            <li>Advanced Visual Transitions</li>
+            <li>Engagement-Focused Hooks</li>
+            <li>Caption + CTA Optimization</li>
+            <li>1 Monthly Strategy Call</li>
+            <li>1 Hour Priority Delivery</li>
+            <li>Unlimited Revisions</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+            target="_blank" class="btn-plan btn-plan-red">
+            Start your Reel
+          </a>
+        </div>
+
+        <div class="pricing-card luxe">
+          <div class="plan-name">Luxe</div>
+          <div class="plan-price"><sup>₹</sup>24,999</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>16 Reels Delivered / Month</li>
+            <li>Premium Cinematic Editing</li>
+            <li>Advanced Motion Effects</li>
+            <li>Viral Scripting Support</li>
+            <li>High-Converting CTA Structuring</li>
+            <li>Dedicated Content Strategist</li>
+            <li>2 Monthly Strategy Calls</li>
+            <li>2 Hour Priority Delivery</li>
+            <li>Unlimited Revisions</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+            target="_blank" class="btn-plan btn-plan-outline btn-plan-luxe">
+            Start Your Reel
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div style="text-align:center" class="reveal">
+      <div class="section-eyebrow">Client Results</div>
+      <div class="section-title">Real brands.<br>Real growth.</div>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+        </div>
+
+        <p class="testi-quote">
+          "ReelScale completely transformed our content game. We went from 10K to 180K followers in
+          3 months. The ROI is insane."
+        </p>
+
+        <div class="testi-result">18x</div>
+        <div class="testi-result-label">Follower Growth</div>
+
+        <div class="testi-divider"></div>
+
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Alex Kim</div>
+            <div class="testi-role">Founder, FitLife</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+        </div>
+        <p class="testi-quote">"The 24-hour turnaround alone is worth every penny. They delivered 8 reels in a week and
+          two went viral. Incredible team."</p>
+        <div class="testi-result">2.1M</div>
+        <div class="testi-result-label">Views in 30 Days</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">
+          <div class="testi-avatar">SR</div>
+          <div>
+            <div class="testi-name">Sofia R.</div>
+            <div class="testi-role">CMO, TechLaunch</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-hf.svg" alt="Star" />
+        </div>
+        <p class="testi-quote">"We were burning money on ads with mediocre results. ReelScale shifted us to
+          organic-first and our CAC dropped 60%."</p>
+        <div class="testi-result">−60%</div>
+        <div class="testi-result-label">Customer Acq. Cost</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">
+          <div class="testi-avatar">JM</div>
+          <div>
+            <div class="testi-name">James M.</div>
+            <div class="testi-role">CEO, StyleCo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="cta">
+    <div class="cta-inner">
+      <div class="section-eyebrow reveal" style="display:inline-block">Ready to Scale?</div>
+      <h2 class="reveal">Your content<br>should <em style="color:var(--red)">Work </em>for you.</h2>
+      <p class="reveal">Book a free strategy call. No pitch. No fluff. Just a real conversation about your growth.</p>
+      <div class="cta-btn-group reveal">
+        <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
+          target="_blank" class="btn-primary">
+          Start your Reel</a>
+        <a href="mailto:reelscale7@gmail.com" class="btn-secondary">Send Email</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <a href="#" class="logo">
+        <div>
+          <img src="assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;">
+        </div>
+        <!-- <span class="logo-text">Reel<span>Scale</span> Co.</span> -->
+      </a>
+
+      <nav class="footer-nav">
+        <a href="#work">Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/dashboard/login">Login</a>
+        <!-- <a href="#process">Process</a>
+      <a href="#testimonials">Results</a> -->
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 ReelScale Co All Rights Reserved.</span>
+    </div>
+  </footer>
+
+  <!-- External JS -->
+  
+  
+  <!-- Google Analytics -->
+  
+
+  
+
+  
+
+0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://reelscale.com/#organization\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://reelscale.com/assets/logo.png\",\"caption\":\"ReelScale Logo\"},\"sameAs\":[\"https://instagram.com/reelscale\"]},{\"@type\":\"WebSite\",\"@id\":\"https://reelscale.com/#website\",\"url\":\"https://reelscale.com\",\"name\":\"ReelScale\",\"publisher\":{\"@id\":\"https://reelscale.com/#organization\"}},{\"@type\":\"ProfessionalService\",\"@id\":\"https://reelscale.com/#service\",\"name\":\"ReelScale\",\"url\":\"https://reelscale.com\",\"image\":\"https://reelscale.com/assets/logo.png\",\"priceRange\":\"$$\",\"telephone\":\"+919966239433\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"IN\"}}]}"}}],["$","$L2",null,{}],["$","main",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],"$L4","$L5","$L6","$L7"],["$L8"],"$L9"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"ZE8Vs0WcfSTSO9-wgkRPt"}
+4:["$","$La",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
+5:["$","$La",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3"}]
+6:["$","$La",null,{"id":"google-analytics","children":"\n          window.dataLayer = window.dataLayer || [];\n          function gtag(){dataLayer.push(arguments);}\n          gtag('js', new Date());\n          gtag('config', 'G-2F6CKK0MY3');\n        "}]
+7:["$","$La",null,{"id":"clarity","children":"\n          (function(c,l,a,r,i,t,y){\n            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n            t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n          })(window, document, \"clarity\", \"script\", \"wwiioh52bs\");\n        "}]
+8:["$","script","script-0",{"src":"/_next/static/chunks/1luh7w22qmjyi.js","async":true}]
+9:["$","$Lb",null,{"children":["$","$c",null,{"name":"Next.MetadataOutlet","children":"$@d"}]}]
+d:null

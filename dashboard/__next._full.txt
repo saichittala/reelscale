@@ -1,0 +1,1725 @@
+1:"$Sreact.fragment"
+2:I[39756,["/_next/static/chunks/158myu8e_yme3.js"],"default"]
+3:I[37457,["/_next/static/chunks/158myu8e_yme3.js"],"default"]
+4:I[28895,["/_next/static/chunks/158myu8e_yme3.js","/_next/static/chunks/0zas1mm9-k65d.js"],"default"]
+a:I[68027,["/_next/static/chunks/158myu8e_yme3.js"],"default",1]
+:HL["/_next/static/chunks/28aen3k8srpr4.css","style"]
+:HL["/_next/static/chunks/3ita1byjbtj22.css","style"]
+:HL["/_next/static/chunks/3na5d2g0pxufr.css","style"]
+:HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
+5:T112be,
+    // ==============================
+    // CONSTANTS & CONFIGURATION
+    // ==============================
+    const AUTH_KEY = 'reelscale_auth';
+    const AUTO_LOGOUT_TIME = 5 * 60 * 1000;
+
+    let logoutTimer = null;
+    let clients = [];
+    let users = [];
+    let sales = [];
+    let newLeadRow = false;
+    let mobileMenuOpen = false;
+    let page = "dashboard";
+    let modal = null;
+    let editId = null;
+    let search = '';
+    let sortKey = 'revenue';
+    let sortDir = -1;
+    let toast = null;
+    let toastTimer = null;
+    let dataLoaded = false;
+    let sessionExpired = false;
+    let newUserRow = false;
+    let usersLoaded = false;
+    let clientsLoaded = false;
+    let salesLoaded = false;
+    let salesDateFrom = '';
+    let salesDateTo = '';
+    let salesFilterExpanded = false;
+    let sidebarCollapsed = false;
+    let expandedGroups = {};
+
+
+    // ==============================
+    // UTILITY FUNCTIONS
+    // ==============================
+    function resetLogoutTimer() {
+      if (!isLoggedIn()) return;
+      clearTimeout(logoutTimer);
+      logoutTimer = setTimeout(() => {
+        clearTimeout(logoutTimer);
+
+        sessionExpired = true;
+
+        localStorage.removeItem("reelscale_auth");
+        localStorage.removeItem("reelscale_user");
+        localStorage.removeItem(
+          "reelscale_current_page"
+        );
+
+        modal = null;
+        editId = null;
+        page = "dashboard";
+
+        render();
+      }, AUTO_LOGOUT_TIME);
+    }
+
+    function startActivityTracking() {
+      ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
+        document.addEventListener(event, resetLogoutTimer);
+      });
+      resetLogoutTimer();
+    }
+
+    function isLoggedIn() {
+      return localStorage.getItem(AUTH_KEY) === '1';
+    }
+
+    function setAuth(v) {
+      v ? localStorage.setItem(AUTH_KEY, '1') : localStorage.removeItem(AUTH_KEY);
+    }
+
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem("reelscale_user") || "null");
+    }
+
+    async function login(email, password) {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+          return false;
+        }
+        setAuth(true);
+        localStorage.setItem("reelscale_user", JSON.stringify(data.user));
+        return true;
+      } catch (error) {
+        console.error("Login error:", error);
+        return false;
+      }
+    }
+
+    function showToast(msg, type = 'success') {
+      if (toastTimer) clearTimeout(toastTimer);
+      toast = { msg, type };
+      render();
+      toastTimer = setTimeout(() => {
+        toast = null;
+        render();
+      }, 2800);
+    }
+
+    function getRevenue(c) {
+      return (c.reels || 0) * (c.ppr || 0);
+    }
+
+    function filteredClients() {
+      let c = [...clients];
+      if (search) {
+        c = c.filter(x => (x.name + x.business + x.instagram).toLowerCase().includes(search.toLowerCase()));
+      }
+      c.sort((a, b) => {
+        let av = sortKey === 'revenue' ? getRevenue(a) : sortKey === 'reels' ? a.reels : 0;
+        let bv = sortKey === 'revenue' ? getRevenue(b) : sortKey === 'reels' ? b.reels : 0;
+        return (av - bv) * sortDir;
+      });
+      return c;
+    }
+
+    function stats() {
+      const total = clients.length;
+      const reels = clients.reduce((s, c) => s + (c.reels || 0), 0);
+      const rev = clients.reduce((s, c) => s + getRevenue(c), 0);
+      const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a))[0] || null;
+      return { total, reels, rev, top };
+    }
+
+    function fmt(n) {
+      return n >= 100000 ? (n / 100000).toFixed(1) + 'L' : n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
+    }
+
+    function fmtFull(n) {
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function toDateStr(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatDisplayDate(str) {
+      if (!str) return '';
+      const parts = str.split('-');
+      if (parts.length !== 3) return str;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[parseInt(parts[1]) - 1] || parts[1]} ${parseInt(parts[2])}, ${parts[0]}`;
+    }
+
+    let nextId = () => Date.now();
+
+    function toggleTheme() {
+      const currentTheme =
+        document.documentElement.getAttribute("data-theme");
+
+
+
+      const newTheme =
+        currentTheme === "light"
+          ? "dark"
+          : "light";
+
+      document.documentElement.setAttribute(
+        "data-theme",
+        newTheme
+      );
+
+      localStorage.setItem(
+        "theme",
+        newTheme
+      );
+    }
+
+    function createWhatsAppLink(phone) {
+      const message = `Hey 👋\n\nWe came across your brand and instantly saw huge potential 🚀\n\nHonestly, with the right content and visual presentation, your brand could stand out on a whole new level 📈\n\nWe're ReelScale — a premium cinematic reel brand creating high-performing content that makes brands look more premium, more trusted, and more impactful ✨\n\nFeel like we could really elevate your brand's online presence 🔥\n\nWe'd genuinely love to collaborate and create something visually powerful together.\n\n— Team ReelScale`;
+      const cleanPhone = String(phone || "").replace(/\D/g, "");
+      return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+    }
+
+    // ==============================
+    // API FUNCTIONS
+    // ==============================
+    async function loadGoogleSheetData(ignoreCache = false) {
+      if (!ignoreCache) {
+        const cached = localStorage.getItem("clients_cache");
+        if (cached) {
+          try {
+            const data = JSON.parse(cached);
+            clients = data.map(row => ({
+              id: row.id,
+              name: row.clientName,
+              business: row.business,
+              phone: row.phone,
+              instagram: row.instagram,
+              reels: row.reels,
+              ppr: row.pricePerReel,
+              image: row.image
+            }));
+            clientsLoaded = true;
+            render();
+          } catch (e) {
+            console.error("Failed to parse clients cache", e);
+          }
+        }
+      }
+
+      try {
+        if (!clientsLoaded) {
+          clientsLoaded = false;
+          render();
+        }
+        const response = await fetch("/api/clients");
+        const data = await response.json();
+        localStorage.setItem(
+          "clients_cache",
+          JSON.stringify(data)
+        );
+        clients = data.map(row => ({
+          id: row.id,
+          name: row.clientName,
+          business: row.business,
+          phone: row.phone,
+          instagram: row.instagram,
+          reels: row.reels,
+          ppr: row.pricePerReel,
+          image: row.image
+        }));
+        clientsLoaded = true;
+        render();
+      } catch (error) {
+        clientsLoaded = true;
+        render();
+        console.error("Clients Load Error:", error);
+      }
+    }
+
+    async function loadUsers(ignoreCache = false) {
+      if (!ignoreCache) {
+        const cached = localStorage.getItem("users_cache");
+        if (cached) {
+          try {
+            users = JSON.parse(cached);
+            usersLoaded = true;
+            render();
+          } catch (e) {
+            console.error("Failed to parse users cache", e);
+          }
+        }
+      }
+
+      try {
+        if (!usersLoaded) {
+          usersLoaded = false;
+          render();
+        }
+        const response = await fetch("/api/users");
+        const data = await response.json();
+        if (data.success) {
+          users = data.users || [];
+          localStorage.setItem("users_cache", JSON.stringify(users));
+        } else {
+          users = [];
+        }
+        usersLoaded = true;
+        render();
+      } catch (error) {
+        console.error("Users Load Error:", error);
+        users = [];
+        usersLoaded = true;
+        render();
+      }
+    }
+
+    async function addUser(data) {
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "add",
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            role: data.role
+          })
+        });
+        const result = await response.json();
+        console.log("ADD USER:", result);
+        if (!result.success) {
+          throw new Error(result.message || "Add failed");
+        }
+        await loadUsers(true);
+        showToast("User added successfully");
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Failed to add user", "error");
+      }
+    }
+
+    async function updateUser(id, data) {
+      const index = users.findIndex(x => String(x.id) === String(id));
+      if (index === -1) return;
+      const oldData = { ...users[index] };
+      users[index] = { ...users[index], ...data };
+      render();
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update",
+            id: id,
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            role: data.role
+          })
+        });
+        const result = await response.json();
+        console.log("UPDATE USER:", result);
+        if (!result.success) {
+          throw new Error(result.message || "Update failed");
+        }
+        await loadUsers(true);
+        showToast("User updated successfully");
+      } catch (error) {
+        users[index] = oldData;
+        render();
+        console.error(error);
+        showToast(error.message || "Failed to update user", "error");
+      }
+    }
+
+    async function deleteUser(id) {
+      const deletedUser = users.find(x => String(x.id) === String(id));
+      users = users.filter(x => String(x.id) !== String(id));
+      render();
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "delete",
+            id: id
+          })
+        });
+        const result = await response.json();
+        console.log("DELETE USER:", result);
+        if (!result.success) {
+          throw new Error(result.message || "Delete failed");
+        }
+        await loadUsers(true);
+        showToast("User deleted successfully");
+      } catch (error) {
+        if (deletedUser) {
+          users.unshift(deletedUser);
+        }
+        render();
+        console.error(error);
+        showToast(error.message || "Failed to delete user", "error");
+      }
+    }
+
+    async function loadSales(ignoreCache = false) {
+      if (!ignoreCache) {
+        const cached = localStorage.getItem("sales_cache");
+        if (cached) {
+          try {
+            sales = JSON.parse(cached);
+            dataLoaded = true;
+            salesLoaded = true;
+            render();
+          } catch (e) {
+            console.error("Failed to parse sales cache", e);
+          }
+        }
+      }
+
+      try {
+        if (!salesLoaded) {
+          salesLoaded = false;
+        }
+        const response = await fetch("/api/sales");
+        const result = await response.json();
+        sales = result.leads || [];
+        localStorage.setItem("sales_cache", JSON.stringify(sales));
+        dataLoaded = true;
+        salesLoaded = true;
+        render();
+      } catch (error) {
+        salesLoaded = true;
+        render();
+        console.error("Sales Load Error:", error);
+      }
+    }
+
+    async function addClient(data) {
+      try {
+        const response = await fetch("/api/clients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "add",
+            name: data.name,
+            business: data.business,
+            phone: data.phone,
+            instagram: data.instagram,
+            reels: Number(data.reels),
+            pricePerReel: Number(data.ppr),
+            image: data.image || ""
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Add failed");
+        }
+        await loadGoogleSheetData(true);
+        showToast("Client added successfully");
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Failed to add client", "error");
+      }
+    }
+
+    async function updateClient(id, data) {
+      try {
+        const response = await fetch("/api/clients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update",
+            id: id,
+            name: data.name,
+            business: data.business,
+            phone: data.phone,
+            instagram: data.instagram,
+            reels: Number(data.reels),
+            pricePerReel: Number(data.ppr),
+            image: data.image || ""
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Update failed");
+        }
+        await loadGoogleSheetData(true);
+        showToast("Client updated successfully");
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Failed to update client", "error");
+      }
+    }
+
+    async function deleteClient(id) {
+      try {
+        const response = await fetch("/api/clients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "delete",
+            id: id
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Delete failed");
+        }
+        await loadGoogleSheetData(true);
+        showToast("Client deleted successfully");
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Failed to delete client", "error");
+      }
+    }
+
+    async function addSale(data) {
+      const tempLead = {
+        id: Date.now(),
+        createdDate: toDateStr(new Date()),
+        ...data
+      };
+      sales.unshift(tempLead);
+      render();
+      try {
+        const response = await fetch("/api/sales", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "add",
+            category: data.category,
+            companyName: data.companyName,
+            contactPerson: data.contactPerson,
+            phoneNumber: data.phoneNumber,
+            notes: data.notes,
+            contacted: data.contacted
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Add failed");
+        }
+        showToast("Lead added successfully");
+        localStorage.setItem("sales_cache", JSON.stringify(sales));
+      } catch (error) {
+        sales = sales.filter(x => x.id !== tempLead.id);
+        render();
+        showToast(error.message || "Failed to add lead", "error");
+        console.error(error);
+      }
+    }
+
+    async function updateSale(id, data) {
+      const index = sales.findIndex(x => String(x.id) === String(id));
+      if (index === -1) return;
+      const oldData = { ...sales[index] };
+      sales[index] = { ...sales[index], ...data };
+      render();
+      try {
+        const response = await fetch("/api/sales", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update",
+            id,
+            category: data.category,
+            companyName: data.companyName,
+            contactPerson: data.contactPerson,
+            phoneNumber: data.phoneNumber,
+            notes: data.notes,
+            contacted: data.contacted
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Update failed");
+        }
+        showToast("Lead updated successfully");
+        localStorage.setItem("sales_cache", JSON.stringify(sales));
+      } catch (error) {
+        sales[index] = oldData;
+        render();
+        showToast(error.message || "Failed to save changes", "error");
+        console.error(error);
+      }
+    }
+
+    async function deleteSale(id) {
+      const deletedLead = sales.find(x => String(x.id) === String(id));
+      sales = sales.filter(x => String(x.id) !== String(id));
+      render();
+      try {
+        const response = await fetch("/api/sales", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "delete",
+            id
+          })
+        });
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.message || "Delete failed");
+        }
+        showToast("Lead deleted successfully");
+        localStorage.setItem("sales_cache", JSON.stringify(sales));
+      } catch (error) {
+        sales.unshift(deletedLead);
+        render();
+        showToast(error.message || "Failed to delete lead", "error");
+        console.error(error);
+      }
+    }
+
+    async function handleSalesImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const workbook = XLSX.read(e.target.result, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+        if (!rows.length) {
+          showToast("No records found", "error");
+          return;
+        }
+        showToast(`Importing ${rows.length} leads...`);
+        for (const row of rows) {
+          await addSale({
+            category: row.Category || "",
+            companyName: row.CompanyName || row.Company || "",
+            contactPerson: row.ContactPerson || "",
+            phoneNumber: row.PhoneNumber || row.Phone || "",
+            notes: row.Notes || "",
+            contacted: row.Contacted || "No"
+          });
+        }
+        showToast(`${rows.length} leads imported successfully`);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ==============================
+    // RENDER FUNCTIONS
+    // ==============================
+    function render() {
+      const currentUser = getCurrentUser();
+
+      if (
+        currentUser?.role === "sales" &&
+        page !== "sales"
+      ) {
+        page = "sales";
+      }
+      if (isLoggedIn()) {
+        resetLogoutTimer();
+      }
+      const root = document.getElementById('root');
+      if (!isLoggedIn()) {
+
+        root.innerHTML =
+          renderLogin() +
+          (sessionExpired
+            ? renderSessionExpiredModal()
+            : "");
+
+        attachLogin();
+        attachSessionExpiredEvents();
+
+        return;
+      }
+      root.innerHTML = `
+        <div class="app">
+          ${renderSidebar()}
+          <div class="main${sidebarCollapsed ? ' collapsed' : ''}">
+            ${renderTopbar()}
+            <div class="content">
+              ${page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : ''}
+            </div>
+          </div>
+        </div>
+        ${modal ? renderModal() : ''}
+        ${mobileMenuOpen ? renderMobileMenu() : ''}
+        ${toast ? `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>` : ''}
+      `;
+      attachEvents();
+      if (page === 'analytics') initCharts();
+    }
+
+    function renderLogin() {
+      return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><a href="#" class="logo"><div><img src="/assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;"></div></a></div><div class="login-title">Welcome back</div><div class="login-sub">Sign in to manage your clients & revenue</div><div id="login-err" style="display:none" class="login-error">Invalid credentials. Please try again.</div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="Enter your email" autocomplete="off"></div><div class="form-group"><label class="form-label">Password</label><input class="form-input" id="l-pass" type="password" placeholder="Enter your password" autocomplete="off"></div><button class="btn btn-primary al-c" id="login-btn" style="width:100%;padding:12px;margin-top:32px;font-size:14px">Sign In</button></div></div>`;
+    }
+
+    function renderSessionExpiredModal() {
+      return `
+    <div class="modal-overlay">
+      <div class="modal" style="max-width:420px">
+
+        <div class=modal-icon>
+          <img src="/assets/icons/log-out.svg" alt="Info" width="24" height="24">
+        </div>
+
+        <div class="modal-header">
+          <div class="modal-title">
+            Session Expired
+          </div>
+        </div>
+
+        <div style="
+          color: var(--muted);
+          font-size: var(--text-sm);
+          line-height: 1.6;
+          margin-bottom: 24px;
+        ">
+          Your session expired due to inactivity.
+          Please sign in again to continue using ReelScale.
+        </div>
+
+        <div class="form-footer">
+          <button
+            id="session-login-btn"
+            class="btn btn-primary"
+          >
+            Login Again
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+    }
+
+    function renderSidebar() {
+      const user = getCurrentUser();
+      const collapsed = sidebarCollapsed;
+      const baseIconPath = "/assets/icons/";
+
+      const nav = user?.role === "sales"
+        ? [{ id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" }]
+        : [
+          { id: "dashboard", icon: baseIconPath + "nav-dashboard.svg", label: "Dashboard" },
+          { id: "clients", icon: baseIconPath + "nav-clients.svg", label: "Clients" },
+          { id: "analytics", icon: baseIconPath + "nav-analytics.svg", label: "Analytics" },
+          { id: "users", icon: baseIconPath + "nav-users.svg", label: "Users" },
+          { id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" }
+        ];
+
+      return `
+        <div class="sidebar${collapsed ? ' collapsed' : ''}">
+          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="${collapsed ? 'Expand' : 'Collapse'} sidebar" title="${collapsed ? 'Expand' : 'Collapse'}"></button>
+          <div class="dashboard-logo">
+            <img src="${collapsed ? '/assets/r_light.svg' : '/assets/logo.svg'}" alt="ReelScale Logo">
+            <div class="logo-sub">Reel Production House</div>
+          </div>
+          <div class="nav">
+            ${nav.map(n => `
+              <button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}"${collapsed ? ` data-tooltip="${n.label}"` : ''}>
+                <img src="${n.icon}" alt="${n.label}" class="nav-icon">
+                <span class="nav-label">${n.label}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div class="sidebar-footer">
+            <div class="user-pill">
+              <div class="user-avatar">${(user?.name || 'A')[0]}</div>
+              <div class="user-info">
+                <div class="user-name">${user?.name || ''}</div>
+                <div class="user-role">${user?.email || ''}</div>
+              </div>
+              <img src="/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMobileMenu() {
+      const user = getCurrentUser();
+      const isSales =
+        String(user?.role || "")
+          .trim()
+          .toLowerCase() === "sales";
+
+      const nav = isSales
+        ? [
+          {
+            id: "sales",
+            icon: "/assets/icons/nav-sales.svg",
+            label: "Sales"
+          }
+        ]
+        : [
+          {
+            id: "dashboard",
+            icon: "/assets/icons/nav-dashboard.svg",
+            label: "Dashboard"
+          },
+          {
+            id: "clients",
+            icon: "/assets/icons/nav-clients.svg",
+            label: "Clients"
+          },
+          {
+            id: "analytics",
+            icon: "/assets/icons/nav-analytics.svg",
+            label: "Analytics"
+          },
+          {
+            id: "users",
+            icon: "/assets/icons/nav-users.svg",
+            label: "Users"
+          },
+          {
+            id: "sales",
+            icon: "/assets/icons/nav-sales.svg",
+            label: "Sales"
+          }
+        ];
+      return `<div class="mobile-menu-overlay" id="mobile-menu-overlay"><div class="mobile-menu"><div class="mobile-menu-header"><img src="/assets/logo.svg" height="22"><button id="mobile-close-btn" class="mobile-close-btn"><img src="/assets/icons/close.svg" alt="Close" width="18" height="18"></button></div>${nav.map(item => `<button class="mobile-nav-item ${page === item.id ? "active" : ""}" data-page="${item.id}"><img src="${item.icon}" width="18">${item.label}</button>`).join("")}</div></div>`;
+    }
+
+    function renderSkeleton(type) {
+      if (type === 'dashboard') {
+        return '<div class="skeleton-stat-grid">' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '</div>' +
+          '<div class="skeleton-grid-2">' +
+          '<div class="skeleton-glass-card">' +
+          '<div class="skeleton-line skeleton"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px"></div>'.repeat(5) +
+          '</div>' +
+          '<div class="skeleton-glass-card">' +
+          '<div class="skeleton-line skeleton"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px"></div>'.repeat(5) +
+          '</div>' +
+          '</div>';
+      }
+      if (type === 'clients') {
+        return '<div class="skeleton-controls">' +
+          '<div class="skeleton-line skeleton" style="height:38px; width:260px;"></div>' +
+          '<div class="skeleton-line skeleton" style="height:38px; width:100px;"></div>' +
+          '<div class="skeleton-line skeleton" style="height:38px; width:100px;"></div>' +
+          '</div>' +
+          '<div class="skeleton-table">' +
+          '<div class="skeleton-table-header">' +
+          '<div class="skeleton-line skeleton" style="width: 25%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 8%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 12%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 10%"></div>' +
+          '</div>' +
+          Array(6).fill(0).map(() =>
+            '<div class="skeleton-table-row">' +
+            '<div class="skeleton-avatar skeleton"></div>' +
+            '<div class="skeleton-line skeleton" style="width:20%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:15%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:15%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:8%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:12%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:15%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:10%"></div>' +
+            '</div>'
+          ).join('') +
+          '</div>';
+      }
+      if (type === 'analytics') {
+        return '<div class="skeleton-stat-grid">' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '<div class="skeleton-stat-card"><div class="skeleton-line skeleton"></div><div class="skeleton-line skeleton" style="width:40%"></div></div>' +
+          '</div>' +
+          '<div class="skeleton-grid-2">' +
+          '<div class="skeleton-glass-card">' +
+          '<div class="skeleton-line skeleton"></div>' +
+          '<div class="skeleton-chart-area skeleton" style="margin-top: 16px; flex: 1;"></div>' +
+          '</div>' +
+          '<div class="skeleton-glass-card">' +
+          '<div class="skeleton-line skeleton"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px; margin-top: 12px;"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px; margin-top: 12px;"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px; margin-top: 12px;"></div>' +
+          '<div class="skeleton-block skeleton" style="height:40px; margin-top: 12px;"></div>' +
+          '</div>' +
+          '</div>';
+      }
+      if (type === 'users') {
+        return '<div class="skeleton-table">' +
+          '<div class="skeleton-table-header">' +
+          '<div class="skeleton-line skeleton" style="width: 10%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 20%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 25%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 20%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 10%"></div>' +
+          '</div>' +
+          Array(5).fill(0).map(() =>
+            '<div class="skeleton-table-row">' +
+            '<div class="skeleton-line skeleton" style="width: 10%"></div>' +
+            '<div class="skeleton-line skeleton" style="width: 20%"></div>' +
+            '<div class="skeleton-line skeleton" style="width: 25%"></div>' +
+            '<div class="skeleton-line skeleton" style="width: 20%"></div>' +
+            '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+            '<div class="skeleton-line skeleton" style="width: 10%"></div>' +
+            '</div>'
+          ).join('') +
+          '</div>';
+      }
+      if (type === 'sales') {
+        return '<div class="skeleton-controls" style="margin-bottom: 24px;">' +
+          '<div class="skeleton-line skeleton" style="height:38px; width:200px;"></div>' +
+          '<div class="skeleton-line skeleton" style="height:38px; width:200px;"></div>' +
+          '</div>' +
+          '<div class="skeleton-table">' +
+          '<div class="skeleton-table-header">' +
+          '<div class="skeleton-line skeleton" style="width: 25%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 20%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 25%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '<div class="skeleton-line skeleton" style="width: 15%"></div>' +
+          '</div>' +
+          Array(6).fill(0).map(() =>
+            '<div class="skeleton-table-row">' +
+            '<div class="skeleton-line skeleton" style="width:25%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:20%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:25%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:15%"></div>' +
+            '<div class="skeleton-line skeleton" style="width:15%"></div>' +
+            '</div>'
+          ).join('') +
+          '</div>';
+      }
+      return '';
+    }
+
+    function renderTopbar() {
+      const titles = { dashboard: 'Dashboard', clients: 'Clients', analytics: 'Revenue Analytics', users: 'Users', sales: 'Sales' };
+      const subs = { dashboard: 'Overview of your business metrics', clients: 'Manage all client accounts', analytics: 'Detailed revenue insights', users: 'Manage system users', sales: 'Manage sales leads' };
+      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="/assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="add-client-btn"><span><img src="/assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="toggle-sales-filter" style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Filter by Date</span>${salesDateFrom || salesDateTo ? `<span class="badge badge-red" style="margin-left:4px;padding:2px 6px;font-size:10px;border-radius:6px;background:var(--red);color:white;">Active</span>` : ''}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;margin-left:4px;${salesFilterExpanded ? 'transform:rotate(180deg);' : ''}"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn btn-ghost" id="import-sales-btn"><img src="/assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="/assets/icons/add.svg" width="18">Add Lead</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<div class="df-g8"><button class="btn btn-primary" id="add-user-btn"><img src="/assets/icons/add.svg" width="18">Add User</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div>` : ''}</div>`;
+    }
+
+    function renderDashboard() {
+      if (!dataLoaded) {
+        return renderSkeleton('dashboard');
+      }
+      const s = stats();
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="/assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="/assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="/assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
+    }
+
+    function renderClients() {
+
+      if (!clientsLoaded) {
+
+        return renderSkeleton('clients');
+      }
+
+      const fc = filteredClients();
+      const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
+      return `<div class="controls"><div class="search-wrap"><img src="/assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="/assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="/assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
+    }
+
+    function renderAnalytics() {
+      if (!clientsLoaded) {
+        return renderSkeleton('analytics');
+      }
+      const s = stats();
+      const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div><div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div><div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div></div><div class="revenue-grid"><div class="glass-card"><div class="chart-title">Revenue Per Client</div><div class="chart-sub" style="margin-bottom:16px">Sorted by revenue · All clients</div><div style="position:relative; flex:1; min-height:0;"><canvas id="rev-chart"></canvas></div></div><div class="glass-card"><div class="chart-title" style="margin-bottom:24px">Client Revenue Breakdown</div><div style="flex:1; overflow-y:auto; padding-right:4px;">${top.map((c, i) => { const rev = getRevenue(c); const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0; return `<div class="rev-bar-wrap" style="margin-bottom:20px"><div class="rev-bar-label"><span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span><span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span></div><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></div>`; }).join('')}</div></div></div>`;
+    }
+
+    function renderUsers() {
+      if (!usersLoaded) {
+
+        return renderSkeleton('users');
+      }
+      return `
+    <div class="table-wrap">
+<table class="users-table">        
+  <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th style="width:120px">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${newUserRow ? `
+          <tr class="new-user-row">
+            <td>Auto</td>
+
+            <td>
+              <input id="new-user-name"
+                class="user-input"
+                placeholder="Name">
+            </td>
+
+            <td>
+              <input id="new-user-email"
+                class="user-input"
+                placeholder="Email">
+            </td>
+
+            <td>
+              <div class="password-wrap">
+                <input
+                  id="new-user-password"
+                  type="password"
+                  class="user-input password-input"
+                  placeholder="Password">
+
+                <img
+                  src="/assets/icons/eye.svg"
+                  class="toggle-password"
+                  data-target="new-user-password">
+              </div>
+            </td>
+
+            <td>
+              <select id="new-user-role" class="user-input">
+                <option value="admin">Admin</option>
+                <option value="sales">Sales</option>
+              </select>
+            </td>
+
+            <td>
+              <div class="action-btns">
+                <img src="/assets/icons/check.svg"
+                  class="create-user-btn">
+
+                <img src="/assets/icons/close.svg"
+                  class="cancel-user-btn">
+              </div>
+            </td>
+          </tr>
+          ` : ""}
+
+          ${users.map(user => `
+            <tr>
+
+              <td>${user.id}</td>
+
+              <td>
+                <input
+                  type="text"
+                  class="user-name-input"
+                  data-id="${user.id}"
+                  value="${user.name}">
+              </td>
+
+              <td>
+                <input
+                  type="email"
+                  class="user-email-input"
+                  data-id="${user.id}"
+                  value="${user.email}">
+              </td>
+
+              <td>
+                <div class="password-wrap">
+
+                  <input
+                    type="password"
+                    class="user-password-input"
+                    id="pass-${user.id}"
+                    data-id="${user.id}"
+                    value="${user.password}">
+
+                  <img
+                    src="/assets/icons/eye.svg"
+                    class="toggle-password"
+                    data-target="pass-${user.id}">
+                </div>
+              </td>
+
+              <td>
+                <select
+                  class="user-role-input"
+                  data-id="${user.id}">
+                  <option value="admin"
+                    ${user.role === "admin" ? "selected" : ""}>
+                    Admin
+                  </option>
+                  <option value="sales"
+                    ${user.role === "sales" ? "selected" : ""}>
+                    Sales
+                  </option>
+                </select>
+              </td>
+
+              <td>
+                <div class="action-btns">
+                  <img
+                    src="/assets/icons/delete.svg"
+                    class="delete-user"
+                    data-id="${user.id}">
+                </div>
+              </td>
+
+            </tr>
+          `).join("")}
+
+        </tbody>
+      </table>
+    </div>
+  `;
+    }
+
+    function renderSales() {
+      if (!salesLoaded) {
+        return renderSkeleton('sales');
+      }
+      function normalizeDate(str) {
+        if (!str) return '';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return str;
+        return toDateStr(d);
+      }
+      const filteredSales = sales.filter(item => {
+        const cd = normalizeDate(item.createdDate);
+        if (!cd) return true;
+        if (salesDateFrom && cd < salesDateFrom) {
+          return false;
+        }
+        if (salesDateTo && cd > salesDateTo) {
+          return false;
+        }
+        return true;
+      });
+      return `<div class="sales-date-filter-panel" style="${salesFilterExpanded ? 'display:flex;' : 'display:none;'} margin-bottom: 16px;">
+          <div class="sales-date-filter" style="margin-top:0;margin-bottom:0;width:100%;">
+            <div class="date-filter-group">
+              <label class="date-filter-label">From</label>
+              <input type="date" id="sales-date-from" class="date-filter-input" value="${salesDateFrom}">
+            </div>
+            <div class="date-filter-group">
+              <label class="date-filter-label">To</label>
+              <input type="date" id="sales-date-to" class="date-filter-input" value="${salesDateTo}">
+            </div>
+            ${salesDateFrom || salesDateTo ? `<button id="clear-sales-date" class="btn btn-ghost btn-sm">Clear</button>` : ''}
+          </div>
+        </div>
+        <div class="table-wrap"><table class="sales-table"><thead><tr><th class="dn">ID</th><th class="dn">Category</th><th>Company Name</th><th class="dn">Contact Person</th><th>Phone Number</th><th>Notes</th><th>Created Date</th><th>Contacted</th><th style="width:120px">Actions</th></tr></thead><tbody>${newLeadRow ? `<tr class="new-lead-row"><td class="dn"></td><td class="dn"></td><td><input id="new-company" class="company-input" placeholder="Company Name"></td><td class="dn"></td><td><input id="new-phone" class="phone-input" placeholder="Phone Number"></td><td><input id="new-note" class="note-input" placeholder="Notes"></td><td></td><td><input type="checkbox" id="new-contacted" class="contacted-toggle"></td><td><div class="action-btns"><img src="/assets/icons/check.svg" class="create-lead-btn" title="Create Lead" style="cursor:pointer"><img src="/assets/icons/close.svg" class="cancel-lead-btn" title="Cancel" style="cursor:pointer"></div></td></tr>` : ""}${filteredSales.length === 0 ? `<tr><td colspan="9"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No leads found${salesDateFrom || salesDateTo ? ' for selected date range' : ''}</div></div></td></tr>` : filteredSales.map(item => `<tr><td class="dn">${item.id}</td><td class="dn"><span class="badge badge-gold">${item.category}</span></td><td><input type="text" class="company-input" data-id="${item.id}" value="${item.companyName || ''}" placeholder="Company Name"></td><td class="dn">${item.contactPerson}</td><td><input type="text" class="phone-input" data-id="${item.id}" value="${item.phoneNumber || ''}" placeholder="Phone Number"></td><td><input type="text" class="note-input" data-id="${item.id}" value="${item.notes || ''}" title="${item.notes || 'No notes added'}" placeholder="Add note..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:white;"></td><td style="white-space:nowrap;color:var(--muted);font-size:12px;">${formatDisplayDate(item.createdDate)}</td><td><input type="checkbox" class="contacted-toggle" data-id="${item.id}" ${item.contacted === "Yes" ? "checked" : ""}></td><td style="width:120px"><div class="action-btns"><a href="tel:${item.phoneNumber}" class="call-sale" data-id="${item.id}" title="Call"><img src="/assets/icons/phone.svg" alt="Call" width="18" height="18"></a><a href="${createWhatsAppLink(item.phoneNumber)}" class="whatsapp-sale" target="_blank" title="WhatsApp"><img src="/assets/icons/whatsapp.svg" width="18" height="18"></a><img src="/assets/icons/edit.svg" class="edit-sale edit-btn-td dn" data-id="${item.id}"><img src="/assets/icons/delete.svg" class="delete-sale delete-btn-td" data-id="${item.id}"></div></td></tr>`).join("")}</tbody></table></div>`;
+    }
+
+    function renderModal() {
+      const isEdit = modal === 'edit';
+      const client = isEdit ? clients.find(c => c.id === editId) : null;
+      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="/assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
+    }
+
+    // ==============================
+    // CHART FUNCTIONS
+    // ==============================
+    function initCharts() {
+      const sorted = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
+      const ctx = document.getElementById('rev-chart');
+      if (!ctx) return;
+      if (window._reelChart) window._reelChart.destroy();
+      window._reelChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sorted.map(c => c.name.split(' ')[0]),
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: sorted.map(c => getRevenue(c)),
+            backgroundColor: sorted.map((_, i) => i === 0 ? 'oklch(0.75 0.10 85 / 0.7)' : 'oklch(52% 0.22 25 / 0.5)'),
+            borderColor: sorted.map((_, i) => i === 0 ? 'oklch(0.75 0.10 85)' : 'oklch(62.944% 0.25583 25.982)'),
+            borderWidth: 1.5,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '₹' + ctx.raw.toLocaleString('en-IN') } } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.45)', font: { size: 11 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.45)', font: { size: 11 }, callback: v => '₹' + v.toLocaleString('en-IN') } }
+          }
+        }
+      });
+    }
+
+    // ==============================
+    // EVENT ATTACHMENT FUNCTIONS
+    // ==============================
+    function attachLogin() {
+      document.getElementById('login-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('login-btn');
+        if (!btn || btn.disabled) return;
+
+        const email = document.getElementById('l-email')?.value?.trim() || "";
+        const password = document.getElementById('l-pass')?.value || "";
+
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="btn-loader"></span> Signing In...`;
+
+        const success = await login(email, password);
+        if (success) {
+          const user = getCurrentUser();
+          page = user.role === "sales" ? "sales" : "dashboard";
+          render();
+          startActivityTracking();
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+          document.getElementById('login-err').style.display = 'block';
+        }
+      });
+      document.getElementById('l-pass')?.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') {
+          document.getElementById('login-btn')?.click();
+        }
+      });
+    }
+
+    function attachSessionExpiredEvents() {
+
+      document
+        .getElementById("session-login-btn")
+        ?.addEventListener("click", () => {
+
+          sessionExpired = false;
+
+          const email =
+            document.getElementById("l-email");
+
+          if (email) {
+            email.focus();
+          }
+
+          render();
+        });
+    }
+
+    function attachModalEvents() {
+      const updatePreview = () => {
+        const r = parseInt(document.getElementById('f-reels')?.value) || 0;
+        const p = parseInt(document.getElementById('f-ppr')?.value) || 0;
+        const el = document.getElementById('rev-preview');
+        if (el) el.textContent = '₹' + (r * p).toLocaleString('en-IN');
+      };
+      document.getElementById('f-reels')?.addEventListener('input', updatePreview);
+      document.getElementById('f-ppr')?.addEventListener('input', updatePreview);
+      updatePreview();
+      document.getElementById('modal-close')?.addEventListener('click', () => { modal = null; render(); });
+      document.getElementById('modal-cancel')?.addEventListener('click', () => { modal = null; render(); });
+      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { modal = null; render(); } });
+      document.getElementById('modal-save')?.addEventListener('click', () => {
+        const data = {
+          name: document.getElementById('f-name')?.value?.trim() || "",
+          business: document.getElementById('f-biz')?.value?.trim() || "",
+          phone: document.getElementById('f-phone')?.value?.trim() || "",
+          instagram: document.getElementById('f-instagram')?.value?.trim() || "",
+          reels: document.getElementById('f-reels')?.value || "",
+          ppr: document.getElementById('f-ppr')?.value || "",
+          image: document.getElementById('f-image')?.value?.trim() || ""
+        };
+        if (!data.name || !data.business) {
+          showToast('Name and business are required', 'error');
+          return;
+        }
+        if (modal === 'edit') updateClient(editId, data);
+        else addClient(data);
+        modal = null;
+        render();
+      });
+    }
+
+    function attachEvents() {
+      // Sidebar expand/collapse toggle
+      document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        render();
+      });
+
+      // Nav group expand/collapse
+      document.querySelectorAll('.nav-group-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (sidebarCollapsed) {
+            // If sidebar is collapsed, expand it first, then expand the group
+            sidebarCollapsed = false;
+            expandedGroups[btn.dataset.group] = true;
+          } else {
+            expandedGroups[btn.dataset.group] = !expandedGroups[btn.dataset.group];
+          }
+          render();
+        });
+      });
+
+      document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+        const user = getCurrentUser();
+        if (user.role === "sales" && b.dataset.page !== "sales") {
+          return;
+        }
+        page = b.dataset.page;
+
+        localStorage.setItem(
+          "reelscale_current_page",
+          page
+        );
+
+        mobileMenuOpen = false;
+        search = '';
+        render();
+      }));
+      document
+        .getElementById("theme-toggle")
+        ?.addEventListener("click", toggleTheme);
+      document.querySelectorAll(".toggle-password")
+        .forEach(btn => {
+
+          btn.addEventListener("click", () => {
+
+            const input =
+              document.getElementById(
+                btn.dataset.target
+              );
+
+            if (!input) return;
+
+            input.type =
+              input.type === "password"
+                ? "text"
+                : "password";
+
+            btn.src =
+              input.type === "password"
+                ? "/assets/icons/eye.svg"
+                : "/assets/icons/eye-off.svg";
+          });
+
+        });
+
+      document.querySelector(".create-user-btn")
+        ?.addEventListener("click", async () => {
+
+          const name =
+            document.getElementById("new-user-name")
+              ?.value?.trim() || "";
+
+          const email =
+            document.getElementById("new-user-email")
+              ?.value?.trim() || "";
+
+          const password =
+            document.getElementById("new-user-password")
+              ?.value?.trim() || "";
+
+          const role =
+            document.getElementById("new-user-role")
+              ?.value;
+
+          if (!name || !email || !password) {
+
+            showToast(
+              "All fields are required",
+              "error"
+            );
+
+            return;
+          }
+
+          await addUser({
+            name,
+            email,
+            password,
+            role
+          });
+
+          newUserRow = false;
+
+          render();
+        });
+
+      document.querySelector(".cancel-user-btn")
+        ?.addEventListener("click", () => {
+
+          newUserRow = false;
+          render();
+
+        });
+
+      document.querySelectorAll(".user-name-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.name === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              name: input.value
+            });
+
+          });
+
+        });
+      document.querySelectorAll(".user-email-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.email === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              email: input.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".user-password-input")
+        .forEach(input => {
+
+          input.addEventListener("blur", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === input.dataset.id
+              );
+
+            if (!user) return;
+
+            if (user.password === input.value) return;
+
+            await updateUser(user.id, {
+              ...user,
+              password: input.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".user-role-input")
+        .forEach(select => {
+
+          select.addEventListener("change", async () => {
+
+            const user =
+              users.find(
+                x => String(x.id) === select.dataset.id
+              );
+
+            if (!user) return;
+
+            await updateUser(user.id, {
+              ...user,
+              role: select.value
+            });
+
+          });
+
+        });
+
+      document.querySelectorAll(".delete-user")
+        .forEach(btn => {
+
+          btn.addEventListener("click", async () => {
+
+            await deleteUser(btn.dataset.id);
+
+          });
+
+        });
+
+      document.querySelectorAll(".call-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (!lead) return;
+          if (lead.contacted === "Yes") return;
+          updateSale(id, { ...lead, contacted: "Yes" });
+        });
+      });
+
+      document.querySelectorAll(".whatsapp-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (!lead) return;
+          await updateSale(id, { ...lead, contacted: "Yes" });
+        });
+      });
+
+      document.getElementById("import-sales-btn")?.addEventListener("click", async () => {
+
+        await loadXLSXLibrary();
+
+        document.getElementById("sales-file-input").click();
+
+      });
+
+      document.getElementById("sales-file-input")?.addEventListener("change", handleSalesImport);
+
+      document.getElementById("mobile-menu-btn")?.addEventListener("click", () => {
+        mobileMenuOpen = true;
+        render();
+      });
+
+      document.getElementById("mobile-close-btn")?.addEventListener("click", () => {
+        mobileMenuOpen = false;
+        render();
+      });
+
+      document.getElementById("mobile-menu-overlay")?.addEventListener("click", (e) => {
+        if (e.target.id === "mobile-menu-overlay") {
+          mobileMenuOpen = false;
+          render();
+        }
+      });
+
+      document.querySelector(".cancel-lead-btn")?.addEventListener("click", () => {
+        newLeadRow = false;
+        render();
+        showToast("Lead creation cancelled");
+      });
+
+      document.querySelector(".create-lead-btn")?.addEventListener("click", async () => {
+        const company = document.getElementById("new-company")?.value?.trim() || "";
+        const phone = document.getElementById("new-phone")?.value?.trim() || "";
+        const notes = document.getElementById("new-note")?.value?.trim() || "";
+        const contacted = document.getElementById("new-contacted")?.checked ? "Yes" : "No";
+        if (!company) {
+          showToast("Company Name is required", "error");
+          return;
+        }
+        await addSale({ category: "", companyName: company, contactPerson: "", phoneNumber: phone, notes, contacted });
+        newLeadRow = false;
+        render();
+      });
+
+      document.querySelectorAll(".delete-sale").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.dataset.id;
+          await deleteSale(id);
+        });
+      });
+
+      document.getElementById("add-sale-btn")?.addEventListener("click", () => {
+        if (newLeadRow) return;
+        newLeadRow = true;
+        render();
+      });
+
+      document.getElementById("toggle-sales-filter")?.addEventListener("click", () => {
+        salesFilterExpanded = !salesFilterExpanded;
+        render();
+      });
+
+      document.getElementById("sales-date-from")?.addEventListener("change", (e) => {
+        salesDateFrom = e.target.value;
+        setTimeout(() => render(), 0);
+      });
+
+      document.getElementById("sales-date-to")?.addEventListener("change", (e) => {
+        salesDateTo = e.target.value;
+        setTimeout(() => render(), 0);
+      });
+
+      document.getElementById("clear-sales-date")?.addEventListener("click", () => {
+        salesDateFrom = '';
+        salesDateTo = '';
+        render();
+      });
+
+      document.querySelectorAll(".note-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === (lead.notes || "")) return;
+          await updateSale(id, { ...lead, notes: input.value });
+          showToast("Note updated");
+        });
+      });
+
+      document.querySelectorAll(".company-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === lead.companyName) return;
+          await updateSale(id, { ...lead, companyName: input.value });
+        });
+      });
+
+      document.querySelectorAll(".phone-input").forEach(input => {
+        input.addEventListener("blur", async () => {
+          const id = input.dataset.id;
+          const lead = sales.find(x => String(x.id) === String(id));
+          if (input.value === lead.phoneNumber) return;
+          await updateSale(id, { ...lead, phoneNumber: input.value });
+        });
+      });
+
+      document.querySelectorAll(".contacted-toggle").forEach(cb => {
+        cb.addEventListener("change", async () => {
+          const lead = sales.find(x => String(x.id) === cb.dataset.id);
+          await updateSale(lead.id, { ...lead, contacted: cb.checked ? "Yes" : "No" });
+        });
+      });
+
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearTimeout(logoutTimer);
+        localStorage.removeItem("reelscale_auth");
+        localStorage.removeItem("reelscale_user");
+        window.location.href = "/dashboard/login";
+        localStorage.removeItem("reelscale_current_page");
+      });
+
+      document.getElementById('add-client-btn')?.addEventListener('click', () => {
+        modal = 'add';
+        editId = null;
+        render();
+        attachModalEvents();
+      });
+
+      document.getElementById('add-user-btn')?.addEventListener('click', () => {
+
+        if (newUserRow) return;
+
+        newUserRow = true;
+        render();
+
+      });
+
+      document.getElementById('search-input')?.addEventListener('input', e => {
+        search = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        render();
+        requestAnimationFrame(() => {
+          const input = document.getElementById('search-input');
+          if (input) {
+            input.focus();
+            input.setSelectionRange(cursorPos, cursorPos);
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => {
+        if (sortKey === b.dataset.sort) sortDir *= -1;
+        else {
+          sortKey = b.dataset.sort;
+          sortDir = -1;
+        }
+        render();
+      }));
+
+      document.querySelectorAll('.edit-client').forEach(b => b.addEventListener('click', () => {
+        editId = +b.dataset.id;
+        modal = 'edit';
+        render();
+        attachModalEvents();
+      }));
+
+      document.querySelectorAll('.del-client').forEach(b => b.addEventListener('click', () => {
+        if (confirm('Delete this client?')) {
+          deleteClient(+b.dataset.id);
+          render();
+        }
+      }));
+
+      if (modal || newUserRow || newLeadRow) attachModalEvents();
+    }
+
+    // ==============================
+    // INITIALIZATION
+    // ==============================
+
+    async function init() {
+      if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-theme");
+      }
+
+      const user = getCurrentUser();
+
+      const savedPage =
+        localStorage.getItem(
+          "reelscale_current_page"
+        );
+
+      if (user?.role === "sales") {
+
+        page = "sales";
+
+      } else {
+
+        page =
+          savedPage || "dashboard";
+
+      }
+      const savedTheme =
+        localStorage.getItem("theme") || "dark";
+
+      document.documentElement.setAttribute(
+        "data-theme",
+        savedTheme
+      );
+      render();
+
+      loadGoogleSheetData();
+      loadUsers();
+      loadSales();
+    }
+
+    try { init(); } catch(e) { console.error("Dashboard init failed:", e); }
+
+    if (isLoggedIn()) {
+      startActivityTracking();
+    }
+  0:{"P":null,"c":["","dashboard"],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/158myu8e_yme3.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3ita1byjbtj22.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/3na5d2g0pxufr.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"ZE8Vs0WcfSTSO9-wgkRPt"}
+c:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
+d:"$Sreact.suspense"
+f:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"ViewportBoundary"]
+11:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"MetadataBoundary"]
+6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true,"nonce":"$undefined"}]
+8:["$","$Lc",null,{"children":["$","$d",null,{"name":"Next.MetadataOutlet","children":"$@e"}]}]
+9:["$","$1","h",{"children":[null,["$","$Lf",null,{"children":"$L10"}],["$","div",null,{"hidden":true,"children":["$","$L11",null,{"children":["$","$d",null,{"name":"Next.Metadata","children":"$L12"}]}]}],null]}]
+b:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/28aen3k8srpr4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+10:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+13:I[27201,["/_next/static/chunks/158myu8e_yme3.js"],"IconMark"]
+e:null
+12:[["$","title","0",{"children":"ReelScale"}],["$","meta","1",{"name":"description","content":"High-retention reels that grow your brand and bring you clients."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/assets/favicon.ico","sizes":"any"}],["$","link","4",{"rel":"icon","href":"/assets/favicon.png","type":"image/png"}],["$","link","5",{"rel":"apple-touch-icon","href":"/assets/apple-touch-icon.png"}],["$","$L13","6",{}]]
