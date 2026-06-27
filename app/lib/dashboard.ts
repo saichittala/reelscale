@@ -12,13 +12,15 @@ export function getDashboardScript() {
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
   const mainScript = scripts.find((script) => script.includes("async function init()")) ?? "";
 
+  const prefix = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true" ? "/reelscale" : "";
+
   const script = mainScript
-    .replace(/window\.location\.href = "login\.html";/g, 'window.location.href = "/dashboard/login";')
-    .replace(/href="login\.html"/g, 'href="/dashboard/login"')
-    .replace(/\.\.\/assets\//g, '/assets/')
-    .replace(/\.\.\/styles\.css/g, '/styles.css')
-    .replace(/\.\.\/dashboard\.css/g, '/dashboard/dashboard.css')
-    .replace(/\.\.\/fonts\.css/g, '/fonts.css')
+    .replace(/window\.location\.href = "login\.html";/g, `window.location.href = "${prefix}/dashboard/login";`)
+    .replace(/href="login\.html"/g, `href="${prefix}/dashboard/login"`)
+    .replace(/\.\.\/assets\//g, `${prefix}/assets/`)
+    .replace(/\.\.\/styles\.css/g, `${prefix}/styles.css`)
+    .replace(/\.\.\/dashboard\.css/g, `${prefix}/dashboard/dashboard.css`)
+    .replace(/\.\.\/fonts\.css/g, `${prefix}/fonts.css`)
     .replace(
       /(init\(\);)/g,
       `try { $1 } catch(e) { console.error("Dashboard init failed:", e); }`

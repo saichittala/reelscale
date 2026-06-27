@@ -47,7 +47,7 @@ function getLandingMarkup() {
 
   const markup = body
     .replace(/<script\b[\s\S]*?<\/script>/gi, "")
-    .replace(/href="dashboard\/login\.html"/g, 'href="/dashboard/login"');
+    .replace(/href="dashboard\/login\.html"/g, 'href="dashboard/login"');
 
   cachedLandingMarkup = markup;
   return markup;
