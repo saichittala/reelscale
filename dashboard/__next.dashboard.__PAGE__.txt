@@ -3,12 +3,17 @@
 7:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T112be,
+3:T114c6,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
     const AUTH_KEY = 'reelscale_auth';
     const AUTO_LOGOUT_TIME = 5 * 60 * 1000;
+
+    // Google Apps Script endpoints — direct calls, work from any host
+    const GAS_USERS_URL   = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+    const GAS_CLIENTS_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
+    const GAS_SALES_URL   = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
 
     let logoutTimer = null;
     let clients = [];
@@ -83,7 +88,7 @@
 
     async function login(email, password) {
       try {
-        const response = await fetch("/api/auth", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -221,7 +226,7 @@
           clientsLoaded = false;
           render();
         }
-        const response = await fetch("/api/clients");
+        const response = await fetch(GAS_CLIENTS_URL);
         const data = await response.json();
         localStorage.setItem(
           "clients_cache",
@@ -265,7 +270,7 @@
           usersLoaded = false;
           render();
         }
-        const response = await fetch("/api/users");
+        const response = await fetch(GAS_USERS_URL);
         const data = await response.json();
         if (data.success) {
           users = data.users || [];
@@ -285,7 +290,7 @@
 
     async function addUser(data) {
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -316,7 +321,7 @@
       users[index] = { ...users[index], ...data };
       render();
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -348,7 +353,7 @@
       users = users.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch(GAS_USERS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -392,7 +397,7 @@
         if (!salesLoaded) {
           salesLoaded = false;
         }
-        const response = await fetch("/api/sales");
+        const response = await fetch(GAS_SALES_URL);
         const result = await response.json();
         sales = result.leads || [];
         localStorage.setItem("sales_cache", JSON.stringify(sales));
@@ -408,7 +413,7 @@
 
     async function addClient(data) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -436,7 +441,7 @@
 
     async function updateClient(id, data) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -465,7 +470,7 @@
 
     async function deleteClient(id) {
       try {
-        const response = await fetch("/api/clients", {
+        const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -494,7 +499,7 @@
       sales.unshift(tempLead);
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -528,7 +533,7 @@
       sales[index] = { ...sales[index], ...data };
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -561,7 +566,7 @@
       sales = sales.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch("/api/sales", {
+        const response = await fetch(GAS_SALES_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1705,7 +1710,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"HZtSHQK3THJTp39ZVb_Tw"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"TdLv-d-ihn6FaTvve1WOL"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
