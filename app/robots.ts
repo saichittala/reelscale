@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/dashboard/", "/api/"],
     },
-    sitemap: "https://reelscale.com/sitemap.xml",
+    sitemap: "https://reelscale.in/sitemap.xml",
   };
 }

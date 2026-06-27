@@ -9,16 +9,16 @@ export const metadata: Metadata = {
   description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales. Partner with Team ReelScale for expert short-form video content creation.",
   keywords: ["cinematic reels", "video agency", "short form video content", "Instagram reels agency", "TikTok growth", "content scale", "YouTube shorts editor"],
   alternates: {
-    canonical: "https://reelscale.com",
+    canonical: "https://reelscale.in",
   },
   openGraph: {
     title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
     description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales.",
-    url: "https://reelscale.com",
+    url: "https://reelscale.in",
     siteName: "ReelScale",
     images: [
       {
-        url: "https://reelscale.com/assets/logo.png",
+        url: "https://reelscale.in/assets/logo.png",
         width: 1200,
         height: 630,
         alt: "ReelScale Branding",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
     description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales.",
-    images: ["https://reelscale.com/assets/logo.png"],
+    images: ["https://reelscale.in/assets/logo.png"],
   },
 };
 
@@ -59,12 +59,12 @@ export default function Home() {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://reelscale.com/#organization",
+        "@id": "https://reelscale.in/#organization",
         "name": "ReelScale",
-        "url": "https://reelscale.com",
+        "url": "https://reelscale.in",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://reelscale.com/assets/logo.png",
+          "url": "https://reelscale.in/assets/logo.png",
           "caption": "ReelScale Logo"
         },
         "sameAs": [
@@ -73,19 +73,19 @@ export default function Home() {
       },
       {
         "@type": "WebSite",
-        "@id": "https://reelscale.com/#website",
-        "url": "https://reelscale.com",
+        "@id": "https://reelscale.in/#website",
+        "url": "https://reelscale.in",
         "name": "ReelScale",
         "publisher": {
-          "@id": "https://reelscale.com/#organization"
+          "@id": "https://reelscale.in/#organization"
         }
       },
       {
         "@type": "ProfessionalService",
-        "@id": "https://reelscale.com/#service",
+        "@id": "https://reelscale.in/#service",
         "name": "ReelScale",
-        "url": "https://reelscale.com",
-        "image": "https://reelscale.com/assets/logo.png",
+        "url": "https://reelscale.in",
+        "image": "https://reelscale.in/assets/logo.png",
         "priceRange": "$$",
         "telephone": "+919966239433",
         "address": {
