@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/158myu8e_yme3.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T11293,
+3:T11304,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -743,7 +743,9 @@
                 <div class="user-name">${user?.name || ''}</div>
                 <div class="user-role">${user?.email || ''}</div>
               </div>
-              <img src="/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+              <span class="logout-btn-wrap"${collapsed ? ' data-tooltip="Logout"' : ''}>
+                <img src="/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
+              </span>
             </div>
           </div>
         </div>
@@ -1710,7 +1712,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"Uopg8zq-3SrkZjBYeNzG2"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"ME1Fkzve_kknrMEQdGVWS"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
