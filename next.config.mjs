@@ -33,7 +33,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.instagram.com https://*.instagram.com https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com https://*.instagram.com https://www.clarity.ms; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://www.instagram.com https://*.instagram.com https://www.youtube.com https://*.youtube.com; connect-src 'self' https://script.google.com https://*.clarity.ms https://*.google-analytics.com; upgrade-insecure-requests;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.instagram.com https://*.instagram.com https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com https://*.instagram.com https://www.clarity.ms; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://www.instagram.com https://*.instagram.com https://www.youtube.com https://*.youtube.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://*.googleusercontent.com https://*.clarity.ms https://*.google-analytics.com; upgrade-insecure-requests;",
           },
           {
             key: "Referrer-Policy",

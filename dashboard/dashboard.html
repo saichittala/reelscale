@@ -105,8 +105,8 @@
       try {
         const response = await fetch(GAS_USERS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+
+          body: JSON.stringify({ action: "login", email, password }),
         });
         const data = await response.json();
         if (!data.success) {
@@ -307,7 +307,7 @@
       try {
         const response = await fetch(GAS_USERS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "add",
             name: data.name,
@@ -338,7 +338,7 @@
       try {
         const response = await fetch(GAS_USERS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "update",
             id: id,
@@ -370,7 +370,7 @@
       try {
         const response = await fetch(GAS_USERS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "delete",
             id: id
@@ -430,7 +430,7 @@
       try {
         const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "add",
             name: data.name,
@@ -458,7 +458,7 @@
       try {
         const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "update",
             id: id,
@@ -487,7 +487,7 @@
       try {
         const response = await fetch(GAS_CLIENTS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "delete",
             id: id
@@ -516,7 +516,7 @@
       try {
         const response = await fetch(GAS_SALES_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "add",
             category: data.category,
@@ -550,7 +550,7 @@
       try {
         const response = await fetch(GAS_SALES_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "update",
             id,
@@ -583,7 +583,7 @@
       try {
         const response = await fetch(GAS_SALES_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
             action: "delete",
             id
