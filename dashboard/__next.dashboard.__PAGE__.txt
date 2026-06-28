@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1ae2c,
+3:T1aeae,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -14,6 +14,7 @@
     const GAS_USERS_URL = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
     const GAS_CLIENTS_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
     const GAS_SALES_URL = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+    const GAS_BLOGS_URL = "";
 
     // Custom fetch wrapper to support local Next.js APIs during development with RBAC headers
     async function customFetch(url, options = {}) {
@@ -42,6 +43,8 @@
           targetUrl = "/api/clients";
         } else if (url === GAS_SALES_URL) {
           targetUrl = "/api/sales";
+        } else if (GAS_BLOGS_URL && url === GAS_BLOGS_URL) {
+          targetUrl = "/api/blogs";
         }
       }
 
@@ -336,7 +339,7 @@
       try {
         let response;
         try {
-          response = await customFetch("/api/blogs");
+          response = await customFetch(GAS_BLOGS_URL);
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         } catch (error) {
           console.warn("Local API fetch failed, trying static fallback:", error);
@@ -364,7 +367,7 @@
     async function saveBlogToServer(blogData) {
       try {
         const action = blogData.id ? "update" : "add";
-        const response = await customFetch("/api/blogs", {
+        const response = await customFetch(GAS_BLOGS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -389,7 +392,7 @@
     async function deleteBlogFromServer(id) {
       if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) return;
       try {
-        const response = await customFetch("/api/blogs", {
+        const response = await customFetch(GAS_BLOGS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2594,7 +2597,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"33S1GQEx3XV7eLUavzYgx"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"KaJdczVzmYnUuHJAM4Z33"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
