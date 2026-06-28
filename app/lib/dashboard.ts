@@ -22,6 +22,10 @@ export function getDashboardScript() {
     .replace(/\.\.\/dashboard\.css/g, `${prefix}/dashboard/dashboard.css`)
     .replace(/\.\.\/fonts\.css/g, `${prefix}/fonts.css`)
     .replace(
+      /const useLocalAPI = window\.location\.hostname === "localhost" \|\| window\.location\.hostname === "127.0.0.1";/g,
+      `const useLocalAPI = ${process.env.NEXT_PUBLIC_STATIC_EXPORT !== "true"};`
+    )
+    .replace(
       /(init\(\);)/g,
       `try { $1 } catch(e) { console.error("Dashboard init failed:", e); }`
     );
