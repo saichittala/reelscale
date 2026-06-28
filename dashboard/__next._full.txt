@@ -8,7 +8,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 :HL["/_next/static/chunks/14t9ff2g8w9g6.css","style"]
 :HL["/_next/static/chunks/2q46gtbhfgghv.css","style"]
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-5:T1aa7e,
+5:T1abca,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -765,13 +765,15 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     function render() {
       const currentUser = getCurrentUser();
 
+      const role = currentUser?.role?.toLowerCase();
+
       if (
-        currentUser?.role === "sales" &&
+        role === "sales" &&
         page !== "sales"
       ) {
         page = "sales";
       } else if (
-        currentUser?.role === "blogger" &&
+        role === "blogger" &&
         page !== "blogs" &&
         page !== "create-blog" &&
         page !== "blog-categories"
@@ -860,15 +862,13 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       const user = getCurrentUser();
       const collapsed = sidebarCollapsed;
       const baseIconPath = "/assets/icons/";
+      const role = user?.role?.toLowerCase();
 
-      const nav = user?.role === "sales"
+      const nav = role === "sales"
         ? [{ id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" }]
-        : user?.role === "blogger"
+        : role === "blogger"
         ? [
-          { isHeader: true, label: "Blog management" },
-          { id: "blogs", icon: baseIconPath + "reels.svg", label: "All blogs" },
-          { id: "create-blog", icon: baseIconPath + "add.svg", label: "Create blog" },
-          { id: "blog-categories", icon: baseIconPath + "nav-analytics.svg", label: "Categories" }
+          { id: "blogs", icon: baseIconPath + "reels.svg", label: "Blogs" }
         ]
         : [
           { id: "dashboard", icon: baseIconPath + "nav-dashboard.svg", label: "Dashboard" },
@@ -876,10 +876,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
           { id: "analytics", icon: baseIconPath + "nav-analytics.svg", label: "Analytics" },
           { id: "users", icon: baseIconPath + "nav-users.svg", label: "Users" },
           { id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" },
-          { isHeader: true, label: "Blog management" },
-          { id: "blogs", icon: baseIconPath + "reels.svg", label: "All blogs" },
-          { id: "create-blog", icon: baseIconPath + "add.svg", label: "Create blog" },
-          { id: "blog-categories", icon: baseIconPath + "nav-analytics.svg", label: "Categories" }
+          { id: "blogs", icon: baseIconPath + "reels.svg", label: "Blogs" }
         ];
 
       return `
@@ -920,17 +917,22 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     function renderMobileMenu() {
       const user = getCurrentUser();
-      const isSales =
-        String(user?.role || "")
-          .trim()
-          .toLowerCase() === "sales";
+      const role = user?.role?.toLowerCase();
 
-      const nav = isSales
+      const nav = role === "sales"
         ? [
           {
             id: "sales",
             icon: "/assets/icons/nav-sales.svg",
             label: "Sales"
+          }
+        ]
+        : role === "blogger"
+        ? [
+          {
+            id: "blogs",
+            icon: "/assets/icons/reels.svg",
+            label: "Blogs"
           }
         ]
         : [
@@ -958,6 +960,11 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
             id: "sales",
             icon: "/assets/icons/nav-sales.svg",
             label: "Sales"
+          },
+          {
+            id: "blogs",
+            icon: "/assets/icons/reels.svg",
+            label: "Blogs"
           }
         ];
       return `<div class="mobile-menu-overlay" id="mobile-menu-overlay"><div class="mobile-menu"><div class="mobile-menu-header"><img src="/assets/logo.svg" height="22"><button id="mobile-close-btn" class="mobile-close-btn"><img src="/assets/icons/close.svg" alt="Close" width="18" height="18"></button></div>${nav.map(item => `<button class="mobile-nav-item ${page === item.id ? "active" : ""}" data-page="${item.id}"><img src="${item.icon}" width="18">${item.label}</button>`).join("")}</div></div>`;
@@ -1101,7 +1108,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         'create-blog': 'Compose, preview and optimize your article',
         'blog-categories': 'Manage blog taxonomies and organization'
       };
-      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="/assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="add-client-btn"><span><img src="/assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="toggle-sales-filter" style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Filter by Date</span>${salesDateFrom || salesDateTo ? `<span class="badge badge-red" style="margin-left:4px;padding:2px 6px;font-size:10px;border-radius:6px;background:var(--red);color:white;">Active</span>` : ''}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;margin-left:4px;${salesFilterExpanded ? 'transform:rotate(180deg);' : ''}"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn btn-ghost" id="import-sales-btn"><img src="/assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="/assets/icons/add.svg" width="18">Add Lead</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<div class="df-g8"><button class="btn btn-primary" id="add-user-btn"><img src="/assets/icons/add.svg" width="18">Add User</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div>` : ''}${page === 'blogs' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="go-create-blog-btn"><img src="/assets/icons/add.svg" width="18">Create Blog</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'create-blog' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-ghost" id="back-to-blogs-btn">Back to list</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'blog-categories' ? `<div class="topbar-actions"><div class="df-g8"><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}</div>`;
+      return `<div class="topbar"><div class="mobile-topbar-left"><button id="mobile-menu-btn" class="mobile-menu-btn"><img src="/assets/icons/menu.svg" width="20" alt="Menu"></button><div><div class="page-title">${titles[page] || ''}</div><div class="page-sub">${subs[page] || ''}</div></div></div>${page === 'clients' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-primary" id="add-client-btn"><span><img src="/assets/icons/add.svg" alt="Add" style="width:20px;"></span><span>Add Client</span></button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'sales' ? `<div class="topbar-actions sales-topbar-actions"><button class="btn btn-ghost" id="toggle-sales-filter" style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Filter by Date</span>${salesDateFrom || salesDateTo ? `<span class="badge badge-red" style="margin-left:4px;padding:2px 6px;font-size:10px;border-radius:6px;background:var(--red);color:white;">Active</span>` : ''}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;margin-left:4px;${salesFilterExpanded ? 'transform:rotate(180deg);' : ''}"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn btn-ghost" id="import-sales-btn"><img src="/assets/icons/upload.svg" width="18">Import XLS</button><button class="btn btn-primary" id="add-sale-btn"><img src="/assets/icons/add.svg" width="18">Add Lead</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button><input type="file" id="sales-file-input" accept=".xlsx,.xls,.csv" style="display:none;"></div>` : ''}${page === 'users' ? `<div class="df-g8"><button class="btn btn-primary" id="add-user-btn"><img src="/assets/icons/add.svg" width="18">Add User</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div>` : ''}${page === 'blogs' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-ghost" id="go-categories-btn"><img src="/assets/icons/nav-analytics.svg" width="18" style="opacity:0.7">Categories</button><button class="btn btn-primary" id="go-create-blog-btn"><img src="/assets/icons/add.svg" width="18">Create Blog</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'create-blog' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-ghost" id="back-to-blogs-btn">Back to list</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}${page === 'blog-categories' ? `<div class="topbar-actions"><div class="df-g8"><button class="btn btn-ghost" id="back-to-blogs-btn">Back to list</button><button id="theme-toggle" class="btn-ghost theme-toggle-btn"><img id="theme-icon" src="/assets/icons/${localStorage.getItem("theme") === "light" ? "light-theme.svg" : "dark-theme.svg"}" alt="Theme" width="20" height="20"></button></div></div>` : ''}</div>`;
     }
 
     function renderDashboard() {
@@ -1248,15 +1255,15 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
                   class="user-role-input"
                   data-id="${user.id}">
                   <option value="admin"
-                    ${user.role === "admin" ? "selected" : ""}>
+                    ${user.role?.toLowerCase() === "admin" ? "selected" : ""}>
                     Admin
                   </option>
                   <option value="sales"
-                    ${user.role === "sales" ? "selected" : ""}>
+                    ${user.role?.toLowerCase() === "sales" ? "selected" : ""}>
                     Sales
                   </option>
                   <option value="blogger"
-                    ${user.role === "blogger" ? "selected" : ""}>
+                    ${user.role?.toLowerCase() === "blogger" ? "selected" : ""}>
                     Blogger
                   </option>
                 </select>
@@ -2228,6 +2235,12 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         render();
       });
 
+      // Go Categories
+      document.getElementById('go-categories-btn')?.addEventListener('click', () => {
+        page = "blog-categories";
+        render();
+      });
+
       // Back to List
       document.getElementById('back-to-blogs-btn')?.addEventListener('click', () => {
         editingBlog = null;
@@ -2504,21 +2517,19 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       }
 
       const user = getCurrentUser();
+      const role = user?.role?.toLowerCase();
 
       const savedPage =
         localStorage.getItem(
           "reelscale_current_page"
         );
 
-      if (user?.role === "sales") {
-
+      if (role === "sales") {
         page = "sales";
-
+      } else if (role === "blogger") {
+        page = "blogs";
       } else {
-
-        page =
-          savedPage || "dashboard";
-
+        page = savedPage || "dashboard";
       }
       const savedTheme =
         localStorage.getItem("theme") || "dark";
@@ -2550,7 +2561,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/01yrwc3om_g2g.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"tJjq5JPOjokeAj1q75nC1"}
+  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/01yrwc3om_g2g.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"XneN6HCHO6pdtKx3AVm4_"}
 d:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 e:"$Sreact.suspense"
 10:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"ViewportBoundary"]
