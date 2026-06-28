@@ -8,7 +8,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 :HL["/_next/static/chunks/14t9ff2g8w9g6.css","style"]
 :HL["/_next/static/chunks/2q46gtbhfgghv.css","style"]
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-5:T19edd,
+5:T1a8c0,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -19,6 +19,51 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     const GAS_USERS_URL   = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
     const GAS_CLIENTS_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
     const GAS_SALES_URL   = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+
+    // Custom fetch wrapper to support local Next.js APIs during development with RBAC headers
+    async function customFetch(url, options = {}) {
+      const useLocalAPI = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      let targetUrl = url;
+      const updatedOptions = { ...options };
+      
+      if (useLocalAPI) {
+        if (url === GAS_USERS_URL) {
+          if (options.body) {
+            try {
+              const bodyObj = JSON.parse(options.body);
+              if (bodyObj.action === "login") {
+                targetUrl = "/api/auth";
+                updatedOptions.body = JSON.stringify({ email: bodyObj.email, password: bodyObj.password });
+              } else {
+                targetUrl = "/api/users";
+              }
+            } catch (e) {
+              targetUrl = "/api/users";
+            }
+          } else {
+            targetUrl = "/api/users";
+          }
+        } else if (url === GAS_CLIENTS_URL) {
+          targetUrl = "/api/clients";
+        } else if (url === GAS_SALES_URL) {
+          targetUrl = "/api/sales";
+        }
+      }
+      
+      const user = getCurrentUser();
+      const headers = { 
+        "Content-Type": "application/json",
+        ...(options.headers || {}) 
+      };
+      
+      if (user) {
+        headers["x-user-role"] = user.role;
+        headers["x-user-email"] = user.email;
+      }
+      
+      updatedOptions.headers = headers;
+      return fetch(targetUrl, updatedOptions);
+    }
 
     let logoutTimer = null;
     let clients = [];
@@ -93,7 +138,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function login(email, password) {
       try {
-        const response = await fetch(GAS_USERS_URL, {
+        const response = await customFetch(GAS_USERS_URL, {
           method: "POST",
 
           body: JSON.stringify({ action: "login", email, password }),
@@ -231,7 +276,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
           clientsLoaded = false;
           render();
         }
-        const response = await fetch(GAS_CLIENTS_URL);
+        const response = await customFetch(GAS_CLIENTS_URL);
         const data = await response.json();
         localStorage.setItem(
           "clients_cache",
@@ -276,7 +321,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function loadBlogs() {
       try {
-        const response = await fetch("/api/blogs");
+        const response = await customFetch("/api/blogs");
         const data = await response.json();
         blogs = data || [];
         blogsLoaded = true;
@@ -298,7 +343,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     async function saveBlogToServer(blogData) {
       try {
         const action = blogData.id ? "update" : "add";
-        const response = await fetch("/api/blogs", {
+        const response = await customFetch("/api/blogs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -323,7 +368,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     async function deleteBlogFromServer(id) {
       if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) return;
       try {
-        const response = await fetch("/api/blogs", {
+        const response = await customFetch("/api/blogs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -362,7 +407,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
           usersLoaded = false;
           render();
         }
-        const response = await fetch(GAS_USERS_URL);
+        const response = await customFetch(GAS_USERS_URL);
         const data = await response.json();
         if (data.success) {
           users = data.users || [];
@@ -382,7 +427,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function addUser(data) {
       try {
-        const response = await fetch(GAS_USERS_URL, {
+        const response = await customFetch(GAS_USERS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -413,7 +458,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       users[index] = { ...users[index], ...data };
       render();
       try {
-        const response = await fetch(GAS_USERS_URL, {
+        const response = await customFetch(GAS_USERS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -445,7 +490,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       users = users.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch(GAS_USERS_URL, {
+        const response = await customFetch(GAS_USERS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -489,7 +534,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         if (!salesLoaded) {
           salesLoaded = false;
         }
-        const response = await fetch(GAS_SALES_URL);
+        const response = await customFetch(GAS_SALES_URL);
         const result = await response.json();
         sales = result.leads || [];
         localStorage.setItem("sales_cache", JSON.stringify(sales));
@@ -505,7 +550,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function addClient(data) {
       try {
-        const response = await fetch(GAS_CLIENTS_URL, {
+        const response = await customFetch(GAS_CLIENTS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -533,7 +578,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function updateClient(id, data) {
       try {
-        const response = await fetch(GAS_CLIENTS_URL, {
+        const response = await customFetch(GAS_CLIENTS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -562,7 +607,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
     async function deleteClient(id) {
       try {
-        const response = await fetch(GAS_CLIENTS_URL, {
+        const response = await customFetch(GAS_CLIENTS_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -591,7 +636,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       sales.unshift(tempLead);
       render();
       try {
-        const response = await fetch(GAS_SALES_URL, {
+        const response = await customFetch(GAS_SALES_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -625,7 +670,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       sales[index] = { ...sales[index], ...data };
       render();
       try {
-        const response = await fetch(GAS_SALES_URL, {
+        const response = await customFetch(GAS_SALES_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -658,7 +703,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       sales = sales.filter(x => String(x.id) !== String(id));
       render();
       try {
-        const response = await fetch(GAS_SALES_URL, {
+        const response = await customFetch(GAS_SALES_URL, {
           method: "POST",
 
           body: JSON.stringify({
@@ -719,6 +764,13 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         page !== "sales"
       ) {
         page = "sales";
+      } else if (
+        currentUser?.role === "blogger" &&
+        page !== "blogs" &&
+        page !== "create-blog" &&
+        page !== "blog-categories"
+      ) {
+        page = "blogs";
       }
       if (isLoggedIn()) {
         resetLogoutTimer();
@@ -805,15 +857,22 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 
       const nav = user?.role === "sales"
         ? [{ id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" }]
+        : user?.role === "blogger"
+        ? [
+          { isHeader: true, label: "Blog management" },
+          { id: "blogs", icon: baseIconPath + "reels.svg", label: "All blogs" },
+          { id: "create-blog", icon: baseIconPath + "add.svg", label: "Create blog" },
+          { id: "blog-categories", icon: baseIconPath + "nav-analytics.svg", label: "Categories" }
+        ]
         : [
           { id: "dashboard", icon: baseIconPath + "nav-dashboard.svg", label: "Dashboard" },
           { id: "clients", icon: baseIconPath + "nav-clients.svg", label: "Clients" },
           { id: "analytics", icon: baseIconPath + "nav-analytics.svg", label: "Analytics" },
           { id: "users", icon: baseIconPath + "nav-users.svg", label: "Users" },
           { id: "sales", icon: baseIconPath + "nav-sales.svg", label: "Sales" },
-          { isHeader: true, label: "Blog Management" },
-          { id: "blogs", icon: baseIconPath + "reels.svg", label: "All Blogs" },
-          { id: "create-blog", icon: baseIconPath + "add.svg", label: "Create Blog" },
+          { isHeader: true, label: "Blog management" },
+          { id: "blogs", icon: baseIconPath + "reels.svg", label: "All blogs" },
+          { id: "create-blog", icon: baseIconPath + "add.svg", label: "Create blog" },
           { id: "blog-categories", icon: baseIconPath + "nav-analytics.svg", label: "Categories" }
         ];
 
@@ -827,7 +886,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
           <div class="nav">
             ${nav.map(n => {
               if (n.isHeader) {
-                return collapsed ? '<div style="margin: 12px 0; border-top: 1px solid var(--border)"></div>' : `<div style="padding: 16px 16px 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 1px;">${n.label}</div>`;
+                return collapsed ? '<div style="margin: 12px 0; border-top: 1px solid var(--border)"></div>' : `<div style="padding: 16px 16px 8px; font-size: 11px; font-weight: 700; color: var(--muted);">${n.label}</div>`;
               }
               return `
                 <button class="nav-item${page === n.id ? ' active' : ''}" data-page="${n.id}"${collapsed ? ` data-tooltip="${n.label}"` : ''}>
@@ -842,7 +901,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
               <div class="user-avatar">${(user?.name || 'A')[0]}</div>
               <div class="user-info">
                 <div class="user-name">${user?.name || ''}</div>
-                <div class="user-role">${user?.email || ''}</div>
+                <div class="user-role">${user?.role || ''} (${user?.email || ''})</div>
               </div>
               <span class="logout-btn-wrap"${collapsed ? ' data-tooltip="Logout"' : ''}>
                 <img src="/assets/icons/log-out.svg" alt="Logout" class="logout-btn" id="logout-btn" title="Logout">
@@ -1124,6 +1183,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
               <select id="new-user-role" class="user-input">
                 <option value="admin">Admin</option>
                 <option value="sales">Sales</option>
+                <option value="blogger">Blogger</option>
               </select>
             </td>
 
@@ -1188,6 +1248,10 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
                   <option value="sales"
                     ${user.role === "sales" ? "selected" : ""}>
                     Sales
+                  </option>
+                  <option value="blogger"
+                    ${user.role === "blogger" ? "selected" : ""}>
+                    Blogger
                   </option>
                 </select>
               </td>
@@ -1733,6 +1797,9 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
         const user = getCurrentUser();
         if (user.role === "sales" && b.dataset.page !== "sales") {
+          return;
+        }
+        if (user.role === "blogger" && b.dataset.page !== "blogs" && b.dataset.page !== "create-blog" && b.dataset.page !== "blog-categories") {
           return;
         }
         page = b.dataset.page;
@@ -2467,7 +2534,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/1efw0611a-djj.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"ASQstSfjRU3cTGSOwOE3Q"}
+  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/1efw0611a-djj.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"SC5J3Ta7I_fjV9sBwi9i0"}
 d:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 e:"$Sreact.suspense"
 10:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"ViewportBoundary"]
