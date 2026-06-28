@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1ab79,
+3:T1acd9,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -46,17 +46,30 @@
       }
 
       const user = getCurrentUser();
-      const headers = {
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      };
+      const updatedOptions = { ...options };
 
-      if (user) {
-        headers["x-user-role"] = user.role;
-        headers["x-user-email"] = user.email;
+      if (useLocalAPI) {
+        const headers = {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        };
+        if (user) {
+          headers["x-user-role"] = user.role;
+          headers["x-user-email"] = user.email;
+        }
+        updatedOptions.headers = headers;
+      } else {
+        if (options.body) {
+          updatedOptions.headers = {
+            "Content-Type": "text/plain"
+          };
+        } else {
+          if (updatedOptions.headers) {
+            delete updatedOptions.headers;
+          }
+        }
       }
 
-      updatedOptions.headers = headers;
       return fetch(targetUrl, updatedOptions);
     }
 
@@ -2574,7 +2587,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"2mNDwwTZszi2bH31gLMUw"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"lhliG87oTb6lHOeS8lAoG"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
