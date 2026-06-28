@@ -61,17 +61,30 @@
       }
 
       const user = getCurrentUser();
-      const headers = {
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      };
+      const updatedOptions = { ...options };
 
-      if (user) {
-        headers["x-user-role"] = user.role;
-        headers["x-user-email"] = user.email;
+      if (useLocalAPI) {
+        const headers = {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        };
+        if (user) {
+          headers["x-user-role"] = user.role;
+          headers["x-user-email"] = user.email;
+        }
+        updatedOptions.headers = headers;
+      } else {
+        if (options.body) {
+          updatedOptions.headers = {
+            "Content-Type": "text/plain"
+          };
+        } else {
+          if (updatedOptions.headers) {
+            delete updatedOptions.headers;
+          }
+        }
       }
 
-      updatedOptions.headers = headers;
       return fetch(targetUrl, updatedOptions);
     }
 
