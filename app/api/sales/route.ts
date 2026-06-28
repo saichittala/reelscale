@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRole } from "../rbac";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,12 @@ async function proxyToGoogleScript(body: Record<string, unknown>) {
   return response.json();
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const rbac = await checkRole(request, ["admin", "sales"]);
+  if (!rbac.authorized) {
+    return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+  }
+
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
     return NextResponse.json({ success: true, sales: [] });
   }
@@ -34,6 +40,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const rbac = await checkRole(request, ["admin", "sales"]);
+  if (!rbac.authorized) {
+    return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const body = await request.json();
     const { action, ...data } = body;

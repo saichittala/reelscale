@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRole, clearUserCache } from "../rbac";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,12 @@ async function proxyToGoogleScript(body: Record<string, unknown>) {
   return response.json();
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const rbac = await checkRole(request, ["admin"]);
+  if (!rbac.authorized) {
+    return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+  }
+
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
     return NextResponse.json({ success: true, users: [] });
   }
@@ -38,8 +44,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, ...data } = body;
 
+    if (action !== "login") {
+      const rbac = await checkRole(request, ["admin"]);
+      if (!rbac.authorized) {
+        return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+      }
+    }
+
     switch (action) {
       case "add": {
+        clearUserCache();
         const result = await proxyToGoogleScript({
           action: "add",
           name: data.name,
@@ -50,6 +64,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(result);
       }
       case "update": {
+        clearUserCache();
         const result = await proxyToGoogleScript({
           action: "update",
           id: data.id,
@@ -61,6 +76,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(result);
       }
       case "delete": {
+        clearUserCache();
         const result = await proxyToGoogleScript({
           action: "delete",
           id: data.id,

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedBlogs, getReadingTime } from "../../../lib/blog";
+import { getPublishedBlogs } from "../../../lib/blog";
 import BlogLayout from "../../BlogLayout";
+import BlogGrid from "../../components/BlogGrid";
+import CategoryBar from "../../components/CategoryBar";
 
 interface Props {
   params: Promise<{
@@ -47,8 +49,8 @@ export default async function CategoryPage({ params }: Props) {
         
         {/* Listing Hero */}
         <section className="blog-listing-hero">
-          <div style={{ fontSize: "14px", textTransform: "uppercase", letterSpacing: "1.5px", color: "var(--gold)", fontWeight: 600, marginBottom: "8px" }}>
-            Category Archive
+          <div style={{ fontSize: "var(--text-sm)", color: "var(--gold)", fontWeight: "var(--fw-medium)", marginBottom: "8px" }}>
+            category archive
           </div>
           <h1>{currentCategoryName}</h1>
           <p>
@@ -58,20 +60,7 @@ export default async function CategoryPage({ params }: Props) {
 
         {/* Categories navigation bar */}
         {allCategories.length > 0 && (
-          <div className="blog-categories-bar">
-            <Link href="/blog" className="blog-category-btn">
-              All
-            </Link>
-            {allCategories.map((cat) => (
-              <Link 
-                key={cat} 
-                href={`/blog/category/${cat.toLowerCase()}`} 
-                className={`blog-category-btn ${cat.toLowerCase() === category.toLowerCase() ? "active" : ""}`}
-              >
-                {cat}
-              </Link>
-            ))}
-          </div>
+          <CategoryBar categories={allCategories} activeCategory={category} />
         )}
 
         {/* Cards Grid */}
@@ -83,45 +72,7 @@ export default async function CategoryPage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="blog-grid">
-            {filteredBlogs.map((post) => {
-              const readTime = getReadingTime(post.content);
-              return (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="blog-card">
-                  <div className="blog-card-img-wrap">
-                    <img 
-                      src={post.featuredImage || "/assets/logo.png"} 
-                      alt={post.title} 
-                      className="blog-card-img"
-                      loading="lazy"
-                    />
-                  </div>
-                  
-                  <div className="blog-card-content">
-                    <div className="blog-card-meta">
-                      <span className="blog-card-category">{post.category}</span>
-                      <span>•</span>
-                      <span>{post.publishedDate}</span>
-                    </div>
-
-                    <h2 className="blog-card-title">{post.title}</h2>
-                    <p className="blog-card-desc">{post.description}</p>
-
-                    <div className="blog-card-footer">
-                      <span>{readTime}</span>
-                      <span className="blog-read-more">
-                        Read Guide 
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                          <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+          <BlogGrid posts={filteredBlogs} />
         )}
 
       </div>

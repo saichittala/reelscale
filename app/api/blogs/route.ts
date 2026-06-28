@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { checkRole } from "../rbac";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const rbac = await checkRole(request, ["admin", "blogger"]);
+  if (!rbac.authorized) {
+    return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const body = await request.json();
     const { action, ...data } = body;

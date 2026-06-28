@@ -51,9 +51,12 @@
     /* Accent — Green */
     --green: oklch(83.515% 0.20131 137.512);
 
+    /* Accent — Green */
+    --blue: oklch(52.956% 0.2015 273.997);
+
     /* Neutrals */
     --white: oklch(92.046% 0.01066 100.933);
-    --muted: oklch(0.92 0.01 95 / 0.44);
+    --muted: oklch(92.046% 0.01066 100.933 / 0.502);
     --border: oklch(0.92 0.01 95 / 0.13);
     --button-white: oklch(92.046% 0.01066 100.933);
 

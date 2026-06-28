@@ -55,7 +55,7 @@ export function getReadingTime(text: string): string {
 
 export function getRelatedPosts(currentPost: BlogPost, count = 3): BlogPost[] {
   const allPosts = getPublishedBlogs().filter((p) => p.id !== currentPost.id);
-  
+
   // Score posts based on category match and tag overlap
   const scored = allPosts.map((post) => {
     let score = 0;
@@ -108,7 +108,7 @@ export function generateTableOfContents(markdown: string): HeadingItem[] {
 
 export function parseMarkdown(markdown: string): string {
   if (!markdown) return "";
-  
+
   let html = markdown;
 
   // Escape HTML entities to prevent raw HTML injections
@@ -165,13 +165,13 @@ export function parseMarkdown(markdown: string): string {
   const lines = html.split("\n");
   const parsedLines = lines.map((line) => {
     const trimmed = line.trim();
-    if (!trimmed) return "<br/>";
+    if (!trimmed) return "";
     if (trimmed.startsWith("<h") || trimmed.startsWith("<ul") || trimmed.startsWith("<li") || trimmed.startsWith("<blockquote") || trimmed.startsWith("<pre") || trimmed.startsWith("<div") || trimmed.startsWith("</")) {
       return line;
     }
     return `<p>${line}</p>`;
   });
-  html = parsedLines.join("\n");
+  html = parsedLines.filter(Boolean).join("\n");
 
   return html;
 }

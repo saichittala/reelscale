@@ -3,6 +3,7 @@ import { join } from "node:path";
 import Link from "next/link";
 import Script from "next/script";
 import LandingInteractions from "../(landing)/components/LandingInteractions";
+import "../../styles.css";
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -26,7 +27,8 @@ function getHeaderAndFooter() {
   headerHtml = headerHtml
     .replace(/src="assets\//g, 'src="/assets/')
     .replace(/href="#/g, 'href="/#')
-    .replace(/href="dashboard\/login\.html"/g, 'href="/dashboard/login"');
+    .replace(/href="dashboard\/login\.html"/g, 'href="/dashboard/login"')
+    .replace(/<div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">[\s\S]*?<\/div>/i, '');
 
   footerHtml = footerHtml
     .replace(/src="assets\//g, 'src="/assets/')
@@ -46,14 +48,17 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
     <div className="blog-page-container">
       <LandingInteractions />
       
-      {/* Dynamic Header from index.html */}
-      <div 
-        dangerouslySetInnerHTML={{ __html: headerHtml }} 
-        style={{ width: "100%", position: "fixed", top: 0, left: 0, zIndex: 1000 }}
-      />
+      {/* Logo-only Header with same CSS properties */}
+      <header id="header" className="scrolled" style={{ position: 'absolute', top: '0px', left: '50%', transform: 'translateX(-50%)', paddingTop: '48px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link href="/" className="logo">
+          <div>
+            <img src="/assets/logo.svg" alt="ReelScale Logo" style={{ display: 'block', height: '20px', width: 'auto' }} />
+          </div>
+        </Link>
+      </header>
       
       {/* Blog Page Content */}
-      <div style={{ minHeight: "80vh", paddingTop: "100px", paddingBottom: "60px" }}>
+      <div style={{ minHeight: "80vh", paddingTop: "120px", paddingBottom: "60px" }}>
         {children}
       </div>
 

@@ -9,7 +9,10 @@ import {
   parseMarkdown 
 } from "../../lib/blog";
 import BlogLayout from "../BlogLayout";
-import BlogInteractions from "./BlogInteractions";
+import ReadingProgressBar from "../components/ReadingProgressBar";
+import TableOfContents from "../components/TableOfContents";
+import FAQSection from "../components/FAQSection";
+import BlogGrid from "../components/BlogGrid";
 import ShareButtons from "./ShareButtons";
 
 interface Props {
@@ -146,7 +149,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <BlogLayout>
-      <BlogInteractions />
+      <ReadingProgressBar />
       
       <script
         type="application/ld+json"
@@ -169,7 +172,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         {/* Title and Hero info */}
-        <header className="blog-post-header">
+        <div className="blog-post-header">
           <h1>{post.title}</h1>
           <div className="blog-post-meta">
             <div className="blog-post-author-img">
@@ -187,7 +190,7 @@ export default async function BlogPostPage({ params }: Props) {
               </span>
             </div>
           </div>
-        </header>
+        </div>
 
         {/* Featured Image */}
         {post.featuredImage && (
@@ -211,31 +214,14 @@ export default async function BlogPostPage({ params }: Props) {
             />
 
             {/* Accordion FAQs */}
-            {post.faq && post.faq.length > 0 && (
-              <section className="blog-faq-section">
-                <h3 className="blog-faq-title">Frequently Asked Questions</h3>
-                {post.faq.map((f, i) => (
-                  <div key={i} className="blog-faq-item">
-                    <div className="blog-faq-q">
-                      <span>{f.question}</span>
-                      <span className="faq-chevron" style={{ transition: "transform 0.2s" }}>
-                        ▼
-                      </span>
-                    </div>
-                    <div className="blog-faq-a" style={{ display: "none" }}>
-                      {f.answer}
-                    </div>
-                  </div>
-                ))}
-              </section>
-            )}
+            <FAQSection faq={post.faq} />
 
             {/* Social Share Buttons */}
             <ShareButtons title={post.title} slug={post.slug} />
 
             {/* Conversion CTA Box */}
             <div className="blog-cta-box">
-              <h3 className="blog-cta-title">Need Scroll-Stopping Cinematic Reels?</h3>
+              <h3 className="blog-cta-title">Need scroll-stopping cinematic reels?</h3>
               <p className="blog-cta-desc">
                 Partner with ReelScale Co. to build a premium, high-retention video pipeline that turns viewers into clients organically.
               </p>
@@ -244,17 +230,17 @@ export default async function BlogPostPage({ params }: Props) {
                   href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20blog%20post%20and%20I%27m%20interested%20in%20scaling%20our%20reel%20production." 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="btn btn-primary"
-                  style={{ display: "inline-flex", padding: "12px 24px", borderRadius: "8px", textDecoration: "none", color: "white" }}
+                  className="btn-primary"
+                  style={{ textDecoration: "none" }}
                 >
-                  WhatsApp Enquiry
+                  WhatsApp enquiry
                 </a>
                 <Link 
                   href="/#pricing" 
-                  className="btn btn-ghost"
-                  style={{ display: "inline-flex", padding: "12px 24px", borderRadius: "8px", textDecoration: "none", border: "1px solid var(--border)" }}
+                  className="btn-secondary"
+                  style={{ textDecoration: "none" }}
                 >
-                  View Packages
+                  View packages
                 </Link>
               </div>
             </div>
@@ -265,26 +251,11 @@ export default async function BlogPostPage({ params }: Props) {
           <aside className="blog-sidebar-sticky">
             
             {/* Table of Contents */}
-            {headings.length > 0 && (
-              <div className="blog-toc-card">
-                <div className="blog-toc-title">On This Page</div>
-                <ul className="blog-toc-list">
-                  {headings.map((h, i) => (
-                    <li 
-                      key={i} 
-                      className="blog-toc-item"
-                      style={{ paddingLeft: `${(h.level - 2) * 12}px` }}
-                    >
-                      <a href={`#${h.id}`}>{h.text}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <TableOfContents headings={headings} />
 
             {/* Newsletter form */}
             <div className="newsletter-card">
-              <div className="newsletter-title">Subscribe to Scale</div>
+              <div className="newsletter-title">Subscribe to scale</div>
               <p className="newsletter-desc">
                 Get monthly deep-dives on editing hooks, retention tactics, and social algorithms.
               </p>
@@ -292,13 +263,13 @@ export default async function BlogPostPage({ params }: Props) {
                 <input 
                   type="email" 
                   placeholder="name@email.com" 
-                  style={{ padding: "10px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--white-03)", color: "white", fontSize: "13px" }}
+                  style={{ padding: "12px 16px", borderRadius: "var(--border-radius-2)", border: "1px solid var(--border)", background: "var(--white-03)", color: "var(--white)", fontSize: "var(--text-sm)" }}
                 />
                 <button 
-                  className="btn btn-primary"
-                  style={{ padding: "10px", borderRadius: "6px", fontSize: "13px", cursor: "pointer" }}
+                  className="btn-primary"
+                  style={{ padding: "12px 16px", borderRadius: "var(--border-radius-2)", fontSize: "var(--text-sm)", cursor: "pointer", width: "100%", border: "none" }}
                 >
-                  Join Newsletter
+                  Join newsletter
                 </button>
               </div>
             </div>
@@ -310,30 +281,8 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Related Articles Footer section */}
         {related.length > 0 && (
           <div style={{ marginTop: "80px", paddingTop: "40px", borderTop: "1px solid var(--border)" }}>
-            <h3 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "32px" }}>Related Articles</h3>
-            <div className="blog-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
-              {related.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="blog-card" style={{ background: "var(--white-03)" }}>
-                  <div className="blog-card-img-wrap" style={{ paddingTop: "50%" }}>
-                    <img 
-                      src={post.featuredImage || "/assets/logo.png"} 
-                      alt={post.title} 
-                      className="blog-card-img" 
-                    />
-                  </div>
-                  <div className="blog-card-content" style={{ padding: "18px" }}>
-                    <div className="blog-card-meta" style={{ fontSize: "11px" }}>
-                      <span className="blog-card-category">{post.category}</span>
-                      <span>•</span>
-                      <span>{post.publishedDate}</span>
-                    </div>
-                    <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--white)", lineHeight: 1.4 }}>
-                      {post.title}
-                    </h4>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <h3 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "32px", color: "var(--white)" }}>Related articles</h3>
+            <BlogGrid posts={related} readText="Read article" />
           </div>
         )}
 

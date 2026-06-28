@@ -10,7 +10,6 @@
     padding: 0;
     box-sizing: border-box;
     letter-spacing: -0.012em;
-
 }
 
 html {
@@ -1336,6 +1335,11 @@ em {
     font-size: var(--text-md);
 }
 
+
+#latest-blogs-section {
+    padding: 120px 0;
+}
+
 /* FOOTER */
 footer {
     padding: 60px 48px;
@@ -1661,7 +1665,7 @@ footer {
     text-align: left;
     color: var(--white);
     font-family: var(--primary-font);
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
     font-weight: 500;
     transition: color 0.2s ease;
 }

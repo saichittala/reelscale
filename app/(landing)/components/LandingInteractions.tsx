@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 declare global {
   interface Window {
@@ -13,6 +14,8 @@ declare global {
 }
 
 export default function LandingInteractions() {
+  const pathname = usePathname();
+
   useEffect(() => {
     const cursor = document.getElementById("cursor");
     const ring = document.getElementById("cursorRing");
@@ -174,7 +177,7 @@ export default function LandingInteractions() {
       portfolioHandlers.forEach(([item, handler]) => item.removeEventListener("click", handler));
       faqHandlers.forEach(([btn, handler]) => btn.removeEventListener("click", handler));
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
