@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1acac,
+3:T1ae2c,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -334,7 +334,15 @@
 
     async function loadBlogs() {
       try {
-        const response = await customFetch("/api/blogs");
+        let response;
+        try {
+          response = await customFetch("/api/blogs");
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        } catch (error) {
+          console.warn("Local API fetch failed, trying static fallback:", error);
+          response = await fetch("../blogs.json");
+          if (!response.ok) throw new Error(`Fallback HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         blogs = Array.isArray(data) ? data : [];
         blogsLoaded = true;
@@ -2586,7 +2594,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"H72C8RlNA81EFCx4Np4vb"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"DVVp26-zTMQycw2DGItcL"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
