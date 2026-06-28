@@ -8,7 +8,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 :HL["/_next/static/chunks/14t9ff2g8w9g6.css","style"]
 :HL["/_next/static/chunks/2q46gtbhfgghv.css","style"]
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-5:T1a8c0,
+5:T1aa7e,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -253,18 +253,20 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         if (cached) {
           try {
             const data = JSON.parse(cached);
-            clients = data.map(row => ({
-              id: row.id,
-              name: row.clientName,
-              business: row.business,
-              phone: row.phone,
-              instagram: row.instagram,
-              reels: row.reels,
-              ppr: row.pricePerReel,
-              image: row.image
-            }));
-            clientsLoaded = true;
-            render();
+            if (Array.isArray(data)) {
+              clients = data.map(row => ({
+                id: row.id,
+                name: row.clientName,
+                business: row.business,
+                phone: row.phone,
+                instagram: row.instagram,
+                reels: row.reels,
+                ppr: row.pricePerReel,
+                image: row.image
+              }));
+              clientsLoaded = true;
+              render();
+            }
           } catch (e) {
             console.error("Failed to parse clients cache", e);
           }
@@ -278,20 +280,24 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
         }
         const response = await customFetch(GAS_CLIENTS_URL);
         const data = await response.json();
-        localStorage.setItem(
-          "clients_cache",
-          JSON.stringify(data)
-        );
-        clients = data.map(row => ({
-          id: row.id,
-          name: row.clientName,
-          business: row.business,
-          phone: row.phone,
-          instagram: row.instagram,
-          reels: row.reels,
-          ppr: row.pricePerReel,
-          image: row.image
-        }));
+        if (Array.isArray(data)) {
+          localStorage.setItem(
+            "clients_cache",
+            JSON.stringify(data)
+          );
+          clients = data.map(row => ({
+            id: row.id,
+            name: row.clientName,
+            business: row.business,
+            phone: row.phone,
+            instagram: row.instagram,
+            reels: row.reels,
+            ppr: row.pricePerReel,
+            image: row.image
+          }));
+        } else {
+          clients = [];
+        }
         clientsLoaded = true;
         render();
       } catch (error) {
@@ -323,7 +329,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       try {
         const response = await customFetch("/api/blogs");
         const data = await response.json();
-        blogs = data || [];
+        blogs = Array.isArray(data) ? data : [];
         blogsLoaded = true;
         
         // Extract unique categories from blogs to keep categories updated
@@ -2523,10 +2529,20 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
       );
       render();
 
-      loadGoogleSheetData();
-      loadUsers();
-      loadSales();
-      loadBlogs();
+      if (!isLoggedIn()) {
+        return;
+      }
+
+      if (user?.role === "admin") {
+        loadGoogleSheetData();
+        loadUsers();
+        loadSales();
+        loadBlogs();
+      } else if (user?.role === "sales") {
+        loadSales();
+      } else if (user?.role === "blogger") {
+        loadBlogs();
+      }
     }
 
     try { init(); } catch(e) { console.error("Dashboard init failed:", e); }
@@ -2534,7 +2550,7 @@ a:I[68027,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/01yrwc3om_g2g.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"S524Mkq_L8_fMKc-eHDsj"}
+  0:{"P":null,"c":["","dashboard",""],"q":"","i":false,"f":[[["",{"children":["dashboard",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/41az42fxatawo.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/01yrwc3om_g2g.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/14t9ff2g8w9g6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/2q46gtbhfgghv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"scriptCode":"$5"}],["$L6","$L7"],"$L8"]}],{},null,false,null]},null,false,null]},null,false,null],"$L9",false]],"m":"$undefined","G":["$a",["$Lb","$Lc"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"tJjq5JPOjokeAj1q75nC1"}
 d:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 e:"$Sreact.suspense"
 10:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"ViewportBoundary"]

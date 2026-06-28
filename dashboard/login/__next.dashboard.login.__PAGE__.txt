@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1a8c0,
+3:T1aa7e,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -248,18 +248,20 @@
         if (cached) {
           try {
             const data = JSON.parse(cached);
-            clients = data.map(row => ({
-              id: row.id,
-              name: row.clientName,
-              business: row.business,
-              phone: row.phone,
-              instagram: row.instagram,
-              reels: row.reels,
-              ppr: row.pricePerReel,
-              image: row.image
-            }));
-            clientsLoaded = true;
-            render();
+            if (Array.isArray(data)) {
+              clients = data.map(row => ({
+                id: row.id,
+                name: row.clientName,
+                business: row.business,
+                phone: row.phone,
+                instagram: row.instagram,
+                reels: row.reels,
+                ppr: row.pricePerReel,
+                image: row.image
+              }));
+              clientsLoaded = true;
+              render();
+            }
           } catch (e) {
             console.error("Failed to parse clients cache", e);
           }
@@ -273,20 +275,24 @@
         }
         const response = await customFetch(GAS_CLIENTS_URL);
         const data = await response.json();
-        localStorage.setItem(
-          "clients_cache",
-          JSON.stringify(data)
-        );
-        clients = data.map(row => ({
-          id: row.id,
-          name: row.clientName,
-          business: row.business,
-          phone: row.phone,
-          instagram: row.instagram,
-          reels: row.reels,
-          ppr: row.pricePerReel,
-          image: row.image
-        }));
+        if (Array.isArray(data)) {
+          localStorage.setItem(
+            "clients_cache",
+            JSON.stringify(data)
+          );
+          clients = data.map(row => ({
+            id: row.id,
+            name: row.clientName,
+            business: row.business,
+            phone: row.phone,
+            instagram: row.instagram,
+            reels: row.reels,
+            ppr: row.pricePerReel,
+            image: row.image
+          }));
+        } else {
+          clients = [];
+        }
         clientsLoaded = true;
         render();
       } catch (error) {
@@ -318,7 +324,7 @@
       try {
         const response = await customFetch("/api/blogs");
         const data = await response.json();
-        blogs = data || [];
+        blogs = Array.isArray(data) ? data : [];
         blogsLoaded = true;
         
         // Extract unique categories from blogs to keep categories updated
@@ -2518,10 +2524,20 @@
       );
       render();
 
-      loadGoogleSheetData();
-      loadUsers();
-      loadSales();
-      loadBlogs();
+      if (!isLoggedIn()) {
+        return;
+      }
+
+      if (user?.role === "admin") {
+        loadGoogleSheetData();
+        loadUsers();
+        loadSales();
+        loadBlogs();
+      } else if (user?.role === "sales") {
+        loadSales();
+      } else if (user?.role === "blogger") {
+        loadBlogs();
+      }
     }
 
     try { init(); } catch(e) { console.error("Dashboard init failed:", e); }
@@ -2529,7 +2545,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"S524Mkq_L8_fMKc-eHDsj"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"tJjq5JPOjokeAj1q75nC1"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/0zas1mm9-k65d.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
