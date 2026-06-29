@@ -908,9 +908,10 @@
         }
 
         // Update content container view (with Apple-style transition on view change)
+        const isAsync = (previousPage !== page);
         const contentDiv = document.querySelector('.content');
         if (contentDiv) {
-          if (previousPage !== page) {
+          if (isAsync) {
             contentDiv.classList.add('blur-out');
             setTimeout(() => {
               contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
@@ -928,8 +929,6 @@
             }, 120);
           } else {
             contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
-            attachEvents();
-            if (page === 'analytics') initCharts();
           }
         }
 
@@ -983,6 +982,10 @@
           root.insertAdjacentHTML('beforeend', toastHtml);
         }
 
+        if (!isAsync) {
+          attachEvents();
+          if (page === 'analytics') initCharts();
+        }
         previousPage = page;
         return;
       }
@@ -2284,6 +2287,29 @@
           mobileMenuOpen = false;
           render();
         }
+      });
+
+      document.querySelectorAll('.mobile-nav-item').forEach(b => {
+        b.addEventListener('click', () => {
+          const user = getCurrentUser();
+          const role = user?.role?.toLowerCase();
+          if (role === "sales" && b.dataset.page !== "sales") {
+            return;
+          }
+          if (role === "blogger" && b.dataset.page !== "blogs" && b.dataset.page !== "create-blog" && b.dataset.page !== "blog-categories") {
+            return;
+          }
+          page = b.dataset.page;
+
+          localStorage.setItem(
+            "reelscale_current_page",
+            page
+          );
+
+          mobileMenuOpen = false;
+          search = '';
+          render();
+        });
       });
 
       document.querySelector(".cancel-lead-btn")?.addEventListener("click", () => {
