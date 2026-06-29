@@ -877,8 +877,12 @@
         if (sidebarCollapsed) {
           sidebar?.classList.add('collapsed');
           main?.classList.add('collapsed');
-          if (logoImg && !logoImg.src.includes('logo-small.svg')) {
-            logoImg.src = '../assets/icons/logo-small.svg';
+          if (logoImg && !logoImg.src.includes('logo-small.svg') && !logoImg.classList.contains('logo-animating')) {
+            logoImg.classList.add('logo-animating');
+            setTimeout(() => {
+              logoImg.src = '../assets/icons/logo-small.svg';
+              logoImg.classList.remove('logo-animating');
+            }, 120);
           }
           sidebarToggle?.setAttribute('aria-label', 'Expand sidebar');
           sidebarToggle?.setAttribute('title', 'Expand');
@@ -890,8 +894,12 @@
         } else {
           sidebar?.classList.remove('collapsed');
           main?.classList.remove('collapsed');
-          if (logoImg && !logoImg.src.includes('logo.svg')) {
-            logoImg.src = '../assets/logo.svg';
+          if (logoImg && !logoImg.src.includes('logo.svg') && !logoImg.classList.contains('logo-animating')) {
+            logoImg.classList.add('logo-animating');
+            setTimeout(() => {
+              logoImg.src = '../assets/logo.svg';
+              logoImg.classList.remove('logo-animating');
+            }, 120);
           }
           sidebarToggle?.setAttribute('aria-label', 'Collapse sidebar');
           sidebarToggle?.setAttribute('title', 'Collapse');

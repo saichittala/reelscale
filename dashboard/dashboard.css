@@ -248,8 +248,14 @@ body {
 
     img {
         width: 96px;
-        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        animation: logo-switch 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        will-change: width, filter, opacity, transform;
+    }
+
+    img.logo-animating {
+        filter: blur(6px) !important;
+        opacity: 0 !important;
+        transform: scale(0.8) !important;
     }
 }
 
