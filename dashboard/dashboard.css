@@ -415,7 +415,7 @@ body {
 /* Logo – collapsed shows compact icon */
 .sidebar.collapsed .dashboard-logo {
     padding: 14px;
-    height: auto;
+    height: 83px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -423,7 +423,8 @@ body {
 }
 
 .sidebar.collapsed .dashboard-logo img {
-    width: 28px;
+    width: 83px;
+    height: 100%;
 }
 
 .sidebar.collapsed .logo-sub {
