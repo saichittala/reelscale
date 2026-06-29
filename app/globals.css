@@ -731,9 +731,21 @@ body {
   background: var(--white-05) !important;
 }
 
-.blog-page-container header,
-.blog-page-container header.scrolled {
+.blog-page-container header#header,
+.blog-page-container header#header.scrolled {
+  position: absolute !important;
+  top: 0px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  padding: 48px 0 0 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  backdrop-filter: none !important;
+  background: transparent !important;
   border-bottom: none !important;
+  transition: none !important;
 }
 
 /* ─────────────────────────── CLEAN CLASS OVERRIDES ─────────────────────────── */
@@ -758,17 +770,7 @@ body {
   font-weight: 600;
 }
 
-.blog-header {
-  position: absolute;
-  top: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding-top: 48px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 
 .blog-header-logo {
   display: block;
@@ -847,8 +849,9 @@ body {
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
-  .blog-header {
-    padding-top: 24px;
+  .blog-page-container header#header,
+  .blog-page-container header#header.scrolled {
+    padding-top: 24px !important;
   }
   .blog-layout-content-wrap {
     padding-top: 80px;
