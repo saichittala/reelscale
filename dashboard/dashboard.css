@@ -355,7 +355,8 @@ body {
 }
 
 .user-info {
-    flex: 1
+    flex: 1;
+    min-width: 0;
 }
 
 .user-name {
