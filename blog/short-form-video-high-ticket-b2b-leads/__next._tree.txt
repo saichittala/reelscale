@@ -1,0 +1,6 @@
+:HL["/_next/static/chunks/1f29ji8du69ef.css","style"]
+:HL["/_next/static/chunks/14qedsr4r5r97.css","style"]
+:HL["/_next/static/chunks/0f9xxawqcfujx.css","style"]
+:HL["/assets/logo.svg","image"]
+:HL["https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"short-form-video-high-ticket-b2b-leads","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"FfZY0NYRHzloaMfa5mrZ4"}
