@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1b14a,
+3:T1b153,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -919,7 +919,7 @@
         <div class="sidebar${collapsed ? ' collapsed' : ''}">
           <button class="sidebar-toggle" id="sidebar-toggle" aria-label="${collapsed ? 'Expand' : 'Collapse'} sidebar" title="${collapsed ? 'Expand' : 'Collapse'}"></button>
           <div class="dashboard-logo">
-            <img src="${collapsed ? '/assets/r_light.svg' : '/assets/logo.svg'}" alt="ReelScale Logo">
+            <img src="${collapsed ? '/assets/icons/logo-small.svg' : '/assets/logo.svg'}" alt="ReelScale Logo">
             <div class="logo-sub">Reel Production House</div>
           </div>
           <div class="nav">
@@ -2615,7 +2615,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"NvXcgy5WXUfW5lbgi1wKD"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"lz1h05uAMyCAcpAzK2YMz"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
