@@ -840,8 +840,20 @@ body {
     flex-direction: column;
     gap: 16px;
     flex: 1;
-    animation: apple-fade-blur-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    will-change: opacity, filter, transform;
+    transition: filter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: filter, opacity, transform;
+}
+
+.content.blur-out {
+    filter: blur(8px) !important;
+    opacity: 0 !important;
+    transform: scale(0.985) !important;
+}
+
+.content.blur-in {
+    filter: blur(8px) !important;
+    opacity: 0 !important;
+    transform: scale(0.985) !important;
 }
 
 /* GLASS CARDS */
@@ -1296,13 +1308,23 @@ tr:hover td {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: oklch(0 0 0 / 0.7);
+    background: oklch(0 0 0 / 0);
     z-index: 200;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    backdrop-filter: blur(14px)
+    backdrop-filter: blur(0px);
+    opacity: 0;
+    pointer-events: none;
+    transition: background 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), backdrop-filter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal-overlay.active {
+    background: oklch(0 0 0 / 0.7);
+    backdrop-filter: blur(14px);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .modal {
@@ -1314,6 +1336,14 @@ tr:hover td {
     max-width: 550px;
     max-height: 90vh;
     overflow-y: auto;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1) translateY(0px);
+    opacity: 1;
 }
 
 .modal-icon {
@@ -2450,6 +2480,25 @@ button:active,
         opacity: 1;
         filter: blur(0px);
         transform: translateY(0px) scale(1);
+    }
+}
+
+tr.new-lead-row,
+tr.new-user-row {
+    animation: row-entrance 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, filter, transform;
+}
+
+@keyframes row-entrance {
+    0% {
+        opacity: 0;
+        filter: blur(6px);
+        transform: scaleY(0.8) translateY(-4px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: scaleY(1) translateY(0px);
     }
 }
 
