@@ -2524,3 +2524,67 @@ tr.new-user-row {
         opacity: 1;
     }
 }
+
+/* BLOG SECTION APPLE-STYLE CONTENT TRANSITIONS */
+.table-wrap tbody tr {
+    animation: row-fade-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, filter, transform;
+}
+
+@keyframes row-fade-in {
+    0% {
+        opacity: 0;
+        filter: blur(4px);
+        transform: translateY(2px) scale(0.995);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0px) scale(1);
+    }
+}
+
+.faq-edit-row {
+    animation: faq-row-entrance 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, filter, transform;
+}
+
+@keyframes faq-row-entrance {
+    0% {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translateY(-8px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0px) scale(1);
+    }
+}
+
+.category-row {
+    animation: faq-row-entrance 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, filter, transform;
+}
+
+#eb-img-preview {
+    animation: image-entrance 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, filter, transform;
+}
+
+@keyframes image-entrance {
+    0% {
+        opacity: 0;
+        filter: blur(8px);
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: scale(1);
+    }
+}
+
+.badge {
+    transition: background-color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
