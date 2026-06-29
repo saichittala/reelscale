@@ -529,6 +529,12 @@ body {
 }
 
 /* Tooltips for collapsed state */
+.sidebar.collapsed .nav-item[data-tooltip],
+.sidebar.collapsed .nav-group-toggle[data-tooltip],
+.sidebar.collapsed .logout-btn-wrap[data-tooltip] {
+    position: relative;
+}
+
 .sidebar.collapsed .nav-item[data-tooltip]:hover::after,
 .sidebar.collapsed .nav-group-toggle[data-tooltip]:hover::after,
 .sidebar.collapsed .logout-btn-wrap[data-tooltip]:hover::after {
