@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1b153,
+3:T1c10a,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -821,7 +821,6 @@
       }
       const root = document.getElementById('root');
       if (!isLoggedIn()) {
-
         root.innerHTML =
           renderLogin() +
           (sessionExpired
@@ -833,6 +832,97 @@
 
         return;
       }
+
+      // SELECTIVE RENDER SHELL RECONCILIATION FOR LIQUID SMOOTHNESS
+      const existingApp = document.querySelector('.app');
+      if (existingApp) {
+        // Sync sidebar and main collapsed state classes and attributes directly on DOM
+        const sidebar = document.querySelector('.sidebar');
+        const main = document.querySelector('.main');
+        const logoImg = document.querySelector('.dashboard-logo img');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const logoutWrap = document.querySelector('.logout-btn-wrap');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        if (sidebarCollapsed) {
+          sidebar?.classList.add('collapsed');
+          main?.classList.add('collapsed');
+          if (logoImg && !logoImg.src.includes('logo-small.svg')) {
+            logoImg.src = '/assets/icons/logo-small.svg';
+          }
+          sidebarToggle?.setAttribute('aria-label', 'Expand sidebar');
+          sidebarToggle?.setAttribute('title', 'Expand');
+          logoutWrap?.setAttribute('data-tooltip', 'Logout');
+          navItems.forEach(item => {
+            const label = item.querySelector('.nav-label')?.textContent?.trim();
+            if (label) item.setAttribute('data-tooltip', label);
+          });
+        } else {
+          sidebar?.classList.remove('collapsed');
+          main?.classList.remove('collapsed');
+          if (logoImg && !logoImg.src.includes('logo.svg')) {
+            logoImg.src = '/assets/logo.svg';
+          }
+          sidebarToggle?.setAttribute('aria-label', 'Collapse sidebar');
+          sidebarToggle?.setAttribute('title', 'Collapse');
+          logoutWrap?.removeAttribute('data-tooltip');
+          navItems.forEach(item => item.removeAttribute('data-tooltip'));
+        }
+
+        // Update content container view
+        const contentDiv = document.querySelector('.content');
+        if (contentDiv) {
+          contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
+        }
+
+        // Update active class on nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+          if (item.dataset.page === page) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+
+        // Update topbar dynamically
+        const topbarDiv = document.querySelector('.topbar');
+        if (topbarDiv) {
+          topbarDiv.outerHTML = renderTopbar();
+        }
+
+        // Reconcile Modals
+        let modalOverlay = document.querySelector('.modal-overlay');
+        if (modalOverlay) {
+          modalOverlay.remove();
+        }
+        if (modal) {
+          root.insertAdjacentHTML('beforeend', renderModal());
+        }
+
+        // Reconcile Mobile menus
+        let mobileOverlay = document.querySelector('.mobile-menu-overlay');
+        if (mobileOverlay) {
+          mobileOverlay.remove();
+        }
+        if (mobileMenuOpen) {
+          root.insertAdjacentHTML('beforeend', renderMobileMenu());
+        }
+
+        // Reconcile Toasts
+        let toastDiv = document.querySelector('.toast');
+        if (toastDiv) {
+          toastDiv.remove();
+        }
+        if (toast) {
+          const toastHtml = `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>`;
+          root.insertAdjacentHTML('beforeend', toastHtml);
+        }
+
+        attachEvents();
+        if (page === 'analytics') initCharts();
+        return;
+      }
+
       root.innerHTML = `
         <div class="app">
           ${renderSidebar()}
@@ -843,10 +933,13 @@
             </div>
           </div>
         </div>
-        ${modal ? renderModal() : ''}
-        ${mobileMenuOpen ? renderMobileMenu() : ''}
-        ${toast ? `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>` : ''}
       `;
+      if (modal) root.insertAdjacentHTML('beforeend', renderModal());
+      if (mobileMenuOpen) root.insertAdjacentHTML('beforeend', renderMobileMenu());
+      if (toast) {
+        const toastHtml = `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>`;
+        root.insertAdjacentHTML('beforeend', toastHtml);
+      }
       attachEvents();
       if (page === 'analytics') initCharts();
     }
@@ -2615,7 +2708,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"e9h1TCEv8HozfdzA1LJA0"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"woySSAqhF4WcLAprOsvX8"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
