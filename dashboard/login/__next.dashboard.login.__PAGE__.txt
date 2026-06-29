@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1c4c5,
+3:T1cc7c,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -82,7 +82,22 @@
     let newLeadRow = false;
     let mobileMenuOpen = false;
     let page = "dashboard";
+    let previousPage = "dashboard";
     let modal = null;
+
+    function closeModalWithAnimation() {
+      const overlay = document.querySelector('.modal-overlay');
+      if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => {
+          modal = null;
+          render();
+        }, 300);
+      } else {
+        modal = null;
+        render();
+      }
+    }
     let editId = null;
     let search = '';
     let sortKey = 'revenue';
@@ -869,10 +884,30 @@
           navItems.forEach(item => item.removeAttribute('data-tooltip'));
         }
 
-        // Update content container view
+        // Update content container view (with Apple-style transition on view change)
         const contentDiv = document.querySelector('.content');
         if (contentDiv) {
-          contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
+          if (previousPage !== page) {
+            contentDiv.classList.add('blur-out');
+            setTimeout(() => {
+              contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
+              contentDiv.classList.remove('blur-out');
+              contentDiv.classList.add('blur-in');
+
+              // Force reflow
+              contentDiv.offsetHeight;
+
+              contentDiv.classList.remove('blur-in');
+
+              // Re-attach page-specific events inside content after delay
+              attachEvents();
+              if (page === 'analytics') initCharts();
+            }, 120);
+          } else {
+            contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
+            attachEvents();
+            if (page === 'analytics') initCharts();
+          }
         }
 
         // Update active class on nav items
@@ -890,13 +925,20 @@
           topbarDiv.outerHTML = renderTopbar();
         }
 
-        // Reconcile Modals
+        // Reconcile Modals with active animation classes
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
           modalOverlay.remove();
         }
         if (modal) {
           root.insertAdjacentHTML('beforeend', renderModal());
+          requestAnimationFrame(() => {
+            const overlay = document.querySelector('.modal-overlay');
+            if (overlay) {
+              overlay.offsetHeight; // force reflow
+              overlay.classList.add('active');
+            }
+          });
         }
 
         // Reconcile Mobile menus
@@ -918,8 +960,7 @@
           root.insertAdjacentHTML('beforeend', toastHtml);
         }
 
-        attachEvents();
-        if (page === 'analytics') initCharts();
+        previousPage = page;
         return;
       }
 
@@ -934,7 +975,16 @@
           </div>
         </div>
       `;
-      if (modal) root.insertAdjacentHTML('beforeend', renderModal());
+      if (modal) {
+        root.insertAdjacentHTML('beforeend', renderModal());
+        requestAnimationFrame(() => {
+          const overlay = document.querySelector('.modal-overlay');
+          if (overlay) {
+            overlay.offsetHeight; // force reflow
+            overlay.classList.add('active');
+          }
+        });
+      }
       if (mobileMenuOpen) root.insertAdjacentHTML('beforeend', renderMobileMenu());
       if (toast) {
         const toastHtml = `<div class="toast ${toast.type}"><img class="toast-icon" src="/assets/icons/${toast.type === 'success' ? 'check.svg' : 'close.svg'}" alt="${toast.type}"><span>${toast.msg}</span></div>`;
@@ -942,6 +992,7 @@
       }
       attachEvents();
       if (page === 'analytics') initCharts();
+      previousPage = page;
     }
 
     function renderLogin() {
@@ -1908,9 +1959,9 @@
       document.getElementById('f-reels')?.addEventListener('input', updatePreview);
       document.getElementById('f-ppr')?.addEventListener('input', updatePreview);
       updatePreview();
-      document.getElementById('modal-close')?.addEventListener('click', () => { modal = null; render(); });
-      document.getElementById('modal-cancel')?.addEventListener('click', () => { modal = null; render(); });
-      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { modal = null; render(); } });
+      document.getElementById('modal-close')?.addEventListener('click', () => { closeModalWithAnimation(); });
+      document.getElementById('modal-cancel')?.addEventListener('click', () => { closeModalWithAnimation(); });
+      document.getElementById('modal-overlay')?.addEventListener('click', e => { if (e.target.id === 'modal-overlay') { closeModalWithAnimation(); } });
       document.getElementById('modal-save')?.addEventListener('click', () => {
         const data = {
           name: document.getElementById('f-name')?.value?.trim() || "",
@@ -1927,8 +1978,7 @@
         }
         if (modal === 'edit') updateClient(editId, data);
         else addClient(data);
-        modal = null;
-        render();
+        closeModalWithAnimation();
       });
     }
 
@@ -2730,7 +2780,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"iEkqonU_NAsHFTYlzMvlt"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"hLzsZuo8nVg5i1Xx6phVP"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
