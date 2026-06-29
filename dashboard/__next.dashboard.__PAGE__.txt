@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1ce28,
+3:T1d12c,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -893,9 +893,10 @@
         }
 
         // Update content container view (with Apple-style transition on view change)
+        const isAsync = (previousPage !== page);
         const contentDiv = document.querySelector('.content');
         if (contentDiv) {
-          if (previousPage !== page) {
+          if (isAsync) {
             contentDiv.classList.add('blur-out');
             setTimeout(() => {
               contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
@@ -913,8 +914,6 @@
             }, 120);
           } else {
             contentDiv.innerHTML = page === 'dashboard' ? renderDashboard() : page === 'clients' ? renderClients() : page === 'analytics' ? renderAnalytics() : page === 'users' ? renderUsers() : page === 'sales' ? renderSales() : page === 'blogs' ? renderBlogs() : page === 'create-blog' ? renderCreateBlog() : page === 'blog-categories' ? renderBlogCategories() : '';
-            attachEvents();
-            if (page === 'analytics') initCharts();
           }
         }
 
@@ -968,6 +967,10 @@
           root.insertAdjacentHTML('beforeend', toastHtml);
         }
 
+        if (!isAsync) {
+          attachEvents();
+          if (page === 'analytics') initCharts();
+        }
         previousPage = page;
         return;
       }
@@ -2271,6 +2274,29 @@
         }
       });
 
+      document.querySelectorAll('.mobile-nav-item').forEach(b => {
+        b.addEventListener('click', () => {
+          const user = getCurrentUser();
+          const role = user?.role?.toLowerCase();
+          if (role === "sales" && b.dataset.page !== "sales") {
+            return;
+          }
+          if (role === "blogger" && b.dataset.page !== "blogs" && b.dataset.page !== "create-blog" && b.dataset.page !== "blog-categories") {
+            return;
+          }
+          page = b.dataset.page;
+
+          localStorage.setItem(
+            "reelscale_current_page",
+            page
+          );
+
+          mobileMenuOpen = false;
+          search = '';
+          render();
+        });
+      });
+
       document.querySelector(".cancel-lead-btn")?.addEventListener("click", () => {
         newLeadRow = false;
         render();
@@ -2788,7 +2814,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"kbOEqNHe02tK4hMl7Vfig"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"iPCsLGVb1gJvTvTP5vKfi"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
