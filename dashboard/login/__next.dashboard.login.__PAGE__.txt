@@ -3,7 +3,7 @@
 7:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 8:"$Sreact.suspense"
 :HL["/_next/static/chunks/3yoyw_6b_u4x1.css","style"]
-3:T1d12c,
+3:T1d141,
     // ==============================
     // CONSTANTS & CONFIGURATION
     // ==============================
@@ -1838,7 +1838,7 @@
             <div class="glass-card-label">Taxonomy Categories</div>
             <div style="display:flex; flex-direction:column; gap:10px;">
               ${blogCategories.map((c, idx) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--white-03); border-radius:var(--border-radius-3); border:1px solid var(--border);">
+                <div class="category-row" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--white-03); border-radius:var(--border-radius-3); border:1px solid var(--border);">
                   <div style="font-weight:var(--fw-semibold); color:var(--white);">${c}</div>
                   <div style="display:flex; gap:12px; align-items:center;">
                     <button class="btn btn-ghost delete-cat-btn" data-index="${idx}" style="color:var(--red); font-size:var(--text-sm); padding:4px 8px;">Delete</button>
@@ -2814,7 +2814,7 @@
     if (isLoggedIn()) {
       startActivityTracking();
     }
-  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"iPCsLGVb1gJvTvTP5vKfi"}
+  0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"scriptCode":"$3"}],["$L4","$L5"],"$L6"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"PVlOwciwSK10HA3n4s1OL"}
 4:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3yoyw_6b_u4x1.css","precedence":"next"}]
 5:["$","script","script-0",{"src":"/_next/static/chunks/21winmwg3o3t5.js","async":true}]
 6:["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]
