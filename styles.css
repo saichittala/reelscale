@@ -1682,7 +1682,7 @@ footer {
 
 .faq-item.active .faq-chevron {
     transform: rotate(180deg);
-    color: var(--red);
+    color: var(--white);
 }
 
 .faq-answer {
