@@ -49,16 +49,16 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       <LandingInteractions />
       
       {/* Logo-only Header with same CSS properties */}
-      <header id="header" className="scrolled" style={{ position: 'absolute', top: '0px', left: '50%', transform: 'translateX(-50%)', paddingTop: '48px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <header id="header" className="scrolled blog-header">
         <Link href="/" className="logo">
           <div>
-            <img src="/assets/logo.svg" alt="ReelScale Logo" style={{ display: 'block', height: '20px', width: 'auto' }} />
+            <img src="/assets/logo.svg" alt="ReelScale Logo" className="blog-header-logo" />
           </div>
         </Link>
       </header>
       
       {/* Blog Page Content */}
-      <div style={{ minHeight: "80vh", paddingTop: "120px", paddingBottom: "60px" }}>
+      <div className="blog-layout-content-wrap">
         {children}
       </div>
 

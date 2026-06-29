@@ -2373,17 +2373,19 @@ tr:hover td {
 }
 
 @keyframes btn-spinner {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ==========================================================
    BUTTON ACTIVE PRESS EFFECTS (SCALE & CUBIC-BEZIER TRANSITION)
    ========================================================== */
-.btn, 
-button, 
-.nav-item, 
-.sidebar-toggle, 
-.filter-btn, 
+.btn,
+button,
+.nav-item,
+.sidebar-toggle,
+.filter-btn,
 .mobile-menu-btn,
 .delete-user,
 .theme-toggle-btn,
@@ -2396,19 +2398,19 @@ button,
 .edit-sale,
 .delete-sale,
 .modal-close {
-    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1), 
-                background-color 0.15s ease, 
-                background 0.15s ease, 
-                color 0.15s ease, 
-                border-color 0.15s ease, 
-                opacity 0.15s ease;
+    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        opacity 0.15s ease;
 }
 
-.btn:active, 
-button:active, 
-.nav-item:active, 
-.sidebar-toggle:active, 
-.filter-btn:active, 
+.btn:active,
+button:active,
+.nav-item:active,
+.sidebar-toggle:active,
+.filter-btn:active,
 .mobile-menu-btn:active,
 .delete-user:active,
 .theme-toggle-btn:active,

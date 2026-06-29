@@ -19,10 +19,10 @@ export default function BlogIndexPage() {
   return (
     <BlogLayout>
       <div className="blog-container">
-        
+
         {/* Listing Hero */}
         <section className="blog-listing-hero">
-          <h1>ReelScale Insights</h1>
+          <h1>ReelScale <em>Insights</em></h1>
           <p>
             Actionable strategies, production breakdowns, and copywriting deep-dives to grow your organic brand footprint.
           </p>
@@ -35,9 +35,9 @@ export default function BlogIndexPage() {
 
         {/* Cards Grid */}
         {publishedBlogs.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 24px", color: "var(--muted)" }}>
-            <p style={{ fontSize: "18px", marginBottom: "16px" }}>No published articles found.</p>
-            <p style={{ fontSize: "14px" }}>Check back soon for new guides and breakdowns!</p>
+          <div className="blog-no-posts">
+            <p className="blog-no-posts-title">No published articles found.</p>
+            <p className="blog-no-posts-subtitle">Check back soon for new guides and breakdowns!</p>
           </div>
         ) : (
           <BlogGrid posts={publishedBlogs} />

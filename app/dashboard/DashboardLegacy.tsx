@@ -129,6 +129,9 @@ export default function DashboardLegacy({ scriptCode }: { scriptCode: string }) 
 
     return () => {
       mounted = false;
+      const scriptEl = document.getElementById("reelscale-dashboard-runtime");
+      if (scriptEl) scriptEl.remove();
+      delete window.__reelscaleDashboardLoaded;
     };
   }, [scriptCode]);
 

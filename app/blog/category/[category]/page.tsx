@@ -49,10 +49,7 @@ export default async function CategoryPage({ params }: Props) {
         
         {/* Listing Hero */}
         <section className="blog-listing-hero">
-          <div style={{ fontSize: "var(--text-sm)", color: "var(--gold)", fontWeight: "var(--fw-medium)", marginBottom: "8px" }}>
-            category archive
-          </div>
-          <h1>{currentCategoryName}</h1>
+          <h1>Category: <em>{currentCategoryName}</em></h1>
           <p>
             Browse all our strategic guides, case studies, and insights focused on {currentCategoryName.toLowerCase()}.
           </p>
@@ -65,9 +62,9 @@ export default async function CategoryPage({ params }: Props) {
 
         {/* Cards Grid */}
         {filteredBlogs.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 24px", color: "var(--muted)" }}>
-            <p style={{ fontSize: "18px", marginBottom: "16px" }}>No published articles found in this category.</p>
-            <Link href="/blog" style={{ color: "var(--red)", textDecoration: "none", fontWeight: 600 }}>
+          <div className="blog-no-posts">
+            <p className="blog-no-posts-title">No published articles found in this category.</p>
+            <Link href="/blog" className="blog-return-link">
               Return to blog index
             </Link>
           </div>

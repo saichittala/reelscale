@@ -26,6 +26,10 @@ export function getDashboardScript() {
       `const useLocalAPI = ${process.env.NEXT_PUBLIC_STATIC_EXPORT !== "true"};`
     )
     .replace(
+      /const GAS_BLOGS_URL = "";/g,
+      `const GAS_BLOGS_URL = "${process.env.GOOGLE_SCRIPT_BLOGS_URL || ""}";`
+    )
+    .replace(
       /(init\(\);)/g,
       `try { $1 } catch(e) { console.error("Dashboard init failed:", e); }`
     );

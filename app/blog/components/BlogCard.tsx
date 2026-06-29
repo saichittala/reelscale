@@ -10,7 +10,7 @@ export default function BlogCard({ post, readText = "Read Guide" }: BlogCardProp
   const readTime = getReadingTime(post.content);
 
   return (
-    <Link href={`/blog/${post.slug}`} className="blog-card" style={{ textDecoration: "none" }}>
+    <Link href={`/blog/${post.slug}`} className="blog-card">
       <div className="blog-card-img-wrap">
         <img 
           src={post.featuredImage || "/assets/logo.png"} 

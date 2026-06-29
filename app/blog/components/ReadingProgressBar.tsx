@@ -22,16 +22,7 @@ export default function ReadingProgressBar() {
   return (
     <div 
       className="reading-progress-bar" 
-      style={{ 
-        width: `${progress}%`,
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "3px",
-        backgroundColor: "var(--red)",
-        zIndex: 9999,
-        transition: "width 0.1s ease-out"
-      }} 
+      style={{ width: `${progress}%` }} 
     />
   );
 }

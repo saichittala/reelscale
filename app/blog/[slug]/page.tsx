@@ -166,7 +166,7 @@ export default async function BlogPostPage({ params }: Props) {
           <span>/</span>
           <Link href={`/blog/category/${post.category.toLowerCase()}`}>{post.category}</Link>
           <span>/</span>
-          <span style={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+          <span className="blog-breadcrumb-active-item">
             {post.title}
           </span>
         </div>
@@ -179,13 +179,13 @@ export default async function BlogPostPage({ params }: Props) {
               {(post.author || 'Sai Chittala')[0]}
             </div>
             <div>
-              <div style={{ fontWeight: 600, color: "var(--white)" }}>{post.author || 'Sai Chittala'}</div>
-              <div style={{ fontSize: "12px", marginTop: "2px" }}>
+              <div className="blog-post-author-name">{post.author || 'Sai Chittala'}</div>
+              <div className="blog-post-publish-date">
                 Published on {post.publishedDate} · {readTime}
               </div>
             </div>
-            <div style={{ marginLeft: "auto" }}>
-              <span className="blog-category-btn active" style={{ fontSize: "11px", padding: "4px 12px" }}>
+            <div className="blog-post-meta-category-wrap">
+              <span className="blog-category-btn active blog-post-category-badge">
                 {post.category}
               </span>
             </div>
@@ -230,15 +230,13 @@ export default async function BlogPostPage({ params }: Props) {
                   href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20blog%20post%20and%20I%27m%20interested%20in%20scaling%20our%20reel%20production." 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="btn-primary"
-                  style={{ textDecoration: "none" }}
+                  className="btn-primary blog-cta-btn-link"
                 >
                   WhatsApp enquiry
                 </a>
                 <Link 
                   href="/#pricing" 
-                  className="btn-secondary"
-                  style={{ textDecoration: "none" }}
+                  className="btn-secondary blog-cta-btn-link"
                 >
                   View packages
                 </Link>
@@ -263,11 +261,10 @@ export default async function BlogPostPage({ params }: Props) {
                 <input 
                   type="email" 
                   placeholder="name@email.com" 
-                  style={{ padding: "12px 16px", borderRadius: "var(--border-radius-2)", border: "1px solid var(--border)", background: "var(--white-03)", color: "var(--white)", fontSize: "var(--text-sm)" }}
+                  className="blog-newsletter-input"
                 />
                 <button 
-                  className="btn-primary"
-                  style={{ padding: "12px 16px", borderRadius: "var(--border-radius-2)", fontSize: "var(--text-sm)", cursor: "pointer", width: "100%", border: "none" }}
+                  className="btn-primary blog-newsletter-btn"
                 >
                   Join newsletter
                 </button>
@@ -280,8 +277,8 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Related Articles Footer section */}
         {related.length > 0 && (
-          <div style={{ marginTop: "80px", paddingTop: "40px", borderTop: "1px solid var(--border)" }}>
-            <h3 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "32px", color: "var(--white)" }}>Related articles</h3>
+          <div className="blog-related-section">
+            <h3 className="blog-related-title">Related articles</h3>
             <BlogGrid posts={related} readText="Read article" />
           </div>
         )}

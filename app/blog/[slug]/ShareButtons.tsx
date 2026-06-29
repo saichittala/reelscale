@@ -21,7 +21,7 @@ export default function ShareButtons({ title, slug }: ShareProps) {
 
   return (
     <div className="blog-share-panel">
-      <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--muted)" }}>
+      <span className="blog-share-label">
         Share Article:
       </span>
       <button className="share-btn" onClick={handleTwitter}>

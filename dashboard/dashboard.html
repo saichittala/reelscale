@@ -29,10 +29,11 @@
     const GAS_USERS_URL = "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
     const GAS_CLIENTS_URL = "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
     const GAS_SALES_URL = "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
+    const GAS_BLOGS_URL = "";
+    const useLocalAPI = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
     // Custom fetch wrapper to support local Next.js APIs during development with RBAC headers
     async function customFetch(url, options = {}) {
-      const useLocalAPI = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
       let targetUrl = url;
       const updatedOptions = { ...options };
 
@@ -57,11 +58,12 @@
           targetUrl = "/api/clients";
         } else if (url === GAS_SALES_URL) {
           targetUrl = "/api/sales";
+        } else if (GAS_BLOGS_URL && url === GAS_BLOGS_URL) {
+          targetUrl = "/api/blogs";
         }
       }
 
       const user = getCurrentUser();
-      const updatedOptions = { ...options };
 
       if (useLocalAPI) {
         const headers = {
@@ -350,9 +352,35 @@
 
     async function loadBlogs() {
       try {
-        const response = await customFetch("/api/blogs");
-        const data = await response.json();
-        blogs = Array.isArray(data) ? data : [];
+        let blogsData = [];
+        try {
+          let urlToFetch = GAS_BLOGS_URL;
+          if (!urlToFetch && useLocalAPI) {
+            urlToFetch = "/api/blogs";
+          }
+          if (!urlToFetch) {
+            throw new Error("No blogs database URL configured.");
+          }
+          const response = await customFetch(urlToFetch);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          
+          const text = await response.text();
+          if (!text || !text.trim()) {
+            throw new Error("Empty response received from blogs database.");
+          }
+          blogsData = JSON.parse(text);
+        } catch (error) {
+          console.warn("Dynamic API fetch/parse failed, trying static fallback:", error);
+          const response = await fetch("/blogs.json");
+          if (!response.ok) throw new Error(`Fallback HTTP error! status: ${response.status}`);
+          
+          const text = await response.text();
+          if (!text || !text.trim()) {
+            throw new Error("Fallback blogs.json content is empty.");
+          }
+          blogsData = JSON.parse(text);
+        }
+        blogs = Array.isArray(blogsData) ? blogsData : [];
         blogsLoaded = true;
 
         // Extract unique categories from blogs to keep categories updated
@@ -372,7 +400,7 @@
     async function saveBlogToServer(blogData) {
       try {
         const action = blogData.id ? "update" : "add";
-        const response = await customFetch("/api/blogs", {
+        const response = await customFetch(GAS_BLOGS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -397,7 +425,7 @@
     async function deleteBlogFromServer(id) {
       if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) return;
       try {
-        const response = await customFetch("/api/blogs", {
+        const response = await customFetch(GAS_BLOGS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

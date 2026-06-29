@@ -52,8 +52,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         {headings.map((h, i) => (
           <li 
             key={i} 
-            className={`blog-toc-item ${activeId === h.id ? "active" : ""}`}
-            style={{ paddingLeft: `${(h.level - 2) * 12}px` }}
+            className={`blog-toc-item level-${h.level} ${activeId === h.id ? "active" : ""}`}
           >
             <a href={`#${h.id}`}>{h.text}</a>
           </li>
