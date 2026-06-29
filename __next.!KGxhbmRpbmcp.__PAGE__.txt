@@ -4,9 +4,9 @@ f:I[79520,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 10:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 11:"$Sreact.suspense"
 13:I[22016,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0id_50brgpbr0.js"],""]
-2:T1116,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"$$","telephone":"+919966239433","address":{"@type":"PostalAddress","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3","$L4","$L5","$L6","$L7","$L8"],["$L9"],"$La"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"PVlOwciwSK10HA3n4s1OL"}
+2:T1116,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"$$","telephone":"+919966239433","address":{"@type":"PostalAddress","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3","$L4","$L5","$L6","$L7","$L8"],["$L9"],"$La"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"Zau0VcXjXqfWzVc5ec-X3"}
 3:["$","$Lb",null,{}]
-c:T6478,
+c:T82a6,
   <div class="video-modal" id="videoModal">
     <div class="video-backdrop"></div>
 
@@ -64,6 +64,134 @@ c:T6478,
         Start your Reel
       </a>
       <a href="#work" class="btn-secondary">View Work</a>
+    </div>
+  </section>
+
+  <!-- HERO CAROUSEL -->
+  <section id="hero-carousel-section">
+    <div class="carousel-container">
+      <div class="carousel-track">
+        <!-- Card 1 (Maitrova) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.instagram.com/p/DYhpQstRCBU/"
+          data-client="Maitrova" data-stat="2.4M Views" style="background-image: url(./assets/clients/maitrova.png);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Maitrova</div>
+            <div class="portfolio-stat">2.4M Views</div>
+          </div>
+        </div>
+        <!-- Card 2 (Avinash Salon) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.instagram.com/p/DFWphKux3dK/"
+          data-client="Avinash Salon" data-stat="1.8M Views"
+          style="background-image: url(./assets/clients/avinash-salon.jpg);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Avinash Salon</div>
+            <div class="portfolio-stat">1.8M Views</div>
+          </div>
+        </div>
+        <!-- Card 3 (Greenwood Interiors) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="Greenwood Interiors" data-stat="4.2M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Greenwood Interiors</div>
+            <div class="portfolio-stat">4.2M Views</div>
+          </div>
+        </div>
+        <!-- Card 4 (Swift Education) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="Swift Education" data-stat="850K Views"
+          style="background-image: url(https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Swift Education</div>
+            <div class="portfolio-stat">850K Views</div>
+          </div>
+        </div>
+        <!-- Card 5 (StyleCo Fashion) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="StyleCo Fashion" data-stat="1.2M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">StyleCo Fashion</div>
+            <div class="portfolio-stat">1.2M Views</div>
+          </div>
+        </div>
+        <!-- Card 6 (SR Interiors) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="SR Interiors" data-stat="3.1M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">SR Interiors</div>
+            <div class="portfolio-stat">3.1M Views</div>
+          </div>
+        </div>
+
+        <!-- Duplicated for infinite scrolling -->
+        <!-- Card 7 (Maitrova) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.instagram.com/p/DYhpQstRCBU/"
+          data-client="Maitrova" data-stat="2.4M Views" style="background-image: url(./assets/clients/maitrova.png);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Maitrova</div>
+            <div class="portfolio-stat">2.4M Views</div>
+          </div>
+        </div>
+        <!-- Card 8 (Avinash Salon) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.instagram.com/p/DFWphKux3dK/"
+          data-client="Avinash Salon" data-stat="1.8M Views"
+          style="background-image: url(./assets/clients/avinash-salon.jpg);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Avinash Salon</div>
+            <div class="portfolio-stat">1.8M Views</div>
+          </div>
+        </div>
+        <!-- Card 9 (Greenwood Interiors) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="Greenwood Interiors" data-stat="4.2M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Greenwood Interiors</div>
+            <div class="portfolio-stat">4.2M Views</div>
+          </div>
+        </div>
+        <!-- Card 10 (Swift Education) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="Swift Education" data-stat="850K Views"
+          style="background-image: url(https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Swift Education</div>
+            <div class="portfolio-stat">850K Views</div>
+          </div>
+        </div>
+        <!-- Card 11 (StyleCo Fashion) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="StyleCo Fashion" data-stat="1.2M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">StyleCo Fashion</div>
+            <div class="portfolio-stat">1.2M Views</div>
+          </div>
+        </div>
+        <!-- Card 12 (SR Interiors) -->
+        <div class="portfolio-item carousel-card" data-video="https://www.youtube.com/embed/ziM_K-n6svk"
+          data-client="SR Interiors" data-stat="3.1M Views"
+          style="background-image: url(https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop);">
+          <div class="portfolio-play">▶</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">SR Interiors</div>
+            <div class="portfolio-stat">3.1M Views</div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -459,18 +587,24 @@ c:T6478,
       <div style="text-align: center; margin-bottom: 64px;">
         <span class="section-eyebrow reveal">FAQ</span>
         <h2 class="section-title reveal">Frequently Asked Questions</h2>
-        <p class="section-sub reveal" style="margin: 20px auto 0;">Got questions? We've got answers. Explore our commonly asked questions to learn how we help businesses scale.</p>
+        <p class="section-sub reveal" style="margin: 20px auto 0;">Got questions? We've got answers. Explore our
+          commonly asked questions to learn how we help businesses scale.</p>
       </div>
-      
+
       <div class="faq-list reveal">
         <div class="faq-item">
           <button class="faq-question">
             <span>What is ReelScale?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically.</p>
+              <p>ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing
+                high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention,
+                build brand authority, and scale your client acquisition organically.</p>
             </div>
           </div>
         </div>
@@ -478,11 +612,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>How does short-form video help grow my business?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend.</p>
+              <p>Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust
+                and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering
+                highly targeted organic impressions to your ideal clients without expensive ad spend.</p>
             </div>
           </div>
         </div>
@@ -490,11 +629,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>What is included in ReelScale's end-to-end service?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis.</p>
+              <p>We manage the entire content production pipeline. This includes scriptwriting, visual asset design,
+                high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy,
+                and performance analysis.</p>
             </div>
           </div>
         </div>
@@ -502,11 +646,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>How long does it take to see results?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles.</p>
+              <p>While organic growth builds over time, most clients see a significant rise in video views, profile
+                traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates
+                typically rise steadily as content authority compiles.</p>
             </div>
           </div>
         </div>
@@ -514,11 +663,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>Do I need to film the content myself?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest.</p>
+              <p>Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides
+                (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile
+                device, and our production team handles the rest.</p>
             </div>
           </div>
         </div>
@@ -526,11 +680,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>What makes cinematic reels different from standard video editing?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention.</p>
+              <p>Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize
+                premium color grading, seamless custom transitions, high-impact sound design, and custom typography to
+                create an immersive visual experience that increases audience retention.</p>
             </div>
           </div>
         </div>
@@ -538,11 +697,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>Which platforms do you optimize for?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform.</p>
+              <p>We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We
+                optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of
+                each target platform.</p>
             </div>
           </div>
         </div>
@@ -550,11 +714,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>What is your pricing model?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages.</p>
+              <p>We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing
+                section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom
+                packages.</p>
             </div>
           </div>
         </div>
@@ -562,11 +731,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>How do we get started?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Click "Start your Reel" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap.</p>
+              <p>Click "Start your Reel" to book a strategy call or send us an email. We'll hop on a quick call to audit
+                your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap.
+              </p>
             </div>
           </div>
         </div>
@@ -574,11 +748,16 @@ c:T6478,
         <div class="faq-item">
           <button class="faq-question">
             <span>Do you write the video scripts for me?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals.</p>
+              <p>Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting
+                hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive
+                conversion goals.</p>
             </div>
           </div>
         </div>
