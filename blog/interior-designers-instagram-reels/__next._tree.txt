@@ -3,4 +3,4 @@
 :HL["/_next/static/chunks/0f9xxawqcfujx.css","style"]
 :HL["/assets/logo.svg","image"]
 :HL["https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"interior-designers-instagram-reels","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"bYoJGrcDou4fwF52N1d8z"}
+0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"interior-designers-instagram-reels","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"NvXcgy5WXUfW5lbgi1wKD"}
