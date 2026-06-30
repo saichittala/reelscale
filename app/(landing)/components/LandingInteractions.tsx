@@ -13,6 +13,8 @@ declare global {
   }
 }
 
+declare const gsap: any;
+
 /* ─── Card data for the Cover Flow ─── */
 interface CoverFlowCard {
   videoSrc: string;
@@ -67,29 +69,27 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
 ];
 
 
-/* ─── Tuning constants — Premium Apple 3D Cover Flow ─── */
-const CFG = {
-  /* 3D Perspective & Layout */
-  rotateYMax: 68,         // side cards tilt 60–75 degrees
-  translateZBase: -350,    // depth push per card slot (px)
-  scaleMin: 0.75,          // side cards scale down to 0.7–0.8
-  opacityMin: 0.5,         // side cards opacity 0.4–0.6
-
-  /* Spacing offsets (relative to card width) */
-  centerOffsetMultiplier: 1.15, // center card spacing dominance
-  sideSpacingMultiplier: 0.38,   // stack density for side cards
-  curveYMultiplier: 12,          // parabolic horizontal arc vertical curve (px)
-
-  /* Auto-scroll */
-  autoSpeed: 0.002,        // auto-scroll speed (increment per frame)
-
-  /* Drag physics */
-  dragSensitivity: 0.0035, // drag responsiveness
-  flickDecay: 0.94,        // inertia glide duration
-
-  /* Real spring physics for organic bouncing snap */
-  springStiffness: 0.05,   // spring k constant
-  springDamping: 0.26,     // spring c damping
+/* ─── 3D Curved Carousel configuration ─── */
+const carouselConfig = {
+  slideHeight: 700,         // Height of each slide in pixels
+  slidesInRing: 13,         // Fewer slides in the ring makes each slide wider/larger!
+  slideSpacing: 1.5,        // Spacing between slides in degrees
+  
+  radius: 1100,             // Radius of the carousel circle (px)
+  initialRotation: 180,     // Initial rotation of the carousel (degrees)
+  
+  autoRotate: true,         // Set to false to disable auto-rotation
+  rotationSpeed: 0.07,      // Target speed of rotation (degrees per frame)
+  rotationDirection: 1,     // 1 for clockwise, -1 for counter-clockwise
+  
+  pauseOnHover: true,       // Pause rotation when hovering
+  resumeDelay: 0,           // Delay before resuming rotation after hover (milliseconds)
+  pauseEaseDuration: 0.5,   // Duration for easing in/out of pause (seconds)
+  
+  entranceAnimation: 'fadeIn',  // 'fadeIn', 'fadeUp', or 'none'
+  entranceDuration: 1.5,        // Duration of entrance animation (seconds)
+  entranceStagger: 0.08,        // Stagger time between slide animations (seconds)
+  entranceDistance: 100         // Distance for fadeUp animation (pixels)
 } as const;
 
 export default function LandingInteractions() {
@@ -97,11 +97,11 @@ export default function LandingInteractions() {
 
   useEffect(() => {
     /* ═══════════════════════════════════════════════════
-       1. COVER FLOW ENGINE
+       1. 3D CURVED CAROUSEL ENGINE (GSAP)
        ═══════════════════════════════════════════════════ */
-    const stage = document.getElementById("coverflowStage");
-    const coverflowEl = document.querySelector(".coverflow") as HTMLElement | null;
-    let coverflowFrame = 0;
+    const carouselEl = document.querySelector(".ls-curved-carousel") as HTMLElement | null;
+    const stageEl = document.querySelector(".ls-curved-carousel__stage") as HTMLElement | null;
+    const ringEl = document.querySelector(".ls-curved-carousel__ring") as HTMLElement | null;
 
     // Event handler refs for cleanup
     const cleanupFns: Array<() => void> = [];
@@ -144,470 +144,244 @@ export default function LandingInteractions() {
       modal.classList.add("active");
     };
 
-    if (stage && coverflowEl) {
+    const runCarousel = () => {
+      if (!carouselEl || !stageEl || !ringEl || typeof gsap === "undefined") return;
       const N = COVERFLOW_CARDS.length;
-      const angleStep = (2 * Math.PI) / N;
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      // Cover Flow Physics State
-      let position = 0;           // current float position index [0, N)
-      let targetPosition = 0;     // snap target index
-      let velocity = 0;           // speed of position sweep
-      let isPaused = false;
-      let isDragging = false;
-      let isSnapping = false;
-      let dragStartX = 0;
-      let lastDragX = 0;
-      let lastDragTime = 0;
-      let wheelTimeout: NodeJS.Timeout | null = null;
-      let autoScrollTimer: NodeJS.Timeout | null = null;
-
-      // Create card DOM elements
-      const cards: HTMLElement[] = [];
-      stage.innerHTML = "";
-
-      COVERFLOW_CARDS.forEach((data, i) => {
-        const card = document.createElement("div");
-        card.className = "coverflow__card";
-        card.setAttribute("role", "group");
-        card.setAttribute("aria-roledescription", "slide");
-        card.setAttribute("aria-label", `${data.client} — ${data.stat}`);
-        card.setAttribute("tabindex", "0");
-        card.setAttribute("data-index", String(i));
-        if (data.video) {
-          card.setAttribute("data-video", data.video);
-        }
+      // 1. Populate original slides dynamically
+      ringEl.innerHTML = "";
+      COVERFLOW_CARDS.forEach((data) => {
+        const slide = document.createElement("div");
+        slide.className = "ls-curved-carousel__slide";
+        slide.setAttribute("data-video", data.video || "");
+        slide.setAttribute("data-client", data.client);
+        slide.setAttribute("data-stat", data.stat);
 
         const isVideo = data.videoSrc.toLowerCase().endsWith(".mp4");
         if (isVideo) {
-          card.innerHTML = `
-            <video autoplay loop muted playsinline preload="metadata" style="width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; backface-visibility:hidden;">
+          slide.innerHTML = `
+            <video autoplay loop muted playsinline preload="metadata" class="ls-curved-carousel__media">
               <source src="${data.videoSrc}" type="video/mp4" />
             </video>
-            <div class="coverflow__label">
-              <span class="coverflow__client">${data.client}</span>
-              <span class="coverflow__stat">${data.stat}</span>
+            <div class="ls-curved-carousel__label">
+              <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
           `;
         } else {
-          card.innerHTML = `
-            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; backface-visibility:hidden;" />
-            <div class="coverflow__label">
-              <span class="coverflow__client">${data.client}</span>
-              <span class="coverflow__stat">${data.stat}</span>
+          slide.innerHTML = `
+            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" />
+            <div class="ls-curved-carousel__label">
+              <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
           `;
         }
-
-        stage.appendChild(card);
-        cards.push(card);
+        ringEl.appendChild(slide);
       });
 
-      // 1. Create pagination dots
-      const paginationEl = document.getElementById("coverflowPagination");
-      if (paginationEl) {
-        paginationEl.innerHTML = "";
-        for (let i = 0; i < N; i++) {
-          const dot = document.createElement("button");
-          dot.className = "coverflow__dot" + (i === 0 ? " active" : "");
-          dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-          dot.addEventListener("click", () => {
-            targetPosition = i;
-            isSnapping = true;
-            isPaused = true;
-            stopAutoScroll();
-          });
-          paginationEl.appendChild(dot);
+      // 2. Duplicate slides if original count is less than slidesInRing
+      const slidesInRing = carouselConfig.slidesInRing;
+      let currentSlides = ringEl.querySelectorAll(".ls-curved-carousel__slide");
+      let originalCount = currentSlides.length;
+
+      if (originalCount < slidesInRing) {
+        const countNeeded = slidesInRing - originalCount;
+        for (let i = 0; i < countNeeded; i++) {
+          const clone = currentSlides[i % originalCount].cloneNode(true) as HTMLElement;
+          ringEl.appendChild(clone);
         }
       }
 
-      const updatePagination = (activeIndex: number) => {
-        if (!paginationEl) return;
-        const dots = paginationEl.querySelectorAll(".coverflow__dot");
-        dots.forEach((dot, idx) => {
-          if (idx === activeIndex) {
-            dot.classList.add("active");
-          } else {
-            dot.classList.remove("active");
-          }
-        });
-      };
+      // Re-fetch all slides after potential duplication
+      const slides = ringEl.querySelectorAll(".ls-curved-carousel__slide") as NodeListOf<HTMLElement>;
+      const slideCount = slides.length;
 
-      // 2. Play/Pause Control
-      const playPauseBtn = document.getElementById("coverflowPlayPause");
-      const iconPause = playPauseBtn?.querySelector(".icon-pause") as HTMLElement;
-      const iconPlay = playPauseBtn?.querySelector(".icon-play") as HTMLElement;
-      let isPausedManually = false;
+      // Calculate angle per slide for even distribution
+      const anglePerSlide = 360 / slidesInRing;
 
-      const togglePlayPause = () => {
-        isPausedManually = !isPausedManually;
-        if (isPausedManually) {
-          isPaused = true;
-          stopAutoScroll();
-          if (iconPause) iconPause.style.display = "none";
-          if (iconPlay) iconPlay.style.display = "block";
-        } else {
-          isPaused = false;
-          startAutoScroll();
-          if (iconPause) iconPause.style.display = "block";
-          if (iconPlay) iconPlay.style.display = "none";
-        }
-      };
-      playPauseBtn?.addEventListener("click", togglePlayPause);
-      cleanupFns.push(() => playPauseBtn?.removeEventListener("click", togglePlayPause));
+      // Calculate ideal slide width based on arc length
+      const arcLength = (anglePerSlide - carouselConfig.slideSpacing) * (Math.PI / 180) * carouselConfig.radius;
+      const slideWidth = arcLength;
 
-      // 3. Mute/Unmute Control
-      const muteBtn = document.getElementById("coverflowMute");
-      const iconUnmute = muteBtn?.querySelector(".icon-unmute") as HTMLElement;
-      const iconMute = muteBtn?.querySelector(".icon-mute") as HTMLElement;
-      let isMuted = true;
+      // Set stage dimensions
+      stageEl.style.width = `${slideWidth}px`;
+      stageEl.style.height = `${carouselConfig.slideHeight}px`;
 
-      const toggleMute = () => {
-        isMuted = !isMuted;
-        const videoElements = stage.querySelectorAll("video");
-        videoElements.forEach((vid) => {
-          vid.muted = isMuted;
+      // Set up auto-rotation state
+      let autoRotate = carouselConfig.autoRotate;
+      let targetRotationSpeed = carouselConfig.rotationSpeed;
+      let currentRotationSpeed = 0;
+      let rotationDirection = carouselConfig.rotationDirection;
+      let autoRotateTimeout: any = null;
+      let lastUpdateTime = Date.now();
+      let updateRotationFunction: any = null;
+      let speedTween: any = null;
+
+      let speedController = { value: 0 };
+
+      // Initialize the carousel timeline
+      const timeline = gsap.timeline();
+      timeline.set(ringEl, { rotationY: carouselConfig.initialRotation });
+
+      // Apply calculated dimensions and position all slides in a circle
+      slides.forEach((slide, index) => {
+        slide.style.width = `${slideWidth}px`;
+        slide.style.height = `${carouselConfig.slideHeight}px`;
+
+        gsap.set(slide, {
+          rotateY: index * -anglePerSlide,
+          transformOrigin: `50% 50% ${carouselConfig.radius}px`,
+          z: -carouselConfig.radius,
+          backfaceVisibility: 'hidden'
         });
 
-        if (isMuted) {
-          if (iconUnmute) iconUnmute.style.display = "none";
-          if (iconMute) iconMute.style.display = "block";
-        } else {
-          if (iconUnmute) iconUnmute.style.display = "block";
-          if (iconMute) iconMute.style.display = "none";
-        }
-      };
-      muteBtn?.addEventListener("click", toggleMute);
-      cleanupFns.push(() => muteBtn?.removeEventListener("click", toggleMute));
-
-      // Keyframes precisely matching reference spec
-      const keyframes = {
-        absX:       [0,   1,    2,    3],
-        rotateY:    [0,   65,   80,   85],
-        translateX: [0,   220,  420,  550],
-        translateZ: [180, -180, -420, -700],
-        scale:      [1.0, 0.82, 0.62, 0.45],
-        opacity:    [1.0, 0.75, 0.35, 0.08]
-      };
-
-      const interpolate = (key: 'rotateY' | 'translateX' | 'translateZ' | 'scale' | 'opacity', val: number): number => {
-        const arrX = keyframes.absX;
-        const arrY = keyframes[key];
-
-        if (val <= arrX[0]) return arrY[0];
-        if (val >= arrX[arrX.length - 1]) return arrY[arrY.length - 1];
-
-        for (let i = 0; i < arrX.length - 1; i++) {
-          if (val >= arrX[i] && val <= arrX[i + 1]) {
-            const t = (val - arrX[i]) / (arrX[i + 1] - arrX[i]);
-            // Smooth ease-in-out Hermite curve
-            const ease = t * t * (3 - 2 * t);
-            return arrY[i] + (arrY[i + 1] - arrY[i]) * ease;
-          }
-        }
-        return arrY[0];
-      };
-
-      /* ─── Transform calculation per card — Keyframe Interpolator ─── */
-      const layoutCards = () => {
-        const vw = window.innerWidth;
-        const scaleFactor = Math.min(1.6, Math.max(0.45, vw / 1200));
-
-        for (let i = 0; i < N; i++) {
-          let diff = i - position;
-          // Wrap diff to [-N/2, N/2] for looping continuity
-          diff = ((diff + N / 2) % N + N) % N - N / 2;
-
-          const absX = Math.abs(diff);
-          const sign = Math.sign(diff);
-
-          // Get values from keyframes
-          const rotateY = -sign * interpolate("rotateY", absX);
-          const translateX = sign * interpolate("translateX", absX) * scaleFactor;
-          const translateZ = interpolate("translateZ", absX);
-          const scale = interpolate("scale", absX);
-          const opacity = interpolate("opacity", absX);
-
-          // Parabolic curve: visual wrapping arc around viewer
-          const translateY = Math.pow(absX, 1.8) * CFG.curveYMultiplier * scaleFactor;
-
-          // Blur: subtle blur on farther cards
-          let blur = 0;
-          if (absX > 1.2) {
-            blur = Math.min((absX - 1.2) * 1.5, 4.0);
-          }
-
-          // Highest z-index for active card
-          const zIndex = Math.round(100 - absX * 10);
-
-          // Box shadow: active card gets premium dynamic floating shadow
-          const t = Math.min(1.0, absX);
-          const shadowOpacity = Math.max(0, (1 - t) - 0.2) * 0.6;
-          const shadowBlur = 30 + (1 - t) * 30;
-          const shadowY = 10 + (1 - t) * 20;
-          const shadow = `0 ${shadowY}px ${shadowBlur}px -8px rgba(0,0,0,${shadowOpacity.toFixed(2)})`;
-
-          const card = cards[i];
-
-          if (prefersReducedMotion) {
-            card.style.transform = `translateX(${translateX}px) scale(${scale})`;
-            card.style.opacity = String(opacity);
-            card.style.filter = "none";
-            card.style.zIndex = String(zIndex);
-            card.style.boxShadow = shadow;
-          } else {
-            card.style.transform = [
-              `translate3d(${translateX}px, ${translateY}px, ${translateZ}px)`,
-              `rotateY(${rotateY}deg)`,
-              `scale(${scale})`,
-            ].join(" ");
-            card.style.opacity = `${opacity}`;
-            card.style.filter = blur > 0.1 ? `blur(${blur}px)` : "none";
-            card.style.zIndex = String(zIndex);
-            card.style.boxShadow = shadow;
-          }
-        }
-      };
-
-      /* ─── Snap to nearest card ─── */
-      const snapToNearest = () => {
-        targetPosition = Math.round(position) % N;
-        if (targetPosition < 0) targetPosition += N;
-        isSnapping = true;
-      };
-
-      /* ─── Auto-scroll management ─── */
-      const startAutoScroll = () => {
-        if (prefersReducedMotion || isPausedManually) return;
-        stopAutoScroll();
-        autoScrollTimer = setInterval(() => {
-          if (!isDragging) {
-            targetPosition = (Math.round(position) + 1) % N;
-            isSnapping = true;
-          }
-        }, 3000);
-      };
-
-      const stopAutoScroll = () => {
-        if (autoScrollTimer) {
-          clearInterval(autoScrollTimer);
-          autoScrollTimer = null;
-        }
-      };
-
-      /* ─── Main animation loop with Spring physics ─── */
-      const tick = () => {
-        if (isSnapping && !isDragging) {
-          // Calculate looped distance to target
-          let diff = targetPosition - position;
-          diff = ((diff + N / 2) % N + N) % N - N / 2;
-
-          // Spring force equations (F = -kx - cv)
-          const force = diff * CFG.springStiffness - velocity * CFG.springDamping;
-          velocity += force;
-          position += velocity;
-
-          // Keep within [0, N) range
-          position = (position % N + N) % N;
-
-          if (Math.abs(diff) < 0.001 && Math.abs(velocity) < 0.0001) {
-            position = targetPosition;
-            velocity = 0;
-            isSnapping = false;
-          }
-        } else if (!isDragging && !isSnapping) {
-          // Decay drag velocity
-          if (Math.abs(velocity) > 0.0001) {
-            position += velocity;
-            velocity *= CFG.flickDecay;
-            position = (position % N + N) % N;
-          } else {
-            velocity = 0;
-          }
-        }
-
-        layoutCards();
-        const activeIdx = (Math.round(position) % N + N) % N;
-        updatePagination(activeIdx);
-        coverflowFrame = requestAnimationFrame(tick);
-      };
-
-      coverflowFrame = requestAnimationFrame(tick);
-      startAutoScroll();
-
-      /* ─── Mouse events ─── */
-      const onMouseDown = (e: MouseEvent) => {
-        e.preventDefault();
-        isDragging = true;
-        isSnapping = false;
-        velocity = 0;
-        dragStartX = e.clientX;
-        lastDragX = e.clientX;
-        lastDragTime = performance.now();
-        stopAutoScroll();
-      };
-
-      const onMouseMove = (e: MouseEvent) => {
-        if (!isDragging) return;
-        const dx = e.clientX - lastDragX;
-        const now = performance.now();
-        const dt = now - lastDragTime;
-        if (dt > 0) {
-          velocity = (-dx * CFG.dragSensitivity) * (16 / dt);
-        }
-        position = (position - dx * CFG.dragSensitivity + N) % N;
-        lastDragX = e.clientX;
-        lastDragTime = now;
-      };
-
-      const onMouseUp = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (Math.abs(velocity) < 0.003) {
-          snapToNearest();
-        }
-        startAutoScroll();
-      };
-
-      /* ─── Touch events ─── */
-      const onTouchStart = (e: TouchEvent) => {
-        isDragging = true;
-        isSnapping = false;
-        velocity = 0;
-        dragStartX = e.touches[0].clientX;
-        lastDragX = e.touches[0].clientX;
-        lastDragTime = performance.now();
-        stopAutoScroll();
-      };
-
-      const onTouchMove = (e: TouchEvent) => {
-        if (!isDragging) return;
-        const clientX = e.touches[0].clientX;
-        const dx = clientX - lastDragX;
-        const now = performance.now();
-        const dt = now - lastDragTime;
-        if (dt > 0) {
-          velocity = (-dx * CFG.dragSensitivity) * (16 / dt);
-        }
-        position = (position - dx * CFG.dragSensitivity + N) % N;
-        lastDragX = clientX;
-        lastDragTime = now;
-      };
-
-      const onTouchEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (Math.abs(velocity) < 0.003) {
-          snapToNearest();
-        }
-        startAutoScroll();
-      };
-
-      /* ─── Mouse Wheel support ─── */
-      const onWheel = (e: WheelEvent) => {
-        e.preventDefault();
-        isPaused = true;
-        isSnapping = false;
-        stopAutoScroll();
-
-        const delta = Math.sign(e.deltaY) * 0.12;
-        position = (position + delta + N) % N;
-        velocity = 0;
-
-        clearTimeout(wheelTimeout!);
-        wheelTimeout = setTimeout(() => {
-          snapToNearest();
-          isPaused = false;
-          startAutoScroll();
-        }, 200);
-      };
-
-      /* ─── Active snap / click handlers ─── */
-      cards.forEach((card, i) => {
-        card.addEventListener("click", (e) => {
-          const currentActive = Math.round(position);
-          if (i !== currentActive) {
-            e.preventDefault();
-            e.stopPropagation();
-            targetPosition = i;
-            isSnapping = true;
-            isPaused = true;
-            stopAutoScroll();
-          } else {
-            const video = card.getAttribute("data-video");
-            if (video) {
-              openVideo(video, COVERFLOW_CARDS[i].client, COVERFLOW_CARDS[i].stat);
-            }
+        // Add modal video opener event listener
+        slide.addEventListener("click", () => {
+          const video = slide.getAttribute("data-video");
+          const client = slide.getAttribute("data-client") || "";
+          const stat = slide.getAttribute("data-stat") || "";
+          if (video) {
+            openVideo(video, client, stat);
           }
         });
       });
 
-      /* ─── Hover pause ─── */
-      const onEnter = () => {
-        isPaused = true;
-      };
-      const onLeave = () => {
-        isPaused = false;
-      };
-
-      /* ─── Keyboard navigation ─── */
-      const onKeyDown = (e: KeyboardEvent) => {
-        const activeEl = document.activeElement;
-        if (!activeEl || !activeEl.classList.contains("coverflow__card")) return;
-
-        if (e.key === "ArrowRight") {
-          e.preventDefault();
-          targetPosition = (Math.round(position) + 1) % N;
-          isSnapping = true;
-          isPaused = true;
-          stopAutoScroll();
-        } else if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          targetPosition = (Math.round(position) - 1 + N) % N;
-          isSnapping = true;
-          isPaused = true;
-          stopAutoScroll();
-        } else if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          (activeEl as HTMLElement).click();
+      // Add entrance animation if enabled
+      if ((carouselConfig.entranceAnimation as string) !== 'none') {
+        let entranceAnimation: any = {};
+        switch (carouselConfig.entranceAnimation as string) {
+          case 'fadeIn':
+            entranceAnimation = {
+              opacity: 0,
+              duration: carouselConfig.entranceDuration,
+              stagger: carouselConfig.entranceStagger,
+              ease: 'power2.out'
+            };
+            break;
+          case 'fadeUp':
+            entranceAnimation = {
+              y: carouselConfig.entranceDistance,
+              opacity: 0,
+              duration: carouselConfig.entranceDuration,
+              stagger: carouselConfig.entranceStagger,
+              ease: 'power3.out'
+            };
+            break;
         }
-      };
 
-      // Bind events
-      coverflowEl.addEventListener("mousedown", onMouseDown);
-      window.addEventListener("mousemove", onMouseMove);
-      window.addEventListener("mouseup", onMouseUp);
-      coverflowEl.addEventListener("touchstart", onTouchStart, { passive: true });
-      coverflowEl.addEventListener("touchmove", onTouchMove, { passive: true });
-      coverflowEl.addEventListener("touchend", onTouchEnd);
-      coverflowEl.addEventListener("wheel", onWheel, { passive: false });
-      coverflowEl.addEventListener("mouseenter", onEnter);
-      coverflowEl.addEventListener("mouseleave", onLeave);
-      document.addEventListener("keydown", onKeyDown);
+        timeline.from(slides, entranceAnimation)
+          .add(() => {
+            startAutoRotation();
+          });
+      } else {
+        startAutoRotation();
+      }
 
-      // Spring-back velocity watcher
-      const velocityWatcher = setInterval(() => {
-        if (!isDragging && !isSnapping && Math.abs(velocity) > 0 && Math.abs(velocity) < 0.005) {
-          velocity = 0;
-          snapToNearest();
+      function updateRotation() {
+        currentRotationSpeed = speedController.value;
+        if (currentRotationSpeed === 0) return;
+
+        const currentTime = Date.now();
+        const deltaTime = currentTime - lastUpdateTime;
+        lastUpdateTime = currentTime;
+
+        const rotationAmount = (deltaTime / 16.67) * currentRotationSpeed * rotationDirection;
+
+        gsap.to(ringEl, {
+          rotationY: `+=${rotationAmount}`,
+          duration: 0,
+          overwrite: true
+        });
+      }
+
+      function startAutoRotation() {
+        if (!autoRotate) return;
+        lastUpdateTime = Date.now();
+        updateRotationFunction = updateRotation;
+        gsap.ticker.add(updateRotationFunction);
+
+        if (speedTween) {
+          speedTween.kill();
         }
-      }, 100);
+        speedTween = gsap.to(speedController, {
+          value: targetRotationSpeed,
+          duration: carouselConfig.pauseEaseDuration,
+          ease: 'power1.out'
+        });
+      }
+
+      function stopAutoRotation() {
+        if (speedTween) {
+          speedTween.kill();
+        }
+        speedTween = gsap.to(speedController, {
+          value: 0,
+          duration: carouselConfig.pauseEaseDuration,
+          ease: 'power1.in',
+          onComplete: () => {
+            if (updateRotationFunction) {
+              gsap.ticker.remove(updateRotationFunction);
+              updateRotationFunction = null;
+            }
+          }
+        });
+      }
+
+      function resumeAutoRotation() {
+        if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
+        autoRotateTimeout = setTimeout(() => {
+          if (carouselConfig.autoRotate) {
+            startAutoRotation();
+          }
+        }, carouselConfig.resumeDelay);
+      }
+
+      // Add pause/resume functionality if enabled
+      if (carouselConfig.pauseOnHover) {
+        const onMouseEnter = () => {
+          if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
+          stopAutoRotation();
+        };
+
+        const onMouseLeave = () => {
+          resumeAutoRotation();
+        };
+
+        carouselEl.addEventListener("mouseenter", onMouseEnter);
+        carouselEl.addEventListener("mouseleave", onMouseLeave);
+
+        carouselEl.addEventListener("touchstart", onMouseEnter, { passive: true });
+        carouselEl.addEventListener("touchend", onMouseLeave);
+
+        cleanupFns.push(() => {
+          carouselEl.removeEventListener("mouseenter", onMouseEnter);
+          carouselEl.removeEventListener("mouseleave", onMouseLeave);
+          carouselEl.removeEventListener("touchstart", onMouseEnter);
+          carouselEl.removeEventListener("touchend", onMouseLeave);
+        });
+      }
 
       cleanupFns.push(() => {
-        cancelAnimationFrame(coverflowFrame);
-        clearInterval(velocityWatcher);
-        stopAutoScroll();
-        if (wheelTimeout) clearTimeout(wheelTimeout);
-        coverflowEl.removeEventListener("mousedown", onMouseDown);
-        window.removeEventListener("mousemove", onMouseMove);
-        window.removeEventListener("mouseup", onMouseUp);
-        coverflowEl.removeEventListener("touchstart", onTouchStart);
-        coverflowEl.removeEventListener("touchmove", onTouchMove);
-        coverflowEl.removeEventListener("touchend", onTouchEnd);
-        coverflowEl.removeEventListener("wheel", onWheel);
-        coverflowEl.removeEventListener("mouseenter", onEnter);
-        coverflowEl.removeEventListener("mouseleave", onLeave);
-        document.removeEventListener("keydown", onKeyDown);
+        if (updateRotationFunction) {
+          gsap.ticker.remove(updateRotationFunction);
+        }
+        if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
+        if (speedTween) speedTween.kill();
+      });
+    };
+
+    if (typeof (window as any).gsap !== "undefined") {
+      runCarousel();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js";
+      script.onload = () => {
+        runCarousel();
+      };
+      document.body.appendChild(script);
+      cleanupFns.push(() => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
       });
     }
 
