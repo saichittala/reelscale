@@ -1,6 +1,6 @@
 :HL["/_next/static/chunks/1f29ji8du69ef.css","style"]
 :HL["/_next/static/chunks/2rn3ipm2p19-9.css","style"]
-:HL["/_next/static/chunks/0-subiez-6bmx.css","style"]
+:HL["/_next/static/chunks/23ojvak9wty1d.css","style"]
 :HL["/assets/logo.svg","image"]
 :HL["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1200&auto=format&fit=crop","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"short-form-video-sound-design","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"2pjlE5vDxJmb1A4IZygBr"}
+0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"short-form-video-sound-design","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"ma1NnxyQ9Hjoo50bgqlEy"}
