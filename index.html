@@ -9,9 +9,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 
   <!-- External CSS -->
   <link rel="stylesheet" href="styles.css">
@@ -78,6 +76,46 @@
         Start your Reel
       </a>
       <a href="#work" class="btn-secondary">View Work</a>
+    </div>
+
+    <!-- 3D COVER FLOW CAROUSEL — Bending Spoons style -->
+    <div class="coverflow display-none" role="region" aria-label="Client showcase carousel"
+      aria-roledescription="carousel">
+      <div class="coverflow__stage" id="coverflowStage">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <!-- Pagination Indicators -->
+      <div class="coverflow__pagination" id="coverflowPagination">
+        <!-- Indicators injected by JS -->
+      </div>
+
+      <!-- Controls -->
+      <div class="coverflow__controls">
+        <button class="coverflow__ctrl-btn" id="coverflowPlayPause" aria-label="Pause Auto-scroll">
+          <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+            <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+          </svg>
+          <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display: none;">
+            <path d="M8 5v14l11-7z"></path>
+          </svg>
+        </button>
+        <button class="coverflow__ctrl-btn" id="coverflowMute" aria-label="Mute Video Audio">
+          <svg class="icon-unmute" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg class="icon-mute" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="22" y1="9" x2="16" y2="15"></line>
+            <line x1="16" y1="9" x2="22" y2="15"></line>
+          </svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -473,18 +511,24 @@
       <div style="text-align: center; margin-bottom: 64px;">
         <span class="section-eyebrow reveal">FAQ</span>
         <h2 class="section-title reveal">Frequently Asked Questions</h2>
-        <p class="section-sub reveal" style="margin: 20px auto 0;">Got questions? We've got answers. Explore our commonly asked questions to learn how we help businesses scale.</p>
+        <p class="section-sub reveal" style="margin: 20px auto 0;">Got questions? We've got answers. Explore our
+          commonly asked questions to learn how we help businesses scale.</p>
       </div>
-      
+
       <div class="faq-list reveal">
         <div class="faq-item">
           <button class="faq-question">
             <span>What is ReelScale?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically.</p>
+              <p>ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing
+                high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention,
+                build brand authority, and scale your client acquisition organically.</p>
             </div>
           </div>
         </div>
@@ -492,11 +536,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>How does short-form video help grow my business?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend.</p>
+              <p>Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust
+                and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering
+                highly targeted organic impressions to your ideal clients without expensive ad spend.</p>
             </div>
           </div>
         </div>
@@ -504,11 +553,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>What is included in ReelScale's end-to-end service?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis.</p>
+              <p>We manage the entire content production pipeline. This includes scriptwriting, visual asset design,
+                high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy,
+                and performance analysis.</p>
             </div>
           </div>
         </div>
@@ -516,11 +570,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>How long does it take to see results?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles.</p>
+              <p>While organic growth builds over time, most clients see a significant rise in video views, profile
+                traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates
+                typically rise steadily as content authority compiles.</p>
             </div>
           </div>
         </div>
@@ -528,11 +587,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>Do I need to film the content myself?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest.</p>
+              <p>Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides
+                (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile
+                device, and our production team handles the rest.</p>
             </div>
           </div>
         </div>
@@ -540,11 +604,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>What makes cinematic reels different from standard video editing?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention.</p>
+              <p>Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize
+                premium color grading, seamless custom transitions, high-impact sound design, and custom typography to
+                create an immersive visual experience that increases audience retention.</p>
             </div>
           </div>
         </div>
@@ -552,11 +621,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>Which platforms do you optimize for?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform.</p>
+              <p>We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We
+                optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of
+                each target platform.</p>
             </div>
           </div>
         </div>
@@ -564,11 +638,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>What is your pricing model?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages.</p>
+              <p>We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing
+                section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom
+                packages.</p>
             </div>
           </div>
         </div>
@@ -576,11 +655,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>How do we get started?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Click "Start your Reel" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap.</p>
+              <p>Click "Start your Reel" to book a strategy call or send us an email. We'll hop on a quick call to audit
+                your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap.
+              </p>
             </div>
           </div>
         </div>
@@ -588,11 +672,16 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>Do you write the video scripts for me?</span>
-            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
           <div class="faq-answer">
             <div class="faq-answer-content">
-              <p>Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals.</p>
+              <p>Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting
+                hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive
+                conversion goals.</p>
             </div>
           </div>
         </div>
