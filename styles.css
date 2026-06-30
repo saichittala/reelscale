@@ -35,6 +35,14 @@ body {
     display: none !important;
 }
 
+.display-flex {
+    display: flex !important;
+}
+
+.fd-c {
+    flex-direction: column;
+}
+
 /* HEADER */
 header {
     position: fixed;
