@@ -37,33 +37,15 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
     video: "https://www.instagram.com/p/DYhpQstRCBU/",
   },
   {
-    videoSrc: "https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=600&auto=format&fit=crop",
-    client: "StyleCo Fashion",
+    videoSrc: "./assets/clients/parthu.png",
+    client: "Parthu Interiors",
     stat: "1.2M Organic Reach",
-    video: "https://www.youtube.com/embed/ziM_K-n6svk",
+    video: "https://drive.google.com/file/d/1yD3ofnBBHKVUkblmLgTm8qYk0A82hK61/view?usp=sharing",
   },
   {
-    videoSrc: "https://images.unsplash.com/photo-1776811798099-ff6d61bd6c7c?q=80&w=600&auto=format&fit=crop",
-    client: "TechLaunch",
+    videoSrc: "./assets/clients/jak-interiors.jpeg",
+    client: "Jak Interiors",
     stat: "4.2x Engagement Lift",
-    video: "https://www.youtube.com/embed/ziM_K-n6svk",
-  },
-  {
-    videoSrc: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop",
-    client: "Greenwood Interiors",
-    stat: "4.2M Views Delivered",
-    video: "https://www.youtube.com/embed/ziM_K-n6svk",
-  },
-  {
-    videoSrc: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop",
-    client: "Swift Education",
-    stat: "850k Organic Views",
-    video: "https://www.youtube.com/embed/ziM_K-n6svk",
-  },
-  {
-    videoSrc: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=600&auto=format&fit=crop",
-    client: "Luxe Studio",
-    stat: "1.5M Views Delivered",
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
   },
 ];
@@ -74,18 +56,18 @@ const carouselConfig = {
   slideHeight: 700,         // Height of each slide in pixels
   slidesInRing: 13,         // Fewer slides in the ring makes each slide wider/larger!
   slideSpacing: 1.5,        // Spacing between slides in degrees
-  
+
   radius: 1100,             // Radius of the carousel circle (px)
   initialRotation: 180,     // Initial rotation of the carousel (degrees)
-  
+
   autoRotate: true,         // Set to false to disable auto-rotation
   rotationSpeed: 0.07,      // Target speed of rotation (degrees per frame)
   rotationDirection: 1,     // 1 for clockwise, -1 for counter-clockwise
-  
+
   pauseOnHover: true,       // Pause rotation when hovering
   resumeDelay: 0,           // Delay before resuming rotation after hover (milliseconds)
   pauseEaseDuration: 0.5,   // Duration for easing in/out of pause (seconds)
-  
+
   entranceAnimation: 'fadeIn',  // 'fadeIn', 'fadeUp', or 'none'
   entranceDuration: 1.5,        // Duration of entrance animation (seconds)
   entranceStagger: 0.08,        // Stagger time between slide animations (seconds)
