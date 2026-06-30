@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/1f29ji8du69ef.css","style"]
 :HL["/_next/static/chunks/2rn3ipm2p19-9.css","style"]
-:HL["/_next/static/chunks/2dagfjwdqedc2.css","style"]
+:HL["/_next/static/chunks/0g4c79lpxtdtm.css","style"]
 :HL["/assets/logo.svg","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"category","param":null,"prefetchHints":0,"slots":{"children":{"name":"category","param":{"type":"d","key":"social%20media%20growth","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}},"staleTime":300,"buildId":"NXFoLsFBpYq_mwBHqPJxe"}
+0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"category","param":null,"prefetchHints":0,"slots":{"children":{"name":"category","param":{"type":"d","key":"social%20media%20growth","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}}}},"staleTime":300,"buildId":"CXfRz0Z7VXTk9_sFDoiX3"}
