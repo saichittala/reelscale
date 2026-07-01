@@ -476,7 +476,7 @@ em {
 }
 
 .metric-digit {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Instrument Sans', Georgia, serif;
     color: var(--red);
     font-weight: 400;
     font-size: 80px;
