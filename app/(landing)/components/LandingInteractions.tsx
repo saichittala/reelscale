@@ -68,10 +68,10 @@ const carouselConfig = {
   resumeDelay: 0,           // Delay before resuming rotation after hover (milliseconds)
   pauseEaseDuration: 0.5,   // Duration for easing in/out of pause (seconds)
 
-  entranceAnimation: 'fadeIn',  // 'fadeIn', 'fadeUp', or 'none'
-  entranceDuration: 1.5,        // Duration of entrance animation (seconds)
-  entranceStagger: 0.08,        // Stagger time between slide animations (seconds)
-  entranceDistance: 100         // Distance for fadeUp animation (pixels)
+  entranceAnimation: 'fadeUp',  // 'fadeIn', 'fadeUp', or 'none'
+  entranceDuration: 2.2,        // Duration of entrance animation (seconds)
+  entranceStagger: 0.05,        // Stagger time between slide animations (seconds)
+  entranceDistance: 160         // Distance for fadeUp animation (pixels)
 } as const;
 
 export default function LandingInteractions() {
@@ -161,7 +161,12 @@ export default function LandingInteractions() {
       });
 
       // 2. Duplicate slides if original count is less than slidesInRing
-      const slidesInRing = carouselConfig.slidesInRing;
+      const isMobile = window.innerWidth <= 768;
+      const slidesInRing = isMobile ? 11 : carouselConfig.slidesInRing;
+      const slideSpacing = isMobile ? 2.0 : carouselConfig.slideSpacing;
+      const radius = isMobile ? 350 : carouselConfig.radius;
+      const slideHeight = isMobile ? 220 : carouselConfig.slideHeight;
+
       let currentSlides = ringEl.querySelectorAll(".ls-curved-carousel__slide");
       let originalCount = currentSlides.length;
 
@@ -181,12 +186,12 @@ export default function LandingInteractions() {
       const anglePerSlide = 360 / slidesInRing;
 
       // Calculate ideal slide width based on arc length
-      const arcLength = (anglePerSlide - carouselConfig.slideSpacing) * (Math.PI / 180) * carouselConfig.radius;
+      const arcLength = (anglePerSlide - slideSpacing) * (Math.PI / 180) * radius;
       const slideWidth = arcLength;
 
       // Set stage dimensions
       stageEl.style.width = `${slideWidth}px`;
-      stageEl.style.height = `${carouselConfig.slideHeight}px`;
+      stageEl.style.height = `${slideHeight}px`;
 
       // Set up auto-rotation state
       let autoRotate = carouselConfig.autoRotate;
@@ -207,12 +212,12 @@ export default function LandingInteractions() {
       // Apply calculated dimensions and position all slides in a circle
       slides.forEach((slide, index) => {
         slide.style.width = `${slideWidth}px`;
-        slide.style.height = `${carouselConfig.slideHeight}px`;
+        slide.style.height = `${slideHeight}px`;
 
         gsap.set(slide, {
           rotateY: index * -anglePerSlide,
-          transformOrigin: `50% 50% ${carouselConfig.radius}px`,
-          z: -carouselConfig.radius,
+          transformOrigin: `50% 50% ${radius}px`,
+          z: -radius,
           backfaceVisibility: 'hidden'
         });
 
@@ -227,35 +232,59 @@ export default function LandingInteractions() {
         });
       });
 
-      // Add entrance animation if enabled
-      if ((carouselConfig.entranceAnimation as string) !== 'none') {
-        let entranceAnimation: any = {};
-        switch (carouselConfig.entranceAnimation as string) {
-          case 'fadeIn':
-            entranceAnimation = {
-              opacity: 0,
-              duration: carouselConfig.entranceDuration,
-              stagger: carouselConfig.entranceStagger,
-              ease: 'power2.out'
-            };
-            break;
-          case 'fadeUp':
-            entranceAnimation = {
-              y: carouselConfig.entranceDistance,
-              opacity: 0,
-              duration: carouselConfig.entranceDuration,
-              stagger: carouselConfig.entranceStagger,
-              ease: 'power3.out'
-            };
-            break;
-        }
+      // Add entrance animation (scroll-driven if ScrollTrigger is loaded, otherwise standard fallback)
+      const gsapInstance = (window as any).gsap;
+      const ScrollTriggerInstance = (window as any).ScrollTrigger;
 
-        timeline.from(slides, entranceAnimation)
-          .add(() => {
-            startAutoRotation();
-          });
-      } else {
+      if (ScrollTriggerInstance && gsapInstance) {
+        gsapInstance.registerPlugin(ScrollTriggerInstance);
+
+        const triggerAnim = gsapInstance.fromTo(carouselEl,
+          {
+            y: isMobile ? 80 : 150,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 3.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: carouselEl,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+
+        cleanupFns.push(() => {
+          if (triggerAnim.scrollTrigger) {
+            triggerAnim.scrollTrigger.kill();
+          }
+          triggerAnim.kill();
+        });
+
         startAutoRotation();
+      } else {
+        if ((carouselConfig.entranceAnimation as string) !== 'none') {
+          gsapInstance.fromTo(carouselEl,
+            {
+              y: isMobile ? 80 : 150,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1.2,
+              ease: "power3.out",
+              onComplete: () => {
+                startAutoRotation();
+              }
+            }
+          );
+        } else {
+          startAutoRotation();
+        }
       }
 
       function updateRotation() {
@@ -351,20 +380,44 @@ export default function LandingInteractions() {
       });
     };
 
-    if (typeof (window as any).gsap !== "undefined") {
-      runCarousel();
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js";
-      script.onload = () => {
-        runCarousel();
-      };
-      document.body.appendChild(script);
-      cleanupFns.push(() => {
-        if (script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
+    const loadScript = (src: string) => {
+      return new Promise<void>((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = () => resolve();
+        script.onerror = () => reject();
+        document.body.appendChild(script);
+        cleanupFns.push(() => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        });
       });
+    };
+
+    if (typeof (window as any).gsap !== "undefined") {
+      if (typeof (window as any).ScrollTrigger !== "undefined") {
+        runCarousel();
+      } else {
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js")
+          .then(() => {
+            runCarousel();
+          })
+          .catch((err) => {
+            console.error("Error loading ScrollTrigger:", err);
+            runCarousel();
+          });
+      }
+    } else {
+      loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js")
+        .then(() => loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"))
+        .then(() => {
+          runCarousel();
+        })
+        .catch((err) => {
+          console.error("Error loading GSAP scripts:", err);
+          runCarousel();
+        });
     }
 
     /* ═══════════════════════════════════════════════════
