@@ -1,50 +1,13 @@
 1:"$Sreact.fragment"
-b:I[91133,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0u8yqrn767uwa.js"],"default"]
-f:I[79520,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0u8yqrn767uwa.js"],""]
-10:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
-11:"$Sreact.suspense"
-13:I[22016,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0u8yqrn767uwa.js"],""]
-2:T1116,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"$$","telephone":"+919966239433","address":{"@type":"PostalAddress","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3","$L4","$L5","$L6","$L7","$L8"],["$L9"],"$La"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"0gsWwJy3np1326UQ0uvVY"}
-3:["$","$Lb",null,{}]
-c:T6977,
-  <div class="video-modal" id="videoModal">
-    <div class="video-backdrop"></div>
-
-    <div class="video-content">
-      <button class="video-close" id="closeVideo">✕</button>
-      <div class="video-wrapper" id="videoWrapper"></div>
-    </div>
-  </div>
-
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
-
-  <!-- HEADER -->
-  <header id="header">
-    <a href="#" class="logo">
-      <!-- <div class="logo-mark">R</div> -->
-      <div>
-        <img src="assets/logo.svg" alt="ReelScale Logo" style="width:100%; height: 20px;">
-      </div>
-      <!-- <span class="logo-text">Reel<span>Scale</span> Co.</span> -->
-    </a>
-
-
-
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
-
-      <nav>
-        <a href="#work">Works</a>
-        <a href="#pricing">Pricing</a>
-      </nav>
-
-      <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
-        target="_blank" class="btn-primary mob-btn-primary">
-        Start your Reel
-      </a>
-
-    </div>
-  </header>
+d:I[91133,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/2bc5o_z25_--f.js"],"default"]
+12:I[79520,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/2bc5o_z25_--f.js"],""]
+13:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
+14:"$Sreact.suspense"
+16:I[22016,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/2bc5o_z25_--f.js"],""]
+2:T14cd,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"LocalBusiness","@id":"https://reelscale.in/#localbusiness","name":"ReelScale Co.","url":"https://reelscale.in","logo":"https://reelscale.in/assets/logo.png","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","streetAddress":"Madhapur, HITEC City","addressLocality":"Hyderabad","addressRegion":"Telangana","postalCode":"500081","addressCountry":"IN"},"geo":{"@type":"GeoCoordinates","latitude":"17.4483","longitude":"78.3741"},"areaServed":[{"@type":"AdministrativeArea","name":"Hyderabad"},{"@type":"AdministrativeArea","name":"Madhapur"},{"@type":"AdministrativeArea","name":"Gachibowli"},{"@type":"AdministrativeArea","name":"Kondapur"},{"@type":"AdministrativeArea","name":"HITEC City"},{"@type":"AdministrativeArea","name":"Jubilee Hills"},{"@type":"AdministrativeArea","name":"Banjara Hills"}]},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale Reel Production Hyderabad","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3","$L4","$L5","$L6","$L7","$L8","$L9","$La"],["$Lb"],"$Lc"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"VpUM-g05RDnEZbBtM2oDX"}
+3:["$","$Ld",null,{}]
+4:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"<header id=\"header\">\n    <a href=\"#\" class=\"logo\">\n      <!-- <div class=\"logo-mark\">R</div> -->\n      <div>\n        <img src=\"assets/logo.svg\" alt=\"ReelScale - Premium Reel Production Agency in Hyderabad\" width=\"120\" height=\"20\"\n          style=\"width: 120px; height: 20px;\">\n      </div>\n      <!-- <span class=\"logo-text\">Reel<span>Scale</span> Co.</span> -->\n    </a>\n\n\n\n    <div style=\"display:flex; align-items:center; justify-content:space-between; gap:20px;\">\n\n      <nav>\n        <a href=\"#work\">Works</a>\n        <a href=\"#pricing\">Pricing</a>\n      </nav>\n\n      <a href=\"https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F\"\n        target=\"_blank\" class=\"btn-primary mob-btn-primary\">\n        Start your Reel\n      </a>\n\n    </div>\n  </header>"}}]
+e:T68b1,
 
   <!-- HERO -->
   <section id="hero">
@@ -54,10 +17,12 @@ c:T6977,
 
       <!-- <div class="hero-eyebrow">Scale Faster With Better Content</div> -->
 
-      <h1>Grow Your Brand<br><em>With Reels</em></h1>
-
-      <!-- <p class="hero-sub">
-      High-retention reels that grow your brand and bring you clients, not just views. </p> -->
+      <h1>Grow Your Brand<br>With <em>Reels</em></h1>
+      <p class="hero-sub display-none">
+        Top-rated Reel Production Company in Hyderabad. We build high-retention cinematic Instagram Reels, YouTube
+        Shorts, and brand videos that grow your audience and acquire clients organically in Gachibowli, Madhapur,
+        Kondapur, and HITEC City.
+      </p>
 
       <div class="hero-ctas">
         <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
@@ -396,11 +361,11 @@ c:T6977,
     <div class="testi-grid reveal">
       <div class="testi-card">
         <div class="testi-stars">
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
         </div>
 
         <p class="testi-quote">
@@ -423,11 +388,11 @@ c:T6977,
       </div>
       <div class="testi-card">
         <div class="testi-stars">
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
         </div>
         <p class="testi-quote">"The 24-hour turnaround alone is worth every penny. They delivered 8 reels in a week and
           two went viral. Incredible team."</p>
@@ -444,11 +409,11 @@ c:T6977,
       </div>
       <div class="testi-card">
         <div class="testi-stars">
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-f.svg" alt="Star" />
-          <img src="./assets/icons/star-hf.svg" alt="Star" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-hf.svg" alt="Half Star Rating Icon" width="16" height="16" loading="lazy" />
         </div>
         <p class="testi-quote">"We were burning money on ads with mediocre results. ReelScale shifted us to
           organic-first and our CAC dropped 60%."</p>
@@ -651,71 +616,80 @@ c:T6977,
   </section>
 
   <!-- LATEST BLOGS SECTION PLACEHOLDER -->
-  4:[["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$c"}}],"$Ld","$Le"]
-5:["$","$Lf",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
-6:["$","$Lf",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3"}]
-7:["$","$Lf",null,{"id":"google-analytics","children":"\n          window.dataLayer = window.dataLayer || [];\n          function gtag(){dataLayer.push(arguments);}\n          gtag('js', new Date());\n          gtag('config', 'G-2F6CKK0MY3');\n        "}]
-8:["$","$Lf",null,{"id":"clarity","children":"\n          (function(c,l,a,r,i,t,y){\n            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n            t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n          })(window, document, \"clarity\", \"script\", \"wwiioh52bs\");\n        "}]
-9:["$","script","script-0",{"src":"/_next/static/chunks/0u8yqrn767uwa.js","async":true}]
-a:["$","$L10",null,{"children":["$","$11",null,{"name":"Next.MetadataOutlet","children":"$@12"}]}]
-d:["$","section",null,{"id":"latest-blogs-section","children":["$","div",null,{"className":"container","style":{"maxWidth":"1200px","margin":"0 auto","padding":"0 24px"},"children":[["$","div",null,{"style":{"textAlign":"center","marginBottom":"50px"},"className":"reveal","children":[["$","div",null,{"className":"section-eyebrow","style":{"textTransform":"uppercase"},"children":"Guides & breakdowns"}],["$","h2",null,{"className":"section-title","children":"Latest from our blog"}]]}],["$","div",null,{"className":"blog-grid reveal","children":[["$","$L13","1782729623895",{"href":"/blog/how-to-create-instagram-reels-that-go-viral-2026","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop","alt":"How to Create Instagram Reels That Actually Go Viral in 2026","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Social Media Growth"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Create Instagram Reels That Actually Go Viral in 2026"}],["$","p",null,{"className":"blog-card-desc","children":"Discover proven strategies to create Instagram Reels that reach more people, increase engagement, and grow your business organically in 2026."}],["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"15 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]]}]]}],["$","$L13","1782730017402",{"href":"/blog/professional-reel-production-vs-diy","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?q=80&w=1200&auto=format&fit=crop","alt":"Professional Reel Production vs DIY Videos: Which Gives Better Results?","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Production"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],["$","h3",null,{"className":"blog-card-title","children":"Professional Reel Production vs DIY Videos: Which Gives Better Results?"}],["$","p",null,{"className":"blog-card-desc","children":"Discover the differences between professional reel production and DIY videos. Learn which delivers better engagement, branding, customer trust, and ROI for your business."}],["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"14 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]]}]]}],["$","$L13","1782661105001",{"href":"/blog/short-form-video-high-ticket-b2b-leads","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","alt":"How to Use Short-Form Video to Generate High-Ticket B2B Leads","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Marketing"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],"$L14","$L15","$L16"]}]]}]]}],"$L17"]}]}]
-18:T628,
-
-  <!-- FINAL CTA -->
-  <section id="cta">
-    <div class="cta-inner">
-      <div class="section-eyebrow reveal" style="display:inline-block">Ready to Scale?</div>
-      <h2 class="reveal">Your content<br>should <em style="color:var(--red)">Work </em>for you.</h2>
-      <p class="reveal">Book a free strategy call. No pitch. No fluff. Just a real conversation about your growth.</p>
-      <div class="cta-btn-group reveal">
-        <a href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F"
-          target="_blank" class="btn-primary">
-          Start your Reel</a>
-        <a href="mailto:reelscale7@gmail.com" class="btn-secondary">Send Email</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <!-- FOOTER -->
-  <footer>
+  5:["$","main",null,{"id":"main-content","children":[["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$e"}}],"$Lf","$L10"]}]
+11:Tef6,<footer>
     <div class="footer-inner">
       <a href="#" class="logo">
         <div>
-          <img src="assets/logo.svg" alt="ReelScale Logo" style="width:100%; height:20px;">
+          <img src="assets/logo.svg" alt="ReelScale - Professional Instagram Reel Making Company in Hyderabad"
+            width="120" height="20" style="width:120px; height: 20px;">
         </div>
-        <!-- <span class="logo-text">Reel<span>Scale</span> Co.</span> -->
       </a>
 
       <nav class="footer-nav">
         <a href="#work">Works</a>
         <a href="#pricing">Pricing</a>
-        <a href="dashboard/login">Login</a>
-        <!-- <a href="#process">Process</a>
-      <a href="#testimonials">Results</a> -->
+        <a href="dashboard/login.html">Login</a>
       </nav>
     </div>
 
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2026 ReelScale Co All Rights Reserved.</span>
+    <!-- Services / Industries Directory Grid for Local SEO and Internal Linking -->
+    <div class="footer-directory"
+      style="max-width: 1200px; margin: 20px auto 0; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
+      <div style="font-size: 11px; color: var(--red); font-weight: 400; margin-bottom: 12px; text-transform: none;">
+        Local Reel Production Services (Hyderabad)</div>
+      <div
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; font-size: 13px;">
+        <a href="/services/restaurant-reels" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Restaurant Reel
+          Production</a>
+        <a href="/services/gym-reels" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Gym Reel
+          Production</a>
+        <a href="/services/interior-designers"
+          style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Interior Design
+          Reels</a>
+        <a href="/services/salons" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Salon Reel
+          Shoots</a>
+        <a href="/services/fashion-brands" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Fashion Brand Video
+          Shoots</a>
+        <a href="/services/real-estate" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Real Estate Video
+          Production</a>
+        <a href="/services/healthcare" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Healthcare Video
+          Marketing</a>
+        <a href="/services/cafes" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Cafe Reel
+          Production</a>
+        <a href="/services/startups" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Startup Video
+          Agency</a>
+        <a href="/services/corporate-companies"
+          style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
+          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Corporate Video
+          Production</a>
+      </div>
     </div>
-  </footer>
 
-  <!-- External JS -->
-  
-  
-  
-  
-  <!-- Google Analytics -->
-  
-
-  
-
-  
-
-e:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$18"}}]
-12:null
-14:["$","h3",null,{"className":"blog-card-title","children":"How to Use Short-Form Video to Generate High-Ticket B2B Leads"}]
-15:["$","p",null,{"className":"blog-card-desc","children":"Learn the exact strategy to create high-retention short-form videos that attract qualified B2B leads, founders, and decision-makers on social media."}]
-16:["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"2 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]
-17:["$","div",null,{"style":{"textAlign":"center","marginTop":"40px"},"className":"reveal","children":["$","$L13",null,{"href":"/blog","className":"btn-secondary","style":{"textDecoration":"none"},"children":"View all guides & breakdowns"}]}]
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
+        Hyderabad.</span>
+    </div>
+  </footer>6:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$11"}}]
+7:["$","$L12",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
+8:["$","$L12",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3"}]
+9:["$","$L12",null,{"id":"google-analytics","children":"\n          window.dataLayer = window.dataLayer || [];\n          function gtag(){dataLayer.push(arguments);}\n          gtag('js', new Date());\n          gtag('config', 'G-2F6CKK0MY3');\n        "}]
+a:["$","$L12",null,{"id":"clarity","children":"\n          (function(c,l,a,r,i,t,y){\n            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n            t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n          })(window, document, \"clarity\", \"script\", \"wwiioh52bs\");\n        "}]
+b:["$","script","script-0",{"src":"/_next/static/chunks/2bc5o_z25_--f.js","async":true}]
+c:["$","$L13",null,{"children":["$","$14",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]
+f:["$","section",null,{"id":"latest-blogs-section","children":["$","div",null,{"className":"container","style":{"maxWidth":"1200px","margin":"0 auto","padding":"0 24px"},"children":[["$","div",null,{"style":{"textAlign":"center","marginBottom":"50px"},"className":"reveal","children":[["$","div",null,{"className":"section-eyebrow","style":{"textTransform":"uppercase"},"children":"Guides & breakdowns"}],["$","h2",null,{"className":"section-title","children":"Latest from our blog"}]]}],["$","div",null,{"className":"blog-grid reveal","children":[["$","$L16","1782729623895",{"href":"/blog/how-to-create-instagram-reels-that-go-viral-2026","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop","alt":"How to Create Instagram Reels That Actually Go Viral in 2026","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Social Media Growth"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Create Instagram Reels That Actually Go Viral in 2026"}],["$","p",null,{"className":"blog-card-desc","children":"Discover proven strategies to create Instagram Reels that reach more people, increase engagement, and grow your business organically in 2026."}],["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"15 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]]}]]}],["$","$L16","1782730017402",{"href":"/blog/professional-reel-production-vs-diy","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?q=80&w=1200&auto=format&fit=crop","alt":"Professional Reel Production vs DIY Videos: Which Gives Better Results?","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Production"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],["$","h3",null,{"className":"blog-card-title","children":"Professional Reel Production vs DIY Videos: Which Gives Better Results?"}],["$","p",null,{"className":"blog-card-desc","children":"Discover the differences between professional reel production and DIY videos. Learn which delivers better engagement, branding, customer trust, and ROI for your business."}],["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"14 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]]}]]}],["$","$L16","1782661105001",{"href":"/blog/short-form-video-high-ticket-b2b-leads","className":"blog-card","style":{"textDecoration":"none"},"children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","alt":"How to Use Short-Form Video to Generate High-Ticket B2B Leads","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"className":"blog-card-category","children":"Marketing"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2026-06-29"}]]}],"$L17","$L18","$L19"]}]]}]]}],"$L1a"]}]}]
+10:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"\n\n  <!-- FINAL CTA -->\n  <section id=\"cta\">\n    <div class=\"cta-inner\">\n      <div class=\"section-eyebrow reveal\" style=\"display:inline-block\">Ready to Scale?</div>\n      <h2 class=\"reveal\">Your content<br>should <em style=\"color:var(--red)\">Work </em>for you.</h2>\n      <p class=\"reveal\">Book a free strategy call. No pitch. No fluff. Just a real conversation about your growth.</p>\n      <div class=\"cta-btn-group reveal\">\n        <a href=\"https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F\"\n          target=\"_blank\" class=\"btn-primary\">\n          Start your Reel</a>\n        <a href=\"mailto:reelscale7@gmail.com\" class=\"btn-secondary\">Send Email</a>\n      </div>\n    </div>\n  </section>\n\n  <!-- FOOTER -->\n  <!-- FOOTER -->\n  "}}]
+15:null
+17:["$","h3",null,{"className":"blog-card-title","children":"How to Use Short-Form Video to Generate High-Ticket B2B Leads"}]
+18:["$","p",null,{"className":"blog-card-desc","children":"Learn the exact strategy to create high-retention short-form videos that attract qualified B2B leads, founders, and decision-makers on social media."}]
+19:["$","div",null,{"className":"blog-card-footer","children":[["$","span",null,{"children":"2 min read"}],["$","span",null,{"className":"blog-read-more","children":["Read article",["$","svg",null,{"width":"12","height":"12","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2.5","strokeLinecap":"round","strokeLinejoin":"round","children":[["$","line",null,{"x1":"5","y1":"12","x2":"19","y2":"12"}],["$","polyline",null,{"points":"12 5 19 12 12 19"}]]}]]}]]}]
+1a:["$","div",null,{"style":{"textAlign":"center","marginTop":"40px"},"className":"reveal","children":["$","$L16",null,{"href":"/blog","className":"btn-secondary","style":{"textDecoration":"none"},"children":"View all guides & breakdowns"}]}]
