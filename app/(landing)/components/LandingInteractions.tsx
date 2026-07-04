@@ -26,25 +26,25 @@ interface CoverFlowCard {
 const COVERFLOW_CARDS: CoverFlowCard[] = [
   {
     videoSrc: "./assets/clients/avinash-salon.jpg",
-    client: "Avinash Salon",
+    client: "Salons",
     stat: "2x Leads in 24hrs",
     video: "https://www.instagram.com/reels/DY3bF7xPJ5_/",
   },
   {
     videoSrc: "./assets/clients/maitrova.png",
-    client: "Maitrova",
+    client: "CLOTHING",
     stat: "2.4M Views",
     video: "https://www.instagram.com/p/DYhpQstRCBU/",
   },
   {
     videoSrc: "./assets/clients/parthu.png",
-    client: "Parthu Interiors",
+    client: "Interiors",
     stat: "1.2M Organic Reach",
     video: "https://drive.google.com/file/d/1yD3ofnBBHKVUkblmLgTm8qYk0A82hK61/view?usp=sharing",
   },
   {
     videoSrc: "./assets/clients/jak-interiors.jpeg",
-    client: "Jak Interiors",
+    client: "Interiors",
     stat: "4.2x Engagement Lift",
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
   },

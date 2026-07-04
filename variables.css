@@ -6,7 +6,7 @@
  */
 
 /* ─────────────────────────── FONTS ─────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Space+Grotesk:wght@300..700&display=swap');
 
 /* ─────────────────────────── ROOT TOKENS ─────────────────────────── */
 :root {
@@ -32,6 +32,7 @@
     /* FONT FAMILIES */
     --primary-font: -apple-system, BlinkMacSystemFont, 'Geist', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font: -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
+    --font-space-grotesk: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
     /* ─── COLORS ─── */
 
