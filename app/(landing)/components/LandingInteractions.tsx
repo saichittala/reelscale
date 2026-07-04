@@ -21,29 +21,34 @@ interface CoverFlowCard {
   client: string;
   stat: string;
   video?: string;
+  posterSrc?: string;
 }
 
 const COVERFLOW_CARDS: CoverFlowCard[] = [
   {
-    videoSrc: "./assets/clients/avinash-salon.jpg",
+    videoSrc: "./assets/clients/avinash-salon.mp4",
+    posterSrc: "./assets/clients/avinash-salon.jpg",
     client: "Salons",
     stat: "2x Leads in 24hrs",
     video: "https://www.instagram.com/reels/DY3bF7xPJ5_/",
   },
   {
-    videoSrc: "./assets/clients/maitrova.png",
+    videoSrc: "./assets/clients/maitrova.mp4",
+    posterSrc: "./assets/clients/maitrova.png",
     client: "CLOTHING",
     stat: "2.4M Views",
     video: "https://www.instagram.com/p/DYhpQstRCBU/",
   },
   {
-    videoSrc: "./assets/clients/parthu.png",
+    videoSrc: "./assets/clients/parthu.mp4",
+    posterSrc: "./assets/clients/parthu.png",
     client: "Interiors",
     stat: "1.2M Organic Reach",
     video: "https://drive.google.com/file/d/1yD3ofnBBHKVUkblmLgTm8qYk0A82hK61/view?usp=sharing",
   },
   {
-    videoSrc: "./assets/clients/jak-interiors.jpeg",
+    videoSrc: "./assets/clients/jak-interiors.mp4",
+    posterSrc: "./assets/clients/jak-interiors.jpeg",
     client: "Interiors",
     stat: "4.2x Engagement Lift",
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
@@ -141,8 +146,9 @@ export default function LandingInteractions() {
 
         const isVideo = data.videoSrc.toLowerCase().endsWith(".mp4");
         if (isVideo) {
+          const posterAttr = data.posterSrc ? `poster="${data.posterSrc}"` : "";
           slide.innerHTML = `
-            <video autoplay loop muted playsinline preload="metadata" class="ls-curved-carousel__media">
+            <video loop muted playsinline preload="metadata" ${posterAttr} class="ls-curved-carousel__media">
               <source src="${data.videoSrc}" type="video/mp4" />
             </video>
             <div class="ls-curved-carousel__label">
@@ -232,6 +238,35 @@ export default function LandingInteractions() {
         });
       });
 
+      // Manage video playback based on position to avoid decoding 13 videos at once
+      function manageVideoPlayback(ringRotation: number) {
+        slides.forEach((slide, index) => {
+          const video = slide.querySelector("video") as HTMLVideoElement | null;
+          if (!video) return;
+
+          const slideRotateY = index * -anglePerSlide;
+          let angle = (ringRotation + slideRotateY) % 360;
+          if (angle < -180) angle += 360;
+          if (angle > 180) angle -= 360;
+
+          // Play only if slide is facing the front (within 60 degrees of front view)
+          const isFacingFront = Math.abs(angle) < 60;
+
+          if (isFacingFront) {
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+          } else {
+            if (!video.paused) {
+              video.pause();
+            }
+          }
+        });
+      }
+
+      // Initialize video playing state for the starting angle
+      manageVideoPlayback(carouselConfig.initialRotation);
+
       // Add entrance animation (scroll-driven if ScrollTrigger is loaded, otherwise standard fallback)
       const gsapInstance = (window as any).gsap;
       const ScrollTriggerInstance = (window as any).ScrollTrigger;
@@ -297,11 +332,16 @@ export default function LandingInteractions() {
 
         const rotationAmount = (deltaTime / 16.67) * currentRotationSpeed * rotationDirection;
 
+        const currentRot = parseFloat(gsap.getProperty(ringEl, "rotationY") as string) || 0;
+        const newRot = currentRot + rotationAmount;
+
         gsap.to(ringEl, {
-          rotationY: `+=${rotationAmount}`,
+          rotationY: newRot,
           duration: 0,
           overwrite: true
         });
+
+        manageVideoPlayback(newRot);
       }
 
       function startAutoRotation() {
