@@ -6,15 +6,28 @@ import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
 
 export const metadata: Metadata = {
-  title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
-  description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales. Partner with Team ReelScale for expert short-form video content creation.",
-  keywords: ["cinematic reels", "video agency", "short form video content", "Instagram reels agency", "TikTok growth", "content scale", "YouTube shorts editor"],
+  title: "ReelScale | Premium Reel Production Company in Hyderabad",
+  description: "ReelScale is the leading Reel Making Agency in Hyderabad. We produce high-retention cinematic Instagram Reels, TikToks, YouTube Shorts, and brand videos that drive organic growth and client acquisition.",
+  keywords: [
+    "Reel Production Hyderabad",
+    "Reel Making Agency Hyderabad",
+    "Instagram Reel Production",
+    "Video Production Company Hyderabad",
+    "Short Form Video Agency",
+    "Content Creation Agency Hyderabad",
+    "Professional Reel Shoots",
+    "Business Reel Production",
+    "Brand Video Production",
+    "Social Media Video Agency",
+    "Cinematic Reels",
+    "Product Shoot Hyderabad"
+  ],
   alternates: {
     canonical: "https://reelscale.in",
   },
   openGraph: {
-    title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
-    description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales.",
+    title: "ReelScale | Premium Reel Production Company in Hyderabad",
+    description: "ReelScale is the leading Reel Making Agency in Hyderabad. We build high-retention cinematic Reels and brand videos that scale organic growth.",
     url: "https://reelscale.in",
     siteName: "ReelScale",
     images: [
@@ -22,7 +35,7 @@ export const metadata: Metadata = {
         url: "https://reelscale.in/assets/logo.png",
         width: 1200,
         height: 630,
-        alt: "ReelScale Branding",
+        alt: "ReelScale Branding - Reel Making Company Hyderabad",
       },
     ],
     locale: "en_US",
@@ -30,28 +43,53 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ReelScale | Premium Cinematic Reels for Rapid Brand Growth",
-    description: "High-retention cinematic reels that grow your brand, increase engagement, and drive sales.",
+    title: "ReelScale | Premium Reel Production Company in Hyderabad",
+    description: "High-retention cinematic Reels, Shorts and brand videos that scale your business in Hyderabad.",
     images: ["https://reelscale.in/assets/logo.png"],
   },
 };
 
-let cachedLandingMarkup: string | null = null;
+let cachedHeaderHtml: string | null = null;
+let cachedMainHtml: string | null = null;
+let cachedFooterHtml: string | null = null;
 
-function getLandingMarkup() {
-  if (process.env.NODE_ENV === "production" && cachedLandingMarkup) {
-    return cachedLandingMarkup;
+function getParsedLandingPage() {
+  if (process.env.NODE_ENV === "production" && cachedHeaderHtml && cachedMainHtml && cachedFooterHtml) {
+    return { headerHtml: cachedHeaderHtml, mainHtml: cachedMainHtml, footerHtml: cachedFooterHtml };
   }
 
   const html = readFileSync(join(process.cwd(), "index.html"), "utf8");
-  const body = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? "";
 
-  const markup = body
+  // Extract Header
+  const headerMatch = html.match(/<header[^>]*>([\s\S]*?)<\/header>/i);
+  const headerHtml = headerMatch ? headerMatch[0] : "";
+
+  // Extract Footer
+  const footerMatch = html.match(/<footer[^>]*>([\s\S]*?)<\/footer>/i);
+  const footerHtml = footerMatch ? footerMatch[0] : "";
+
+  // Extract Main content (everything between header and footer)
+  const startIdx = html.indexOf("</header>");
+  const endIdx = html.indexOf("<footer");
+  let mainHtml = "";
+
+  if (startIdx !== -1 && endIdx !== -1) {
+    mainHtml = html.substring(startIdx + "</header>".length, endIdx);
+  } else {
+    mainHtml = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? "";
+    mainHtml = mainHtml.replace(/<header[\s\S]*?<\/header>/gi, "").replace(/<footer[\s\S]*?<\/footer>/gi, "");
+  }
+
+  // Clean up scripts and replace links
+  mainHtml = mainHtml
     .replace(/<script\b[\s\S]*?<\/script>/gi, "")
     .replace(/href="dashboard\/login\.html"/g, 'href="dashboard/login"');
 
-  cachedLandingMarkup = markup;
-  return markup;
+  cachedHeaderHtml = headerHtml;
+  cachedMainHtml = mainHtml;
+  cachedFooterHtml = footerHtml;
+
+  return { headerHtml, mainHtml, footerHtml };
 }
 
 export default function Home() {
@@ -82,15 +120,48 @@ export default function Home() {
         }
       },
       {
-        "@type": "ProfessionalService",
-        "@id": "https://reelscale.in/#service",
-        "name": "ReelScale",
+        "@type": "LocalBusiness",
+        "@id": "https://reelscale.in/#localbusiness",
+        "name": "ReelScale Co.",
         "url": "https://reelscale.in",
+        "logo": "https://reelscale.in/assets/logo.png",
         "image": "https://reelscale.in/assets/logo.png",
-        "priceRange": "$$",
+        "priceRange": "₹₹",
         "telephone": "+919966239433",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Madhapur, HITEC City",
+          "addressLocality": "Hyderabad",
+          "addressRegion": "Telangana",
+          "postalCode": "500081",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "17.4483",
+          "longitude": "78.3741"
+        },
+        "areaServed": [
+          { "@type": "AdministrativeArea", "name": "Hyderabad" },
+          { "@type": "AdministrativeArea", "name": "Madhapur" },
+          { "@type": "AdministrativeArea", "name": "Gachibowli" },
+          { "@type": "AdministrativeArea", "name": "Kondapur" },
+          { "@type": "AdministrativeArea", "name": "HITEC City" },
+          { "@type": "AdministrativeArea", "name": "Jubilee Hills" },
+          { "@type": "AdministrativeArea", "name": "Banjara Hills" }
+        ]
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://reelscale.in/#service",
+        "name": "ReelScale Reel Production Hyderabad",
+        "url": "https://reelscale.in",
+        "image": "https://reelscale.in/assets/logo.png",
+        "priceRange": "₹₹",
+        "telephone": "+919966239433",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Hyderabad",
           "addressCountry": "IN"
         }
       },
@@ -182,6 +253,9 @@ export default function Home() {
     ]
   };
 
+  const { headerHtml, mainHtml, footerHtml } = getParsedLandingPage();
+  const mainParts = mainHtml.split('<section id="latest-blogs-section"></section>');
+
   return (
     <>
       <script
@@ -189,20 +263,23 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
       <LandingInteractions />
-      {(() => {
-        const html = getLandingMarkup();
-        const parts = html.split('<section id="latest-blogs-section"></section>');
-        if (parts.length === 2) {
-          return (
-            <>
-              <div dangerouslySetInnerHTML={{ __html: parts[0] }} />
-              <LatestBlogs />
-              <div dangerouslySetInnerHTML={{ __html: parts[1] }} />
-            </>
-          );
-        }
-        return <main dangerouslySetInnerHTML={{ __html: html }} />;
-      })()}
+
+      <div dangerouslySetInnerHTML={{ __html: headerHtml }} />
+
+      <main id="main-content">
+        {mainParts.length === 2 ? (
+          <>
+            <div dangerouslySetInnerHTML={{ __html: mainParts[0] }} />
+            <LatestBlogs />
+            <div dangerouslySetInnerHTML={{ __html: mainParts[1] }} />
+          </>
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: mainHtml }} />
+        )}
+      </main>
+
+      <div dangerouslySetInnerHTML={{ __html: footerHtml }} />
+
       <Script async src="https://www.instagram.com/embed.js" />
       <Script async src="https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3" />
       <Script id="google-analytics">

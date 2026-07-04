@@ -69,6 +69,29 @@ function generate() {
     <priority>0.5</priority>
   </url>`;
 
+  const services = [
+    "restaurant-reels",
+    "gym-reels",
+    "interior-designers",
+    "salons",
+    "fashion-brands",
+    "real-estate",
+    "healthcare",
+    "cafes",
+    "startups",
+    "corporate-companies"
+  ];
+
+  services.forEach(srv => {
+    xml += `
+  <url>
+    <loc>https://reelscale.in/services/${srv}</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+  });
+
   published.forEach(post => {
     xml += `
   <url>
