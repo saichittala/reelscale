@@ -53,15 +53,23 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    padding: 8px 72px;
+    padding: 16px 72px;
     display: flex;
     height: 72px;
     justify-content: space-between;
     z-index: 1000;
     align-items: center;
-    border-bottom: 0.78px solid transparent;
-    transition: border-color 0.3s ease, transform 0.5s ease, padding 0.5s ease;
-    transform: translateY(12px);
+    background: rgba(10, 10, 10, 0);
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                -webkit-backdrop-filter 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                backdrop-filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(0px);
+    will-change: transform, background-color, backdrop-filter, padding;
 
     .mob-btn-primary {
         background: transparent !important;
@@ -69,23 +77,23 @@ header {
         color: var(--red) !important;
         transition: border-color 0.3s ease, transform 0.5s ease, padding 0.5s ease, background 0.3s ease, color 0.3s ease;
     }
-
 }
 
-/* Active when scrolled */
+/* Active when scrolled - Apple-style glassmorphism & fluid easing */
 header.scrolled {
-    border-bottom: 0.78px solid var(--border);
+    background: rgba(12, 12, 12, 0.78);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transform: translateY(0px);
-    padding: 8px 56px;
-    backdrop-filter: blur(100px);
-
+    padding: 10px 56px;
 
     .mob-btn-primary {
         background: var(--red) !important;
         border: 1px solid transparent !important;
         color: var(--white) !important;
     }
-
 }
 
 /* BUTTON */
