@@ -15,7 +15,7 @@ export default function LatestBlogs() {
         {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "50px" }} className="reveal">
           <div className="section-eyebrow" style={{ textTransform: "uppercase" }}>
-            Guides & breakdowns
+            Blogs
           </div>
           <h2 className="section-title">
             Latest from our blog
@@ -66,7 +66,7 @@ export default function LatestBlogs() {
         {/* View All Button */}
         <div style={{ textAlign: "center", marginTop: "40px" }} className="reveal">
           <Link href="/blog" className="btn-secondary" style={{ textDecoration: "none" }}>
-            View all guides & breakdowns
+            View all blogs
           </Link>
         </div>
 

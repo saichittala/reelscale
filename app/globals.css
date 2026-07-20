@@ -74,6 +74,9 @@ body {
   margin-bottom: 48px;
 }
 
+/* ==========================================================================
+   BLOG CATEGORY BUTTONS — 10% Red Active Pill (No Drop Shadows)
+   ========================================================================== */
 .blog-category-btn {
   padding: 8px 18px;
   border-radius: var(--border-radius-99);
@@ -87,42 +90,46 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: 
-    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, box-shadow;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .blog-category-btn:hover {
   background: var(--white-07);
   border-color: var(--white-20);
   color: var(--white);
-  transform: translateY(-1px) scale(1.02);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .blog-category-btn:active {
-  transform: translateY(0px) scale(0.96);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
+/* Secondary Action Pill: Red 10% Opacity Active State */
 .blog-category-btn.active {
   font-size: var(--text-xs) !important;
-  background: var(--red) !important;
-  border-color: var(--red) !important;
-  color: var(--button-white) !important;
-  box-shadow: 0 8px 24px rgba(232, 37, 30, 0.35), 0 2px 6px rgba(232, 37, 30, 0.15) !important;
-  transform: translateY(-1px) scale(1.04);
+  background: rgba(232, 37, 30, 0.10) !important;
+  border-color: rgba(232, 37, 30, 0.35) !important;
+  color: var(--white) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 .blog-category-btn.active:hover {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow: 0 12px 28px rgba(232, 37, 30, 0.45), 0 4px 10px rgba(232, 37, 30, 0.2) !important;
+  background: rgba(232, 37, 30, 0.16) !important;
+  border-color: rgba(232, 37, 30, 0.50) !important;
+  color: var(--white) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .blog-category-btn.active:active {
-  transform: translateY(0px) scale(0.98);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* Blog Cards Grid */
@@ -1006,4 +1013,42 @@ body {
 .blog-page-container *:not(.blog-card-img):not(.blog-category-btn) {
   animation: none !important;
   transition: none !important;
+}
+
+/* ==========================================================================
+   LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE ACCELERATION FALLBACKS
+   ========================================================================== */
+.low-end-device *,
+.low-end-device *::before,
+.low-end-device *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.low-end-device #cursor,
+.low-end-device #cursorRing {
+  display: none !important;
+}
+
+.low-end-device header,
+.low-end-device .modal-content,
+.low-end-device .video-modal-container {
+  background: rgba(12, 12, 12, 0.95) !important;
+}
+
+/* ==========================================================================
+   GLOBAL BLOG DESIGN SYSTEM HEURISTIC PURGE — NO DROP SHADOWS
+   ========================================================================== */
+.blog-container *,
+.blog-grid *,
+.blog-card,
+.blog-card *,
+.blog-nav-card,
+.blog-toc-card,
+.blog-faq-item,
+.blog-callout {
+  box-shadow: none !important;
+  filter: none !important;
 }

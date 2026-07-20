@@ -6,24 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ReelScale</title>
 
-  <!-- Fonts -->
+  <!-- Performance Optimization Pre-connections -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
-  <!-- External CSS -->
+  <!-- Preload Stylesheet for instant paint -->
+  <link rel="preload" href="styles.css" as="style">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 </head>
 
 <body>
-  <div class="video-modal" id="videoModal">
+  <div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Video Player">
     <div class="video-backdrop"></div>
 
     <div class="video-content">
-      <button class="video-close" id="closeVideo">✕</button>
+      <button class="video-close" id="closeVideo" aria-label="Close video modal">✕</button>
       <div class="video-wrapper" id="videoWrapper"></div>
     </div>
   </div>
@@ -37,7 +43,7 @@
       <!-- <div class="logo-mark">R</div> -->
       <div>
         <img src="assets/logo.svg" alt="ReelScale - Premium Reel Production Agency in Hyderabad" width="120" height="20"
-          style="width: 120px; height: 20px;">
+          decoding="async" style="width: 120px; height: 20px;">
       </div>
       <!-- <span class="logo-text">Reel<span>Scale</span> Co.</span> -->
     </a>
@@ -703,12 +709,11 @@
 
     <!-- Services / Industries Directory Grid for Local SEO and Internal Linking -->
     <div class="footer-directory"
-      style="max-width: 1200px; margin: 20px auto 0; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
-      <div
-        style="font-size: 11px; letter-spacing: 2px; color: var(--red); font-weight: bold; margin-bottom: 12px; text-transform: none;">
+      style="max-width: 1200px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.08); text-align: left;">
+      <div style="font-size: 15px; color: var(--white); font-weight: 600; margin-bottom: 16px; text-transform: none; letter-spacing: 0.02em;">
         Local Reel Production Services (Hyderabad)</div>
       <div
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; font-size: 13px;">
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; font-size: 14px;">
         <a href="/services/restaurant-reels" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
           onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Restaurant Reel
           Production</a>

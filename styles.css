@@ -442,7 +442,7 @@ em {
 /* METRICS — Bending Spoons Vertical Style */
 
 #metrics {
-    padding: 140px 24px;
+    padding: 100px 24px 60px 24px;
     background-color: var(--bg);
     padding-top: 0 !important;
 }
@@ -451,9 +451,9 @@ em {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 90px;
+    gap: 52px;
     width: 100%;
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
     text-align: center;
 }
@@ -467,70 +467,76 @@ em {
 }
 
 .metric-num {
-    font-family: var(--primary-font);
-    font-size: 68px;
-    font-weight: 300;
+    font-family: 'Geist', var(--primary-font), sans-serif !important;
+    font-size: 52px;
+    font-weight: 400;
     color: var(--white);
-    line-height: 0.95;
-    margin-bottom: 12px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
 }
 
 .metric-digit {
-    font-family: 'Instrument Sans', Georgia, serif;
+    font-family: 'Instrument Serif', Georgia, serif !important;
     color: var(--red);
     font-weight: 400;
-    font-size: 80px;
-    margin-right: 4px;
+    font-size: 64px;
+    line-height: 1.0;
 }
 
 .metric-label {
-    font-family: var(--primary-font);
-    font-size: 18px;
-    font-weight: 400;
+    font-family: 'Geist', var(--primary-font), sans-serif !important;
+    font-size: 15px;
+    font-weight: 300;
     color: var(--muted);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.2px;
     text-transform: lowercase;
 }
 
 /* Tablet / Desktop scaling up */
 @media (min-width: 1024px) {
     .metrics-list {
-        gap: 100px;
+        gap: 64px;
     }
 
     .metric-num {
-        font-size: 85px;
+        font-size: 56px;
     }
 
     .metric-digit {
-        font-size: 100px;
+        font-size: 72px;
     }
 
     .metric-label {
-        font-size: 20px;
+        font-size: 16px;
     }
 }
 
 /* Mobile scaling down */
 @media (max-width: 768px) {
     #metrics {
-        padding: 90px 24px;
+        padding: 60px 24px;
     }
 
     .metrics-list {
-        gap: 60px;
+        gap: 40px;
     }
 
     .metric-num {
-        font-size: 42px;
+        font-size: 36px;
+        gap: 6px;
     }
 
     .metric-digit {
-        font-size: 48px;
+        font-size: 46px;
     }
 
     .metric-label {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 
@@ -845,10 +851,11 @@ em {
 }
 
 .portfolio-client {
-    font-family: var(--primary-font);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--white)
+    font-family: 'Bebas Neue', var(--font-bebas-neue), sans-serif !important;
+    font-size: 28px;
+    letter-spacing: 2px;
+    font-weight: 400;
+    color: var(--white);
 }
 
 .portfolio-stat {
@@ -1694,15 +1701,16 @@ footer {
 .faq-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
     margin-top: 48px;
+    border-top: 0.6px solid var(--border);
 }
 
 .faq-item {
-    transition: background .25s, border-color .25s, transform .25s;
+    transition: background .25s, border-color .25s;
     overflow: hidden;
-    border-top: .6px solid var(--border);
-    border-bottom: .6px solid var(--border);
+    border-bottom: 0.6px solid var(--border);
+    border-top: none;
 }
 
 .faq-item:hover {
@@ -1888,13 +1896,12 @@ footer {
 }
 
 .ls-curved-carousel__client {
-    font-size: 22px;
-    /* font-size: var(--text-2xl); */
-    font-weight: var(--fw-light);
+    font-size: 44px;
+    font-weight: 400 !important;
     color: var(--white);
-    line-height: 1.2;
-    letter-spacing: 10px;
-    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8);
+    line-height: 1.1;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 0, 0, 0.8);
     position: absolute;
     text-transform: uppercase;
     top: 0;
@@ -1905,7 +1912,8 @@ footer {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: var(--font-space-grotesk) !important;
+    font-family: 'Bebas Neue', var(--font-bebas-neue), sans-serif !important;
+    -webkit-font-smoothing: antialiased;
 }
 
 @media (max-width: 768px) {
@@ -1923,7 +1931,55 @@ footer {
     }
 
     .ls-curved-carousel__client {
-        font-size: 15px;
-        margin-bottom: 8px;
+        font-family: 'Bebas Neue', var(--font-bebas-neue), sans-serif !important;
+        font-size: 30px !important;
+        letter-spacing: 2px !important;
+        margin-bottom: 0px !important;
     }
+}
+
+/* ==========================================================================
+   LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE EXTREME SPEED OVERRIDES
+   ========================================================================== */
+.low-end-device *,
+.low-end-device *::before,
+.low-end-device *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    transition-duration: 0.05s !important;
+    animation-duration: 0.05s !important;
+}
+
+.low-end-device header,
+.low-end-device .modal-content,
+.low-end-device .video-modal-container,
+.low-end-device .pricing-card {
+    background: rgba(12, 12, 12, 0.98) !important;
+}
+
+.low-end-device #cursor,
+.low-end-device #cursorRing {
+    display: none !important;
+}
+
+/* Off-screen layout containment for lightning-fast scrolling */
+#services,
+#portfolio,
+#process,
+#pricing,
+#blogs,
+#faq {
+    content-visibility: auto;
+    contain-intrinsic-size: 800px;
+}
+
+.portfolio-item,
+.pricing-card,
+.process-step,
+.faq-item {
+    contain: layout style paint;
+    transform: translate3d(0, 0, 0);
 }

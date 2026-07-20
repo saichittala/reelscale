@@ -146,15 +146,25 @@ export default function LandingInteractions() {
 
         const isVideo = data.videoSrc.toLowerCase().endsWith(".mp4");
         if (isVideo) {
-          const posterAttr = data.posterSrc ? `poster="${data.posterSrc}"` : "";
+          const poster = data.posterSrc || "";
           slide.innerHTML = `
-            <video loop muted playsinline preload="metadata" ${posterAttr} class="ls-curved-carousel__media">
+            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0;" />
+            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.4s ease; z-index:1;">
               <source src="${data.videoSrc}" type="video/mp4" />
             </video>
             <div class="ls-curved-carousel__label">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
           `;
+          const vidEl = slide.querySelector("video");
+          if (vidEl) {
+            const revealVideo = () => {
+              vidEl.style.opacity = "1";
+            };
+            vidEl.addEventListener("canplay", revealVideo);
+            vidEl.addEventListener("playing", revealVideo);
+            vidEl.play().catch(() => {});
+          }
         } else {
           slide.innerHTML = `
             <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" />
@@ -169,9 +179,9 @@ export default function LandingInteractions() {
       // 2. Duplicate slides if original count is less than slidesInRing
       const isMobile = window.innerWidth <= 768;
       const slidesInRing = isMobile ? 11 : carouselConfig.slidesInRing;
-      const slideSpacing = isMobile ? 2.0 : carouselConfig.slideSpacing;
-      const radius = isMobile ? 350 : carouselConfig.radius;
-      const slideHeight = isMobile ? 220 : carouselConfig.slideHeight;
+      const slideSpacing = isMobile ? 1.5 : carouselConfig.slideSpacing;
+      const radius = isMobile ? 380 : carouselConfig.radius;
+      const slideHeight = isMobile ? 240 : carouselConfig.slideHeight;
 
       let currentSlides = ringEl.querySelectorAll(".ls-curved-carousel__slide");
       let originalCount = currentSlides.length;
@@ -386,6 +396,29 @@ export default function LandingInteractions() {
         }, carouselConfig.resumeDelay);
       }
 
+      // Add viewport intersection & tab visibility observers to pause GSAP ticker when offscreen/hidden
+      const carouselViewportObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) {
+            stopAutoRotation();
+          } else if (!document.hidden && carouselConfig.autoRotate) {
+            startAutoRotation();
+          }
+        });
+      }, { threshold: 0.05 });
+
+      carouselViewportObserver.observe(carouselEl);
+
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          stopAutoRotation();
+        } else if (carouselConfig.autoRotate) {
+          startAutoRotation();
+        }
+      };
+
+      document.addEventListener("visibilitychange", onVisibilityChange);
+
       // Add pause/resume functionality if enabled
       if (carouselConfig.pauseOnHover) {
         const onMouseEnter = () => {
@@ -412,6 +445,8 @@ export default function LandingInteractions() {
       }
 
       cleanupFns.push(() => {
+        carouselViewportObserver.disconnect();
+        document.removeEventListener("visibilitychange", onVisibilityChange);
         if (updateRotationFunction) {
           gsap.ticker.remove(updateRotationFunction);
         }
@@ -461,16 +496,29 @@ export default function LandingInteractions() {
     }
 
     /* ═══════════════════════════════════════════════════
-       2. CUSTOM CURSOR
+       2. CUSTOM CURSOR (Paused on Idle / Touch / Low Memory)
        ═══════════════════════════════════════════════════ */
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isLowMemoryHardware = Boolean(
+      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 2) ||
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+    );
+    const isLowEndDevice = isTouchDevice || prefersReducedMotion || isLowMemoryHardware;
+
+    if (isLowEndDevice) {
+      document.documentElement.classList.add("low-end-device");
+    }
+
     const cursor = document.getElementById("cursor");
     const ring = document.getElementById("cursorRing");
     const header = document.querySelector("header");
-    let mx = 0;
-    let my = 0;
-    let rx = 0;
-    let ry = 0;
+    let mx = -100;
+    let my = -100;
+    let rx = -100;
+    let ry = -100;
     let frame = 0;
+    let cursorAnimating = false;
 
     const onCursorMove = (event: MouseEvent) => {
       mx = event.clientX;
@@ -479,25 +527,43 @@ export default function LandingInteractions() {
         cursor.style.left = `${mx}px`;
         cursor.style.top = `${my}px`;
       }
+      if (!cursorAnimating && !document.hidden && ring && !isLowEndDevice) {
+        cursorAnimating = true;
+        frame = requestAnimationFrame(animateRing);
+      }
     };
 
     const animateRing = () => {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
+      if (document.hidden) {
+        cursorAnimating = false;
+        return;
+      }
+      rx += (mx - rx) * 0.15;
+      ry += (my - ry) * 0.15;
       if (ring) {
         ring.style.left = `${rx}px`;
         ring.style.top = `${ry}px`;
       }
-      frame = requestAnimationFrame(animateRing);
+
+      if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) {
+        frame = requestAnimationFrame(animateRing);
+      } else {
+        cursorAnimating = false;
+      }
     };
 
     const onScroll = () => {
       header?.classList.toggle("scrolled", window.scrollY > 10);
     };
 
-    document.addEventListener("mousemove", onCursorMove);
-    window.addEventListener("scroll", onScroll);
-    frame = requestAnimationFrame(animateRing);
+    if (!isLowEndDevice && cursor && ring) {
+      document.addEventListener("mousemove", onCursorMove, { passive: true });
+    } else if (cursor && ring) {
+      cursor.style.display = "none";
+      ring.style.display = "none";
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     /* ═══════════════════════════════════════════════════
        3. SCROLL REVEAL
@@ -510,8 +576,6 @@ export default function LandingInteractions() {
       });
     });
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-
-
 
     const portfolioHandlers: Array<[Element, EventListener]> = [];
     document.querySelectorAll(".portfolio-item").forEach((item) => {
@@ -543,6 +607,8 @@ export default function LandingInteractions() {
         document.querySelectorAll(".faq-item").forEach((otherItem) => {
           if (otherItem !== item) {
             otherItem.classList.remove("active");
+            const otherBtn = otherItem.querySelector(".faq-question");
+            if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
             const otherAnswer = otherItem.querySelector(".faq-answer") as HTMLElement;
             if (otherAnswer) otherAnswer.style.maxHeight = "0px";
           }
@@ -550,9 +616,11 @@ export default function LandingInteractions() {
 
         if (isActive) {
           item.classList.remove("active");
+          btn.setAttribute("aria-expanded", "false");
           answer.style.maxHeight = "0px";
         } else {
           item.classList.add("active");
+          btn.setAttribute("aria-expanded", "true");
           answer.style.maxHeight = `${answer.scrollHeight}px`;
         }
       }) as EventListener;
@@ -573,7 +641,7 @@ export default function LandingInteractions() {
        CLEANUP
        ═══════════════════════════════════════════════════ */
     return () => {
-      cancelAnimationFrame(frame);
+      if (frame) cancelAnimationFrame(frame);
       cleanupFns.forEach((fn) => fn());
       observer.disconnect();
       document.removeEventListener("mousemove", onCursorMove);

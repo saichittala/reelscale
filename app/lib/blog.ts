@@ -28,14 +28,19 @@ export interface BlogPost {
 }
 
 const DB_PATH = join(process.cwd(), "content", "blogs.json");
+let cachedBlogs: BlogPost[] | null = null;
 
 export function getBlogsFromDB(): BlogPost[] {
+  if (cachedBlogs) {
+    return cachedBlogs;
+  }
   if (!existsSync(DB_PATH)) {
     return [];
   }
   try {
     const content = readFileSync(DB_PATH, "utf8");
-    return JSON.parse(content || "[]");
+    cachedBlogs = JSON.parse(content || "[]");
+    return cachedBlogs || [];
   } catch (e) {
     console.error("Error reading blogs database:", e);
     return [];
@@ -94,12 +99,28 @@ export interface HeadingItem {
 export function generateTableOfContents(markdown: string): HeadingItem[] {
   const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const headings: HeadingItem[] = [];
+  const usedIds: Record<string, number> = {};
   let match;
 
   while ((match = headingRegex.exec(markdown)) !== null) {
     const level = match[1].length;
     const text = match[2].replace(/[#*`_\[\]]/g, "").trim();
-    const id = slugify(text);
+
+    // Omit generic callout titles like "Key Takeaway" or "Key Takeaways" from TOC sidebar
+    if (/^key takeaway(s)?$/i.test(text)) {
+      continue;
+    }
+
+    let id = slugify(text);
+    if (!id) continue;
+
+    if (usedIds[id]) {
+      usedIds[id]++;
+      id = `${id}-${usedIds[id]}`;
+    } else {
+      usedIds[id] = 1;
+    }
+
     headings.push({ text, id, level });
   }
 
@@ -120,18 +141,21 @@ export function parseMarkdown(markdown: string): string {
   // 1. Blockquotes
   html = html.replace(/^\s*>\s+(.+)$/gm, "<blockquote>$1</blockquote>");
 
-  // 2. Headings
-  html = html.replace(/^######\s+(.+)$/gm, '<h6 id="$1">$1</h6>');
-  html = html.replace(/^#####\s+(.+)$/gm, '<h5 id="$1">$1</h5>');
-  html = html.replace(/^####\s+(.+)$/gm, '<h4 id="$1">$1</h4>');
-  html = html.replace(/^###\s+(.+)$/gm, '<h3 id="$1">$1</h3>');
-  html = html.replace(/^##\s+(.+)$/gm, '<h2 id="$1">$1</h2>');
-  html = html.replace(/^#\s+(.+)$/gm, '<h1 id="$1">$1</h1>');
+  // 2. Headings with unique IDs
+  const usedHeadingIds: Record<string, number> = {};
+  html = html.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, textContent) => {
+    const level = hashes.length;
+    const cleanText = textContent.replace(/[#*`_\[\]]/g, "").trim();
+    let id = slugify(cleanText);
 
-  // Slugify IDs inside headings
-  html = html.replace(/<(h[1-6]) id="([^"]+)">/g, (match, tag, text) => {
-    const cleanText = text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    return `<${tag} id="${slugify(cleanText)}">`;
+    if (usedHeadingIds[id]) {
+      usedHeadingIds[id]++;
+      id = `${id}-${usedHeadingIds[id]}`;
+    } else {
+      usedHeadingIds[id] = 1;
+    }
+
+    return `<h${level} id="${id}">${cleanText}</h${level}>`;
   });
 
   // 3. Bold, Italic, Underline

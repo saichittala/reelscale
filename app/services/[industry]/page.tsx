@@ -494,15 +494,53 @@ const INDUSTRIES_DATA: Record<string, IndustryData> = {
   }
 };
 
+// Helper function to resolve industry data including slug aliases
+function resolveIndustryData(slug: string): IndustryData | undefined {
+  if (INDUSTRIES_DATA[slug]) return INDUSTRIES_DATA[slug];
+
+  const aliasMap: Record<string, string> = {
+    "restaurant-reel-production": "restaurant-reels",
+    "gym-reel-production": "gym-reels",
+    "interior-design-reels": "interior-designers",
+    "salon-reel-shoots": "salons",
+    "fashion-brand-video-shoots": "fashion-brands",
+    "real-estate-video-production": "real-estate",
+    "healthcare-video-marketing": "healthcare",
+    "cafe-reel-production": "cafes",
+    "startup-video-agency": "startups",
+    "corporate-video-production": "corporate-companies",
+  };
+
+  const canonicalKey = aliasMap[slug];
+  if (canonicalKey && INDUSTRIES_DATA[canonicalKey]) {
+    return INDUSTRIES_DATA[canonicalKey];
+  }
+
+  return undefined;
+}
+
 export async function generateStaticParams() {
-  return Object.keys(INDUSTRIES_DATA).map((key) => ({
+  const primaryKeys = Object.keys(INDUSTRIES_DATA);
+  const aliases = [
+    "restaurant-reel-production",
+    "gym-reel-production",
+    "interior-design-reels",
+    "salon-reel-shoots",
+    "fashion-brand-video-shoots",
+    "real-estate-video-production",
+    "healthcare-video-marketing",
+    "cafe-reel-production",
+    "startup-video-agency",
+    "corporate-video-production",
+  ];
+  return Array.from(new Set([...primaryKeys, ...aliases])).map((key) => ({
     industry: key,
   }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ industry: string }> }): Promise<Metadata> {
   const { industry } = await params;
-  const data = INDUSTRIES_DATA[industry];
+  const data = resolveIndustryData(industry);
   if (!data) return {};
 
   return {
@@ -562,7 +600,7 @@ function getHeaderAndFooter() {
 
 export default async function IndustryServicePage({ params }: { params: Promise<{ industry: string }> }) {
   const { industry } = await params;
-  const data = INDUSTRIES_DATA[industry];
+  const data = resolveIndustryData(industry);
 
   if (!data) {
     notFound();
@@ -631,7 +669,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
   };
 
   return (
-    <div className="blog-page-container service-page-container">
+    <div className="service-page-container">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
@@ -644,47 +682,62 @@ export default async function IndustryServicePage({ params }: { params: Promise<
       {/* Main Content */}
       <main id="main-content" style={{ paddingTop: "120px" }}>
         
-        {/* Breadcrumbs */}
-        <div style={{ maxWidth: "1200px", margin: "0 auto 20px", padding: "0 20px", fontSize: "14px", color: "var(--muted)", fontFamily: "var(--primary-font)" }}>
-          <Link href="/" style={{ color: "var(--muted)", textDecoration: "none" }}>Home</Link>
-          <span style={{ margin: "0 8px" }}>/</span>
-          <span style={{ color: "var(--muted)" }}>Services</span>
-          <span style={{ margin: "0 8px" }}>/</span>
-          <span style={{ color: "var(--red)" }}>{data.name}</span>
-        </div>
-
         {/* Hero Section */}
-        <section style={{ maxWidth: "1200px", margin: "40px auto 80px", padding: "0 20px", textAlign: "center", fontFamily: "var(--primary-font)" }}>
-          <div className="section-eyebrow" style={{ display: "inline-block", marginBottom: "16px", textTransform: "none" }}>{data.name}</div>
-          <h1 className="section-title" style={{ fontSize: "clamp(32px, 6vw, 64px)", lineHeight: "1.1", marginBottom: "24px" }}>
-            {data.headline.split("Hyderabad")[0]}<br /><em>Hyderabad</em>
+        <section style={{ maxWidth: "1200px", margin: "48px auto 96px", padding: "0 32px", textAlign: "center", fontFamily: "var(--primary-font)" }}>
+          <div className="section-eyebrow" style={{ display: "inline-block", marginBottom: "20px", textTransform: "uppercase" }}>{data.name}</div>
+          <h1 className="section-title" style={{ fontSize: "clamp(28px, 4.5vw, 48px)", lineHeight: "1.2", marginBottom: "24px" }}>
+            {data.name}<br /><em>Hyderabad</em>
           </h1>
-          <p className="section-sub" style={{ margin: "0 auto 40px", opacity: 1, animation: "none", maxWidth: "700px" }}>
+          <p className="section-sub" style={{ margin: "0 auto 40px", opacity: 1, animation: "none", maxWidth: "720px", fontSize: "var(--text-md)", lineHeight: "1.7" }}>
             {data.subheadline} — {data.introText}
           </p>
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://wa.me/919966239433?text=Hey%2520I%2520want%2520to%2520scale%2520our%2520content%2520creation." target="_blank" className="btn-primary" style={{ padding: "14px 28px" }}>
+          
+          <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", marginBottom: "48px" }}>
+            <a href="https://wa.me/919966239433?text=Hey%2520I%2520want%2520to%2520scale%2520our%2520content%2520creation." target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 36px" }}>
               Start your Reel
             </a>
-            <Link href="/" className="btn-secondary" style={{ padding: "14px 28px" }}>
-              Back to Home
+            <Link href="/#work" className="btn-secondary" style={{ padding: "16px 36px" }}>
+              View Our Work
             </Link>
+          </div>
+
+          {/* Trust Signal Badges */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "32px", flexWrap: "wrap", fontSize: "var(--text-xs)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              100M+ Organic Views Delivered
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              24-48h Fast Turnaround
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+              On-Site Hyderabad Production
+            </span>
+          </div>
+
+          {/* Location Keywords Pills */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", flexWrap: "wrap", marginTop: "28px" }}>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)", marginRight: "6px" }}>Available in:</span>
+            {data.locationKeywords.map((loc, idx) => (
+              <span key={idx} style={{ padding: "6px 14px", borderRadius: "var(--border-radius-99)", background: "var(--white-03)", fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                {loc}
+              </span>
+            ))}
           </div>
         </section>
 
         {/* Benefits Section */}
-        <section style={{ background: "rgba(255,255,255,0.01)", padding: "80px 0", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
-            <div style={{ textAlign: "center", marginBottom: "50px" }}>
-              <div className="section-eyebrow" style={{ textTransform: "none" }}>Key Benefits</div>
-              <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 36px)" }}>Why Choose Our {data.name} Services?</h2>
+        <section style={{ background: "var(--bg)", padding: "112px 0" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 32px" }}>
+            <div style={{ textAlign: "center", marginBottom: "64px" }}>
+              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Key Benefits</div>
+              <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Why Choose ReelScale?</h2>
             </div>
-            <div className="services-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+            <div className="services-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "32px" }}>
               {data.benefits.map((b, idx) => (
-                <div key={idx} className="service-card" style={{ opacity: 1, transform: "none" }}>
-                  <div className="service-num">0{idx + 1}</div>
-                  <div className="service-name">{b.title}</div>
-                  <p className="service-desc">{b.desc}</p>
+                <div key={idx} className="service-card" style={{ opacity: 1, transform: "none", padding: "36px 32px" }}>
+                  <div className="service-num" style={{ marginBottom: "20px" }}>0{idx + 1}</div>
+                  <div className="service-name" style={{ marginBottom: "12px", fontSize: "var(--text-xl)" }}>{b.title}</div>
+                  <p className="service-desc" style={{ lineHeight: "1.7" }}>{b.desc}</p>
                 </div>
               ))}
             </div>
@@ -692,31 +745,31 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Deliverables & Process Split Section */}
-        <section style={{ maxWidth: "1200px", margin: "80px auto", padding: "0 20px", fontFamily: "var(--primary-font)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "50px" }}>
+        <section style={{ maxWidth: "1200px", margin: "112px auto", padding: "0 32px", fontFamily: "var(--primary-font)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "64px" }}>
             <div>
-              <div className="section-eyebrow" style={{ textTransform: "none" }}>What You Get</div>
-              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "30px" }}>Deliverables</h2>
+              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>What You Get</div>
+              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "32px" }}>Deliverables</h2>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                 {data.deliverables.map((item, idx) => (
-                  <li key={idx} style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", fontSize: "16px", color: "var(--muted)" }}>
-                    <span style={{ color: "var(--red)", fontSize: "20px" }}>✦</span>
-                    {item}
+                  <li key={idx} style={{ display: "flex", alignItems: "center", gap: "16px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-md)", color: "var(--white)" }}>
+                    <span style={{ color: "var(--muted)", fontSize: "14px" }}>•</span>
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
             
             <div>
-              <div className="section-eyebrow" style={{ textTransform: "none" }}>Our Workflow</div>
-              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "30px" }}>The Production Process</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Our Workflow</div>
+              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "32px" }}>The Production Process</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                 {data.process.map((p, idx) => (
-                  <div key={idx} style={{ display: "flex", gap: "16px" }}>
-                    <div style={{ color: "var(--red)", fontSize: "20px", fontWeight: "bold" }}>{p.step}</div>
+                  <div key={idx} style={{ display: "flex", gap: "20px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div style={{ color: "var(--muted)", fontSize: "var(--text-lg)", fontWeight: "var(--fw-medium)", minWidth: "28px" }}>{p.step}</div>
                     <div>
-                      <h4 style={{ color: "var(--white)", fontSize: "18px", margin: "0 0 6px" }}>{p.title}</h4>
-                      <p style={{ color: "var(--muted)", fontSize: "14px", margin: 0, lineHeight: "1.6" }}>{p.desc}</p>
+                      <h3 style={{ color: "var(--white)", fontSize: "var(--text-lg)", margin: "0 0 6px", fontWeight: "var(--fw-medium)" }}>{p.title}</h3>
+                      <p style={{ color: "var(--muted)", fontSize: "var(--text-sm)", margin: 0, lineHeight: "1.7" }}>{p.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -726,23 +779,23 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Featured Pricing Highlight */}
-        <section style={{ background: "rgba(255,255,255,0.01)", padding: "80px 0", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-          <div style={{ maxWidth: "600px", margin: "0 auto", padding: "0 20px" }}>
-            <div style={{ textAlign: "center", marginBottom: "40px" }}>
-              <div className="section-eyebrow" style={{ textTransform: "none" }}>Pricing Package</div>
-              <h2 className="section-title" style={{ fontSize: "32px" }}>Dedicated Plan</h2>
+        <section style={{ background: "var(--bg)", padding: "112px 0" }}>
+          <div style={{ maxWidth: "640px", margin: "0 auto", padding: "0 32px" }}>
+            <div style={{ textAlign: "center", marginBottom: "56px" }}>
+              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Pricing Package</div>
+              <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Dedicated Plan</h2>
             </div>
-            <div className="pricing-card featured" style={{ margin: "0 auto", opacity: 1, transform: "none" }}>
+            <div className="pricing-card featured" style={{ margin: "0 auto", opacity: 1, transform: "none", padding: "48px 36px" }}>
               <div className="plan-name">{data.pricingPlan}</div>
               <div className="plan-price"><sup>₹</sup>{data.pricingPrice.replace("₹", "")}</div>
-              <div className="plan-cadence">per month</div>
-              <div className="plan-divider"></div>
-              <ul className="plan-features">
+              <div className="plan-cadence" style={{ marginBottom: "28px" }}>per month</div>
+              <div className="plan-divider" style={{ marginBottom: "28px" }}></div>
+              <ul className="plan-features" style={{ marginBottom: "36px" }}>
                 {data.pricingFeatures.map((f, idx) => (
-                  <li key={idx}>{f}</li>
+                  <li key={idx} style={{ marginBottom: "14px" }}>{f}</li>
                 ))}
               </ul>
-              <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520the%2520package." target="_blank" className="btn-plan btn-plan-red">
+              <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520the%2520package." target="_blank" rel="noopener noreferrer" className="btn-plan btn-plan-red" style={{ padding: "16px 36px" }}>
                 Start your Reel
               </a>
             </div>
@@ -750,27 +803,43 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* FAQs Accordion */}
-        <section className="faq-section" style={{ maxWidth: "800px", margin: "80px auto", padding: "0 20px" }}>
-          <div style={{ textAlign: "center", marginBottom: "50px" }}>
-            <span className="section-eyebrow" style={{ textTransform: "none" }}>FAQ</span>
-            <h2 className="section-title" style={{ fontSize: "32px" }}>Frequently Asked Questions</h2>
+        <section className="faq-section" style={{ maxWidth: "840px", margin: "112px auto", padding: "0 32px" }}>
+          <div style={{ textAlign: "center", marginBottom: "56px" }}>
+            <span className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>FAQ</span>
+            <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Frequently Asked Questions</h2>
           </div>
           <div className="faq-list" style={{ opacity: 1 }}>
             {data.faqs.map((faq, idx) => (
-              <div key={idx} className="faq-item">
-                <button className="faq-question">
+              <div key={idx} className="faq-item" style={{ marginBottom: "16px" }}>
+                <button className="faq-question" aria-expanded="false" aria-controls={`faq-ans-${idx}`} style={{ padding: "20px 0" }}>
                   <span>{faq.question}</span>
                   <svg className="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
-                <div className="faq-answer">
-                  <div className="faq-answer-content">
-                    <p style={{ margin: 0, lineHeight: "1.7", color: "var(--muted)" }}>{faq.answer}</p>
+                <div className="faq-answer" id={`faq-ans-${idx}`}>
+                  <div className="faq-answer-content" style={{ paddingBottom: "20px" }}>
+                    <p style={{ margin: 0, lineHeight: "1.8", color: "var(--muted)", fontSize: "var(--text-md)" }}>{faq.answer}</p>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Dedicated Bottom Conversion CTA Section */}
+        <section style={{ maxWidth: "1200px", margin: "80px auto 140px", padding: "0 32px", textAlign: "center", fontFamily: "var(--primary-font)" }}>
+          <div style={{ background: "var(--white-03)", borderRadius: "var(--border-radius-1)", padding: "72px 40px" }}>
+            <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "20px" }}>Scale Your Brand</div>
+            <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)", marginBottom: "20px" }}>
+              Ready to Scale Your Brand?
+            </h2>
+            <p className="section-sub" style={{ margin: "0 auto 40px", maxWidth: "640px", fontSize: "var(--text-md)", lineHeight: "1.7" }}>
+              Book a cinematic shoot with our Hyderabad team today. We handle scriptwriting, filming, editing, and distribution.
+            </p>
+            <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520a%2520shoot." target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 40px" }}>
+              Book a Shoot on WhatsApp
+            </a>
           </div>
         </section>
 

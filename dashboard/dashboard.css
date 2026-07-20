@@ -2588,3 +2588,23 @@ tr.new-user-row {
 .badge {
     transition: background-color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+
+/* ==========================================================================
+   LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE ACCELERATION FALLBACKS
+   ========================================================================== */
+.low-end-device *,
+.low-end-device *::before,
+.low-end-device *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+.low-end-device .sidebar,
+.low-end-device .topbar,
+.low-end-device .modal-overlay,
+.low-end-device .card {
+    background: rgba(18, 18, 18, 0.98) !important;
+}

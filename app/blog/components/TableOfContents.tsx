@@ -13,30 +13,38 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   useEffect(() => {
     if (headings.length === 0) return;
 
+    let ticking = false;
+
     const handleScroll = () => {
-      const headingElements = headings
-        .map((h) => document.getElementById(h.id))
-        .filter(Boolean) as HTMLElement[];
-      
-      const scrollPos = window.scrollY + 140;
+      if (ticking) return;
+      ticking = true;
 
-      // Find the current heading that is above the scroll threshold
-      let currentActive = "";
-      for (const el of headingElements) {
-        if (el.offsetTop <= scrollPos) {
-          currentActive = el.id;
+      requestAnimationFrame(() => {
+        const headingElements = headings
+          .map((h) => document.getElementById(h.id))
+          .filter(Boolean) as HTMLElement[];
+
+        const scrollPos = window.scrollY + 140;
+
+        // Find the current heading that is above the scroll threshold
+        let currentActive = "";
+        for (const el of headingElements) {
+          if (el.offsetTop <= scrollPos) {
+            currentActive = el.id;
+          }
         }
-      }
-      
-      // Fallback to first heading if none are active but we have scrolled past it
-      if (!currentActive && headingElements.length > 0) {
-        currentActive = headingElements[0].id;
-      }
 
-      setActiveId(currentActive);
+        // Fallback to first heading if none are active but we have scrolled past it
+        if (!currentActive && headingElements.length > 0) {
+          currentActive = headingElements[0].id;
+        }
+
+        setActiveId((prev) => (prev !== currentActive ? currentActive : prev));
+        ticking = false;
+      });
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     // Call once initially to set the active heading
     handleScroll();
 

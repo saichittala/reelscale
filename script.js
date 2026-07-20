@@ -1,41 +1,79 @@
-// Custom cursor
+// Hardware resource & low-memory detection (targeting <= 2GB devices & low-spec GPUs)
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isLowMemoryHardware = Boolean(
+  (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
+  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+);
+const isLowEndDevice = isTouchDevice || prefersReducedMotion || isLowMemoryHardware;
+
+if (isLowEndDevice) {
+  document.documentElement.classList.add('low-end-device');
+}
+
+// Custom cursor (paused when idle or on low-end/touch devices to save RAM/CPU)
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 
-let mx = 0, my = 0, rx = 0, ry = 0;
+if (cursor && ring && !isTouchDevice && !isLowEndDevice) {
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  let cursorAnimating = false;
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX;
-  my = e.clientY;
+  function animateRing() {
+    if (document.hidden) {
+      cursorAnimating = false;
+      return;
+    }
 
-  cursor.style.left = mx + 'px';
-  cursor.style.top = my + 'px';
-});
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) * 0.15;
 
-function animateRing() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
 
-  ring.style.left = rx + 'px';
-  ring.style.top = ry + 'px';
+    // Sleep when position catches up with mouse to save CPU/GPU cycles
+    if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) {
+      requestAnimationFrame(animateRing);
+    } else {
+      cursorAnimating = false;
+    }
+  }
 
-  requestAnimationFrame(animateRing);
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+
+    if (!cursorAnimating && !document.hidden) {
+      cursorAnimating = true;
+      requestAnimationFrame(animateRing);
+    }
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && cursorAnimating) {
+      requestAnimationFrame(animateRing);
+    }
+  });
+
+  // Hover effects
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '0';
+      ring.style.height = '0';
+    });
+
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '0';
+      ring.style.height = '0';
+    });
+  });
+} else if (cursor && ring) {
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
 }
-
-animateRing();
-
-// Hover effects
-document.querySelectorAll('a, button').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    ring.style.width = '0';
-    ring.style.height = '0';
-  });
-
-  el.addEventListener('mouseleave', () => {
-    ring.style.width = '0';
-    ring.style.height = '0';
-  });
-});
 
 // Scroll reveal
 const reveals = document.querySelectorAll('.reveal');
@@ -58,7 +96,7 @@ window.addEventListener('scroll', () => {
   } else {
     header.classList.remove('scrolled');
   }
-});
+}, { passive: true });
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -111,8 +149,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const carouselTrack = document.getElementById("carouselTrack");
   if (carouselTrack) {
     carouselTrack.innerHTML = "";
-    // Duplicate 3 times (18 cards total) to enable infinite wrapping on drag/scroll
-    const fullSet = [...initialCards, ...initialCards, ...initialCards];
+    // Duplicate cards only on high-performance hardware, single set on low-end 2GB devices to maximize speed
+    const fullSet = isLowEndDevice ? initialCards : [...initialCards, ...initialCards, ...initialCards];
     fullSet.forEach((cardData, idx) => {
       const cardEl = document.createElement("div");
       cardEl.className = "portfolio-item carousel-card";
@@ -399,8 +437,36 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // Viewport & visibility tracking to pause loop when off-screen or tab is hidden
+    let isCarouselInView = true;
+    let isCarouselLoopRunning = false;
+
+    const carouselObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isCarouselInView = entry.isIntersecting;
+        if (isCarouselInView && !isCarouselLoopRunning && !document.hidden) {
+          isCarouselLoopRunning = true;
+          requestAnimationFrame(updateCarousel);
+        }
+      });
+    }, { threshold: 0.05 });
+
+    carouselObserver.observe(carouselContainer);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && isCarouselInView && !isCarouselLoopRunning) {
+        isCarouselLoopRunning = true;
+        requestAnimationFrame(updateCarousel);
+      }
+    });
+
     // Main animation loop
     function updateCarousel() {
+      if (!isCarouselInView || document.hidden) {
+        isCarouselLoopRunning = false;
+        return;
+      }
+
       const cardWidth = getCardWidth();
       const gap = getGap();
       const interval = cardWidth + gap;
@@ -425,12 +491,14 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let x = relativeCenter / interval; // relative card offset index
 
-        if (prefersReducedMotion) {
-          // Flatten layouts for reduced motion settings
-          card.style.transform = `translateX(${relativeCenter}px) scale(1)`;
-          card.style.opacity = Math.abs(x) > 3 ? '0' : '1';
+        if (prefersReducedMotion || isLowEndDevice) {
+          // Flatten layouts and disable expensive 3D filters for low-end / 2GB devices
+          const rotateY = isLowEndDevice ? -Math.tanh(x) * 15 : 0;
+          const scale = 1 - Math.abs(x) * 0.04;
+          card.style.transform = `translateX(${relativeCenter}px) rotateY(${rotateY}deg) scale(${scale})`;
+          card.style.opacity = Math.abs(x) > 3.8 ? '0' : '1';
           card.style.filter = 'none';
-          card.style.zIndex = '1';
+          card.style.zIndex = Math.round(100 - Math.abs(x) * 10);
           return;
         }
 
@@ -449,10 +517,48 @@ document.addEventListener("DOMContentLoaded", () => {
         card.style.zIndex = Math.round(100 - Math.abs(x) * 10);
       });
 
+      isCarouselLoopRunning = true;
       requestAnimationFrame(updateCarousel);
     }
 
-    requestAnimationFrame(updateCarousel);
+    if (isCarouselInView && !document.hidden) {
+      isCarouselLoopRunning = true;
+      requestAnimationFrame(updateCarousel);
+    }
   }
+
+  // FAQ Accordion interaction & ARIA state management
+  const faqQuestions = document.querySelectorAll(".faq-question");
+  faqQuestions.forEach((btn) => {
+    btn.setAttribute("aria-expanded", "false");
+    btn.addEventListener("click", () => {
+      const item = btn.parentElement;
+      if (!item) return;
+      const answer = item.querySelector(".faq-answer");
+      if (!answer) return;
+      const isActive = item.classList.contains("active");
+
+      // Close all other FAQ items for a clean single-open accordion
+      document.querySelectorAll(".faq-item").forEach((other) => {
+        if (other !== item) {
+          other.classList.remove("active");
+          const otherBtn = other.querySelector(".faq-question");
+          if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
+          const otherAns = other.querySelector(".faq-answer");
+          if (otherAns) otherAns.style.maxHeight = "0px";
+        }
+      });
+
+      if (isActive) {
+        item.classList.remove("active");
+        btn.setAttribute("aria-expanded", "false");
+        answer.style.maxHeight = "0px";
+      } else {
+        item.classList.add("active");
+        btn.setAttribute("aria-expanded", "true");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
+    });
+  });
 
 });

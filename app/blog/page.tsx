@@ -37,7 +37,7 @@ export default function BlogIndexPage() {
         {publishedBlogs.length === 0 ? (
           <div className="blog-no-posts">
             <p className="blog-no-posts-title">No published articles found.</p>
-            <p className="blog-no-posts-subtitle">Check back soon for new guides and breakdowns!</p>
+            <p className="blog-no-posts-subtitle">Check back soon for new blog posts!</p>
           </div>
         ) : (
           <BlogGrid posts={publishedBlogs} />

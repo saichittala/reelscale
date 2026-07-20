@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
   const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
   return {
-    title: `${capitalized} Guides & Insights | ReelScale`,
-    description: `Browse articles and guides relating to ${capitalized} from the Team ReelScale editors.`,
+    title: `${capitalized} Blogs | ReelScale`,
+    description: `Browse blog posts relating to ${capitalized} from the Team ReelScale editors.`,
     alternates: {
       canonical: `https://reelscale.in/blog/category/${category}`,
     },
@@ -51,7 +51,7 @@ export default async function CategoryPage({ params }: Props) {
         <section className="blog-listing-hero">
           <h1>Category: <em>{currentCategoryName}</em></h1>
           <p>
-            Browse all our strategic guides, case studies, and insights focused on {currentCategoryName.toLowerCase()}.
+            Browse all our blog posts and articles focused on {currentCategoryName.toLowerCase()}.
           </p>
         </section>
 

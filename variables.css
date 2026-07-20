@@ -6,7 +6,7 @@
  */
 
 /* ─────────────────────────── FONTS ─────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 /* ─────────────────────────── ROOT TOKENS ─────────────────────────── */
 :root {
@@ -33,12 +33,49 @@
     --primary-font: -apple-system, BlinkMacSystemFont, 'Geist', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font: -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
     --font-space-grotesk: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-instrument-serif: 'Instrument Serif', Georgia, serif;
+    --font-bebas-neue: 'Bebas Neue', sans-serif;
+
+    /* SPACING SCALE */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+    --space-32: 128px;
+
+    /* CONTAINER WIDTHS */
+    --container-sm: 640px;
+    --container-md: 800px;
+    --container-lg: 1000px;
+    --container-xl: 1200px;
+
+    /* Z-INDEX LAYERS */
+    --z-below: -1;
+    --z-base: 1;
+    --z-header: 100;
+    --z-dropdown: 500;
+    --z-modal: 1000;
+    --z-cursor: 9999;
+
+    /* TRANSITION TIMINGS */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
     /* ─── COLORS ─── */
 
-    /* Backgrounds */
+    /* Backgrounds — Single Uniform Dark Black */
     --bg: oklch(0.09 0 0);
-    --bg2: oklch(0.12 0 0);
+    --bg1: oklch(0.09 0 0);
+    --bg2: oklch(0.09 0 0);
     --bg3: oklch(0.09 0 0);
 
     /* Accent — Red */
@@ -52,7 +89,7 @@
     /* Accent — Green */
     --green: oklch(83.515% 0.20131 137.512);
 
-    /* Accent — Green */
+    /* Accent — Blue */
     --blue: oklch(52.956% 0.2015 273.997);
 
     /* Neutrals */
