@@ -198,6 +198,38 @@ export default function LandingInteractions() {
       const slides = ringEl.querySelectorAll(".ls-curved-carousel__slide") as NodeListOf<HTMLElement>;
       const slideCount = slides.length;
 
+      // Ensure all videos (including cloned slides) auto-play smoothly
+      ringEl.querySelectorAll("video").forEach((vid) => {
+        const vidEl = vid as HTMLVideoElement;
+        vidEl.muted = true;
+        vidEl.defaultMuted = true;
+        vidEl.playsInline = true;
+        vidEl.setAttribute("muted", "");
+        vidEl.setAttribute("playsinline", "");
+        vidEl.setAttribute("autoplay", "");
+
+        const triggerPlay = () => {
+          vidEl.style.opacity = "1";
+          const promise = vidEl.play();
+          if (promise !== undefined) {
+            promise.catch(() => {});
+          }
+        };
+
+        if (vidEl.readyState >= 2) {
+          triggerPlay();
+        } else {
+          vidEl.addEventListener("canplay", triggerPlay);
+          vidEl.addEventListener("loadeddata", triggerPlay);
+          vidEl.addEventListener("playing", () => {
+            vidEl.style.opacity = "1";
+          });
+        }
+
+        // Immediate play attempt
+        triggerPlay();
+      });
+
       // Calculate angle per slide for even distribution
       const anglePerSlide = 360 / slidesInRing;
 
