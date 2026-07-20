@@ -2835,8 +2835,8 @@
   <script src="js/services/clients.js"></script>
   <script src="js/services/sales.js"></script>
   <script>
-    if (!isLoggedIn() && window.location.pathname !== "/dashboard/login") {
-      window.location.href = "login.html";
+    if (!isLoggedIn() && !window.location.pathname.includes("/dashboard/login")) {
+      window.location.href = "/dashboard/login/";
     }
   </script>
 </body>

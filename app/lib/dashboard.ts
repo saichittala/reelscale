@@ -15,8 +15,9 @@ export function getDashboardScript() {
   const prefix = "";
 
   const script = mainScript
-    .replace(/window\.location\.href = "login\.html";/g, `window.location.href = "${prefix}/dashboard/login";`)
-    .replace(/href="login\.html"/g, `href="${prefix}/dashboard/login"`)
+    .replace(/window\.location\.href = "login\.html";/g, `window.location.href = "${prefix}/dashboard/login/";`)
+    .replace(/href="login\.html"/g, `href="${prefix}/dashboard/login/"`)
+    .replace(/window\.location\.pathname !== "\/dashboard\/login"/g, `!window.location.pathname.includes("/dashboard/login")`)
     .replace(/\.\.\/assets\//g, `${prefix}/assets/`)
     .replace(/\.\.\/styles\.css/g, `${prefix}/styles.css`)
     .replace(/\.\.\/dashboard\.css/g, `${prefix}/dashboard/dashboard.css`)
