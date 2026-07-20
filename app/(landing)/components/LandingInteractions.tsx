@@ -148,27 +148,18 @@ export default function LandingInteractions() {
         if (isVideo) {
           const poster = data.posterSrc || "";
           slide.innerHTML = `
-            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0;" />
-            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.4s ease; z-index:1;">
+            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
+            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
               <source src="${data.videoSrc}" type="video/mp4" />
             </video>
-            <div class="ls-curved-carousel__label">
+            <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
           `;
-          const vidEl = slide.querySelector("video");
-          if (vidEl) {
-            const revealVideo = () => {
-              vidEl.style.opacity = "1";
-            };
-            vidEl.addEventListener("canplay", revealVideo);
-            vidEl.addEventListener("playing", revealVideo);
-            vidEl.play().catch(() => {});
-          }
         } else {
           slide.innerHTML = `
-            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" />
-            <div class="ls-curved-carousel__label">
+            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; transform:translateZ(0);" />
+            <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
           `;
@@ -198,7 +189,7 @@ export default function LandingInteractions() {
       const slides = ringEl.querySelectorAll(".ls-curved-carousel__slide") as NodeListOf<HTMLElement>;
       const slideCount = slides.length;
 
-      // Ensure all videos (including cloned slides) auto-play smoothly
+      // Hardware accelerated auto-play handler for all slide videos
       ringEl.querySelectorAll("video").forEach((vid) => {
         const vidEl = vid as HTMLVideoElement;
         vidEl.muted = true;
@@ -208,26 +199,23 @@ export default function LandingInteractions() {
         vidEl.setAttribute("playsinline", "");
         vidEl.setAttribute("autoplay", "");
 
-        const triggerPlay = () => {
+        const revealAndPlay = () => {
           vidEl.style.opacity = "1";
-          const promise = vidEl.play();
-          if (promise !== undefined) {
-            promise.catch(() => {});
-          }
+          const p = vidEl.play();
+          if (p !== undefined) p.catch(() => {});
         };
 
         if (vidEl.readyState >= 2) {
-          triggerPlay();
+          revealAndPlay();
         } else {
-          vidEl.addEventListener("canplay", triggerPlay);
-          vidEl.addEventListener("loadeddata", triggerPlay);
+          vidEl.addEventListener("canplaythrough", revealAndPlay, { once: true });
+          vidEl.addEventListener("canplay", revealAndPlay, { once: true });
           vidEl.addEventListener("playing", () => {
             vidEl.style.opacity = "1";
           });
         }
 
-        // Immediate play attempt
-        triggerPlay();
+        revealAndPlay();
       });
 
       // Calculate angle per slide for even distribution
