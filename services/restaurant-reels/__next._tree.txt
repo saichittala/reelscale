@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/1nl2q_uub_-_0.css","style"]
 :HL["/_next/static/chunks/34c3h0cj69r_r.css","style"]
-:HL["/_next/static/chunks/2whjwhfkitf06.css","style"]
+:HL["/_next/static/chunks/2_i201j4p2jyh.css","style"]
 :HL["https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"restaurant-reels","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"BhRejOTVrkBccEmJBJosy"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"restaurant-reels","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"na-xur45KR7QGLdyAoXFW"}
