@@ -69,7 +69,7 @@ const carouselConfig = {
   rotationSpeed: 0.07,      // Target speed of rotation (degrees per frame)
   rotationDirection: 1,     // 1 for clockwise, -1 for counter-clockwise
 
-  pauseOnHover: true,       // Pause rotation when hovering
+  pauseOnHover: false,       // Pause rotation when hovering
   resumeDelay: 0,           // Delay before resuming rotation after hover (milliseconds)
   pauseEaseDuration: 0.5,   // Duration for easing in/out of pause (seconds)
 
