@@ -121,19 +121,8 @@ export default function LandingInteractions() {
         wrapper.innerHTML = `
           <div class="video-meta">
             <div class="video-client">${clientName}</div>
-            <div class="video-stat">${statText}</div>
-          </div>
-          <iframe src="${videoUrl}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="Video player"
-            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        `;
-      }
-      modal.classList.add("active");
-    };
-
-    const runCarousel = () => {
-      if (!carouselEl || !stageEl || !ringEl || typeof gsap === "undefined") return;
-      const N = COVERFLOW_CARDS.length;
+            <div class="video-s    const runCarousel = () => {
+      if (!carouselEl || !stageEl || !ringEl) return;
 
       // 1. Populate original slides dynamically
       ringEl.innerHTML = "";
@@ -145,29 +134,30 @@ export default function LandingInteractions() {
         slide.setAttribute("data-stat", data.stat);
 
         const isVideo = data.videoSrc.toLowerCase().endsWith(".mp4");
+        const poster = data.posterSrc || "";
+
         if (isVideo) {
-          const poster = data.posterSrc || "";
           slide.innerHTML = `
-            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
-            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
+          < img src = "${poster}" alt = "${data.client}" draggable = "false" class="ls-curved-carousel__media ls-curved-carousel__poster" style = "position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0;" />
+            <video loop muted playsinline autoplay preload="metadata" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1;">
               <source src="${data.videoSrc}" type="video/mp4" />
             </video>
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
-          `;
+        `;
         } else {
           slide.innerHTML = `
-            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; transform:translateZ(0);" />
+          < img src = "${data.videoSrc}" alt = "${data.client}" loading = "lazy" draggable = "false" class="ls-curved-carousel__media" style = "position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit;" />
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
-          `;
+        `;
         }
         ringEl.appendChild(slide);
       });
 
-      // 2. Duplicate slides if original count is less than slidesInRing
+      // 2. Duplicate slides for seamless 360deg ring distribution
       const isMobile = window.innerWidth <= 768;
       const slidesInRing = isMobile ? 11 : carouselConfig.slidesInRing;
       const slideSpacing = isMobile ? 1.5 : carouselConfig.slideSpacing;
@@ -185,79 +175,52 @@ export default function LandingInteractions() {
         }
       }
 
-      // Re-fetch all slides after potential duplication
       const slides = ringEl.querySelectorAll(".ls-curved-carousel__slide") as NodeListOf<HTMLElement>;
-      const slideCount = slides.length;
-
-      // Hardware accelerated auto-play handler for all slide videos
-      ringEl.querySelectorAll("video").forEach((vid) => {
-        const vidEl = vid as HTMLVideoElement;
-        vidEl.muted = true;
-        vidEl.defaultMuted = true;
-        vidEl.playsInline = true;
-        vidEl.setAttribute("muted", "");
-        vidEl.setAttribute("playsinline", "");
-        vidEl.setAttribute("autoplay", "");
-
-        const revealAndPlay = () => {
-          vidEl.style.opacity = "1";
-          const p = vidEl.play();
-          if (p !== undefined) p.catch(() => { });
-        };
-
-        if (vidEl.readyState >= 2) {
-          revealAndPlay();
-        } else {
-          vidEl.addEventListener("canplaythrough", revealAndPlay, { once: true });
-          vidEl.addEventListener("canplay", revealAndPlay, { once: true });
-          vidEl.addEventListener("playing", () => {
-            vidEl.style.opacity = "1";
-          });
-        }
-
-        revealAndPlay();
-      });
-
-      // Calculate angle per slide for even distribution
       const anglePerSlide = 360 / slidesInRing;
-
-      // Calculate ideal slide width based on arc length
       const arcLength = (anglePerSlide - slideSpacing) * (Math.PI / 180) * radius;
       const slideWidth = arcLength;
 
-      // Set stage dimensions
-      stageEl.style.width = `${slideWidth}px`;
-      stageEl.style.height = `${slideHeight}px`;
+      stageEl.style.width = `${ slideWidth } px`;
+      stageEl.style.height = `${ slideHeight } px`;
 
-      // Set up auto-rotation state
-      let autoRotate = carouselConfig.autoRotate;
-      let targetRotationSpeed = carouselConfig.rotationSpeed;
-      let currentRotationSpeed = 0;
-      let rotationDirection = carouselConfig.rotationDirection;
-      let autoRotateTimeout: any = null;
-      let lastUpdateTime = Date.now();
-      let updateRotationFunction: any = null;
-      let speedTween: any = null;
+      interface CachedVideoItem {
+        video: HTMLVideoElement;
+        slideRotateY: number;
+        isPlaying: boolean;
+      }
+      const cachedVideos: CachedVideoItem[] = [];
 
-      let speedController = { value: 0 };
-
-      // Initialize the carousel timeline
-      const timeline = gsap.timeline();
-      timeline.set(ringEl, { rotationY: carouselConfig.initialRotation });
-
-      // Apply calculated dimensions and position all slides in a circle
       slides.forEach((slide, index) => {
-        slide.style.width = `${slideWidth}px`;
-        slide.style.height = `${slideHeight}px`;
+        slide.style.width = `${ slideWidth } px`;
+        slide.style.height = `${ slideHeight } px`;
+        const slideRotateY = index * -anglePerSlide;
 
-        gsap.set(slide, {
-          rotateY: index * -anglePerSlide,
-          transformOrigin: `50% 50% ${radius}px`,
-          z: -radius,
-          backfaceVisibility: 'hidden'
-        });
+        slide.style.transform = `rotateY(${ slideRotateY }deg) translateZ(${ radius }px)`;
+        slide.style.transformOrigin = `50 % 50 % 0px`;
+        (slide.style as any).backfaceVisibility = "hidden";
+        (slide.style as any).webkitBackfaceVisibility = "hidden";
 
-        // Add modal video opener event listener
+        const vidEl = slide.querySelector("video");
+        if (vidEl) {
+          vidEl.muted = true;
+          vidEl.defaultMuted = true;
+          vidEl.playsInline = true;
+
+          const revealVideo = () => { vidEl.style.opacity = "1"; };
+          if (vidEl.readyState >= 2) {
+            revealVideo();
+          } else {
+            vidEl.addEventListener("canplay", revealVideo, { once: true });
+            vidEl.addEventListener("playing", revealVideo, { once: true });
+          }
+
+          cachedVideos.push({
+            video: vidEl,
+            slideRotateY,
+            isPlaying: false
+          });
+        }
+
         slide.addEventListener("click", () => {
           const video = slide.getAttribute("data-video");
           const client = slide.getAttribute("data-client") || "";
@@ -268,36 +231,90 @@ export default function LandingInteractions() {
         });
       });
 
-      // Manage video playback based on position to avoid decoding 13 videos at once
-      function manageVideoPlayback(ringRotation: number) {
-        slides.forEach((slide, index) => {
-          const video = slide.querySelector("video") as HTMLVideoElement | null;
-          if (!video) return;
+      /* ═══════════════════════════════════════════════════
+         3D ROTATION & GPU RAF ANIMATION ENGINE
+         ═══════════════════════════════════════════════════ */
+      let currentRotation: number = carouselConfig.initialRotation;
+      let targetSpeed = carouselConfig.rotationSpeed;
+      let isAutoRotating = carouselConfig.autoRotate;
+      let isHovered = false;
+      let isDragging = false;
+      let startX = 0;
+      let dragStartRotation = 0;
+      let dragVelocity = 0;
+      let lastDragX = 0;
+      let lastDragTime = 0;
+      let animFrameId: number | null = null;
+      let lastFrameTime = performance.now();
+      let lastVideoCheckRot = -999;
+      let isIntersecting = true;
 
-          const slideRotateY = index * -anglePerSlide;
-          let angle = (ringRotation + slideRotateY) % 360;
+      ringEl.style.transform = `rotateY(${ currentRotation }deg)`;
+
+      function updateVideos(rot: number) {
+        cachedVideos.forEach((item) => {
+          let angle = (rot + item.slideRotateY) % 360;
           if (angle < -180) angle += 360;
           if (angle > 180) angle -= 360;
 
-          // Play only if slide is facing the front (within 60 degrees of front view)
-          const isFacingFront = Math.abs(angle) < 60;
-
-          if (isFacingFront) {
-            if (video.paused) {
-              video.play().catch(() => { });
-            }
-          } else {
-            if (!video.paused) {
-              video.pause();
-            }
+          const isFacingFront = Math.abs(angle) < 55;
+          if (isFacingFront && !item.isPlaying) {
+            item.isPlaying = true;
+            item.video.play().catch(() => {});
+          } else if (!isFacingFront && item.isPlaying) {
+            item.isPlaying = false;
+            item.video.pause();
           }
         });
       }
 
-      // Initialize video playing state for the starting angle
-      manageVideoPlayback(carouselConfig.initialRotation);
+      updateVideos(currentRotation);
 
-      // Add entrance animation (scroll-driven if ScrollTrigger is loaded, otherwise standard fallback)
+      function renderLoop(time: number) {
+        if (!isIntersecting || document.hidden) {
+          animFrameId = null;
+          return;
+        }
+
+        const dt = Math.min((time - lastFrameTime) / 1000, 0.05);
+        lastFrameTime = time;
+
+        if (isDragging) {
+          currentRotation += dragVelocity;
+          dragVelocity *= 0.92;
+        } else if (isAutoRotating && (!isHovered || !carouselConfig.pauseOnHover)) {
+          currentRotation += targetSpeed * carouselConfig.rotationDirection * (dt * 60);
+        } else if (Math.abs(dragVelocity) > 0.01) {
+          currentRotation += dragVelocity;
+          dragVelocity *= 0.92;
+        }
+
+        // Direct GPU Transform write - zero DOM reads or layout reflows!
+        ringEl!.style.transform = `rotateY(${ currentRotation }deg)`;
+
+        if (Math.abs(currentRotation - lastVideoCheckRot) > 1.5) {
+          lastVideoCheckRot = currentRotation;
+          updateVideos(currentRotation);
+        }
+
+        animFrameId = requestAnimationFrame(renderLoop);
+      }
+
+      function startLoop() {
+        if (animFrameId === null) {
+          lastFrameTime = performance.now();
+          animFrameId = requestAnimationFrame(renderLoop);
+        }
+      }
+
+      function stopLoop() {
+        if (animFrameId !== null) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = null;
+        }
+      }
+
+      // Entrance animation setup
       const gsapInstance = (window as any).gsap;
       const ScrollTriggerInstance = (window as any).ScrollTrigger;
 
@@ -312,7 +329,7 @@ export default function LandingInteractions() {
           {
             y: 0,
             opacity: 1,
-            duration: 3.1,
+            duration: 2.2,
             ease: "power3.out",
             scrollTrigger: {
               trigger: carouselEl,
@@ -328,150 +345,105 @@ export default function LandingInteractions() {
           }
           triggerAnim.kill();
         });
+      }
 
-        startAutoRotation();
-      } else {
-        if ((carouselConfig.entranceAnimation as string) !== 'none') {
-          gsapInstance.fromTo(carouselEl,
-            {
-              y: isMobile ? 80 : 150,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1.2,
-              ease: "power3.out",
-              onComplete: () => {
-                startAutoRotation();
+      startLoop();
+
+      /* ═══════════════════════════════════════════════════
+         INTERACTIVE POINTER & TOUCH MOMENTUM DRAGGING
+         ═══════════════════════════════════════════════════ */
+      const onPointerDown = (e: PointerEvent) => {
+        if (e.button !== 0 && e.pointerType === "mouse") return;
+        isDragging = true;
+        startX = e.clientX;
+        lastDragX = e.clientX;
+        lastDragTime = performance.now();
+        dragStartRotation = currentRotation;
+        dragVelocity = 0;
+        carouselEl.style.cursor = "grabbing";
+        carouselEl.setPointerCapture(e.pointerId);
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!isDragging) return;
+        const now = performance.now();
+        const deltaX = e.clientX - startX;
+        const currentRot = dragStartRotation + deltaX * 0.25;
+
+        const timeDiff = Math.max(now - lastDragTime, 8);
+        dragVelocity = ((e.clientX - lastDragX) / timeDiff) * 3.5;
+
+        lastDragX = e.clientX;
+        lastDragTime = now;
+        currentRotation = currentRot;
+
+        ringEl.style.transform = `rotateY(${ currentRotation }deg)`;
+      };
+
+      const onPointerUp = (e: PointerEvent) => {
+        if (!isDragging) return;
+        isDragging = false;
+        carouselEl.style.cursor = "grab";
+        try {
+          carouselEl.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      };
+
+      carouselEl.style.cursor = "grab";
+      carouselEl.addEventListener("pointerdown", onPointerDown, { passive: true });
+      carouselEl.addEventListener("pointermove", onPointerMove, { passive: true });
+      carouselEl.addEventListener("pointerup", onPointerUp, { passive: true });
+      carouselEl.addEventListener("pointercancel", onPointerUp, { passive: true });
+
+      const onMouseEnter = () => { isHovered = true; };
+      const onMouseLeave = () => { isHovered = false; };
+      carouselEl.addEventListener("mouseenter", onMouseEnter, { passive: true });
+      carouselEl.addEventListener("mouseleave", onMouseLeave, { passive: true });
+
+      const viewportObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isIntersecting = entry.isIntersecting;
+          if (isIntersecting) {
+            startLoop();
+          } else {
+            stopLoop();
+            cachedVideos.forEach((v) => {
+              if (v.isPlaying) {
+                v.isPlaying = false;
+                v.video.pause();
               }
-            }
-          );
-        } else {
-          startAutoRotation();
-        }
-      }
-
-      function updateRotation() {
-        currentRotationSpeed = speedController.value;
-        if (currentRotationSpeed === 0) return;
-
-        const currentTime = Date.now();
-        const deltaTime = currentTime - lastUpdateTime;
-        lastUpdateTime = currentTime;
-
-        const rotationAmount = (deltaTime / 16.67) * currentRotationSpeed * rotationDirection;
-
-        const currentRot = parseFloat(gsap.getProperty(ringEl, "rotationY") as string) || 0;
-        const newRot = currentRot + rotationAmount;
-
-        gsap.to(ringEl, {
-          rotationY: newRot,
-          duration: 0,
-          overwrite: true
-        });
-
-        manageVideoPlayback(newRot);
-      }
-
-      function startAutoRotation() {
-        if (!autoRotate) return;
-        lastUpdateTime = Date.now();
-        updateRotationFunction = updateRotation;
-        gsap.ticker.add(updateRotationFunction);
-
-        if (speedTween) {
-          speedTween.kill();
-        }
-        speedTween = gsap.to(speedController, {
-          value: targetRotationSpeed,
-          duration: carouselConfig.pauseEaseDuration,
-          ease: 'power1.out'
-        });
-      }
-
-      function stopAutoRotation() {
-        if (speedTween) {
-          speedTween.kill();
-        }
-        speedTween = gsap.to(speedController, {
-          value: 0,
-          duration: carouselConfig.pauseEaseDuration,
-          ease: 'power1.in',
-          onComplete: () => {
-            if (updateRotationFunction) {
-              gsap.ticker.remove(updateRotationFunction);
-              updateRotationFunction = null;
-            }
-          }
-        });
-      }
-
-      function resumeAutoRotation() {
-        if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
-        autoRotateTimeout = setTimeout(() => {
-          if (carouselConfig.autoRotate) {
-            startAutoRotation();
-          }
-        }, carouselConfig.resumeDelay);
-      }
-
-      // Add viewport intersection & tab visibility observers to pause GSAP ticker when offscreen/hidden
-      const carouselViewportObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) {
-            stopAutoRotation();
-          } else if (!document.hidden && carouselConfig.autoRotate) {
-            startAutoRotation();
+            });
           }
         });
       }, { threshold: 0.05 });
 
-      carouselViewportObserver.observe(carouselEl);
+      viewportObserver.observe(carouselEl);
 
-      const onVisibilityChange = () => {
+      const onVisibility = () => {
         if (document.hidden) {
-          stopAutoRotation();
-        } else if (carouselConfig.autoRotate) {
-          startAutoRotation();
+          stopLoop();
+          cachedVideos.forEach((v) => {
+            if (v.isPlaying) {
+              v.isPlaying = false;
+              v.video.pause();
+            }
+          });
+        } else if (isIntersecting) {
+          startLoop();
         }
       };
-
-      document.addEventListener("visibilitychange", onVisibilityChange);
-
-      // Add pause/resume functionality if enabled
-      if (carouselConfig.pauseOnHover) {
-        const onMouseEnter = () => {
-          if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
-          stopAutoRotation();
-        };
-
-        const onMouseLeave = () => {
-          resumeAutoRotation();
-        };
-
-        carouselEl.addEventListener("mouseenter", onMouseEnter);
-        carouselEl.addEventListener("mouseleave", onMouseLeave);
-
-        carouselEl.addEventListener("touchstart", onMouseEnter, { passive: true });
-        carouselEl.addEventListener("touchend", onMouseLeave);
-
-        cleanupFns.push(() => {
-          carouselEl.removeEventListener("mouseenter", onMouseEnter);
-          carouselEl.removeEventListener("mouseleave", onMouseLeave);
-          carouselEl.removeEventListener("touchstart", onMouseEnter);
-          carouselEl.removeEventListener("touchend", onMouseLeave);
-        });
-      }
+      document.addEventListener("visibilitychange", onVisibility);
 
       cleanupFns.push(() => {
-        carouselViewportObserver.disconnect();
-        document.removeEventListener("visibilitychange", onVisibilityChange);
-        if (updateRotationFunction) {
-          gsap.ticker.remove(updateRotationFunction);
-        }
-        if (autoRotateTimeout) clearTimeout(autoRotateTimeout);
-        if (speedTween) speedTween.kill();
+        stopLoop();
+        viewportObserver.disconnect();
+        document.removeEventListener("visibilitychange", onVisibility);
+        carouselEl.removeEventListener("pointerdown", onPointerDown);
+        carouselEl.removeEventListener("pointermove", onPointerMove);
+        carouselEl.removeEventListener("pointerup", onPointerUp);
+        carouselEl.removeEventListener("pointercancel", onPointerUp);
+        carouselEl.removeEventListener("mouseenter", onMouseEnter);
+        carouselEl.removeEventListener("mouseleave", onMouseLeave);
       });
     };
 
@@ -544,8 +516,8 @@ export default function LandingInteractions() {
       mx = event.clientX;
       my = event.clientY;
       if (cursor) {
-        cursor.style.left = `${mx}px`;
-        cursor.style.top = `${my}px`;
+        cursor.style.left = `${ mx } px`;
+        cursor.style.top = `${ my } px`;
       }
       if (!cursorAnimating && !document.hidden && ring && !isLowEndDevice) {
         cursorAnimating = true;
@@ -561,8 +533,8 @@ export default function LandingInteractions() {
       rx += (mx - rx) * 0.15;
       ry += (my - ry) * 0.15;
       if (ring) {
-        ring.style.left = `${rx}px`;
-        ring.style.top = `${ry}px`;
+        ring.style.left = `${ rx } px`;
+        ring.style.top = `${ ry } px`;
       }
 
       if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) {
@@ -641,7 +613,7 @@ export default function LandingInteractions() {
         } else {
           item.classList.add("active");
           btn.setAttribute("aria-expanded", "true");
-          answer.style.maxHeight = `${answer.scrollHeight}px`;
+          answer.style.maxHeight = `${ answer.scrollHeight } px`;
         }
       }) as EventListener;
       btn.addEventListener("click", handler);
