@@ -1801,6 +1801,7 @@ footer {
     overflow: visible;
     z-index: 1;
     margin-block: var(--block-offset);
+    contain: layout paint;
 
     -webkit-mask-image: var(--fadeout);
     mask-image: var(--fadeout);
@@ -1819,7 +1820,10 @@ footer {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-50%, -50%, 0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 @media (max-width:767px) {
@@ -1838,6 +1842,9 @@ footer {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     gap: 0;
 }
 
@@ -1846,7 +1853,10 @@ footer {
     transform-style: preserve-3d;
     overflow: hidden;
     border-radius: 28px;
-    transition: transform 0.3s ease;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 2px rgba(255, 255, 255, 0.1);
+    contain: layout paint style;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     cursor: pointer;
 }
 
@@ -1859,14 +1869,7 @@ footer {
     display: block;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transform: translateZ(0);
-    will-change: opacity, transform;
-}
-
-/* Card reflection */
-.ls-curved-carousel__slide img,
-.ls-curved-carousel__slide video {
-    -webkit-box-reflect: below 8px linear-gradient(to bottom, transparent 70%, rgba(0, 0, 0, 0.15));
+    transform: translate3d(0, 0, 0);
 }
 
 /* Bottom shadow gradient overlay on slide */
@@ -1875,10 +1878,10 @@ footer {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: rgba(0, 0, 0, 0.45);
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
     pointer-events: none;
     z-index: 1;
-    transition: background 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
 .ls-curved-carousel__slide:hover::after {

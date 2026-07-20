@@ -202,7 +202,7 @@ export default function LandingInteractions() {
         const revealAndPlay = () => {
           vidEl.style.opacity = "1";
           const p = vidEl.play();
-          if (p !== undefined) p.catch(() => {});
+          if (p !== undefined) p.catch(() => { });
         };
 
         if (vidEl.readyState >= 2) {
@@ -284,7 +284,7 @@ export default function LandingInteractions() {
 
           if (isFacingFront) {
             if (video.paused) {
-              video.play().catch(() => {});
+              video.play().catch(() => { });
             }
           } else {
             if (!video.paused) {
