@@ -606,19 +606,21 @@ em {
 }
 
 .service-card {
-    background: var(--bg);
+    background: var(--bg2);
     border: 0.6px solid var(--border);
-    padding: 32px;
-    border-radius: 0;
+    padding: 28px 24px;
+    border-radius: var(--border-radius-1);
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s, background 0.3s;
-    border-radius: var(--border-radius-1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .service-card:hover {
     background: var(--white-03);
-    /* background: rgba(232, 37, 30, 0.04); */
+    border-color: rgba(232, 37, 30, 0.35);
+    transform: translateY(-2px);
 }
 
 .service-card::before {
@@ -630,46 +632,60 @@ em {
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--red), transparent);
     opacity: 0;
-    transition: opacity 0.3s ease, height 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
 .service-card:hover::before {
     opacity: 1;
 }
 
-.service-num {
-    font-family: var(--primary-font);
-    font-size: var(--text-md);
-    color: var(--red);
-    margin-bottom: 32px;
-    opacity: 0.7;
+.service-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-.service-icon {
-    display: none !important;
-    width: 44px;
-    height: 44px;
-    background: rgba(232, 37, 30, 0.1);
-    border-radius: 10px;
+.service-icon-box {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
-    font-size: var(--text-xl);
+    color: var(--white);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.service-card:hover .service-icon-box {
+    color: var(--red);
+    transform: scale(1.05);
 }
 
 .service-name {
     font-family: var(--primary-font);
-    font-size: var(--text-xl);
-    font-weight: 500;
-    margin-bottom: 14px;
+    font-size: var(--text-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--white);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.service-card-divider {
+    height: 0.7px;
+    background: var(--border);
+    width: 100%;
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+}
+
+.service-card:hover .service-card-divider {
+    background: rgba(232, 37, 30, 0.3);
 }
 
 .service-desc {
     font-size: var(--text-md);
     color: var(--muted);
-    line-height: 1.7;
-    font-weight: 300;
+    line-height: 1.65;
+    font-weight: var(--fw-light);
+    margin: 0;
 }
 
 /* WHY CHOOSE US */
@@ -1295,7 +1311,6 @@ em {
     color: rgba(255, 255, 255, 0.85);
     font-weight: 300;
     margin-bottom: 28px;
-    font-style: italic;
 }
 
 .testi-result {
