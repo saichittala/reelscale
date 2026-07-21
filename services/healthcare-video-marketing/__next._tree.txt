@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/292g6--x-cyj2.css","style"]
-:HL["/_next/static/chunks/2a7ft8fa6ekyo.css","style"]
+:HL["/_next/static/chunks/30sjv4-tp4z5a.css","style"]
 :HL["/_next/static/chunks/2ohewvpli0hm2.css","style"]
 :HL["https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"healthcare-video-marketing","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"_S_XPxKxcdnHZcoQj_cRy"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"healthcare-video-marketing","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"4M7JNasI1O8T3SQnPAUch"}
