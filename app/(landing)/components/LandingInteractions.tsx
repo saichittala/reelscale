@@ -27,7 +27,7 @@ interface CoverFlowCard {
 const COVERFLOW_CARDS: CoverFlowCard[] = [
   {
     videoSrc: "./assets/clients/avinash-salon.mp4",
-    posterSrc: "./assets/clients/avinash-salon.jpg",
+    posterSrc: "./assets/clients/avinash-salon.webp",
     client: "Salons",
     stat: "2x Leads in 24hrs",
     video: "https://www.instagram.com/reels/DY3bF7xPJ5_/",
@@ -41,14 +41,14 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
   },
   {
     videoSrc: "./assets/clients/parthu.mp4",
-    posterSrc: "./assets/clients/parthu.png",
+    posterSrc: "./assets/clients/parthu.webp",
     client: "Interiors",
     stat: "1.2M Organic Reach",
     video: "https://drive.google.com/file/d/1yD3ofnBBHKVUkblmLgTm8qYk0A82hK61/view?usp=sharing",
   },
   {
     videoSrc: "./assets/clients/jak-interiors.mp4",
-    posterSrc: "./assets/clients/jak-interiors.jpeg",
+    posterSrc: "./assets/clients/jak-interiors.webp",
     client: "Interiors",
     stat: "4.2x Engagement Lift",
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
@@ -148,10 +148,9 @@ export default function LandingInteractions() {
         if (isVideo) {
           const poster = data.posterSrc || "";
           slide.innerHTML = `
-            <img src="${poster}" alt="${data.client}" fetchpriority="high" decoding="async" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
-            <video loop muted playsinline autoplay preload="none" poster="${poster}" aria-label="${data.client} Reel" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
+            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
+            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
               <source src="${data.videoSrc}" type="video/mp4" />
-              <track kind="captions" src="" label="No captions" />
             </video>
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
