@@ -233,7 +233,6 @@ body {
 
 .blog-card:hover {
   background: var(--white-03);
-  border-color: rgba(232, 37, 30, 0.35);
 }
 
 .blog-card-img-wrap {
