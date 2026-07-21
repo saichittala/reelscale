@@ -2592,9 +2592,7 @@ tr.new-user-row {
 /* ==========================================================================
    LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE ACCELERATION FALLBACKS
    ========================================================================== */
-.low-end-device *,
-.low-end-device *::before,
-.low-end-device *::after {
+.low-end-device *:not(header):not(header *):not(.topbar):not(.topbar *) {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
@@ -2603,7 +2601,6 @@ tr.new-user-row {
 }
 
 .low-end-device .sidebar,
-.low-end-device .topbar,
 .low-end-device .modal-overlay,
 .low-end-device .card {
     background: rgba(18, 18, 18, 0.98) !important;

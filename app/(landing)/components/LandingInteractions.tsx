@@ -34,7 +34,7 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
   },
   {
     videoSrc: "./assets/clients/maitrova.mp4",
-    posterSrc: "./assets/clients/maitrova.png",
+    posterSrc: "./assets/clients/maitrova.webp",
     client: "CLOTHING",
     stat: "2.4M Views",
     video: "https://www.instagram.com/p/DYhpQstRCBU/",
@@ -148,9 +148,10 @@ export default function LandingInteractions() {
         if (isVideo) {
           const poster = data.posterSrc || "";
           slide.innerHTML = `
-            <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
-            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
+            <img src="${poster}" alt="${data.client}" fetchpriority="high" decoding="async" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
+            <video loop muted playsinline autoplay preload="none" poster="${poster}" aria-label="${data.client} Reel" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
               <source src="${data.videoSrc}" type="video/mp4" />
+              <track kind="captions" src="" label="No captions" />
             </video>
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
@@ -522,9 +523,9 @@ export default function LandingInteractions() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isLowMemoryHardware = Boolean(
       ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 2) ||
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
     );
-    const isLowEndDevice = isTouchDevice || prefersReducedMotion || isLowMemoryHardware;
+    const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware;
 
     if (isLowEndDevice) {
       document.documentElement.classList.add("low-end-device");
@@ -576,7 +577,9 @@ export default function LandingInteractions() {
       header?.classList.toggle("scrolled", window.scrollY > 10);
     };
 
-    if (!isLowEndDevice && cursor && ring) {
+    onScroll();
+
+    if (!isTouchDevice && !isLowEndDevice && cursor && ring) {
       document.addEventListener("mousemove", onCursorMove, { passive: true });
     } else if (cursor && ring) {
       cursor.style.display = "none";

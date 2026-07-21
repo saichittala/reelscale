@@ -3,9 +3,9 @@ const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isLowMemoryHardware = Boolean(
   (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
-  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
 );
-const isLowEndDevice = isTouchDevice || prefersReducedMotion || isLowMemoryHardware;
+const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware;
 
 if (isLowEndDevice) {
   document.documentElement.classList.add('low-end-device');
@@ -90,13 +90,14 @@ reveals.forEach(el => observer.observe(el));
 
 const header = document.querySelector('header');
 
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 10) {
-    header.classList.add('scrolled');
-  } else {
-    header.classList.remove('scrolled');
+function updateHeaderScroll() {
+  if (header) {
+    header.classList.toggle('scrolled', window.scrollY > 10);
   }
-}, { passive: true });
+}
+
+window.addEventListener('scroll', updateHeaderScroll, { passive: true });
+updateHeaderScroll();
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -112,13 +113,13 @@ document.addEventListener("DOMContentLoaded", () => {
       video: "https://www.instagram.com/p/DYhpQstRCBU/",
       client: "Maitrova",
       stat: "2.4M Views",
-      img: "./assets/clients/maitrova.png"
+      img: "./assets/clients/maitrova.webp"
     },
     {
       video: "https://www.instagram.com/p/DFWphKux3dK/",
       client: "Avinash Salon",
       stat: "1.8M Views",
-      img: "./assets/clients/avinash-salon.jpg"
+      img: "./assets/clients/avinash-salon.webp"
     },
     {
       video: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop",

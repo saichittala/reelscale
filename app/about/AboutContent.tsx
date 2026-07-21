@@ -37,7 +37,7 @@ export default function AboutContent({ headerHtml, footerHtml }: AboutContentPro
             {/* Large Cinematic Hero Image */}
             <div className="ed-hero-image-wrap reveal">
               <img
-                src="/assets/about/main.png"
+                src="/assets/about/main.webp"
                 alt="ReelScale Cinematic Video Production Setup"
                 loading="eager"
               />

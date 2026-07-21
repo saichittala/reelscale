@@ -59,31 +59,28 @@ header {
     justify-content: space-between;
     z-index: 1000;
     align-items: center;
-    background: rgba(10, 10, 10, 0);
+    background: rgba(0, 0, 0, 0);
     border-bottom: 1px solid transparent;
-    transition: background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        border-color 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        padding 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        -webkit-backdrop-filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-        backdrop-filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: translateY(10px);
+    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(0px);
+    transition:
+        all 1s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(8px);
     will-change: transform, background-color, backdrop-filter, padding;
 
     .mob-btn-primary {
         background: transparent !important;
         border: 1px solid var(--red) !important;
         color: var(--red) !important;
-        transition: border-color 0.5s ease, transform 0.5s ease, padding 0.5s ease, background 0.5s ease, color 0.5s ease;
+        transition: border-color 0.4s ease, transform 0.4s ease, padding 0.4s ease, background 0.4s ease, color 0.4s ease;
     }
 }
 
 /* Active when scrolled - Apple-style glassmorphism & fluid easing */
 header.scrolled {
-    background: rgba(0, 0, 0, 0.9);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    backdrop-filter: blur(28px) saturate(180%);
+    background: rgba(0, 0, 0, 0.75);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transform: translateY(0px);
@@ -274,7 +271,7 @@ nav a:hover {
     inset: 0;
     /* background: radial-gradient(ellipse 65% 55% at 50% 50%, rgba(193, 18, 31, 0.18) 0%, rgba(193, 18, 31, 0.10) 28%, rgba(193, 18, 31, 0.04) 55%, transparent 75%); */
     pointer-events: none;
-    background-image: url('/assets/bg.png');
+    background-image: url('/assets/bg.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1513,12 +1510,17 @@ footer {
 /* MOBILE */
 @media (max-width: 900px) {
     header {
-        padding: 8px 24px;
-        height: 70px;
+        padding: 12px 20px;
+        height: 64px;
+        -webkit-backdrop-filter: blur(0px);
+        backdrop-filter: blur(0px);
     }
 
     header.scrolled {
-        padding: 8px 24px;
+        padding: 10px 20px;
+        background: rgba(10, 10, 10, 0.75);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        backdrop-filter: blur(20px) saturate(180%);
     }
 
     nav {
@@ -1995,19 +1997,14 @@ footer {
 /* ==========================================================================
    LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE EXTREME SPEED OVERRIDES
    ========================================================================== */
-.low-end-device *,
-.low-end-device *::before,
-.low-end-device *::after {
+.low-end-device *:not(header):not(header *) {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     text-shadow: none !important;
     filter: none !important;
-    transition-duration: 0.05s !important;
-    animation-duration: 0.05s !important;
 }
 
-.low-end-device header,
 .low-end-device .modal-content,
 .low-end-device .video-modal-container,
 .low-end-device .pricing-card {
