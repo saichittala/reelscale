@@ -6,7 +6,7 @@
 :HL["/_next/static/chunks/34c3h0cj69r_r.css","style"]
 :HL["/_next/static/chunks/2hqj050grw9zb.css","style"]
 :HL["https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","style"]
-4:T14cd,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"LocalBusiness","@id":"https://reelscale.in/#localbusiness","name":"ReelScale Co.","url":"https://reelscale.in","logo":"https://reelscale.in/assets/logo.png","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","streetAddress":"Madhapur, HITEC City","addressLocality":"Hyderabad","addressRegion":"Telangana","postalCode":"500081","addressCountry":"IN"},"geo":{"@type":"GeoCoordinates","latitude":"17.4483","longitude":"78.3741"},"areaServed":[{"@type":"AdministrativeArea","name":"Hyderabad"},{"@type":"AdministrativeArea","name":"Madhapur"},{"@type":"AdministrativeArea","name":"Gachibowli"},{"@type":"AdministrativeArea","name":"Kondapur"},{"@type":"AdministrativeArea","name":"HITEC City"},{"@type":"AdministrativeArea","name":"Jubilee Hills"},{"@type":"AdministrativeArea","name":"Banjara Hills"}]},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale Reel Production Hyderabad","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["(landing)",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/292g6--x-cyj2.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/34c3h0cj69r_r.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","link",null,{"rel":"preconnect","href":"https://fonts.googleapis.com"}],["$","link",null,{"rel":"preconnect","href":"https://fonts.gstatic.com","crossOrigin":"anonymous"}],["$","link",null,{"href":"https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","rel":"stylesheet"}]]}],["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2hqj050grw9zb.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:style","children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:1:props:style","children":404}],["$","div",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:2:props:style","children":["$","h2",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:2:props:children:props:style","children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$4"}}],"$L5","$L6","$L7","$L8","$L9","$La","$Lb","$Lc"],["$Ld"],"$Le"]}],{},null,false,null]},null,false,null]},null,false,null],"$Lf",false]],"m":"$undefined","G":["$10",["$L11","$L12"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"HoXWVQ5ZA4kCMXd1vFkCC"}
+4:T14cd,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"LocalBusiness","@id":"https://reelscale.in/#localbusiness","name":"ReelScale Co.","url":"https://reelscale.in","logo":"https://reelscale.in/assets/logo.png","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","streetAddress":"Madhapur, HITEC City","addressLocality":"Hyderabad","addressRegion":"Telangana","postalCode":"500081","addressCountry":"IN"},"geo":{"@type":"GeoCoordinates","latitude":"17.4483","longitude":"78.3741"},"areaServed":[{"@type":"AdministrativeArea","name":"Hyderabad"},{"@type":"AdministrativeArea","name":"Madhapur"},{"@type":"AdministrativeArea","name":"Gachibowli"},{"@type":"AdministrativeArea","name":"Kondapur"},{"@type":"AdministrativeArea","name":"HITEC City"},{"@type":"AdministrativeArea","name":"Jubilee Hills"},{"@type":"AdministrativeArea","name":"Banjara Hills"}]},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale Reel Production Hyderabad","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["(landing)",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/292g6--x-cyj2.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/34c3h0cj69r_r.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/05-c3ty_6dwfk.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/14mrh2-p_w84d.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","link",null,{"rel":"preconnect","href":"https://fonts.googleapis.com"}],["$","link",null,{"rel":"preconnect","href":"https://fonts.gstatic.com","crossOrigin":"anonymous"}],["$","link",null,{"href":"https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","rel":"stylesheet"}]]}],["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],{"children":[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2hqj050grw9zb.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:style","children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:1:props:style","children":404}],["$","div",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:2:props:style","children":["$","h2",null,{"style":"$0:f:0:1:0:props:children:1:props:children:1:props:children:props:notFound:0:1:props:children:props:children:2:props:children:props:style","children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$4"}}],"$L5","$L6","$L7","$L8","$L9","$La","$Lb","$Lc"],["$Ld"],"$Le"]}],{},null,false,null]},null,false,null]},null,false,null],"$Lf",false]],"m":"$undefined","G":["$10",["$L11","$L12"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"y0dtmxOixFlzX1e6CriQw"}
 13:I[91133,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0cc55toprmtn1.js"],"default"]
 18:I[79520,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0cc55toprmtn1.js"],""]
 19:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
@@ -15,7 +15,7 @@
 1e:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"MetadataBoundary"]
 5:["$","$L13",null,{}]
 6:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"<header id=\"header\">\n    <a href=\"#\" class=\"logo\">\n      <!-- <div class=\"logo-mark\">R</div> -->\n      <div>\n        <img src=\"assets/logo.svg\" alt=\"ReelScale - Premium Reel Production Agency in Hyderabad\" width=\"120\" height=\"20\"\n          decoding=\"async\" style=\"width: 120px; height: 20px;\">\n      </div>\n      <!-- <span class=\"logo-text\">Reel<span>Scale</span> Co.</span> -->\n    </a>\n\n\n\n    <div style=\"display:flex; align-items:center; justify-content:space-between; gap:20px;\">\n\n      <nav>\n        <a href=\"#work\">Works</a>\n        <a href=\"#pricing\">Pricing</a>\n      </nav>\n\n      <a href=\"https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20reel%20service%20and%20I%27m%20interested.%20Can%20you%20share%20more%20details%3F\"\n        target=\"_blank\" class=\"btn-primary mob-btn-primary\">\n        Start your Reel\n      </a>\n\n    </div>\n  </header>"}}]
-14:T68b1,
+14:T652c,
 
   <!-- HERO -->
   <section id="hero">
@@ -187,6 +187,22 @@
         <a href="#" class="btn-secondary">View All Work</a>
       </div>
       <div class="portfolio-grid reveal">
+        <a class="portfolio-item"
+          href="https://www.instagram.com/reel/DaCLa1di0HS/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+          target="_blank" rel="noopener noreferrer" style="
+        background: url(./assets/clients/parthu.png);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        ">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Interiors</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
+          </div>
+        </a>
 
         <a class="portfolio-item" href="https://www.instagram.com/reels/DY3bF7xPJ5_/" target="_blank"
           rel="noopener noreferrer" style="
@@ -199,8 +215,8 @@
           <div class="portfolio-play">▶</div>
 
           <div class="portfolio-overlay">
-            <div class="portfolio-client">Avinash Unisex Beauty Salon</div>
-            <div class="portfolio-stat">Increased 2x leads in 24hrs</div>
+            <div class="portfolio-client">Salons</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
           </div>
 
         </a>
@@ -215,34 +231,11 @@
           <div class="portfolio-play">▶</div>
 
           <div class="portfolio-overlay">
-            <div class="portfolio-client">Maitrova</div>
-            <div class="portfolio-stat">Increased 2x leads in 24hrs</div>
+            <div class="portfolio-client">Clothing</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
           </div>
 
         </a>
-
-        <!-- <div class="portfolio-item" data-video="https://www.youtube.com/embed/ziM_K-n6svk" data-client="TechLaunch"
-          data-stat="4.2x engagement lift" style="background: url(https://images.unsplash.com/photo-1776811798099-ff6d61bd6c7c?q=80&w=2670&auto=format&fit=crop);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;">
-          <div class="portfolio-play">▶</div>
-          <div class="portfolio-overlay">
-            <div class="portfolio-client">TechLaunch</div>
-            <div class="portfolio-stat">4.2x engagement lift</div>
-          </div>
-        </div> -->
-        <div class="portfolio-item" data-video="https://www.youtube.com/embed/ziM_K-n6svk" data-client="StyleCo Fashion"
-          data-stat="1.2M organic reach" style="    background: url(https://images.unsplash.com/photo-1776518411187-de29b9b1bcc1?q=80&w=2671&auto=format&fit=crop);
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;">
-          <div class="portfolio-play">▶</div>
-          <div class="portfolio-overlay">
-            <div class="portfolio-client">StyleCo Fashion</div>
-            <div class="portfolio-stat">1.2M organic reach</div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -256,26 +249,23 @@
     <div class="process-steps reveal">
       <div class="process-step">
         <div class="step-dot">01</div>
-        <div class="step-title">Strategy</div>
-        <p class="step-desc">Deep-dive into your brand, audience, and goals. We map the content playbook before a single
-          frame is filmed.</p>
+        <div class="step-title">Plan</div>
+        <p class="step-desc">Strategy that attracts the right customers.</p>
       </div>
       <div class="process-step">
         <div class="step-dot">02</div>
-        <div class="step-title">Production</div>
-        <p class="step-desc">Scripting, shot lists, and cinematic execution. Every second of footage is intentional.</p>
+        <div class="step-title">Create</div>
+        <p class="step-desc">We script and film scroll-stopping reels.</p>
       </div>
       <div class="process-step">
         <div class="step-dot">03</div>
-        <div class="step-title">Delivery</div>
-        <p class="step-desc">Polished reels delivered in 24–48h. Ready to post, platform-optimized, and
-          conversion-ready.</p>
+        <div class="step-title">Deliver</div>
+        <p class="step-desc">Ready-to-post videos in 24–48 hours.</p>
       </div>
       <div class="process-step">
         <div class="step-dot">04</div>
         <div class="step-title">Scale</div>
-        <p class="step-desc">We analyze performance data and double down on what drives growth. Rinse, repeat, dominate.
-        </p>
+        <p class="step-desc">More reach. More leads. More growth.</p>
       </div>
     </div>
   </section>
@@ -625,7 +615,7 @@
 
   <!-- LATEST BLOGS SECTION PLACEHOLDER -->
   7:["$","main",null,{"id":"main-content","children":[["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$14"}}],"$L15","$L16"]}]
-17:Tf0d,<footer>
+17:Tf15,<footer>
     <div class="footer-inner">
       <a href="#" class="logo">
         <div>
@@ -644,7 +634,8 @@
     <!-- Services / Industries Directory Grid for Local SEO and Internal Linking -->
     <div class="footer-directory"
       style="max-width: 1200px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.08); text-align: left;">
-      <div style="font-size: 15px; color: var(--white); font-weight: 600; margin-bottom: 16px; text-transform: none; letter-spacing: 0.02em;">
+      <div
+        style="font-size: 15px; color: var(--white); font-weight: 600; margin-bottom: 16px; text-transform: none; letter-spacing: 0.02em;">
         Local Reel Production Services (Hyderabad)</div>
       <div
         style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; font-size: 14px;">
