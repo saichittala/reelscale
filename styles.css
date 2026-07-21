@@ -1734,7 +1734,7 @@ footer {
 
 .faq-item:hover {
     background: var(--white-03);
-    border-color: rgba(232, 37, 30, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .faq-item.active {
@@ -1745,6 +1745,7 @@ footer {
     width: 100%;
     background: none;
     border: none;
+    outline: none;
     padding: 24px 28px;
     display: flex;
     justify-content: space-between;
@@ -1759,8 +1760,14 @@ footer {
     transition: color 0.3s ease;
 }
 
+.faq-question:focus,
+.faq-question:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
 .faq-question:hover {
-    color: var(--red);
+    color: var(--white);
 }
 
 .faq-item.active .faq-question {
@@ -1775,7 +1782,7 @@ footer {
 
 .faq-item.active .faq-chevron {
     transform: rotate(180deg);
-    color: var(--red);
+    color: var(--white);
 }
 
 .faq-answer {
