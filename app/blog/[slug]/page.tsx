@@ -158,47 +158,39 @@ export default async function BlogPostPage({ params }: Props) {
 
       <article className="blog-container">
         
-        {/* Breadcrumbs */}
+        {/* Back Link & Breadcrumbs */}
         <div className="blog-breadcrumbs">
-          <Link href="/">Home</Link>
-          <span>/</span>
-          <Link href="/blog">Blog</Link>
-          <span>/</span>
-          <Link href={`/blog/category/${post.category.toLowerCase()}`}>{post.category}</Link>
-          <span>/</span>
-          <span className="blog-breadcrumb-active-item">
-            {post.title}
-          </span>
+          <Link href="/blog" className="blog-back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back
+          </Link>
         </div>
 
         {/* Title and Hero info */}
         <div className="blog-post-header">
-          <h1>{post.title}</h1>
-          <div className="blog-post-meta">
-            <div className="blog-post-author-img">
-              {(post.author || 'Sai Chittala')[0]}
-            </div>
-            <div>
-              <div className="blog-post-author-name">{post.author || 'Sai Chittala'}</div>
-              <div className="blog-post-publish-date">
-                Published on {post.publishedDate} · {readTime}
-              </div>
-            </div>
-            <div className="blog-post-meta-category-wrap">
-              <span className="blog-category-btn active blog-post-category-badge">
-                {post.category}
-              </span>
-            </div>
+          <div className="blog-post-top-meta">
+            <span>{post.publishedDate}</span>
+            <span>•</span>
+            <span>{post.category}</span>
+            <span>•</span>
+            <span>{post.author || 'ReelScale'}</span>
           </div>
+
+          <h1 className="blog-detail-title">{post.title}</h1>
         </div>
 
         {/* Featured Image */}
         {post.featuredImage && (
-          <img 
-            src={post.featuredImage} 
-            alt={post.title} 
-            className="blog-post-featured-img"
-          />
+          <div className="blog-post-featured-wrap">
+            <img 
+              src={post.featuredImage} 
+              alt={post.title} 
+              className="blog-post-featured-img"
+            />
+          </div>
         )}
 
         {/* Main layout split */}
@@ -278,8 +270,11 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Related Articles Footer section */}
         {related.length > 0 && (
           <div className="blog-related-section">
-            <h3 className="blog-related-title">Related articles</h3>
-            <BlogGrid posts={related} readText="Read article" />
+            <div className="blog-related-header">
+              <h2 className="blog-related-title">Related Content</h2>
+              <p className="blog-related-sub">Join the ReelScale community for the latest insights on short-form reel production.</p>
+            </div>
+            <BlogGrid posts={related} />
           </div>
         )}
 

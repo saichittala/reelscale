@@ -6,7 +6,7 @@ interface BlogCardProps {
   readText?: string;
 }
 
-export default function BlogCard({ post, readText = "Read Guide" }: BlogCardProps) {
+export default function BlogCard({ post }: BlogCardProps) {
   const readTime = getReadingTime(post.content);
 
   return (
@@ -22,23 +22,19 @@ export default function BlogCard({ post, readText = "Read Guide" }: BlogCardProp
       
       <div className="blog-card-content">
         <div className="blog-card-meta">
-          <span className="blog-card-category">{post.category}</span>
-          <span>•</span>
           <span>{post.publishedDate}</span>
+          <span>•</span>
+          <span>{readTime}</span>
         </div>
 
-        <h2 className="blog-card-title">{post.title}</h2>
-        <p className="blog-card-desc">{post.description}</p>
+        <h3 className="blog-card-title">{post.title}</h3>
 
-        <div className="blog-card-footer">
-          <span>{readTime}</span>
-          <span className="blog-read-more">
-            {readText} 
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </span>
+        <div className="blog-card-divider"></div>
+
+        <div className="blog-card-author">
+          <span className="blog-card-by">by:</span>
+          <img src="/assets/logo.png" alt="ReelScale" className="blog-card-author-logo" />
+          <span className="blog-card-author-name">{post.author || "ReelScale"}</span>
         </div>
       </div>
     </Link>

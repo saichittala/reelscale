@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getPublishedBlogs } from "../../../lib/blog";
 import BlogLayout from "../../BlogLayout";
 import BlogGrid from "../../components/BlogGrid";
-import CategoryBar from "../../components/CategoryBar";
+import CategorySidebar from "../../components/CategorySidebar";
 
 interface Props {
   params: Promise<{
@@ -55,22 +55,25 @@ export default async function CategoryPage({ params }: Props) {
           </p>
         </section>
 
-        {/* Categories navigation bar */}
-        {allCategories.length > 0 && (
-          <CategoryBar categories={allCategories} activeCategory={category} />
-        )}
+        {/* Wrangle Index Layout: Sidebar + Grid */}
+        <div className="blog-index-layout">
+          {allCategories.length > 0 && (
+            <CategorySidebar categories={allCategories} activeCategory={category} />
+          )}
 
-        {/* Cards Grid */}
-        {filteredBlogs.length === 0 ? (
-          <div className="blog-no-posts">
-            <p className="blog-no-posts-title">No published articles found in this category.</p>
-            <Link href="/blog" className="blog-return-link">
-              Return to blog index
-            </Link>
-          </div>
-        ) : (
-          <BlogGrid posts={filteredBlogs} />
-        )}
+          <main className="blog-index-main">
+            {filteredBlogs.length === 0 ? (
+              <div className="blog-no-posts">
+                <p className="blog-no-posts-title">No published articles found in this category.</p>
+                <Link href="/blog" className="blog-return-link">
+                  Return to blog index
+                </Link>
+              </div>
+            ) : (
+              <BlogGrid posts={filteredBlogs} />
+            )}
+          </main>
+        </div>
 
       </div>
     </BlogLayout>
