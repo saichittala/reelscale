@@ -33,7 +33,6 @@ export default function BlogCard({ post }: BlogCardProps) {
 
         <div className="blog-card-author">
           <span className="blog-card-by">by:</span>
-          <img src="/assets/logo.png" alt="ReelScale" className="blog-card-author-logo" />
           <span className="blog-card-author-name">{post.author || "ReelScale"}</span>
         </div>
       </div>
