@@ -20,6 +20,8 @@
     --text-2xl: 24px;
     --text-3xl: 40px;
     --text-4xl: 56px;
+    --text-5xl: 72px;
+    --text-6xl: 96px;
 
     /* FONT WEIGHTS */
     --fw-light: 300;
