@@ -1063,9 +1063,9 @@ body {
   margin-top: 24px;
 }
 
-/* ─────────────────────────── DISABLE ALL BLOG ANIMATIONS & TRANSITIONS ─────────────────────────── */
+/* ─────────────────────────── DISABLE ALL BLOG ANIMATIONS & TRANSITIONS (EXCEPT FAQS) ─────────────────────────── */
 .blog-page-container,
-.blog-page-container *:not(.blog-card-img):not(.blog-category-btn) {
+.blog-page-container *:not(.blog-card-img):not(.blog-category-btn):not(.faq-item):not(.faq-question):not(.faq-chevron):not(.faq-answer):not(.faq-answer-content):not(.blog-faq-list) {
   animation: none !important;
   transition: none !important;
 }
