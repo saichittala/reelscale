@@ -1,7 +1,8 @@
 :HL["/_next/static/chunks/292g6--x-cyj2.css","style"]
-:HL["/_next/static/chunks/34c3h0cj69r_r.css","style"]
-:HL["/_next/static/chunks/0a3eg00q2h8g7.css","style"]
+:HL["/_next/static/chunks/2a7ft8fa6ekyo.css","style"]
+:HL["/_next/static/chunks/2ohewvpli0hm2.css","style"]
 :HL["https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","style"]
 :HL["/assets/logo.svg","image"]
 :HL["https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"short-form-video-high-ticket-b2b-leads","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"KGDwiPosFttgtCGAE959K"}
+:HL["/assets/logo.png","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":24,"slots":{"children":{"name":"blog","param":null,"prefetchHints":4,"slots":{"children":{"name":"slug","param":{"type":"d","key":"short-form-video-high-ticket-b2b-leads","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"_S_XPxKxcdnHZcoQj_cRy"}
