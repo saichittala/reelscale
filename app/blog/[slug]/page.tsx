@@ -13,7 +13,7 @@ import ReadingProgressBar from "../components/ReadingProgressBar";
 import TableOfContents from "../components/TableOfContents";
 import FAQSection from "../components/FAQSection";
 import BlogGrid from "../components/BlogGrid";
-import ShareButtons from "./ShareButtons";
+import ShareButtons, { HeaderShareButton } from "./ShareButtons";
 
 interface Props {
   params: Promise<{
@@ -77,6 +77,16 @@ export default async function BlogPostPage({ params }: Props) {
   const headings = generateTableOfContents(post.content);
   const readTime = getReadingTime(post.content);
   const related = getRelatedPosts(post, 3);
+
+  const sharePostData = {
+    title: post.title,
+    slug: post.slug,
+    description: post.description,
+    featuredImage: post.featuredImage,
+    category: post.category,
+    author: post.author || "Sai Chittala",
+    readTime,
+  };
 
   // Schema generation
   const schemaData = {
@@ -184,10 +194,11 @@ export default async function BlogPostPage({ params }: Props) {
                 Published on {post.publishedDate} · {readTime}
               </div>
             </div>
-            <div className="blog-post-meta-category-wrap">
+            <div className="blog-post-meta-actions">
               <span className="blog-category-btn active blog-post-category-badge">
                 {post.category}
               </span>
+              <HeaderShareButton post={sharePostData} />
             </div>
           </div>
         </div>
@@ -217,7 +228,7 @@ export default async function BlogPostPage({ params }: Props) {
             <FAQSection faq={post.faq} />
 
             {/* Social Share Buttons */}
-            <ShareButtons title={post.title} slug={post.slug} />
+            <ShareButtons title={post.title} slug={post.slug} post={sharePostData} />
 
             {/* Conversion CTA Box */}
             <div className="blog-cta-box">
