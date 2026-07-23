@@ -5,8 +5,8 @@ c:I[79520,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-
 d:I[97367,["/_next/static/chunks/05-c3ty_6dwfk.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 e:"$Sreact.suspense"
 :HL["/assets/logo.svg","image"]
-:HL["/_next/static/chunks/3s2h-81chdf-q.css","style"]
-4:Tf18,<footer>
+:HL["/_next/static/chunks/2fgsvkikqg-ey.css","style"]
+4:T668,<footer>
     <div class="footer-inner">
       <a href="/" class="logo">
         <div>
@@ -23,45 +23,20 @@ e:"$Sreact.suspense"
     </div>
 
     <!-- Services / Industries Directory Grid for Local SEO and Internal Linking -->
-    <div class="footer-directory"
-      style="max-width: 1200px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.08); text-align: left;">
-      <div
-        style="font-size: 15px; color: var(--white); font-weight: 600; margin-bottom: 16px; text-transform: none; letter-spacing: 0.02em;">
+    <div class="footer-directory">
+      <div class="footer-directory-title">
         Local Reel Production Services (Hyderabad)</div>
-      <div
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; font-size: 14px;">
-        <a href="/services/restaurant-reels" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Restaurant Reel
-          Production</a>
-        <a href="/services/gym-reels" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Gym Reel
-          Production</a>
-        <a href="/services/interior-designers"
-          style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Interior Design
-          Reels</a>
-        <a href="/services/salons" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Salon Reel
-          Shoots</a>
-        <a href="/services/fashion-brands" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Fashion Brand Video
-          Shoots</a>
-        <a href="/services/real-estate" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Real Estate Video
-          Production</a>
-        <a href="/services/healthcare" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Healthcare Video
-          Marketing</a>
-        <a href="/services/cafes" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Cafe Reel
-          Production</a>
-        <a href="/services/startups" style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Startup Video
-          Agency</a>
-        <a href="/services/corporate-companies"
-          style="color: var(--muted); text-decoration: none; transition: color 0.2s;"
-          onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Corporate Video
-          Production</a>
+      <div class="footer-directory-grid">
+        <a href="/services/restaurant-reels">Restaurant Reel Production</a>
+        <a href="/services/gym-reels">Gym Reel Production</a>
+        <a href="/services/interior-designers">Interior Design Reels</a>
+        <a href="/services/salons">Salon Reel Shoots</a>
+        <a href="/services/fashion-brands">Fashion Brand Video Shoots</a>
+        <a href="/services/real-estate">Real Estate Video Production</a>
+        <a href="/services/healthcare">Healthcare Video Marketing</a>
+        <a href="/services/cafes">Cafe Reel Production</a>
+        <a href="/services/startups">Startup Video Agency</a>
+        <a href="/services/corporate-companies">Corporate Video Production</a>
       </div>
     </div>
 
@@ -69,12 +44,12 @@ e:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"blog-page-container","children":[["$","$L2",null,{}],["$","header",null,{"id":"header","className":"scrolled blog-header","children":["$","$L3",null,{"href":"/","className":"logo","children":["$","div",null,{"children":["$","img",null,{"src":"/assets/logo.svg","alt":"ReelScale Logo","className":"blog-header-logo"}]}]}]}],["$","div",null,{"className":"blog-layout-content-wrap","children":["$","div",null,{"className":"blog-container","children":[["$","section",null,{"className":"blog-listing-hero","children":[["$","h1",null,{"children":["Category: ",["$","em",null,{"children":"Marketing"}]]}],["$","p",null,{"children":["Browse all our blog posts and articles focused on ","marketing","."]}]]}],["$","div",null,{"className":"blog-index-layout","children":[["$","aside",null,{"className":"blog-sidebar-nav","children":[["$","div",null,{"className":"blog-sidebar-title","children":"Categories"}],["$","ul",null,{"className":"blog-sidebar-list","children":[["$","li",null,{"children":["$","$L3",null,{"href":"/blog","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"All Posts"]}]}],[["$","li","Social Media Growth",{"children":["$","$L3",null,{"href":"/blog/category/social media growth","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Social Media Growth"]}]}],["$","li","Production",{"children":["$","$L3",null,{"href":"/blog/category/production","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Production"]}]}],["$","li","Marketing",{"children":["$","$L3",null,{"href":"/blog/category/marketing","className":"blog-sidebar-link active","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Marketing"]}]}]]]}]]}],["$","main",null,{"className":"blog-index-main","children":["$","div",null,{"className":"blog-grid","children":[["$","$L3","1782661105001",{"href":"/blog/short-form-video-high-ticket-b2b-leads","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","alt":"How to Use Short-Form Video to Generate High-Ticket B2B Leads","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Use Short-Form Video to Generate High-Ticket B2B Leads"}],["$","div",null,{"className":"blog-card-divider"}],["$","div",null,{"className":"blog-card-author","children":[["$","span",null,{"className":"blog-card-by","children":"by:"}],["$","span",null,{"className":"blog-card-author-name","children":"Sai Chittala"}]]}]]}]]}],["$","$L3","1782661105005",{"href":"/blog/interior-designers-instagram-reels","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop","alt":"How Interior Designers Can Use Reels to Land High-End Clients","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"1 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How Interior Designers Can Use Reels to Land High-End Clients"}],["$","div",null,{"className":"blog-card-divider"}],["$","div",null,{"className":"blog-card-author","children":[["$","span",null,{"className":"blog-card-by","children":"by:"}],["$","span",null,{"className":"blog-card-author-name","children":"Sai Chittala"}]]}]]}]]}]]}]}]]}]]}]}],["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$4"}}],"$L5","$L6","$L7","$L8"]}],["$L9","$La"],"$Lb"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"ytQJhzI_II-GdToTQp4EZ"}
+  </footer>0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"blog-page-container","children":[["$","$L2",null,{}],["$","header",null,{"id":"header","className":"scrolled blog-header","children":["$","$L3",null,{"href":"/","className":"logo","children":["$","div",null,{"children":["$","img",null,{"src":"/assets/logo.svg","alt":"ReelScale Logo","className":"blog-header-logo"}]}]}]}],["$","div",null,{"className":"blog-layout-content-wrap","children":["$","div",null,{"className":"blog-container","children":[["$","section",null,{"className":"blog-listing-hero","children":[["$","h1",null,{"children":["Category: ",["$","em",null,{"children":"Marketing"}]]}],["$","p",null,{"children":["Browse all our blog posts and articles focused on ","marketing","."]}]]}],["$","div",null,{"className":"blog-index-layout","children":[["$","aside",null,{"className":"blog-sidebar-nav","children":[["$","div",null,{"className":"blog-sidebar-title","children":"Categories"}],["$","ul",null,{"className":"blog-sidebar-list","children":[["$","li",null,{"children":["$","$L3",null,{"href":"/blog","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"All Posts"]}]}],[["$","li","Social Media Growth",{"children":["$","$L3",null,{"href":"/blog/category/social media growth","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Social Media Growth"]}]}],["$","li","Production",{"children":["$","$L3",null,{"href":"/blog/category/production","className":"blog-sidebar-link ","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Production"]}]}],["$","li","Marketing",{"children":["$","$L3",null,{"href":"/blog/category/marketing","className":"blog-sidebar-link active","children":[["$","span",null,{"className":"blog-sidebar-indicator"}],"Marketing"]}]}]]]}]]}],["$","main",null,{"className":"blog-index-main","children":["$","div",null,{"className":"blog-grid","children":[["$","$L3","1782661105001",{"href":"/blog/short-form-video-high-ticket-b2b-leads","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","alt":"How to Use Short-Form Video to Generate High-Ticket B2B Leads","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Use Short-Form Video to Generate High-Ticket B2B Leads"}],["$","div",null,{"className":"blog-card-divider"}],["$","div",null,{"className":"blog-card-author","children":[["$","span",null,{"className":"blog-card-by","children":"by:"}],["$","span",null,{"className":"blog-card-author-name","children":"Sai Chittala"}]]}]]}]]}],["$","$L3","1782661105005",{"href":"/blog/interior-designers-instagram-reels","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop","alt":"How Interior Designers Can Use Reels to Land High-End Clients","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"1 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How Interior Designers Can Use Reels to Land High-End Clients"}],["$","div",null,{"className":"blog-card-divider"}],["$","div",null,{"className":"blog-card-author","children":[["$","span",null,{"className":"blog-card-by","children":"by:"}],["$","span",null,{"className":"blog-card-author-name","children":"Sai Chittala"}]]}]]}]]}]]}]}]]}]]}]}],["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$4"}}],"$L5","$L6","$L7","$L8"]}],["$L9","$La"],"$Lb"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"nK0FF8n0908koOXH5eqLX"}
 5:["$","$Lc",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
 6:["$","$Lc",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3"}]
 7:["$","$Lc",null,{"id":"google-analytics-blog","children":"\n          window.dataLayer = window.dataLayer || [];\n          function gtag(){dataLayer.push(arguments);}\n          gtag('js', new Date());\n          gtag('config', 'G-2F6CKK0MY3');\n        "}]
 8:["$","$Lc",null,{"id":"clarity-blog","children":"\n          (function(c,l,a,r,i,t,y){\n            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n            t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n          })(window, document, \"clarity\", \"script\", \"wwiioh52bs\");\n        "}]
-9:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3s2h-81chdf-q.css","precedence":"next"}]
+9:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2fgsvkikqg-ey.css","precedence":"next"}]
 a:["$","script","script-0",{"src":"/_next/static/chunks/2o-ij8xcn6xzz.js","async":true}]
 b:["$","$Ld",null,{"children":["$","$e",null,{"name":"Next.MetadataOutlet","children":"$@f"}]}]
 f:null
