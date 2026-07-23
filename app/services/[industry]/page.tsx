@@ -491,8 +491,262 @@ const INDUSTRIES_DATA: Record<string, IndustryData> = {
       { question: "What is the turnaround for events?", answer: "We deliver event recap reels within 48 hours to capitalize on event buzz and social sharing." }
     ],
     locationKeywords: ["HITEC City", "Madhapur", "Gachibowli", "Jubilee Hills"]
+  },
+  "video-production-services": {
+    slug: "video-production-services",
+    name: "Video Production Services",
+    keyword: "Video Production Services Hyderabad",
+    metaTitle: "Video Production Services Hyderabad | ReelScale Co.",
+    metaDesc: "ReelScale offers premium end-to-end video production services in Hyderabad. Scriptwriting, cinematic filming, corporate and brand edits.",
+    headline: "Premium Video Production Services",
+    subheadline: "High-Retention Video Production Engineered to Scale Brands",
+    introText: "We manage the complete video production pipeline from initial scripting to final cinematic edit. Get professional corporate, commercial, and brand videos designed for organic search and client acquisition.",
+    benefits: [
+      { title: "Strategic Scriptwriting", desc: "Every video starts with hook-driven messaging that aligns with your user demographic." },
+      { title: "Cinematic Videography", desc: "On-location high-definition recording with premium lighting and crystal clear audio." },
+      { title: "Bespoke Color & Editing", desc: "Professional grading, clean text overlays, and sound design that holds viewer retention." }
+    ],
+    process: [
+      { step: "01", title: "Concept & Script", desc: "Translating your sales copy or brand messages into scroll-stopping scripts." },
+      { step: "02", title: "On-site Production", desc: "Filming with multi-camera set-ups, key light configuration, and teleprompters." },
+      { step: "03", title: "Advanced Sound & Edit", desc: "Removing filler words, audio enhancement, lo-fi beats, and caption timing." },
+      { step: "04", title: "Algorithmic Upload", desc: "Formatting optimized video files for Instagram Reels, LinkedIn, and YouTube Shorts." }
+    ],
+    deliverables: [
+      "Scripting & Hook Variations",
+      "Professional On-Site Camera Direction",
+      "High-End Audio Balancing & Mastering",
+      "Bespoke Color Correction & Grading",
+      "Subtitle Overlay & Logo Watermarks"
+    ],
+    pricingPlan: "Production Growth",
+    pricingPrice: "₹24,999",
+    pricingFeatures: [
+      "12 Custom Videos / Month",
+      "Teleprompter Supported Shoots",
+      "Pro Lighting and Audio Capture",
+      "Vocal Audio Mastering",
+      "Custom Brand Typography",
+      "Unlimited Revisions",
+      "Priority Turnaround"
+    ],
+    faqs: [
+      { question: "What kind of videos do you produce?", answer: "We specialize in short-form content (Reels, TikTok, YouTube Shorts), corporate explainer videos, commercial ads, and SaaS software demos." },
+      { question: "Do you handle script writing?", answer: "Yes, our team drafts 100% of the script copy with scroll-stopping hooks and calls-to-action." },
+      { question: "What is the turnaround time?", answer: "Standard edits are delivered within 48 hours of filming." }
+    ],
+    locationKeywords: ["Hyderabad", "Gachibowli", "Madhapur", "Jubilee Hills"]
+  },
+  "music-video-production": {
+    slug: "music-video-production",
+    name: "Music Video Production",
+    keyword: "Music Video Production Hyderabad",
+    metaTitle: "Music Video Production Hyderabad | Cinematic Visuals | ReelScale",
+    metaDesc: "Take your tracks viral. ReelScale provides high-end music video production services in Hyderabad. Cinematic transition styling, beat synchronization, and premium color grading.",
+    headline: "Cinematic Music Video Production",
+    subheadline: "Stunning Visual Storytelling Synced to Your Music Beats",
+    introText: "We combine visual matching, match-cut transitions, and luxury dynamic lighting to create scroll-stopping music videos optimized for social media reach and viral growth.",
+    benefits: [
+      { title: "Beat-Synched Pacing", desc: "Transitions and visual cuts timed perfectly to your track's beats and drops." },
+      { title: "Atmospheric Lighting", desc: "Professional stage lighting setup, neon accent coloring, and custom shadow contrast." },
+      { title: "Viral Cut Storyboarding", desc: "Designing hooks and dramatic reveals that encourage shares and saves on social media." }
+    ],
+    process: [
+      { step: "01", title: "Track Auditing & Storyboard", desc: "Mapping out visual transitions, style guides, and model directions to match the audio." },
+      { step: "02", title: "Cinematic Session Shoot", desc: "On-location gimbal filming focusing on high-speed movements and matching angles." },
+      { step: "03", title: "Dynamic Beat Grading", desc: "Advanced post-production synced transitions, visual effects, and custom text cards." },
+      { step: "04", title: "Multi-Platform Publish", desc: "Optimizing formats for Instagram Reels, YouTube Shorts, and TikTok discovery." }
+    ],
+    deliverables: [
+      "Beat Storyboard & Concept Board",
+      "High-Dynamic-Range Camera Capture",
+      "Bespoke Beat-Matched Transition Cuts",
+      "Stylized Color Grading & LUTs",
+      "Social Media Cover Thumbnails"
+    ],
+    pricingPlan: "Music Video Scale",
+    pricingPrice: "₹29,999",
+    pricingFeatures: [
+      "8 Stylized Music Clips / Month",
+      "Professional Gimbal Capture",
+      "Studio Lighting Modifications",
+      "Transition Sound Effect Overlays",
+      "Visual Hooks Storyboarding",
+      "Priority Edits Delivery",
+      "Unlimited Revisions"
+    ],
+    faqs: [
+      { question: "Do you help write visual scripts?", answer: "Yes, we match your music beats to engaging visual storyboards." },
+      { question: "Can we shoot outdoors?", answer: "Yes, we film in dynamic outdoor spots or local studio locations in Hyderabad." }
+    ],
+    locationKeywords: ["Hyderabad", "Banjara Hills", "Jubilee Hills", "Gachibowli"]
+  },
+  "animated-video-production": {
+    slug: "animated-video-production",
+    name: "Animated Video Production",
+    keyword: "Animated Video Production Services",
+    metaTitle: "Animated Video Production Company | Explainer Videos",
+    metaDesc: "Attract customers with clean animations. ReelScale provides premium animated video production services. SaaS dashboards, typographic guides, and explainer motion graphics.",
+    headline: "Animated Video Production Services",
+    subheadline: "Explain Complex Tech and Ideas with Clean Motion Graphics",
+    introText: "We create high-end typographic animations, software dashboard walkthroughs, and conceptual motion graphics that explain your tech or service value instantly.",
+    benefits: [
+      { title: "Clean Typography Layouts", desc: "Bold, legible design system fonts styled to keep viewers reading without sound." },
+      { title: "Software Dashboard Zooms", desc: "Animated cursor trails, UI focuses, and dashboard overlays showing ease of software use." },
+      { title: "High-Impact Auditory Cues", desc: "Pops, typing sounds, rip effects, and ambient beats synced perfectly to graphic elements." }
+    ],
+    process: [
+      { step: "01", title: "Script & Visual Blueprint", desc: "Structuring user benefit copy and mapping transitions for graphic components." },
+      { step: "02", title: "Typography & Asset Styling", desc: "Selecting brand typography, color schemes, and dashboard vectors." },
+      { step: "03", title: "Motion Graphic Animation", desc: "Animating UI flows, screen translations, cursor tracks, and sound designs." },
+      { step: "04", title: "High-Retention Delivery", desc: "Exporting high-resolution vertical MP4s optimized for social algorithms." }
+    ],
+    deliverables: [
+      "Animated Screen Walkthrough Storyboards",
+      "Custom Typography Animations",
+      "Animated Software UI Demos",
+      "Dynamic Audio Sound FX Layers",
+      "Optimized Vertical Layout Formats"
+    ],
+    pricingPlan: "Motion Pro",
+    pricingPrice: "₹24,999",
+    pricingFeatures: [
+      "6 Typographic/SaaS Animated Clips / Month",
+      "Typographic Script Writing",
+      "UI Cursor Tracking Animations",
+      "High-Impact Sound Design FX",
+      "Brand Color Matching",
+      "Fast 48h Turnaround",
+      "Unlimited Revisions"
+    ],
+    faqs: [
+      { question: "Do I need to record my face?", answer: "No. Animated explainers focus entirely on text motion, graphic diagrams, and software UI screencasts." },
+      { question: "Do you include voiceovers?", answer: "Yes, we can sync animations with AI or professional studio voiceover tracks." }
+    ],
+    locationKeywords: ["Hyderabad", "Gachibowli", "Madhapur", "Kondapur"]
+  },
+  "commercial-video-production": {
+    slug: "commercial-video-production",
+    name: "Commercial Video Production",
+    keyword: "Commercial Video Production Company",
+    metaTitle: "Commercial Video Production Company | High-Converting Ads",
+    metaDesc: "Convert viewers into clients. Professional commercial video production in Hyderabad. Product videos, visual ads, and high-converting commercial reels.",
+    headline: "Commercial Video Production in Hyderabad",
+    subheadline: "High-Converting Product Ads & Brand Commercial Reels",
+    introText: "We produce cinematic, hook-driven brand ads and product commercial videos that showcase your value proposition, build desirability, and drive direct sales.",
+    benefits: [
+      { title: "Scroll-Stopping Ad Hooks", desc: "Capturing the product value or main user problem within the first 1.5 seconds." },
+      { title: "Macro Product Detail Capture", desc: "Stunning macro videography highlighting angles, curves, texture, and usage." },
+      { title: "High-Converting Calls-to-Action", desc: "Structured end screens and caption setups that convert curiosity into checkout purchases." }
+    ],
+    process: [
+      { step: "01", title: "Target Audit & Scripting", desc: "Analyzing buyer objections, product features, and mapping visual pacing." },
+      { step: "02", title: "Cinematic Commercial Shoot", desc: "On-location capture focusing on product texture, reflections, and use." },
+      { step: "03", title: "Snappy Audio Visual Edit", desc: "Beat-matching cuts, premium color grading, pop sound effects, and clean copy text overlays." },
+      { step: "04", title: "Direct Conversion Launch", desc: "Adding clear purchase discounts and redirect links." }
+    ],
+    deliverables: [
+      "Product Benefit Storyboard Drafts",
+      "On-Site High-Dynamic Studio Shoot",
+      "Product Macro Detailing Shots",
+      "Commercial Beat Soundscapes",
+      "High-Converting Ad Outros"
+    ],
+    pricingPlan: "Ad Scale",
+    pricingPrice: "₹24,999",
+    pricingFeatures: [
+      "8 Product Commercial Reels / Month",
+      "On-Site Product Shooting",
+      "Macro Lens Detailing Focus",
+      "Professional Lighting Setup",
+      "Conversion Hooks Blueprint",
+      "Fast 48h Delivery",
+      "Unlimited Revisions"
+    ],
+    faqs: [
+      { question: "Do you supply props or models?", answer: "We work with your team to select appropriate props and models that match your brand aesthetic." },
+      { question: "Where are these shoots done?", answer: "We film in custom studio settings or on-location in Hyderabad." }
+    ],
+    locationKeywords: ["Hyderabad", "Gachibowli", "Madhapur", "Jubilee Hills"]
   }
 };
+
+const SEO_TARGETS_SLUGS = [
+  // Tier 1: General/Commercial
+  "video-production-company",
+  "video-production-agency",
+  "reel-making-agency",
+  "reel-production-company",
+  "instagram-reel-production",
+  "short-form-video-agency",
+  "short-form-video-production-company",
+  "social-media-video-production",
+  "brand-video-production",
+  "product-video-production",
+  "video-marketing-agency",
+  "video-content-agency",
+  "video-content-creation-agency",
+  // Tier 2: Buying Intent
+  "best-video-production-company",
+  "best-reel-making-agency",
+  "best-reel-production-company",
+  "affordable-video-production-company",
+  "professional-video-production-services",
+  "premium-video-production-agency",
+  "creative-video-production-company",
+  "video-production-studio",
+  "video-production-house",
+  "video-editing-agency",
+  "reels-agency",
+  "video-shoot-company",
+  "ad-film-production-company",
+  "corporate-film-makers",
+  "brand-film-agency",
+  // Tier 3: Local SEO Hyderabad & Micro-Markets
+  "video-production-company-hyderabad",
+  "reel-making-agency-hyderabad",
+  "short-form-video-agency-hyderabad",
+  "video-production-company-gachibowli",
+  "video-production-company-madhapur",
+  "video-production-company-kondapur",
+  "video-production-company-kukatpally",
+  "video-production-company-jubilee-hills",
+  "video-production-company-hitec-city",
+  // Tier 4: Industry/Niche Pages
+  "reel-production-for-restaurants",
+  "reel-production-for-cafes",
+  "reel-production-for-gyms",
+  "reel-production-for-salons",
+  "reel-production-for-doctors",
+  "reel-production-for-dentists",
+  "reel-production-for-builders",
+  "reel-production-for-realtors",
+  "reel-production-for-hotels",
+  "reel-production-for-jewellery",
+  "reel-production-for-fashion-brands",
+  "reel-production-for-startups",
+  "reel-production-for-saas-companies",
+  "reel-production-for-schools",
+  "reel-production-for-colleges",
+  // Tier 5: Long-Tail
+  "instagram-reel-maker",
+  "instagram-reel-agency",
+  "professional-reel-maker",
+  "viral-reel-agency",
+  "viral-reel-production",
+  "luxury-video-production",
+  "luxury-brand-video-production",
+  "premium-reel-agency",
+  "social-media-content-agency",
+  "content-creation-agency",
+  "product-shoot-agency",
+  "corporate-shoot-company",
+  "brand-shoot-company",
+  "video-shoot-services",
+  "reels-for-business",
+  "business-reel-maker",
+  "social-media-content-production",
+];
 
 // Helper function to resolve industry data including slug aliases
 function resolveIndustryData(slug: string): IndustryData | undefined {
@@ -509,6 +763,10 @@ function resolveIndustryData(slug: string): IndustryData | undefined {
     "cafe-reel-production": "cafes",
     "startup-video-agency": "startups",
     "corporate-video-production": "corporate-companies",
+    "video-production-services": "video-production-services",
+    "music-video-production": "music-video-production",
+    "animated-video-production": "animated-video-production",
+    "commercial-video-production": "commercial-video-production",
   };
 
   const canonicalKey = aliasMap[slug];
@@ -516,7 +774,71 @@ function resolveIndustryData(slug: string): IndustryData | undefined {
     return INDUSTRIES_DATA[canonicalKey];
   }
 
-  return undefined;
+  // Dynamic compiler for SEO campaign routes
+  const lowerSlug = slug.toLowerCase();
+  const isValidSEORoute = SEO_TARGETS_SLUGS.includes(slug);
+  if (!isValidSEORoute) return undefined;
+
+  // Resolve Location Details
+  let locName = "Hyderabad";
+  let locKeywords = ["Madhapur", "HITEC City", "Gachibowli", "Jubilee Hills"];
+  
+  if (lowerSlug.includes("gachibowli")) {
+    locName = "Gachibowli";
+    locKeywords = ["Gachibowli", "HITEC City", "Madhapur", "Hyderabad"];
+  } else if (lowerSlug.includes("madhapur")) {
+    locName = "Madhapur";
+    locKeywords = ["Madhapur", "Jubilee Hills", "Gachibowli", "Hyderabad"];
+  } else if (lowerSlug.includes("kondapur")) {
+    locName = "Kondapur";
+    locKeywords = ["Kondapur", "HITEC City", "Gachibowli", "Hyderabad"];
+  } else if (lowerSlug.includes("kukatpally")) {
+    locName = "Kukatpally";
+    locKeywords = ["Kukatpally", "HITEC City", "Madhapur", "Hyderabad"];
+  } else if (lowerSlug.includes("jubilee-hills")) {
+    locName = "Jubilee Hills";
+    locKeywords = ["Jubilee Hills", "Banjara Hills", "Madhapur", "Hyderabad"];
+  } else if (lowerSlug.includes("hitec-city")) {
+    locName = "HITEC City";
+    locKeywords = ["HITEC City", "Madhapur", "Gachibowli", "Hyderabad"];
+  }
+
+  // Determine Niche/Base Template
+  let baseKey = "video-production-services";
+  
+  if (lowerSlug.includes("restaurant")) baseKey = "restaurant-reels";
+  else if (lowerSlug.includes("cafe")) baseKey = "cafes";
+  else if (lowerSlug.includes("gym")) baseKey = "gym-reels";
+  else if (lowerSlug.includes("salon")) baseKey = "salons";
+  else if (lowerSlug.includes("doctor") || lowerSlug.includes("dentist")) baseKey = "healthcare";
+  else if (lowerSlug.includes("builder") || lowerSlug.includes("realtor") || lowerSlug.includes("real-estate")) baseKey = "real-estate";
+  else if (lowerSlug.includes("fashion") || lowerSlug.includes("jewellery")) baseKey = "fashion-brands";
+  else if (lowerSlug.includes("startup") || lowerSlug.includes("saas")) baseKey = "startups";
+  else if (lowerSlug.includes("corporate")) baseKey = "corporate-companies";
+  else if (lowerSlug.includes("commercial")) baseKey = "commercial-video-production";
+  else if (lowerSlug.includes("animated")) baseKey = "animated-video-production";
+  else if (lowerSlug.includes("music")) baseKey = "music-video-production";
+
+  const baseData = INDUSTRIES_DATA[baseKey] || INDUSTRIES_DATA["video-production-services"];
+
+  // Format dynamic titles and headlines matching Google queries
+  const titleWords = slug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  const cleanTitle = titleWords.replace("For ", "for ").replace("And ", "and ");
+  
+  const metaTitle = `${cleanTitle} ${locName !== "Hyderabad" ? `${locName} ` : ""}Hyderabad | ReelScale`;
+  const metaDesc = `ReelScale provides premium, high-retention ${cleanTitle.toLowerCase()} in ${locName}, Hyderabad. Scale your brand views and customer bookings with cinematic visual hooks.`;
+  const headline = `${cleanTitle} in ${locName}`;
+
+  return {
+    ...baseData,
+    slug,
+    keyword: `${cleanTitle} ${locName}`,
+    name: cleanTitle,
+    metaTitle,
+    metaDesc,
+    headline,
+    locationKeywords: locKeywords,
+  };
 }
 
 export async function generateStaticParams() {
@@ -532,6 +854,11 @@ export async function generateStaticParams() {
     "cafe-reel-production",
     "startup-video-agency",
     "corporate-video-production",
+    "video-production-services",
+    "music-video-production",
+    "animated-video-production",
+    "commercial-video-production",
+    ...SEO_TARGETS_SLUGS,
   ];
   return Array.from(new Set([...primaryKeys, ...aliases])).map((key) => ({
     industry: key,

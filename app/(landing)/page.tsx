@@ -6,28 +6,43 @@ import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
 
 export const metadata: Metadata = {
-  title: "ReelScale | Premium Reel Production Company in Hyderabad",
-  description: "ReelScale is the leading Reel Making Agency in Hyderabad. We produce high-retention cinematic Instagram Reels, TikToks, YouTube Shorts, and brand videos that drive organic growth and client acquisition.",
+  title: "Reel Makers & Best Video Production Company | ReelScale",
+  description: "ReelScale is the best video production company and top-rated reel makers in Hyderabad. We deliver cinematic, high-retention corporate reels and commercial video ads.",
   keywords: [
+    "reel makers",
+    "reel maker",
+    "ai reel makers",
+    "reel maker ai",
+    "reel maker app",
+    "instagram reel makers",
+    "free reel maker",
+    "best reel maker",
+    "reel maker online",
+    "reel companies",
+    "video production",
+    "video production services",
+    "video production company",
+    "video production agency",
+    "corporate video production",
+    "commercial video production",
+    "music video production",
+    "animated video production",
+    "video production services near me",
+    "video production near me",
+    "video editing kaise kare",
+    "video editing karne wala app",
+    "video production software",
     "Reel Production Hyderabad",
     "Reel Making Agency Hyderabad",
     "Instagram Reel Production",
-    "Video Production Company Hyderabad",
-    "Short Form Video Agency",
-    "Content Creation Agency Hyderabad",
-    "Professional Reel Shoots",
-    "Business Reel Production",
-    "Brand Video Production",
-    "Social Media Video Agency",
-    "Cinematic Reels",
-    "Product Shoot Hyderabad"
+    "Short Form Video Agency"
   ],
   alternates: {
     canonical: "https://reelscale.in",
   },
   openGraph: {
-    title: "ReelScale | Premium Reel Production Company in Hyderabad",
-    description: "ReelScale is the leading Reel Making Agency in Hyderabad. We build high-retention cinematic Reels and brand videos that scale organic growth.",
+    title: "Reel Makers & Best Video Production Company | ReelScale",
+    description: "ReelScale is the best video production company and leading reel makers in Hyderabad. We build high-retention cinematic Reels and corporate videos.",
     url: "https://reelscale.in",
     siteName: "ReelScale",
     images: [
@@ -35,7 +50,7 @@ export const metadata: Metadata = {
         url: "https://reelscale.in/assets/logo.png",
         width: 1200,
         height: 630,
-        alt: "ReelScale Branding - Reel Making Company Hyderabad",
+        alt: "ReelScale Branding - Best Video Production Company & Reel Makers Hyderabad",
       },
     ],
     locale: "en_US",
@@ -43,8 +58,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ReelScale | Premium Reel Production Company in Hyderabad",
-    description: "High-retention cinematic Reels, Shorts and brand videos that scale your business in Hyderabad.",
+    title: "Reel Makers & Best Video Production Company | ReelScale",
+    description: "High-retention cinematic Reels and professional video production in Hyderabad.",
     images: ["https://reelscale.in/assets/logo.png"],
   },
 };
@@ -99,7 +114,7 @@ export default function Home() {
       {
         "@type": "Organization",
         "@id": "https://reelscale.in/#organization",
-        "name": "ReelScale",
+        "name": "ReelScale | Best Video Production Company & Reel Makers",
         "url": "https://reelscale.in",
         "logo": {
           "@type": "ImageObject",
@@ -122,7 +137,7 @@ export default function Home() {
       {
         "@type": "LocalBusiness",
         "@id": "https://reelscale.in/#localbusiness",
-        "name": "ReelScale Co.",
+        "name": "ReelScale Co. | Best Video Production Company & Reel Makers",
         "url": "https://reelscale.in",
         "logo": "https://reelscale.in/assets/logo.png",
         "image": "https://reelscale.in/assets/logo.png",
@@ -154,7 +169,7 @@ export default function Home() {
       {
         "@type": "ProfessionalService",
         "@id": "https://reelscale.in/#service",
-        "name": "ReelScale Reel Production Hyderabad",
+        "name": "ReelScale | Reel Makers & Best Video Production Company Hyderabad",
         "url": "https://reelscale.in",
         "image": "https://reelscale.in/assets/logo.png",
         "priceRange": "₹₹",
