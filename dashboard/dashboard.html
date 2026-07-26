@@ -213,11 +213,16 @@
     function filteredClients() {
       let c = [...clients];
       if (search) {
-        c = c.filter(x => (x.name + x.business + x.instagram).toLowerCase().includes(search.toLowerCase()));
+        c = c.filter(x => {
+          const name = x.name || '';
+          const business = x.business || '';
+          const instagram = x.instagram || '';
+          return (name + business + instagram).toLowerCase().includes(search.toLowerCase());
+        });
       }
       c.sort((a, b) => {
-        let av = sortKey === 'revenue' ? getRevenue(a) : sortKey === 'reels' ? a.reels : 0;
-        let bv = sortKey === 'revenue' ? getRevenue(b) : sortKey === 'reels' ? b.reels : 0;
+        let av = sortKey === 'revenue' ? getRevenue(a) : sortKey === 'reels' ? (a.reels || 0) : 0;
+        let bv = sortKey === 'revenue' ? getRevenue(b) : sortKey === 'reels' ? (b.reels || 0) : 0;
         return (av - bv) * sortDir;
       });
       return c;
@@ -296,13 +301,13 @@
             if (Array.isArray(data)) {
               clients = data.map(row => ({
                 id: row.id,
-                name: row.clientName,
-                business: row.business,
-                phone: row.phone,
-                instagram: row.instagram,
-                reels: row.reels,
-                ppr: row.pricePerReel,
-                image: row.image
+                name: row.clientName || "",
+                business: row.business || "",
+                phone: row.phone || "",
+                instagram: row.instagram || "",
+                reels: Number(row.reels || 0),
+                ppr: Number(row.pricePerReel || 0),
+                image: row.image || ""
               }));
               clientsLoaded = true;
               render();
@@ -327,13 +332,13 @@
           );
           clients = data.map(row => ({
             id: row.id,
-            name: row.clientName,
-            business: row.business,
-            phone: row.phone,
-            instagram: row.instagram,
-            reels: row.reels,
-            ppr: row.pricePerReel,
-            image: row.image
+            name: row.clientName || "",
+            business: row.business || "",
+            phone: row.phone || "",
+            instagram: row.instagram || "",
+            reels: Number(row.reels || 0),
+            ppr: Number(row.pricePerReel || 0),
+            image: row.image || ""
           }));
         } else {
           clients = [];
@@ -1322,7 +1327,14 @@
         return renderSkeleton('dashboard');
       }
       const s = stats();
-      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="../assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="../assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div class="client-meta"><div class="client-name">${c.name}</div><div class="client-biz">${c.business} · ${c.reels} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${c.name}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`).join('')}</div></div>`;
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Clients</div><div class="stat-value">${s.total}</div><div class="stat-sub dn">Active accounts</div><div class="stat-icon"><img src="../assets/icons/nav-clients.svg" alt="Dashboard Icon"></div></div><div class="stat-card gold"><div class="stat-label">Total Reels</div><div class="stat-value gold">${s.reels.toLocaleString()}</div><div class="stat-sub dn">Reels created</div><div class="stat-icon"><img src="../assets/icons/reels.svg" alt="Reels Icon"></div></div><div class="stat-card white"><div class="stat-label">Total Revenue</div><div class="stat-value green">₹${fmt(s.rev)}</div><div class="stat-sub dn">${fmtFull(s.rev)}</div><div class="stat-icon"><img src="../assets/icons/revenue.svg" alt="Revenue Icon"></div></div></div><div class="dash-clients-grid"><div class="glass-card"><div class="glass-card-label">Top Clients by Revenue</div>${[...clients].sort((a, b) => getRevenue(b) - getRevenue(a)).slice(0, 8).map((c, i) => {
+        const displayName = c.name && c.name.trim() ? c.name : (c.business || 'Unnamed Client');
+        const avatarChar = (c.name && c.name.trim() ? c.name.trim()[0] : (c.business && c.business.trim() ? c.business.trim()[0] : '?')).toUpperCase();
+        return `<div class="top-client"><div class="client-avatar" style="${i === 0 ? 'background:oklch(0.75 0.10 85 / 0.15);color:var(--gold)' : ''}">${c.image ? `<img src="${c.image}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : avatarChar}</div><div class="client-meta"><div class="client-name">${displayName}</div><div class="client-biz">${c.business || '—'} · ${c.reels || 0} reels</div></div><div class="client-rev">₹${fmt(getRevenue(c))}</div></div>`;
+      }).join('')}</div><div class="glass-card"><div class="glass-card-label">Recent Clients</div>${clients.slice(-9).reverse().map(c => {
+        const displayName = c.name && c.name.trim() ? c.name : (c.business || 'Unnamed Client');
+        return `<div class="top-client"><div style="display:flex; flex-direction:column; width:100%"><div class="client-name" style="margin-left: 4px;">${displayName}</div><div class="client-biz" style="margin-left: 4px;">${c.instagram || '—'}</div></div><div style="text-align:right"><div class="badge badge-gold">₹${fmt(getRevenue(c))}</div></div></div>`;
+      }).join('')}</div></div>`;
     }
 
     function renderClients() {
@@ -1334,7 +1346,13 @@
 
       const fc = filteredClients();
       const maxRev = Math.max(...clients.map(c => getRevenue(c)), 1);
-      return `<div class="controls"><div class="search-wrap"><img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => { const rev = getRevenue(c); const pct = Math.round(rev / maxRev * 100); return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${c.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.name[0]}</div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`; }).join('')}</tbody></table></div>`;
+      return `<div class="controls"><div class="search-wrap"><img src="../assets/icons/search.svg" alt="Search" style="width:16px;position:absolute;left:12px;top:50%;transform:translateY(-50%)"><input id="search-input" placeholder="Search clients..." value="${search}" class="form-input" style="padding-left:36px"></div><button class="filter-btn${sortKey === 'revenue' ? ' active' : ''}" data-sort="revenue">↓ Revenue</button><button class="filter-btn${sortKey === 'reels' ? ' active' : ''}" data-sort="reels">↓ Reels</button></div><div class="table-wrap"><table><thead><tr><th>Client Name</th><th>Business</th><th>Insta ID</th><th>Reels</th><th>Price/Reel</th><th>Revenue</th><th>Revenue Share</th><th style="width:120px">Actions</th></tr></thead><tbody>${fc.length === 0 ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No clients found</div></div></td></tr>` : ''}${fc.map(c => {
+        const rev = getRevenue(c);
+        const pct = Math.round(rev / maxRev * 100);
+        const displayName = c.name && c.name.trim() ? c.name : (c.business || 'Unnamed Client');
+        const avatarChar = (c.name && c.name.trim() ? c.name.trim()[0] : (c.business && c.business.trim() ? c.business.trim()[0] : '?')).toUpperCase();
+        return `<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="client-avatar">${c.image ? `<img src="${c.image}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : avatarChar}</div><div><div style="font-weight:500">${displayName}</div><div style="font-size:11px;color:var(--muted)">${c.phone || '—'}</div></div></div></td><td>${c.business || '—'}</td><td style="color:var(--muted)">${c.instagram || '—'}</td><td><span class="badge badge-red">${c.reels || 0}</span></td><td>₹${(c.ppr || 0).toLocaleString()}</td><td style="font-weight:600;color:var(--white)">₹${rev.toLocaleString()}</td><td style="min-width:100px"><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></td><td style="width:120px"><div class="action-btns"><img src="../assets/icons/edit.svg" alt="Edit" class="edit-client" data-id="${c.id}" title="Edit Client"><img src="../assets/icons/delete.svg" alt="Delete" class="del-client" data-id="${c.id}" title="Delete Client"></div></td></tr>`;
+      }).join('')}</tbody></table></div>`;
     }
 
     function renderAnalytics() {
@@ -1343,7 +1361,7 @@
       }
       const s = stats();
       const top = [...clients].sort((a, b) => getRevenue(b) - getRevenue(a));
-      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div><div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div><div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? s.top.name : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div></div><div class="revenue-grid"><div class="glass-card"><div class="chart-title">Revenue Per Client</div><div class="chart-sub" style="margin-bottom:16px">Sorted by revenue · All clients</div><div style="position:relative; flex:1; min-height:0;"><canvas id="rev-chart"></canvas></div></div><div class="glass-card"><div class="chart-title" style="margin-bottom:24px">Client Revenue Breakdown</div><div style="flex:1; overflow-y:auto; padding-right:4px;">${top.map((c, i) => { const rev = getRevenue(c); const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0; return `<div class="rev-bar-wrap" style="margin-bottom:20px"><div class="rev-bar-label"><span style="font-weight:500;font-size:14px">${i + 1}. ${c.name} <span style="color:var(--muted);font-weight:400">· ${c.business}</span></span><span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span></div><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></div>`; }).join('')}</div></div></div>`;
+      return `<div class="stat-grid"><div class="stat-card red"><div class="stat-label">Total Revenue</div><div class="stat-value red">₹${fmt(s.rev)}</div><div class="stat-sub">${fmtFull(s.rev)}</div></div><div class="stat-card gold"><div class="stat-label">Avg Revenue/Client</div><div class="stat-value gold">₹${s.total ? fmt(Math.round(s.rev / s.total)) : 0}</div><div class="stat-sub">Per client average</div></div><div class="stat-card white"><div class="stat-label">Top Client</div><div class="stat-value" style="font-size:18px">${s.top ? (s.top.name || s.top.business || '—') : '—'}</div><div class="stat-sub">${s.top ? fmtFull(getRevenue(s.top)) : ''}</div></div></div><div class="revenue-grid"><div class="glass-card"><div class="chart-title">Revenue Per Client</div><div class="chart-sub" style="margin-bottom:16px">Sorted by revenue · All clients</div><div style="position:relative; flex:1; min-height:0;"><canvas id="rev-chart"></canvas></div></div><div class="glass-card"><div class="chart-title" style="margin-bottom:24px">Client Revenue Breakdown</div><div style="flex:1; overflow-y:auto; padding-right:4px;">${top.map((c, i) => { const rev = getRevenue(c); const pct = s.rev > 0 ? Math.round(rev / s.rev * 100) : 0; const displayName = c.name && c.name.trim() ? c.name : (c.business || 'Unnamed Client'); return `<div class="rev-bar-wrap" style="margin-bottom:20px"><div class="rev-bar-label"><span style="font-weight:500;font-size:14px">${i + 1}. ${displayName} <span style="color:var(--muted);font-weight:400">· ${c.business || '—'}</span></span><span style="color:var(--white);font-weight:600">₹${rev.toLocaleString()} <span style="color:var(--muted);font-weight:400">(${pct}%)</span></span></div><div class="rev-bar"><div class="rev-bar-fill" style="width:${pct}%"></div></div></div>`; }).join('')}</div></div></div>`;
     }
 
     function renderUsers() {
@@ -1869,7 +1887,7 @@
     function renderModal() {
       const isEdit = modal === 'edit';
       const client = isEdit ? clients.find(c => c.id === editId) : null;
-      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="../assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client?.name || ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
+      return `<div class="modal-overlay" id="modal-overlay"><div class="modal"><div class="modal-header"><div class="modal-title">${isEdit ? 'Edit Client Details' : 'Add New Client'}</div><button class="modal-close" id="modal-close" aria-label="Close"><img src="../assets/icons/close.svg" alt="" class="modal-close-icon"></button></div><div class="form-row dn"><div class="form-group"><label class="form-label">Client Image URL</label><input class="form-input" id="f-image" placeholder="https://..." value="${client?.image || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="f-name" placeholder="Arjun Mehta" value="${client ? (client.name || client.business || '') : ''}"></div><div class="form-group"><label class="form-label">Business Name</label><input class="form-input" id="f-biz" placeholder="Spice Route Café" value="${client?.business || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="f-phone" placeholder="+91 98765 43210" value="${client?.phone || ''}"></div><div class="form-group"><label class="form-label">Instagram Handle</label><input class="form-input" id="f-instagram" placeholder="@handle" value="${client?.instagram || ''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Reels Count</label><input class="form-input" id="f-reels" type="number" placeholder="24" value="${client?.reels || ''}"></div><div class="form-group"><label class="form-label">Price Per Reel (₹)</label><input class="form-input" id="f-ppr" type="number" placeholder="3500" value="${client?.ppr || ''}"></div></div><div style="background:var(--white-03);border-radius:10px;padding:12px 14px;margin-top:4px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Calculated Revenue</div><div id="rev-preview" style="font-size:20px;font-weight:700;color:var(--white)">₹0</div></div><div class="form-footer"><button class="btn btn-ghost" id="modal-cancel">Cancel</button><button class="btn btn-primary" id="modal-save">${isEdit ? 'Save Changes' : 'Add Client'}</button></div></div></div>`;
     }
 
     // ==============================
@@ -1883,7 +1901,10 @@
       window._reelChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: sorted.map(c => c.name.split(' ')[0]),
+          labels: sorted.map(c => {
+            const displayName = c.name && c.name.trim() ? c.name : (c.business || 'Unnamed');
+            return displayName.split(' ')[0];
+          }),
           datasets: [{
             label: 'Revenue (₹)',
             data: sorted.map(c => getRevenue(c)),
@@ -1998,8 +2019,8 @@
           ppr: document.getElementById('f-ppr')?.value || "",
           image: document.getElementById('f-image')?.value?.trim() || ""
         };
-        if (!data.name || !data.business) {
-          showToast('Name and business are required', 'error');
+        if (!data.business) {
+          showToast('Business name is required', 'error');
           return;
         }
         if (modal === 'edit') updateClient(editId, data);
