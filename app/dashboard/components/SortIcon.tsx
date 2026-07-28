@@ -9,8 +9,8 @@ export function SortIcon({ active, dir }: SortIconProps) {
   if (!active) {
     return (
       <svg
-        width="11"
-        height="11"
+        width="14"
+        height="14"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -26,8 +26,8 @@ export function SortIcon({ active, dir }: SortIconProps) {
   }
   return dir === 1 ? (
     <svg
-      width="11"
-      height="11"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -40,8 +40,8 @@ export function SortIcon({ active, dir }: SortIconProps) {
     </svg>
   ) : (
     <svg
-      width="11"
-      height="11"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
