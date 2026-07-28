@@ -351,269 +351,269 @@ export function Sales({
       <div className="table-wrap table-scroll-wrap">
         <div className="table-inner-scroll">
           <table className="sales-table">
-          <thead>
-            <tr>
-              <th className="th-checkbox">
-                <input
-                  type="checkbox"
-                  className="custom-checkbox"
-                  checked={areAllFilteredLeadsSelected}
-                  onChange={handleSelectAll}
-                />
-              </th>
-              <th className="dn">ID</th>
-              <th className="dn">Category</th>
-              <th
-                onClick={() => handleSort("company")}
-                className="sortable-header th-sortable"
-              >
-                <div className="th-header-inner">
-                  <span>Company Name</span>
-                  <SortIcon active={sortKey === "company"} dir={sortDir} />
-                </div>
-              </th>
-              <th className="dn">Contact Person</th>
-              <th>Phone Number</th>
-              <th>Notes</th>
-              <th
-                onClick={() => handleSort("createdDate")}
-                className="sortable-header th-sortable"
-              >
-                <div className="th-header-inner">
-                  <span>Created Date</span>
-                  <SortIcon active={sortKey === "createdDate"} dir={sortDir} />
-                </div>
-              </th>
-              <th>Contacted</th>
-              <th className="th-actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* New Lead Row */}
-            {newLeadRow && (
-              <tr className="new-lead-row">
-                <td></td>
-                <td className="dn"></td>
-                <td className="dn"></td>
-                <td>
-                  <input
-                    id="new-company"
-                    className="company-input"
-                    placeholder="Company Name"
-                    value={newCompany}
-                    onChange={(e) => setNewCompany(e.target.value)}
-                  />
-                </td>
-                <td className="dn"></td>
-                <td>
-                  <input
-                    id="new-phone"
-                    className="phone-input"
-                    placeholder="Phone Number"
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                  />
-                </td>
-                <td>
-                  <input
-                    id="new-note"
-                    className="note-input"
-                    placeholder="Notes"
-                    value={newNotes}
-                    onChange={(e) => setNewNotes(e.target.value)}
-                  />
-                </td>
-                <td></td>
-                <td>
+            <thead>
+              <tr>
+                <th className="th-checkbox">
                   <input
                     type="checkbox"
-                    id="new-contacted"
-                    className="contacted-toggle"
-                    checked={newContacted}
-                    onChange={(e) => setNewContacted(e.target.checked)}
+                    className="custom-checkbox"
+                    checked={areAllFilteredLeadsSelected}
+                    onChange={handleSelectAll}
                   />
-                </td>
-                <td>
-                  <div className="action-btns">
-                    <img
-                      src="/assets/icons/check.svg"
-                      className="create-lead-btn"
-                      alt="Save"
-                      title="Create Lead"
-                      onClick={handleCreateLead}
-                      style={{ cursor: "pointer" }}
-                    />
-                    <img
-                      src="/assets/icons/close.svg"
-                      className="cancel-lead-btn"
-                      alt="Cancel"
-                      title="Cancel"
-                      onClick={() => setNewLeadRow(false)}
-                      style={{ cursor: "pointer" }}
-                    />
+                </th>
+                <th className="dn">ID</th>
+                <th className="dn">Category</th>
+                <th
+                  onClick={() => handleSort("company")}
+                  className="sortable-header th-sortable"
+                >
+                  <div className="th-header-inner">
+                    <span>Company Name</span>
+                    <SortIcon active={sortKey === "company"} dir={sortDir} />
                   </div>
-                </td>
+                </th>
+                <th className="dn">Contact Person</th>
+                <th>Phone Number</th>
+                <th>Notes</th>
+                <th
+                  onClick={() => handleSort("createdDate")}
+                  className="sortable-header th-sortable"
+                >
+                  <div className="th-header-inner">
+                    <span>Created Date</span>
+                    <SortIcon active={sortKey === "createdDate"} dir={sortDir} />
+                  </div>
+                </th>
+                <th>Contacted</th>
+                <th className="th-actions">Actions</th>
               </tr>
-            )}
-
-            {filteredLeads.length === 0 ? (
-              <tr>
-                <td colSpan={10}>
-                  <div className="empty">
-                    <div className="empty-icon">◎</div>
-                    <div className="empty-text">
-                      No leads found
-                      {salesDateFrom || salesDateTo || search
-                        ? " for selected search/date parameters"
-                        : ""}
+            </thead>
+            <tbody>
+              {/* New Lead Row */}
+              {newLeadRow && (
+                <tr className="new-lead-row">
+                  <td></td>
+                  <td className="dn"></td>
+                  <td className="dn"></td>
+                  <td>
+                    <input
+                      id="new-company"
+                      className="company-input"
+                      placeholder="Company Name"
+                      value={newCompany}
+                      onChange={(e) => setNewCompany(e.target.value)}
+                    />
+                  </td>
+                  <td className="dn"></td>
+                  <td>
+                    <input
+                      id="new-phone"
+                      className="phone-input"
+                      placeholder="Phone Number"
+                      value={newPhone}
+                      onChange={(e) => setNewPhone(e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      id="new-note"
+                      className="note-input"
+                      placeholder="Notes"
+                      value={newNotes}
+                      onChange={(e) => setNewNotes(e.target.value)}
+                    />
+                  </td>
+                  <td></td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      id="new-contacted"
+                      className="contacted-toggle"
+                      checked={newContacted}
+                      onChange={(e) => setNewContacted(e.target.checked)}
+                    />
+                  </td>
+                  <td>
+                    <div className="action-btns">
+                      <img
+                        src="/assets/icons/check.svg"
+                        className="create-lead-btn"
+                        alt="Save"
+                        title="Create Lead"
+                        onClick={handleCreateLead}
+                        style={{ cursor: "pointer" }}
+                      />
+                      <img
+                        src="/assets/icons/close.svg"
+                        className="cancel-lead-btn"
+                        alt="Cancel"
+                        title="Cancel"
+                        onClick={() => setNewLeadRow(false)}
+                        style={{ cursor: "pointer" }}
+                      />
                     </div>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              pagedLeads.map((item) => {
-                const leadId = item.id;
-                const updateLeadField = async (
-                  field: keyof Omit<Lead, "id" | "createdDate">,
-                  value: any
-                ) => {
-                  const updatedLead = {
-                    category: item.category || "",
-                    companyName: item.companyName || "",
-                    contactPerson: item.contactPerson || "",
-                    phoneNumber: item.phoneNumber || "",
-                    notes: item.notes || "",
-                    contacted: item.contacted || "No",
-                    [field]: value,
-                  };
-                  if (item[field] === value) return;
-                  await onUpdateLead(leadId, updatedLead);
-                };
+                  </td>
+                </tr>
+              )}
 
-                const markContactedAndCall = async () => {
-                  if (item.contacted !== "Yes") {
-                    await updateLeadField("contacted", "Yes");
-                  }
-                };
-
-                return (
-                  <tr key={leadId}>
-                    <td className="td-checkbox">
-                      <input
-                        type="checkbox"
-                        className="custom-checkbox"
-                        checked={selectedLeadIds.includes(String(leadId))}
-                        onChange={(e) =>
-                          handleSelectRow(String(leadId), e.target.checked)
-                        }
-                      />
-                    </td>
-                    <td className="dn">{leadId}</td>
-                    <td className="dn">
-                      <span className="badge badge-gold">{item.category}</span>
-                    </td>
-                    <td>
-                      <input
-                        key={`${leadId}-companyName-${item.companyName}`}
-                        type="text"
-                        className="company-input"
-                        defaultValue={item.companyName || ""}
-                        placeholder="Company Name"
-                        onBlur={(e) =>
-                          updateLeadField("companyName", e.target.value)
-                        }
-                      />
-                    </td>
-                    <td className="dn">{item.contactPerson}</td>
-                    <td>
-                      <input
-                        key={`${leadId}-phoneNumber-${item.phoneNumber}`}
-                        type="text"
-                        className="phone-input"
-                        defaultValue={item.phoneNumber || ""}
-                        placeholder="Phone Number"
-                        onBlur={(e) =>
-                          updateLeadField("phoneNumber", e.target.value)
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        key={`${leadId}-notes-${item.notes}`}
-                        type="text"
-                        className="note-input"
-                        defaultValue={item.notes || ""}
-                        placeholder="Add note..."
-                        title={item.notes || "No notes added"}
-                        onBlur={(e) => updateLeadField("notes", e.target.value)}
-                      />
-                    </td>
-                    <td className="td-date">
-                      {formatDisplayDate(item.createdDate)}
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="contacted-toggle"
-                        checked={item.contacted === "Yes"}
-                        onChange={(e) =>
-                          updateLeadField(
-                            "contacted",
-                            e.target.checked ? "Yes" : "No"
-                          )
-                        }
-                      />
-                    </td>
-                    <td className="th-actions">
-                      <div className="action-btns">
-                        <a
-                          href={`tel:${item.phoneNumber}`}
-                          className="call-sale"
-                          title="Call"
-                          onClick={markContactedAndCall}
-                        >
-                          <img
-                            src="/assets/icons/phone.svg"
-                            alt="Call"
-                            width="18"
-                            height="18"
-                          />
-                        </a>
-                        <a
-                          href={createWhatsAppLink(item.phoneNumber)}
-                          className="whatsapp-sale"
-                          target="_blank"
-                          rel="noreferrer"
-                          title="WhatsApp"
-                          onClick={markContactedAndCall}
-                        >
-                          <img
-                            src="/assets/icons/whatsapp.svg"
-                            alt="WhatsApp"
-                            width="18"
-                            height="18"
-                          />
-                        </a>
-                        <img
-                          src="/assets/icons/delete.svg"
-                          className="delete-sale delete-btn-td"
-                          alt="Delete"
-                          onClick={() => {
-                            setConfirmModal({
-                              title: "Delete Lead",
-                              message: `Are you sure you want to delete lead from "${item.companyName}"?`,
-                              onConfirm: () => onDeleteLead(leadId),
-                            });
-                          }}
-                        />
+              {filteredLeads.length === 0 ? (
+                <tr>
+                  <td colSpan={10}>
+                    <div className="empty">
+                      <div className="empty-icon">◎</div>
+                      <div className="empty-text">
+                        No leads found
+                        {salesDateFrom || salesDateTo || search
+                          ? " for selected search/date parameters"
+                          : ""}
                       </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                pagedLeads.map((item) => {
+                  const leadId = item.id;
+                  const updateLeadField = async (
+                    field: keyof Omit<Lead, "id" | "createdDate">,
+                    value: any
+                  ) => {
+                    const updatedLead = {
+                      category: item.category || "",
+                      companyName: item.companyName || "",
+                      contactPerson: item.contactPerson || "",
+                      phoneNumber: item.phoneNumber || "",
+                      notes: item.notes || "",
+                      contacted: item.contacted || "No",
+                      [field]: value,
+                    };
+                    if (item[field] === value) return;
+                    await onUpdateLead(leadId, updatedLead);
+                  };
+
+                  const markContactedAndCall = async () => {
+                    if (item.contacted !== "Yes") {
+                      await updateLeadField("contacted", "Yes");
+                    }
+                  };
+
+                  return (
+                    <tr key={leadId}>
+                      <td className="td-checkbox">
+                        <input
+                          type="checkbox"
+                          className="custom-checkbox"
+                          checked={selectedLeadIds.includes(String(leadId))}
+                          onChange={(e) =>
+                            handleSelectRow(String(leadId), e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className="dn">{leadId}</td>
+                      <td className="dn">
+                        <span className="badge badge-gold">{item.category}</span>
+                      </td>
+                      <td>
+                        <input
+                          key={`${leadId}-companyName-${item.companyName}`}
+                          type="text"
+                          className="company-input"
+                          defaultValue={item.companyName || ""}
+                          placeholder="Company Name"
+                          onBlur={(e) =>
+                            updateLeadField("companyName", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="dn">{item.contactPerson}</td>
+                      <td>
+                        <input
+                          key={`${leadId}-phoneNumber-${item.phoneNumber}`}
+                          type="text"
+                          className="phone-input"
+                          defaultValue={item.phoneNumber || ""}
+                          placeholder="Phone Number"
+                          onBlur={(e) =>
+                            updateLeadField("phoneNumber", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          key={`${leadId}-notes-${item.notes}`}
+                          type="text"
+                          className="note-input"
+                          defaultValue={item.notes || ""}
+                          placeholder="Add note..."
+                          title={item.notes || "No notes added"}
+                          onBlur={(e) => updateLeadField("notes", e.target.value)}
+                        />
+                      </td>
+                      <td className="td-date">
+                        {formatDisplayDate(item.createdDate)}
+                      </td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          className="contacted-toggle"
+                          checked={item.contacted === "Yes"}
+                          onChange={(e) =>
+                            updateLeadField(
+                              "contacted",
+                              e.target.checked ? "Yes" : "No"
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="th-actions">
+                        <div className="action-btns">
+                          <a
+                            href={`tel:${item.phoneNumber}`}
+                            className="call-sale"
+                            title="Call"
+                            onClick={markContactedAndCall}
+                          >
+                            <img
+                              src="/assets/icons/phone.svg"
+                              alt="Call"
+                              width="18"
+                              height="18"
+                            />
+                          </a>
+                          <a
+                            href={createWhatsAppLink(item.phoneNumber)}
+                            className="whatsapp-sale"
+                            target="_blank"
+                            rel="noreferrer"
+                            title="WhatsApp"
+                            onClick={markContactedAndCall}
+                          >
+                            <img
+                              src="/assets/icons/whatsapp.svg"
+                              alt="WhatsApp"
+                              width="18"
+                              height="18"
+                            />
+                          </a>
+                          <img
+                            src="/assets/icons/delete.svg"
+                            className="delete-sale delete-btn-td"
+                            alt="Delete"
+                            onClick={() => {
+                              setConfirmModal({
+                                title: "Delete Lead",
+                                message: `Are you sure you want to delete lead from "${item.companyName}"?`,
+                                onConfirm: () => onDeleteLead(leadId),
+                              });
+                            }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
 
         {totalItems > 0 && (
@@ -638,9 +638,8 @@ export function Sales({
                   ) : (
                     <button
                       key={pageNum}
-                      className={`btn btn-ghost pagination-number-btn ${
-                        currentPage === pageNum ? "active" : ""
-                      }`}
+                      className={`btn btn-ghost pagination-number-btn ${currentPage === pageNum ? "active" : ""
+                        }`}
                       onClick={() => setCurrentPage(pageNum as number)}
                     >
                       {pageNum}
