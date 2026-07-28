@@ -157,15 +157,15 @@ body {
 }
 
 .mb-20 {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-5) !important;
 }
 
 .mb-24 {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-6) !important;
 }
 
 .mb-28 {
-    margin-bottom: 28px;
+    margin-bottom: 28px !important;
 }
 
 .table-scroll-wrap {
