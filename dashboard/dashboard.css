@@ -65,7 +65,7 @@ body {
 
 .df-g8 {
     display: flex;
-    gap: 8px;
+    gap: 12px;
 }
 
 /* LAYOUT */
@@ -780,15 +780,25 @@ body {
     text-decoration: none;
 }
 
+.btn img,
+.btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+}
+
 .btn-primary {
     background: var(--red);
     color: var(--button-white);
-    padding: 8px 14px;
+    height: 34px;
+    padding: 0 14px;
+    box-sizing: border-box;
     border-radius: var(--border-radius-99);
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
 
     span {
         display: flex;
@@ -805,8 +815,9 @@ body {
     background: var(--white-05);
     color: var(--white);
     cursor: pointer;
-    height: 100%;
-    padding: 8px 14px;
+    height: 34px;
+    padding: 0 14px;
+    box-sizing: border-box;
     border: unset !important;
     display: flex;
     align-items: center;
@@ -814,6 +825,7 @@ body {
     border-radius: var(--border-radius-99);
     transition: .15s;
     gap: 6px;
+    white-space: nowrap;
 }
 
 .btn-ghost:hover {
@@ -828,7 +840,14 @@ body {
 .btn-danger {
     background: oklch(0.4 0.2 25 / 0.2);
     color: var(--red);
-    border: 0.6px solid var(--red-op)
+    height: 34px;
+    padding: 0 14px;
+    box-sizing: border-box;
+    border: 0.6px solid var(--red-op);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
 .btn-danger:hover {
@@ -838,7 +857,14 @@ body {
 .btn-gold {
     background: oklch(0.75 0.10 85 / 0.15);
     color: var(--gold);
-    border: 0.6px solid oklch(0.75 0.10 85 / 0.3)
+    height: 34px;
+    padding: 0 14px;
+    box-sizing: border-box;
+    border: 0.6px solid oklch(0.75 0.10 85 / 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
 .btn-gold:hover {
@@ -985,7 +1011,8 @@ body {
 
 .search-wrap input {
     width: 100%;
-    padding: 9px 14px 9px 36px;
+    height: 38px;
+    padding: 0 14px 0 36px;
     background: var(--white-05);
     border: 0.6px solid transparent;
     border-radius: var(--border-radius-2);
@@ -1414,8 +1441,8 @@ tr:hover td {
 }
 
 .delete-icon {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     margin: 0 auto 20px;
     border-radius: 999px;
     background: var(--red-op);
@@ -1509,6 +1536,50 @@ tr:hover td {
     color: var(--muted)
 }
 
+/* CUSTOM CHECKBOX */
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--white-03);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    vertical-align: middle;
+    position: relative;
+}
+
+.custom-checkbox:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--white-05);
+}
+
+.custom-checkbox:checked {
+    background: var(--red);
+    border-color: var(--red);
+}
+
+.custom-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 4px;
+    border-left: 1.8px solid white;
+    border-bottom: 1.8px solid white;
+    transform: translate(0px, -1px) rotate(-45deg);
+}
+
+.custom-checkbox:focus-visible {
+    outline: none;
+    box-shadow: 0px 0px 0px 3px rgba(232, 37, 30, 0.25);
+}
+
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1553,7 +1624,7 @@ tr:hover td {
 .revenue-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 16px;
     align-items: stretch;
     flex: 1;
 }
@@ -1890,19 +1961,20 @@ tr:hover td {
 /* TOASTS */
 .toast {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
     background: oklch(0.13 0 0);
     border: 1px solid var(--border);
     border-radius: var(--border-radius-2);
     padding: 12px 18px;
     font-size: var(--text-sm);
     z-index: 999;
-    animation: slideIn .2s ease;
     display: flex;
     align-items: center;
     gap: 10px;
     backdrop-filter: blur(20px);
+    animation: toastIn .25s ease;
 }
 
 .toast.success {
@@ -1932,15 +2004,15 @@ tr:hover td {
     filter: brightness(0) saturate(100%) invert(41%) sepia(92%) saturate(1843%) hue-rotate(338deg) brightness(98%) contrast(92%);
 }
 
-@keyframes slideIn {
+@keyframes toastIn {
     from {
-        transform: translateX(40px);
-        opacity: 0
+        opacity: 0;
+        transform: translate(-50%, -32px) scale(0.7);
     }
 
     to {
-        transform: none;
-        opacity: 1
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
     }
 }
 
@@ -2224,7 +2296,7 @@ tr:hover td {
 .user-role-input,
 .user-input {
     width: 100%;
-    padding: 8px;
+    padding: 8px 12px;
     border-radius: var(--border-radius-2);
     border: 0.6px solid transparent;
     background: transparent;
@@ -2488,6 +2560,7 @@ button:active,
         filter: blur(12px);
         transform: translateY(4px) scale(0.99);
     }
+
     100% {
         opacity: 1;
         filter: blur(0px);
@@ -2507,6 +2580,7 @@ tr.new-user-row {
         filter: blur(6px);
         transform: scaleY(0.8) translateY(-4px);
     }
+
     100% {
         opacity: 1;
         filter: blur(0px);
@@ -2519,6 +2593,7 @@ tr.new-user-row {
         filter: blur(4px);
         opacity: 0.6;
     }
+
     100% {
         filter: blur(0px);
         opacity: 1;
@@ -2537,6 +2612,7 @@ tr.new-user-row {
         filter: blur(4px);
         transform: translateY(2px) scale(0.995);
     }
+
     100% {
         opacity: 1;
         filter: blur(0px);
@@ -2555,6 +2631,7 @@ tr.new-user-row {
         filter: blur(6px);
         transform: translateY(-8px) scale(0.98);
     }
+
     100% {
         opacity: 1;
         filter: blur(0px);
@@ -2578,6 +2655,7 @@ tr.new-user-row {
         filter: blur(8px);
         transform: scale(0.95);
     }
+
     100% {
         opacity: 1;
         filter: blur(0px);
@@ -2604,4 +2682,836 @@ tr.new-user-row {
 .low-end-device .modal-overlay,
 .low-end-device .card {
     background: rgba(18, 18, 18, 0.98) !important;
+}
+
+/* PAGINATION */
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--white-03);
+    border-top: 0.6px solid var(--border);
+    border-bottom-left-radius: var(--border-radius-3);
+    border-bottom-right-radius: var(--border-radius-3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.pagination-info {
+    color: var(--muted);
+    font-size: var(--text-sm);
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-number-btn {
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    font-size: var(--text-xs) !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pagination-number-btn.active {
+    background: var(--red-10) !important;
+    color: var(--red) !important;
+    font-weight: 600 !important;
+}
+
+.pagination-ellipsis {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    padding: 0 4px;
+    user-select: none;
+}
+
+.pagination-btn {
+    padding: 6px 14px !important;
+    font-size: var(--text-xs) !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+}
+
+/* ==========================================================================
+   PREMIUM INTERACTION SYSTEM — Apple · Stripe · Notion
+   --------------------------------------------------------------------------
+   Philosophy:
+   • Feedback is immediate, subtle, and never distracting.
+   • Only background, border, color, opacity, and box-shadow change on hover.
+   • No transforms, no translate, no scale, no rotation on hover/active.
+   • Transitions: 150ms ease for colors, 120ms ease for opacity.
+   • Active (pressed) states use a slightly deeper color or opacity shift.
+   • Disabled states reduce opacity and set cursor:not-allowed.
+   • Focus rings are clean, brand-aligned, and keyboard-only.
+   ========================================================================== */
+
+/* Override earlier broad transitions — remove movement */
+.btn,
+.btn-primary,
+.btn-ghost,
+.btn-danger,
+.btn-gold,
+button,
+.nav-item,
+.sidebar-toggle,
+.filter-btn,
+.mobile-menu-btn,
+.delete-user,
+.theme-toggle-btn,
+.create-lead-btn,
+.cancel-lead-btn,
+.edit-client,
+.del-client,
+.call-sale,
+.whatsapp-sale,
+.edit-sale,
+.delete-sale,
+.modal-close {
+    transition:
+        background-color 150ms ease,
+        background 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        opacity 150ms ease,
+        transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 150ms ease !important;
+    transform: none;
+}
+
+/* ─── CURSORS ─────────────────────────────────────────────── */
+button:not(:disabled),
+.btn,
+.btn-primary,
+.btn-ghost,
+.btn-danger,
+.btn-gold,
+.nav-item,
+.nav-group-toggle,
+.nav-submenu .nav-item,
+.sidebar-toggle,
+.logout-btn,
+.filter-btn,
+.modal-close,
+.mobile-nav-item,
+.mobile-menu-btn,
+.mobile-close-btn,
+.dashboard-logo,
+.theme-toggle-btn,
+.pagination-btn:not(:disabled),
+.pagination-number-btn,
+.edit-btn-td,
+.del-btn-td,
+.delete-sale,
+.create-lead-btn,
+.cancel-lead-btn,
+.edit-client,
+.del-client,
+.call-sale,
+.whatsapp-sale,
+.create-user-btn,
+.cancel-user-btn,
+.delete-user,
+.toggle-password,
+th,
+a,
+a * {
+    cursor: pointer;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+textarea,
+[contenteditable="true"],
+.search-wrap input,
+.form-input,
+.company-input,
+.phone-input,
+.note-input,
+.user-name-input,
+.user-email-input,
+.user-password-input,
+.user-input {
+    cursor: text;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="file"],
+.date-filter-input,
+select,
+.user-role-input,
+#new-user-role {
+    cursor: pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+.custom-checkbox,
+.contacted-toggle {
+    cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"],
+.btn:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.38 !important;
+}
+
+/* ─── PRIMARY BUTTON ──────────────────────────────────────── */
+.btn-primary:hover {
+    background: var(--red2) !important;
+    box-shadow: 0 0 0 3px rgba(232, 37, 30, 0.18);
+}
+
+.btn-primary:active {
+    background: oklch(0.45 0.22 25) !important;
+    box-shadow: none !important;
+    opacity: 0.92;
+}
+
+/* ─── GHOST BUTTON ────────────────────────────────────────── */
+.btn-ghost:not(:disabled):hover {
+    background: var(--white-10) !important;
+}
+
+.btn-ghost:not(:disabled):active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    opacity: 0.85;
+}
+
+/* ─── DANGER BUTTON ───────────────────────────────────────── */
+.btn-danger:not(:disabled):hover {
+    background: rgba(232, 37, 30, 0.28) !important;
+    border-color: rgba(232, 37, 30, 0.6) !important;
+}
+
+.btn-danger:not(:disabled):active {
+    background: rgba(232, 37, 30, 0.38) !important;
+    opacity: 0.9;
+}
+
+/* ─── GOLD BUTTON ─────────────────────────────────────────── */
+.btn-gold:not(:disabled):hover {
+    background: oklch(0.75 0.10 85 / 0.28) !important;
+    border-color: oklch(0.75 0.10 85 / 0.5) !important;
+}
+
+.btn-gold:not(:disabled):active {
+    background: oklch(0.75 0.10 85 / 0.38) !important;
+    opacity: 0.9;
+}
+
+/* ─── SIDEBAR NAV ─────────────────────────────────────────── */
+.nav-item {
+    transition:
+        background-color 150ms ease,
+        background 150ms ease,
+        color 150ms ease,
+        opacity 150ms ease !important;
+}
+
+.nav-item:hover {
+    background: var(--white-05);
+    color: var(--white);
+}
+
+.nav-item:hover img {
+    opacity: 0.85;
+}
+
+.nav-item:active {
+    background: rgba(255, 255, 255, 0.07);
+    opacity: 0.85;
+}
+
+/* ─── ICON ACTION BUTTONS ─────────────────────────────────── */
+.edit-btn-td,
+.del-btn-td,
+.delete-sale,
+.create-lead-btn,
+.cancel-lead-btn,
+.edit-client,
+.del-client,
+.call-sale,
+.whatsapp-sale,
+.create-user-btn,
+.cancel-user-btn,
+.delete-user,
+.toggle-password {
+    transition: opacity 150ms ease, background 150ms ease, border-color 150ms ease !important;
+}
+
+.edit-btn-td:hover,
+.del-btn-td:hover,
+.delete-sale:hover,
+.create-lead-btn:hover,
+.cancel-lead-btn:hover,
+.edit-client:hover,
+.del-client:hover,
+.call-sale:hover,
+.whatsapp-sale:hover,
+.create-user-btn:hover,
+.cancel-user-btn:hover,
+.delete-user:hover,
+.toggle-password:hover {
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.edit-btn-td:active,
+.del-btn-td:active,
+.delete-sale:active,
+.create-lead-btn:active,
+.cancel-lead-btn:active,
+.edit-client:active,
+.del-client:active,
+.call-sale:active,
+.whatsapp-sale:active,
+.create-user-btn:active,
+.cancel-user-btn:active,
+.delete-user:active {
+    opacity: 0.7 !important;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+/* ─── TABLE HEADERS ───────────────────────────────────────── */
+th {
+    transition: color 150ms ease, background 150ms ease;
+}
+
+th:hover {
+    color: var(--white);
+    background: var(--white-05);
+}
+
+/* ─── TABLE ROWS ──────────────────────────────────────────── */
+tbody tr {
+    transition: background 120ms ease;
+}
+
+/* ─── CHECKBOXES ──────────────────────────────────────────── */
+.custom-checkbox {
+    transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.custom-checkbox:not(:disabled):hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.custom-checkbox:not(:disabled):active {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+/* ─── TOGGLE SWITCH ───────────────────────────────────────── */
+.contacted-toggle {
+    transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.contacted-toggle:not(:disabled):hover {
+    box-shadow: 0 0 0 3px rgba(131, 230, 88, 0.18);
+}
+
+/* ─── SIDEBAR TOGGLE ──────────────────────────────────────── */
+.sidebar-toggle {
+    transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sidebar-toggle:hover {
+    background: var(--white-10);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-toggle:active {
+    background: rgba(255, 255, 255, 0.15);
+    opacity: 0.85;
+}
+
+/* ─── MODAL CLOSE ─────────────────────────────────────────── */
+.modal-close {
+    transition: background 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--white);
+}
+
+.modal-close:active {
+    background: rgba(255, 255, 255, 0.10);
+    opacity: 0.8;
+}
+
+/* ─── THEME TOGGLE ────────────────────────────────────────── */
+.theme-toggle-btn {
+    transition: background 150ms ease, opacity 150ms ease;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--white-10) !important;
+}
+
+.theme-toggle-btn:active {
+    opacity: 0.7;
+}
+
+/* ─── LOGOUT ──────────────────────────────────────────────── */
+.logout-btn {
+    transition: background 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--white);
+}
+
+.logout-btn:active {
+    opacity: 0.75;
+}
+
+/* ─── PAGINATION ──────────────────────────────────────────── */
+.pagination-number-btn {
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
+
+.pagination-number-btn:not(.active):hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: var(--white) !important;
+}
+
+.pagination-number-btn:not(.active):active {
+    background: rgba(255, 255, 255, 0.10) !important;
+    opacity: 0.85;
+}
+
+.pagination-btn:not(:disabled):hover {
+    background: var(--white-10) !important;
+}
+
+.pagination-btn:not(:disabled):active {
+    opacity: 0.75;
+}
+
+/* ─── FILTER BUTTONS ──────────────────────────────────────── */
+.filter-btn {
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
+.filter-btn:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--white);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.filter-btn:active {
+    opacity: 0.8;
+}
+
+/* ─── INPUTS TRANSITIONS ──────────────────────────────────── */
+.search-wrap input,
+.company-input,
+.phone-input,
+.note-input,
+.user-name-input,
+.user-email-input,
+.user-password-input,
+.user-input,
+.form-input,
+.date-filter-input {
+    transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.search-wrap input:focus {
+    box-shadow: 0 0 0 3px rgba(232, 37, 30, 0.12);
+}
+
+.company-input:focus,
+.phone-input:focus,
+.note-input:focus,
+.user-name-input:focus,
+.user-email-input:focus,
+.user-password-input:focus,
+.user-input:focus {
+    box-shadow: 0 0 0 2px rgba(232, 37, 30, 0.15);
+}
+
+.date-filter-input:hover {
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* ─── MOBILE NAV ──────────────────────────────────────────── */
+.mobile-nav-item {
+    transition: background 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
+.mobile-nav-item:hover {
+    background: var(--white-05);
+}
+
+.mobile-nav-item:active {
+    opacity: 0.75;
+}
+
+.mobile-close-btn {
+    transition: background 150ms ease, opacity 150ms ease;
+}
+
+.mobile-close-btn:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.mobile-close-btn:active {
+    opacity: 0.7;
+}
+
+/* ─── FOCUS RINGS (keyboard only) ─────────────────────────── */
+:focus-visible {
+    outline: 2px solid rgba(232, 37, 30, 0.5);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid rgba(232, 37, 30, 0.5);
+    outline-offset: 3px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+}
+
+/* ==========================================================================
+   CUSTOM SELECT — World-Class Dropdown
+   Inspired by: Notion, Stripe, Linear
+   ========================================================================== */
+
+:root {
+    --cs-bg: oklch(0.12 0 0);
+    --cs-border: var(--border);
+    --cs-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 0.6px 0 rgba(255, 255, 255, 0.06);
+    --cs-option-color: var(--muted);
+    --cs-option-hover-bg: var(--white-07);
+    --cs-option-hover-color: var(--white);
+    --cs-option-selected-color: var(--white);
+    --cs-trigger-hover-bg: var(--white-05);
+    --cs-trigger-border: var(--border);
+}
+
+[data-theme="light"] {
+    --cs-bg: oklch(1 0 0);
+    --cs-border: var(--border);
+    --cs-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 0.6px 0 rgba(255, 255, 255, 0.8);
+    --cs-option-color: var(--muted);
+    --cs-option-hover-bg: var(--white-07);
+    --cs-option-hover-color: var(--white);
+    --cs-option-selected-color: var(--white);
+    --cs-trigger-hover-bg: var(--white-05);
+    --cs-trigger-border: var(--border);
+}
+
+/* Stacking context fixes for open dropdowns in tables/lists */
+tr:has(.cs-root[data-open="true"]) {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+td:has(.cs-root[data-open="true"]) {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+.table-wrap:has(.cs-root[data-open="true"]) {
+    overflow: visible !important;
+}
+
+.table-wrap>div:has(.cs-root[data-open="true"]) {
+    overflow: visible !important;
+}
+
+/* ─── ROOT CONTAINER ──────────────────────────────────────── */
+.cs-root {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* ─── TRIGGER BUTTON ──────────────────────────────────────── */
+.cs-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    background: transparent;
+    border: 0.6px solid transparent;
+    border-radius: var(--border-radius-2);
+    color: var(--white);
+    font-family: var(--font);
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease;
+    white-space: nowrap;
+    outline: none;
+}
+
+/* Medium — for form use */
+.cs-trigger-md {
+    height: 38px;
+    padding: 0 14px;
+    font-size: var(--text-sm);
+    border: 0.6px solid var(--border);
+    background: transparent;
+}
+
+/* Small — for inline table use */
+.cs-trigger-sm {
+    padding: 6px 10px;
+    font-size: var(--text-sm);
+    border: 0.6px solid transparent;
+    background: transparent;
+}
+
+/* Hover */
+.cs-trigger-md:hover {
+    background: var(--cs-trigger-hover-bg);
+    border-color: var(--cs-trigger-border);
+}
+
+.cs-trigger-sm:hover {
+    background: var(--cs-trigger-hover-bg);
+    border-color: var(--cs-trigger-border);
+}
+
+/* Active (open) trigger */
+.cs-root[data-open="true"] .cs-trigger {
+    background: var(--cs-trigger-hover-bg);
+    border-color: var(--cs-trigger-border);
+    box-shadow: 0 0 0 3px var(--red-10);
+}
+
+/* Disabled */
+.cs-root[data-disabled="true"] .cs-trigger {
+    cursor: not-allowed;
+    opacity: 0.38;
+}
+
+/* ─── VALUE TEXT ──────────────────────────────────────────── */
+.cs-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--white);
+}
+
+/* ─── CHEVRON ICON ────────────────────────────────────────── */
+.cs-chevron {
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 150ms ease;
+}
+
+.cs-trigger:hover .cs-chevron {
+    color: var(--white);
+}
+
+.cs-chevron-open {
+    transform: rotate(180deg);
+    color: var(--white) !important;
+}
+
+/* ─── DROPDOWN PANEL ──────────────────────────────────────── */
+.cs-panel {
+    position: absolute;
+    z-index: 9999;
+    top: calc(100% + 6px);
+    left: 0;
+
+    background: var(--cs-bg);
+    border: 0.6px solid var(--cs-border);
+    border-radius: 10px;
+    box-shadow: var(--cs-shadow);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    animation: cs-panel-in 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top left;
+}
+
+.cs-panel-right {
+    left: auto !important;
+    right: 0 !important;
+    transform-origin: top right !important;
+}
+
+/* Medium panel */
+.cs-panel-md {
+    min-width: 100%;
+    max-width: 320px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+/* Small panel — inline table */
+.cs-panel-sm {
+    min-width: 140px;
+    max-width: 220px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+/* Panel entrance animation — opacity + subtle vertical shift only */
+@keyframes cs-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar */
+.cs-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.cs-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cs-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+}
+
+/* ─── OPTION LIST ─────────────────────────────────────────── */
+.cs-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+}
+
+/* ─── OPTION ITEM ─────────────────────────────────────────── */
+.cs-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--cs-option-color);
+    font-size: var(--text-sm);
+    font-family: var(--font);
+    transition:
+        background 120ms ease,
+        color 120ms ease;
+    user-select: none;
+}
+
+/* Hover */
+.cs-option:hover,
+.cs-option-focused {
+    background: var(--cs-option-hover-bg);
+    color: var(--cs-option-hover-color);
+}
+
+/* Selected */
+.cs-option-selected {
+    color: var(--cs-option-selected-color);
+    font-weight: 500;
+}
+
+/* ─── OPTION LABEL ────────────────────────────────────────── */
+.cs-option-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ─── CHECK MARK ──────────────────────────────────────────── */
+.cs-check {
+    flex-shrink: 0;
+    color: var(--red);
+}
+
+/* ─── FOCUS RING ──────────────────────────────────────────── */
+.cs-trigger:focus-visible {
+    outline: none;
+    background: var(--cs-trigger-hover-bg);
+    border-color: var(--cs-trigger-border);
+    box-shadow: 0 0 0 3px var(--red-10);
+}
+
+/* ─── ACTIVE VIEW TRANSITIONS ─────────────────────────────── */
+.active-view {
+    animation: apple-fade-blur-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Modal Overlay mounting animation */
+.modal-overlay.active {
+    animation: modal-overlay-fade-in 0.2s ease forwards;
+}
+
+@keyframes modal-overlay-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
