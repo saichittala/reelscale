@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Client } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
+import { SortIcon } from "../components/SortIcon";
 
 interface ClientsProps {
   clients: Client[];
@@ -36,7 +37,7 @@ export function Clients({
   setConfirmModal,
 }: ClientsProps) {
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState<"revenue" | "reels">("revenue");
+  const [sortKey, setSortKey] = useState<"revenue" | "reels" | "name">("revenue");
   const [sortDir, setSortDir] = useState<-1 | 1>(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -72,6 +73,11 @@ export function Clients({
 
   // Sort filtered clients
   const sortedClients = [...filteredClients].sort((a, b) => {
+    if (sortKey === "name") {
+      const av = (a.name || "").toLowerCase();
+      const bv = (b.name || "").toLowerCase();
+      return av.localeCompare(bv) * sortDir;
+    }
     const av =
       sortKey === "revenue"
         ? getClientRevenue(a)
@@ -200,7 +206,7 @@ export function Clients({
 
   const maxRevenue = Math.max(...clients.map((c) => getClientRevenue(c)), 1);
 
-  const handleSort = (key: "revenue" | "reels") => {
+  const handleSort = (key: "revenue" | "reels" | "name") => {
     if (sortKey === key) {
       setSortDir((dir) => (dir === -1 ? 1 : -1));
     } else {
@@ -234,18 +240,6 @@ export function Clients({
             style={{ paddingLeft: "36px" }}
           />
         </div>
-        <button
-          className={`filter-btn ${sortKey === "revenue" ? "active" : ""}`}
-          onClick={() => handleSort("revenue")}
-        >
-          {sortDir === -1 && sortKey === "revenue" ? "↓" : "↑"} Revenue
-        </button>
-        <button
-          className={`filter-btn ${sortKey === "reels" ? "active" : ""}`}
-          onClick={() => handleSort("reels")}
-        >
-          {sortDir === -1 && sortKey === "reels" ? "↓" : "↑"} Reels
-        </button>
       </div>
 
       {/* Clients Table */}
@@ -262,12 +256,39 @@ export function Clients({
                   onChange={handleSelectAllClients}
                 />
               </th>
-              <th>Client Name</th>
+              <th
+                onClick={() => handleSort("name")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Client Name</span>
+                  <SortIcon active={sortKey === "name"} dir={sortDir} />
+                </div>
+              </th>
               <th>Business</th>
               <th>Insta ID</th>
-              <th>Reels</th>
+              <th
+                onClick={() => handleSort("reels")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Reels</span>
+                  <SortIcon active={sortKey === "reels"} dir={sortDir} />
+                </div>
+              </th>
               <th>Price/Reel</th>
-              <th>Revenue</th>
+              <th
+                onClick={() => handleSort("revenue")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Revenue</span>
+                  <SortIcon active={sortKey === "revenue"} dir={sortDir} />
+                </div>
+              </th>
               <th>Revenue Share</th>
               <th style={{ width: "120px" }}>Actions</th>
             </tr>
@@ -291,7 +312,7 @@ export function Clients({
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <div className="client-avatar">?</div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                           <input
                             className="company-input"
                             placeholder="Client Name"
@@ -304,7 +325,7 @@ export function Clients({
                             placeholder="Phone Number"
                             value={newClientPhone}
                             onChange={(e) => setNewClientPhone(e.target.value)}
-                            style={{ width: "130px", height: "30px", padding: "4px 8px" }}
+                            style={{ width: "130px", height: "30px", padding: "4px 8px", marginTop: "-4px" }}
                           />
                         </div>
                       </div>
@@ -418,7 +439,7 @@ export function Clients({
                             avatarChar
                           )}
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                           <input
                             type="text"
                             className="company-input"
@@ -430,7 +451,7 @@ export function Clients({
                           <input
                             type="text"
                             className="phone-input"
-                            style={{ fontSize: "11px", width: "130px", height: "30px", padding: "4px 8px" }}
+                            style={{ fontSize: "11px", width: "130px", height: "30px", padding: "4px 8px", marginTop: "-4px" }}
                             defaultValue={c.phone}
                             onBlur={(e) => updateClientField(c, "phone", e.target.value)}
                             placeholder="Phone"

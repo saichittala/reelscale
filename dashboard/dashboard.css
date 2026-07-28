@@ -3515,3 +3515,17 @@ td:has(.cs-root[data-open="true"]) {
         opacity: 1;
     }
 }
+
+/* Sortable Table Headers */
+.sortable-header {
+    transition: color 150ms ease;
+}
+
+.sortable-header:hover {
+    color: var(--white) !important;
+}
+
+.sortable-header:hover svg {
+    color: var(--white) !important;
+    opacity: 0.85 !important;
+}

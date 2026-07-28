@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Blog } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
+import { SortIcon } from "../components/SortIcon";
 
 interface BlogsProps {
   blogs: Blog[];
@@ -37,14 +38,15 @@ export function Blogs({
   const [blogSearch, setBlogSearch] = useState("");
   const [blogStatusFilter, setBlogStatusFilter] = useState("all");
   const [blogCategoryFilter, setBlogCategoryFilter] = useState("all");
-  const [blogSortDir] = useState<-1 | 1>(-1); // default sort descending
+  const [blogSortKey, setBlogSortKey] = useState<"title" | "date">("date");
+  const [blogSortDir, setBlogSortDir] = useState<-1 | 1>(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
   // Reset to page 1 when search or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [blogSearch, blogStatusFilter, blogCategoryFilter]);
+  }, [blogSearch, blogStatusFilter, blogCategoryFilter, blogSortKey, blogSortDir]);
 
   if (isLoading) {
     return <SkeletonLoader type="blogs" />;
@@ -71,7 +73,21 @@ export function Blogs({
     );
   }
 
+  const handleSort = (key: "title" | "date") => {
+    if (blogSortKey === key) {
+      setBlogSortDir((dir) => (dir === -1 ? 1 : -1));
+    } else {
+      setBlogSortKey(key);
+      setBlogSortDir(-1);
+    }
+  };
+
   filteredBlogs.sort((a, b) => {
+    if (blogSortKey === "title") {
+      const valA = a.title || "";
+      const valB = b.title || "";
+      return valA.localeCompare(valB) * blogSortDir;
+    }
     const valA = a.publishedDate || "";
     const valB = b.publishedDate || "";
     return valA.localeCompare(valB) * blogSortDir;
@@ -210,10 +226,28 @@ export function Blogs({
                 />
               </th>
               <th>Featured Image</th>
-              <th>Blog Title</th>
+              <th
+                onClick={() => handleSort("title")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Blog Title</span>
+                  <SortIcon active={blogSortKey === "title"} dir={blogSortDir} />
+                </div>
+              </th>
               <th>Category</th>
               <th>Status</th>
-              <th>Published Date</th>
+              <th
+                onClick={() => handleSort("date")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Published Date</span>
+                  <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
+                </div>
+              </th>
               <th>Last Updated</th>
               <th style={{ width: "140px" }}>Actions</th>
             </tr>

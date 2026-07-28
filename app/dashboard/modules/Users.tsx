@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { User } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
+import { SortIcon } from "../components/SortIcon";
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -49,6 +50,8 @@ export function Users({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
   const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<"name" | "role">("name");
+  const [sortDir, setSortDir] = useState<-1 | 1>(1);
 
   // Local state for new user inputs
   const [newUserName, setNewUserName] = useState("");
@@ -58,7 +61,16 @@ export function Users({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search]);
+  }, [search, sortKey, sortDir]);
+
+  const handleSort = (key: "name" | "role") => {
+    if (sortKey === key) {
+      setSortDir((dir) => (dir === -1 ? 1 : -1));
+    } else {
+      setSortKey(key);
+      setSortDir(1);
+    }
+  };
 
   const filteredUsers = users.filter((u) => {
     const name = u.name || "";
@@ -67,11 +79,25 @@ export function Users({
     return (name + email + role).toLowerCase().includes(search.toLowerCase());
   });
 
-  const totalItems = filteredUsers.length;
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (sortKey === "name") {
+      const av = String(a.name || "").toLowerCase();
+      const bv = String(b.name || "").toLowerCase();
+      return av.localeCompare(bv) * sortDir;
+    }
+    if (sortKey === "role") {
+      const av = String(a.role || "").toLowerCase();
+      const bv = String(b.role || "").toLowerCase();
+      return av.localeCompare(bv) * sortDir;
+    }
+    return 0;
+  });
+
+  const totalItems = sortedUsers.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-  const pagedUsers = filteredUsers.slice(startIndex, endIndex);
+  const pagedUsers = sortedUsers.slice(startIndex, endIndex);
 
   // Compute all filtered user IDs for select-all
   const allFilteredIds = filteredUsers.map((u) => String(u.id)).filter(Boolean);
@@ -207,10 +233,28 @@ export function Users({
               />
             </th>
             <th>ID</th>
-            <th>Name</th>
+            <th
+              onClick={() => handleSort("name")}
+              className="sortable-header"
+              style={{ cursor: "pointer", userSelect: "none" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <span>Name</span>
+                <SortIcon active={sortKey === "name"} dir={sortDir} />
+              </div>
+            </th>
             <th>Email</th>
             <th>Password</th>
-            <th>Role</th>
+            <th
+              onClick={() => handleSort("role")}
+              className="sortable-header"
+              style={{ cursor: "pointer", userSelect: "none" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <span>Role</span>
+                <SortIcon active={sortKey === "role"} dir={sortDir} />
+              </div>
+            </th>
             <th style={{ width: "120px" }}>Actions</th>
           </tr>
         </thead>

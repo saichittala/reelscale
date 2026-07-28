@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Lead } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
+import { SortIcon } from "../components/SortIcon";
 import {
   formatDisplayDate,
   createWhatsAppLink,
@@ -53,11 +54,13 @@ export function Sales({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
   const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<"company" | "createdDate">("createdDate");
+  const [sortDir, setSortDir] = useState<-1 | 1>(-1);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [salesDateFrom, salesDateTo, search]);
+  }, [salesDateFrom, salesDateTo, search, sortKey, sortDir]);
 
   // New lead inputs state
   const [newCompany, setNewCompany] = useState("");
@@ -105,11 +108,34 @@ export function Sales({
     return true;
   });
 
-  const totalItems = filteredLeads.length;
+  const handleSort = (key: "company" | "createdDate") => {
+    if (sortKey === key) {
+      setSortDir((dir) => (dir === -1 ? 1 : -1));
+    } else {
+      setSortKey(key);
+      setSortDir(-1);
+    }
+  };
+
+  const sortedLeads = [...filteredLeads].sort((a, b) => {
+    if (sortKey === "company") {
+      const av = String(a.companyName ?? "").toLowerCase();
+      const bv = String(b.companyName ?? "").toLowerCase();
+      return av.localeCompare(bv) * sortDir;
+    }
+    if (sortKey === "createdDate") {
+      const av = new Date(normalizeDate(a.createdDate) || 0).getTime();
+      const bv = new Date(normalizeDate(b.createdDate) || 0).getTime();
+      return (av - bv) * sortDir;
+    }
+    return 0;
+  });
+
+  const totalItems = sortedLeads.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-  const pagedLeads = filteredLeads.slice(startIndex, endIndex);
+  const pagedLeads = sortedLeads.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -351,11 +377,29 @@ export function Sales({
               </th>
               <th className="dn">ID</th>
               <th className="dn">Category</th>
-              <th>Company Name</th>
+              <th
+                onClick={() => handleSort("company")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Company Name</span>
+                  <SortIcon active={sortKey === "company"} dir={sortDir} />
+                </div>
+              </th>
               <th className="dn">Contact Person</th>
               <th>Phone Number</th>
               <th>Notes</th>
-              <th>Created Date</th>
+              <th
+                onClick={() => handleSort("createdDate")}
+                className="sortable-header"
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                  <span>Created Date</span>
+                  <SortIcon active={sortKey === "createdDate"} dir={sortDir} />
+                </div>
+              </th>
               <th>Contacted</th>
               <th style={{ width: "120px" }}>Actions</th>
             </tr>
