@@ -779,14 +779,7 @@ export default function DashboardMainPage() {
                         )}
                       </div>
                     )}
-                    <div className="toast-content">
-                      <div className="toast-title">
-                        {t.type === "success" && "Success"}
-                        {t.type === "error" && "Error"}
-                        {t.type === "loading" && "Loading..."}
-                      </div>
-                      <div className="toast-message">{t.message}</div>
-                    </div>
+                    <span className="toast-message">{t.message}</span>
                     <button
                       className="toast-close-btn"
                       onClick={(e) => {
