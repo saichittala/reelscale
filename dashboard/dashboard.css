@@ -2247,10 +2247,10 @@ tr:hover td {
     flex-direction: column;
     align-items: center;
     pointer-events: auto;
-    width: fit-content;
+    width: auto;
     max-width: 480px;
     height: auto;
-    transition: gap var(--duration-base) ease;
+    transition: gap 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .toast {
@@ -2259,9 +2259,8 @@ tr:hover td {
     background: #070707;
     border: 1.2px solid var(--border);
     border-radius: var(--border-radius-99, 99px);
-    padding: 10px 20px;
-    width: max-content;
-    max-width: 420px;
+    padding: 10px 22px;
+    width: 320px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -2269,10 +2268,26 @@ tr:hover td {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: transform var(--duration-base) var(--ease-spring),
-                opacity var(--duration-base) ease,
-                scale var(--duration-base) var(--ease-spring),
-                z-index var(--duration-base) ease;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s ease,
+                scale 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease,
+                z-index 0.45s ease;
+    animation: toast-apple-entrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) ease-out;
+}
+
+@keyframes toast-apple-entrance {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40px) scale(0.8);
+        filter: blur(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 .toast.success {
@@ -2389,10 +2404,16 @@ tr:hover td {
     pointer-events: auto !important;
 }
 
+.toasts-container:hover .toast:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 8px 16px rgba(0, 0, 0, 0.5);
+    border-color: var(--white-20);
+}
+
 @media(max-width:640px) {
     .toasts-container {
         width: calc(100% - 32px);
-        max-width: 380px;
+        max-width: 320px;
         top: 16px;
     }
 
