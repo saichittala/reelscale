@@ -166,21 +166,15 @@ export function Blogs({
           <img
             src="/assets/icons/search.svg"
             alt="Search"
-            style={{
-              width: "16px",
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
+            className="search-icon"
           />
           <input
             id="blog-search-input"
+            type="text"
             placeholder="Search blogs by title..."
             value={blogSearch}
             onChange={(e) => setBlogSearch(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: "36px" }}
+            className="search-input"
           />
         </div>
 
