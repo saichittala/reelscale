@@ -484,7 +484,7 @@ export default function DashboardMainPage() {
             }}
             alt=""
           />
-          <span>Delete Selected ({selectedClientIds.length})</span>
+          <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
         </button>
       )}
 
@@ -563,7 +563,7 @@ export default function DashboardMainPage() {
             }}
             alt=""
           />
-          <span>Delete Selected ({selectedLeadIds.length})</span>
+          <span><span className="hide-mobile">Delete Selected </span>({selectedLeadIds.length})</span>
         </button>
       )}
 
@@ -668,7 +668,7 @@ export default function DashboardMainPage() {
             }}
             alt=""
           />
-          <span>Delete Selected ({selectedUserIds.length})</span>
+          <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
         </button>
       )}
 
@@ -731,7 +731,7 @@ export default function DashboardMainPage() {
             }}
             alt=""
           />
-          <span>Delete Selected ({selectedBlogIds.length})</span>
+          <span><span className="hide-mobile">Delete Selected </span>({selectedBlogIds.length})</span>
         </button>
       )}
 
