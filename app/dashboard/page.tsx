@@ -255,6 +255,7 @@ export default function DashboardMainPage() {
     id: string | number,
     clientData: Omit<Client, "id">
   ) => {
+    showToast("Updating...", "success");
     const backup = [...clients];
     setClients((prev) =>
       prev.map((c) => (String(c.id) === String(id) ? { ...c, ...clientData } : c))
@@ -293,6 +294,7 @@ export default function DashboardMainPage() {
   };
 
   const handleUpdateUser = async (id: string | number, userData: User) => {
+    showToast("Updating...", "success");
     // Optimistic UI updates
     setUsers((prev) =>
       prev.map((u) => (String(u.id) === String(id) ? { ...u, ...userData } : u))
@@ -354,6 +356,7 @@ export default function DashboardMainPage() {
     id: string | number,
     leadData: Omit<Lead, "id" | "createdDate">
   ) => {
+    showToast("Updating...", "success");
     const backup = [...leads];
     setLeads((prev) =>
       prev.map((l) => (String(l.id) === String(id) ? { ...l, ...leadData } : l))
@@ -387,6 +390,9 @@ export default function DashboardMainPage() {
 
   // Blog publishing actions
   const handleSaveBlog = async (blogData: Blog) => {
+    if (blogData.id) {
+      showToast("Updating...", "success");
+    }
     try {
       await apiSaveBlog(blogData);
       showToast(
