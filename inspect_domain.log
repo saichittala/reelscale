@@ -1,0 +1,25 @@
+Vercel CLI 58.1.0 (Node.js 22.11.0)
+Fetching Domain reelscale.in under saichittalas-projects
+> Domain reelscale.in found under saichittalas-projects [9s]
+
+  General
+
+    Name			reelscale.in
+    Registrar			Third Party
+    Expiration Date		-
+    Creator			saichittala
+    Created At			16 June 2026 14:03:50 [42d ago]
+    Edge Network		yes
+    Renewal Price		-
+
+  Nameservers
+
+    Intended Nameservers    Current Nameservers            
+    ns1.vercel-dns.com      ns01.domaincontrol.com    ✘    
+    ns2.vercel-dns.com      ns02.domaincontrol.com    ✘    
+
+  Projects
+   
+    Project            Domains                             
+    reelscale          www.reelscale.in, reelscale.in      
+   
