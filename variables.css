@@ -11,7 +11,7 @@
 /* ─────────────────────────── ROOT TOKENS ─────────────────────────── */
 :root {
 
-    /* TYPOGRAPHY SCALE */
+    /* ── TYPOGRAPHY SCALE ── */
     --text-xs: 12px;
     --text-sm: 14px;
     --text-md: 16px;
@@ -23,7 +23,7 @@
     --text-5xl: 72px;
     --text-6xl: 96px;
 
-    /* FONT WEIGHTS */
+    /* ── FONT WEIGHTS ── */
     --fw-light: 300;
     --fw-regular: 400;
     --fw-medium: 500;
@@ -31,14 +31,14 @@
     --fw-bold: 700;
     --fw-extrabold: 800;
 
-    /* FONT FAMILIES */
+    /* ── FONT FAMILIES ── */
     --primary-font: -apple-system, BlinkMacSystemFont, 'Geist', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font: -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
     --font-space-grotesk: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-instrument-serif: 'Instrument Serif', Georgia, serif;
     --font-bebas-neue: 'Bebas Neue', sans-serif;
 
-    /* SPACING SCALE */
+    /* ── SPACING SCALE ── */
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -53,24 +53,97 @@
     --space-24: 96px;
     --space-32: 128px;
 
-    /* CONTAINER WIDTHS */
+    /* ── CONTAINER WIDTHS ── */
     --container-sm: 640px;
     --container-md: 800px;
     --container-lg: 1000px;
     --container-xl: 1200px;
 
-    /* Z-INDEX LAYERS */
+    /* ── Z-INDEX LAYERS ── */
     --z-below: -1;
     --z-base: 1;
+    --z-raised: 10;
     --z-header: 100;
     --z-dropdown: 500;
     --z-modal: 1000;
+    --z-overlay: 9999;
+    --z-toast: 10000;
     --z-cursor: 9999;
 
-    /* TRANSITION TIMINGS */
+    /* ── MOTION & EASING ── */
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-instant: 80ms;
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+    --duration-xslow: 500ms;
+
+    /* ── TRANSITIONS (shorthand) ── */
     --transition-fast: 0.15s ease;
     --transition-base: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-colors: background var(--duration-fast) ease,
+                         border-color var(--duration-fast) ease,
+                         color var(--duration-fast) ease,
+                         opacity var(--duration-fast) ease;
+    --transition-interactive: background var(--duration-fast) ease,
+                              border-color var(--duration-fast) ease,
+                              color var(--duration-fast) ease,
+                              opacity var(--duration-fast) ease,
+                              transform var(--duration-fast) var(--ease-bounce),
+                              box-shadow var(--duration-fast) ease;
+
+    /* ── BORDER RADII ── */
+    --border-radius-1: 16px;
+    --border-radius-2: 12px;
+    --border-radius-3: 8px;
+    --border-radius-4: 10px;
+    --border-radius-5: 7px;
+    --border-radius-99: 99px;
+    --radius-full: 50%;
+    --radius-pill: 999px;
+    --radius-xs: 4px;
+
+    /* ── SHADOWS ── */
+    --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.2);
+    --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
+    --shadow-lg: 0 8px 32px oklch(0 0 0 / 0.25), 0 2px 8px oklch(0 0 0 / 0.15);
+    --shadow-xl: 0 16px 48px oklch(0 0 0 / 0.5);
+    --shadow-focus: 0 0 0 3px var(--red-10);
+    --shadow-focus-sm: 0 0 0 2px var(--red-10);
+    --shadow-focus-red: 0 0 0 3px oklch(62.944% 0.25583 25.982 / 0.18);
+    --shadow-focus-green: 0 0 0 3px oklch(83.515% 0.20131 137.512 / 0.18);
+    --shadow-btn-white: 0 0 0 3px oklch(1 0 0 / 0.15);
+
+    /* ── OPACITY ── */
+    --opacity-disabled: 0.38;
+    --opacity-muted: 0.70;
+    --opacity-subtle: 0.44;
+    --opacity-hover: 0.85;
+
+    /* ── SIZES ── */
+    --icon-xs: 12px;
+    --icon-sm: 14px;
+    --icon-md: 16px;
+    --icon-lg: 20px;
+    --icon-xl: 24px;
+    --icon-2xl: 28px;
+    --sidebar-width: 220px;
+    --sidebar-collapsed: 64px;
+    --topbar-height: 83px;
+    --input-height: 38px;
+    --btn-height: 34px;
+    --action-btn-size: 32px;
+
+    /* ── ICON CSS FILTERS ── */
+    /* Used to tint white SVG/PNG icons to brand colors without JS */
+    --filter-icon-dark: brightness(0) saturate(100%) invert(7%) sepia(14%) saturate(2618%) hue-rotate(182deg) brightness(95%) contrast(93%);
+    --filter-icon-red: invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%);
+    --filter-icon-green: brightness(0) saturate(100%) invert(68%) sepia(31%) saturate(781%) hue-rotate(97deg) brightness(94%) contrast(89%);
+    --filter-icon-red-error: brightness(0) saturate(100%) invert(41%) sepia(92%) saturate(1843%) hue-rotate(338deg) brightness(98%) contrast(92%);
 
     /* ─── COLORS ─── */
 
@@ -85,9 +158,19 @@
     --red2: oklch(54.187% 0.21198 24.926);
     --red-op: oklch(52% 0.22 25 / 0.31);
     --red-10: oklch(62.944% 0.25583 25.982 / 0.10);
+    --red-20: oklch(62.944% 0.25583 25.982 / 0.20);
+    --red-hover-bg: oklch(0.4 0.2 25 / 0.2);
+    --red-active-bg: oklch(0.45 0.22 25);
 
     /* Accent — Gold */
     --gold: oklch(0.75 0.10 85);
+    --gold-10: oklch(0.75 0.10 85 / 0.10);
+    --gold-15: oklch(0.75 0.10 85 / 0.15);
+    --gold-25: oklch(0.75 0.10 85 / 0.25);
+    --gold-28: oklch(0.75 0.10 85 / 0.28);
+    --gold-30: oklch(0.75 0.10 85 / 0.30);
+    --gold-38: oklch(0.75 0.10 85 / 0.38);
+    --gold-50: oklch(0.75 0.10 85 / 0.50);
 
     /* Accent — Green */
     --green: oklch(83.515% 0.20131 137.512);
@@ -107,15 +190,15 @@
     --white-05: oklch(1 0 0 / 0.05);
     --white-07: oklch(1 0 0 / 0.07);
     --white-10: oklch(1 0 0 / 0.10);
+    --white-12: oklch(1 0 0 / 0.12);
+    --white-15: oklch(1 0 0 / 0.15);
     --white-20: oklch(1 0 0 / 0.20);
     --white-30: oklch(1 0 0 / 0.30);
+    --white-35: oklch(1 0 0 / 0.35);
     --white-50: oklch(1 0 0 / 0.50);
 
-    /* BORDER RADII */
-    --border-radius-1: 16px;
-    --border-radius-2: 12px;
-    --border-radius-3: 8px;
-    --border-radius-99: 99px;
+    /* Low-end device fallback */
+    --bg-lowend: oklch(0.09 0 0 / 0.98);
 }
 
 /* ─────────────────────────── LIGHT THEME ─────────────────────────── */
@@ -134,7 +217,12 @@
     --white-05: oklch(20.768% 0.03985 265.767 / 0.04);
     --white-07: oklch(20.768% 0.03985 265.767 / 0.06);
     --white-10: oklch(20.768% 0.03985 265.767 / 0.08);
+    --white-12: oklch(20.768% 0.03985 265.767 / 0.10);
+    --white-15: oklch(20.768% 0.03985 265.767 / 0.12);
     --white-20: oklch(20.768% 0.03985 265.767 / 0.12);
     --white-30: oklch(20.768% 0.03985 265.767 / 0.18);
+    --white-35: oklch(20.768% 0.03985 265.767 / 0.22);
     --white-50: oklch(20.768% 0.03985 265.767 / 0.50);
+
+    --bg-lowend: oklch(98% 0 0 / 0.98);
 }

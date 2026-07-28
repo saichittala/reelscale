@@ -223,32 +223,25 @@ export function Clients({
           <img
             src="/assets/icons/search.svg"
             alt="Search"
-            style={{
-              width: "16px",
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
+            className="search-icon"
           />
           <input
             id="search-input"
             placeholder="Search clients..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: "36px" }}
+            className="form-input search-input-padded"
           />
         </div>
       </div>
 
       {/* Clients Table */}
-      <div className="table-wrap" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <div style={{ overflowX: "auto", width: "100%" }}>
+      <div className="table-wrap table-scroll-wrap">
+        <div className="table-inner-scroll">
           <table>
           <thead>
             <tr>
-              <th style={{ width: "40px", paddingLeft: "16px" }}>
+              <th className="th-checkbox">
                 <input
                   type="checkbox"
                   className="custom-checkbox"
@@ -258,10 +251,9 @@ export function Clients({
               </th>
               <th
                 onClick={() => handleSort("name")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Client Name</span>
                   <SortIcon active={sortKey === "name"} dir={sortDir} />
                 </div>
@@ -270,10 +262,9 @@ export function Clients({
               <th>Insta ID</th>
               <th
                 onClick={() => handleSort("reels")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Reels</span>
                   <SortIcon active={sortKey === "reels"} dir={sortDir} />
                 </div>
@@ -281,16 +272,15 @@ export function Clients({
               <th>Price/Reel</th>
               <th
                 onClick={() => handleSort("revenue")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Revenue</span>
                   <SortIcon active={sortKey === "revenue"} dir={sortDir} />
                 </div>
               </th>
               <th>Revenue Share</th>
-              <th style={{ width: "120px" }}>Actions</th>
+              <th className="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -308,83 +298,76 @@ export function Clients({
                 {/* New Client Creation Row */}
                 {newClientRow && (
                   <tr className="new-client-row">
-                    <td style={{ width: "40px", paddingLeft: "16px" }}></td>
+                    <td className="td-checkbox"></td>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div className="client-name-col">
                         <div className="client-avatar">?</div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                        <div className="client-fields-col">
                           <input
-                            className="company-input"
+                            className="company-input td-input td-input-xl"
                             placeholder="Client Name"
                             value={newClientName}
                             onChange={(e) => setNewClientName(e.target.value)}
-                            style={{ width: "130px", height: "30px", padding: "4px 8px" }}
                           />
                           <input
-                            className="phone-input"
+                            className="phone-input td-input td-input-xl"
                             placeholder="Phone Number"
                             value={newClientPhone}
                             onChange={(e) => setNewClientPhone(e.target.value)}
-                            style={{ width: "130px", height: "30px", padding: "4px 8px", marginTop: "-4px" }}
+                            style={{ marginTop: "-4px" }}
                           />
                         </div>
                       </div>
                     </td>
                     <td>
                       <input
-                        className="company-input"
+                        className="company-input td-input td-input-2xl"
                         placeholder="Business Name"
                         value={newClientBusiness}
                         onChange={(e) => setNewClientBusiness(e.target.value)}
-                        style={{ width: "140px", height: "30px", padding: "4px 8px" }}
                       />
                     </td>
                     <td>
                       <input
-                        className="company-input"
+                        className="company-input td-input td-input-lg"
                         placeholder="Instagram Handle"
                         value={newClientInstagram}
                         onChange={(e) => setNewClientInstagram(e.target.value)}
-                        style={{ width: "120px", height: "30px", padding: "4px 8px" }}
                       />
                     </td>
                     <td>
                       <input
                         type="number"
-                        className="company-input"
+                        className="company-input td-input td-input-sm"
                         placeholder="Reels"
                         value={newClientReels}
                         onChange={(e) => setNewClientReels(e.target.value)}
-                        style={{ width: "70px", height: "30px", padding: "4px 8px" }}
                       />
                     </td>
                     <td>
                       <input
                         type="number"
-                        className="company-input"
+                        className="company-input td-input td-input-md"
                         placeholder="Price/Reel"
                         value={newClientPpr}
                         onChange={(e) => setNewClientPpr(e.target.value)}
-                        style={{ width: "90px", height: "30px", padding: "4px 8px" }}
                       />
                     </td>
                     <td>—</td>
                     <td>—</td>
                     <td>
-                      <div className="action-btns" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                      <div className="action-btns action-btns-row">
                         <img
                           src="/assets/icons/check.svg"
                           className="save-client-btn"
                           alt="Save"
                           onClick={handleSaveNewClient}
-                          style={{ cursor: "pointer", width: "18px", height: "18px" }}
                         />
                         <img
                           src="/assets/icons/close.svg"
                           className="cancel-client-btn"
                           alt="Cancel"
                           onClick={() => setNewClientRow(false)}
-                          style={{ cursor: "pointer", width: "18px", height: "18px" }}
                         />
                       </div>
                     </td>
@@ -407,7 +390,7 @@ export function Clients({
 
                 return (
                   <tr key={c.id}>
-                    <td style={{ width: "40px", paddingLeft: "16px" }}>
+                    <td className="td-checkbox">
                       <input
                         type="checkbox"
                         className="custom-checkbox"
@@ -416,42 +399,29 @@ export function Clients({
                       />
                     </td>
                     <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
+                      <div className="client-name-col">
                         <div className="client-avatar">
                           {c.image ? (
                             <img
                               src={c.image}
                               alt={displayName}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "50%",
-                              }}
+                              className="avatar-img"
                             />
                           ) : (
                             avatarChar
                           )}
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                        <div className="client-fields-col">
                           <input
                             type="text"
-                            className="company-input"
-                            style={{ fontWeight: 500, fontSize: "14px", width: "130px", height: "30px", padding: "4px 8px" }}
+                            className="company-input td-input td-input-name"
                             defaultValue={c.name}
                             onBlur={(e) => updateClientField(c, "name", e.target.value)}
                             placeholder="Name"
                           />
                           <input
                             type="text"
-                            className="phone-input"
-                            style={{ fontSize: "11px", width: "130px", height: "30px", padding: "4px 8px", marginTop: "-4px" }}
+                            className="phone-input td-input td-input-phone"
                             defaultValue={c.phone}
                             onBlur={(e) => updateClientField(c, "phone", e.target.value)}
                             placeholder="Phone"
@@ -462,8 +432,7 @@ export function Clients({
                     <td>
                       <input
                         type="text"
-                        className="company-input"
-                        style={{ width: "140px", height: "30px", padding: "4px 8px" }}
+                        className="company-input td-input td-input-2xl"
                         defaultValue={c.business}
                         onBlur={(e) => updateClientField(c, "business", e.target.value)}
                         placeholder="Business"
@@ -472,8 +441,7 @@ export function Clients({
                     <td>
                       <input
                         type="text"
-                        className="company-input"
-                        style={{ width: "120px", height: "30px", padding: "4px 8px" }}
+                        className="company-input td-input td-input-lg"
                         defaultValue={c.instagram}
                         onBlur={(e) => updateClientField(c, "instagram", e.target.value)}
                         placeholder="Instagram"
@@ -482,8 +450,7 @@ export function Clients({
                     <td>
                       <input
                         type="number"
-                        className="company-input"
-                        style={{ width: "70px", height: "30px", padding: "4px 8px" }}
+                        className="company-input td-input td-input-sm"
                         defaultValue={c.reels}
                         onBlur={(e) => updateClientField(c, "reels", e.target.value)}
                         placeholder="Reels"
@@ -492,17 +459,16 @@ export function Clients({
                     <td>
                       <input
                         type="number"
-                        className="company-input"
-                        style={{ width: "90px", height: "30px", padding: "4px 8px" }}
+                        className="company-input td-input td-input-md"
                         defaultValue={c.ppr}
                         onBlur={(e) => updateClientField(c, "ppr", e.target.value)}
                         placeholder="Price/Reel"
                       />
                     </td>
-                    <td style={{ fontWeight: 600, color: "var(--white)" }}>
+                    <td className="td-rev">
                       ₹{rev.toLocaleString("en-IN")}
                     </td>
-                    <td style={{ minWidth: "100px" }}>
+                    <td className="td-minw">
                       <div className="rev-bar">
                         <div
                           className="rev-bar-fill"
@@ -510,7 +476,7 @@ export function Clients({
                         ></div>
                       </div>
                     </td>
-                    <td style={{ width: "120px" }}>
+                    <td className="th-actions">
                       <div className="action-btns">
                         <img
                           src="/assets/icons/delete.svg"
@@ -524,7 +490,6 @@ export function Clients({
                               onConfirm: () => onDeleteClient(c.id),
                             });
                           }}
-                          style={{ cursor: "pointer" }}
                         />
                       </div>
                     </td>

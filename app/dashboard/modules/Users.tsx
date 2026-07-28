@@ -201,13 +201,7 @@ export function Users({
           <img
             src="/assets/icons/search.svg"
             alt="Search"
-            style={{
-              width: "16px",
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
+            className="search-icon"
           />
           <input
             type="text"
@@ -219,12 +213,12 @@ export function Users({
         </div>
       </div>
 
-      <div className="table-wrap" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <div style={{ overflowX: "auto", width: "100%" }}>
+      <div className="table-wrap table-scroll-wrap">
+        <div className="table-inner-scroll">
           <table className="users-table">
         <thead>
           <tr>
-            <th style={{ width: "40px", paddingLeft: "16px" }}>
+            <th className="th-checkbox">
               <input
                 type="checkbox"
                 className="custom-checkbox"
@@ -235,10 +229,9 @@ export function Users({
             <th>ID</th>
             <th
               onClick={() => handleSort("name")}
-              className="sortable-header"
-              style={{ cursor: "pointer", userSelect: "none" }}
+              className="sortable-header th-sortable"
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+              <div className="th-header-inner">
                 <span>Name</span>
                 <SortIcon active={sortKey === "name"} dir={sortDir} />
               </div>
@@ -247,15 +240,14 @@ export function Users({
             <th>Password</th>
             <th
               onClick={() => handleSort("role")}
-              className="sortable-header"
-              style={{ cursor: "pointer", userSelect: "none" }}
+              className="sortable-header th-sortable"
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+              <div className="th-header-inner">
                 <span>Role</span>
                 <SortIcon active={sortKey === "role"} dir={sortDir} />
               </div>
             </th>
-            <th style={{ width: "120px" }}>Actions</th>
+            <th className="th-actions">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -301,7 +293,6 @@ export function Users({
                     alt="Toggle View"
                     className="toggle-password"
                     onClick={() => togglePasswordVisibility("new-user")}
-                    style={{ cursor: "pointer" }}
                   />
                 </div>
               </td>
@@ -321,14 +312,12 @@ export function Users({
                     className="create-user-btn"
                     alt="Save"
                     onClick={handleCreateUser}
-                    style={{ cursor: "pointer" }}
                   />
                   <img
                     src="/assets/icons/close.svg"
                     className="cancel-user-btn"
                     alt="Cancel"
                     onClick={() => setNewUserRow(false)}
-                    style={{ cursor: "pointer" }}
                   />
                 </div>
               </td>
@@ -351,7 +340,7 @@ export function Users({
 
             return (
               <tr key={userId}>
-                <td style={{ paddingLeft: "16px" }}>
+                <td className="td-checkbox">
                   <input
                     type="checkbox"
                     className="custom-checkbox"
@@ -412,7 +401,6 @@ export function Users({
                       alt="Toggle View"
                       className="toggle-password"
                       onClick={() => togglePasswordVisibility(userId)}
-                      style={{ cursor: "pointer" }}
                     />
                   </div>
                 </td>
@@ -439,7 +427,6 @@ export function Users({
                           onConfirm: () => onDeleteUser(userId),
                         });
                       }}
-                      style={{ cursor: "pointer" }}
                     />
                   </div>
                 </td>

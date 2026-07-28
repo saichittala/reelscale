@@ -282,13 +282,7 @@ export function Sales({
           <img
             src="/assets/icons/search.svg"
             alt="Search"
-            style={{
-              width: "16px",
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
+            className="search-icon"
           />
           <input
             type="text"
@@ -302,14 +296,8 @@ export function Sales({
 
       {/* Date Filter Panel */}
       {salesFilterExpanded && (
-        <div
-          className="sales-date-filter-panel"
-          style={{ display: "flex", marginBottom: "16px" }}
-        >
-          <div
-            className="sales-date-filter"
-            style={{ marginTop: 0, marginBottom: 0, width: "100%" }}
-          >
+        <div className="sales-date-filter-panel">
+          <div className="sales-date-filter">
             <div className="date-filter-group">
               <label className="date-filter-label">From</label>
               <input
@@ -351,23 +339,21 @@ export function Sales({
         type="file"
         id="sales-file-input"
         accept=".xlsx,.xls,.csv"
-        style={{ display: "none" }}
+        className="dn"
         onChange={handleSalesImport}
       />
 
-      {/* Topbar Buttons Portal Actions - Renders triggers for actions */}
-      {/* (In parent component, triggers can fire functions on this instance if exposed, or we can handle buttons inside topbar dynamically) */}
-      <div style={{ display: "none" }}>
+      <div className="dn">
         <button id="import-sales-btn-trigger" onClick={handleExcelImportClick} />
       </div>
 
       {/* Leads Table */}
-      <div className="table-wrap" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <div style={{ overflowX: "auto", width: "100%" }}>
+      <div className="table-wrap table-scroll-wrap">
+        <div className="table-inner-scroll">
           <table className="sales-table">
           <thead>
             <tr>
-              <th style={{ width: "40px", paddingLeft: "16px" }}>
+              <th className="th-checkbox">
                 <input
                   type="checkbox"
                   className="custom-checkbox"
@@ -379,10 +365,9 @@ export function Sales({
               <th className="dn">Category</th>
               <th
                 onClick={() => handleSort("company")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Company Name</span>
                   <SortIcon active={sortKey === "company"} dir={sortDir} />
                 </div>
@@ -392,16 +377,15 @@ export function Sales({
               <th>Notes</th>
               <th
                 onClick={() => handleSort("createdDate")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Created Date</span>
                   <SortIcon active={sortKey === "createdDate"} dir={sortDir} />
                 </div>
               </th>
               <th>Contacted</th>
-              <th style={{ width: "120px" }}>Actions</th>
+              <th className="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -514,7 +498,7 @@ export function Sales({
 
                 return (
                   <tr key={leadId}>
-                    <td style={{ width: "40px", paddingLeft: "16px" }}>
+                    <td className="td-checkbox">
                       <input
                         type="checkbox"
                         className="custom-checkbox"
@@ -559,23 +543,9 @@ export function Sales({
                         placeholder="Add note..."
                         title={item.notes || "No notes added"}
                         onBlur={(e) => updateLeadField("notes", e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "8px 12px",
-                          borderRadius: "8px",
-                          border: "1px solid transparent",
-                          background: "transparent",
-                          color: "white",
-                        }}
                       />
                     </td>
-                    <td
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "var(--muted)",
-                        fontSize: "12px",
-                      }}
-                    >
+                    <td className="td-date">
                       {formatDisplayDate(item.createdDate)}
                     </td>
                     <td>
@@ -591,7 +561,7 @@ export function Sales({
                         }
                       />
                     </td>
-                    <td style={{ width: "120px" }}>
+                    <td className="th-actions">
                       <div className="action-btns">
                         <a
                           href={`tel:${item.phoneNumber}`}
@@ -625,7 +595,6 @@ export function Sales({
                           src="/assets/icons/delete.svg"
                           className="delete-sale delete-btn-td"
                           alt="Delete"
-                          style={{ cursor: "pointer" }}
                           onClick={() => {
                             setConfirmModal({
                               title: "Delete Lead",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -39,6 +40,11 @@ export default function DashboardMainPage() {
   const router = useRouter();
   const auth = useAuth();
   const { isLoggedIn, role, user, logout, sessionExpired, setSessionExpired } = auth;
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Selected tab route state (synced with localStorage)
   const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
@@ -438,21 +444,10 @@ export default function DashboardMainPage() {
 
   // Define dynamic action elements for the Layout topbar portal
   const addClientBtn = (
-    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+    <div className="df-g8 al-c">
       {selectedClientIds.length > 0 && (
         <button
           className="btn btn-danger"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(232, 37, 30, 0.15)",
-            color: "var(--red)",
-            border: "0.6px solid rgba(232, 37, 30, 0.4)",
-            cursor: "pointer",
-            padding: "8px 14px",
-            borderRadius: "var(--border-radius-99)",
-          }}
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Clients",
@@ -478,10 +473,7 @@ export default function DashboardMainPage() {
           <img
             src="/assets/icons/delete.svg"
             width="16"
-            style={{
-              filter:
-                "invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%)",
-            }}
+            className="icon-red"
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
@@ -498,7 +490,7 @@ export default function DashboardMainPage() {
           <img
             src="/assets/icons/add.svg"
             alt="Add"
-            style={{ width: "20px" }}
+            width="20"
           />
         </span>
         <span>Add Client</span>
@@ -521,17 +513,6 @@ export default function DashboardMainPage() {
       {selectedLeadIds.length > 0 && (
         <button
           className="btn btn-danger"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(232, 37, 30, 0.15)",
-            color: "var(--red)",
-            border: "0.6px solid rgba(232, 37, 30, 0.4)",
-            cursor: "pointer",
-            padding: "8px 14px",
-            borderRadius: "var(--border-radius-99)",
-          }}
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Leads",
@@ -557,10 +538,7 @@ export default function DashboardMainPage() {
           <img
             src="/assets/icons/delete.svg"
             width="16"
-            style={{
-              filter:
-                "invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%)",
-            }}
+            className="icon-red"
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedLeadIds.length})</span>
@@ -568,9 +546,8 @@ export default function DashboardMainPage() {
       )}
 
       <button
-        className="btn btn-ghost"
+        className="btn btn-ghost df-g8 al-c"
         onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
-        style={{ display: "flex", alignItems: "center", gap: "8px" }}
       >
         <svg
           width="16"
@@ -624,19 +601,10 @@ export default function DashboardMainPage() {
   );
 
   const addUserBtn = (
-    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+    <div className="df-g8 al-c">
       {selectedUserIds.length > 0 && (
         <button
           className="btn btn-danger"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(232, 37, 30, 0.15)",
-            color: "var(--red)",
-            border: "0.6px solid rgba(232, 37, 30, 0.4)",
-            cursor: "pointer",
-          }}
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Users",
@@ -662,10 +630,7 @@ export default function DashboardMainPage() {
           <img
             src="/assets/icons/delete.svg"
             width="16"
-            style={{
-              filter:
-                "invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%)",
-            }}
+            className="icon-red"
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
@@ -687,17 +652,6 @@ export default function DashboardMainPage() {
       {selectedBlogIds.length > 0 && (
         <button
           className="btn btn-danger"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "rgba(232, 37, 30, 0.15)",
-            color: "var(--red)",
-            border: "0.6px solid rgba(232, 37, 30, 0.4)",
-            cursor: "pointer",
-            padding: "8px 14px",
-            borderRadius: "var(--border-radius-99)",
-          }}
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Blog Posts",
@@ -725,10 +679,7 @@ export default function DashboardMainPage() {
           <img
             src="/assets/icons/delete.svg"
             width="16"
-            style={{
-              filter:
-                "invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%)",
-            }}
+            className="icon-red"
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedBlogIds.length})</span>
@@ -785,24 +736,27 @@ export default function DashboardMainPage() {
       blogActionsBtn={blogActionsBtn}
       createBlogActionsBtn={createBlogActionsBtn}
       toast={
-        toasts.length > 0 && (
-          <div className="toasts-container">
-            {toasts.map((t) => (
-              <div key={t.id} className={`toast ${t.type}`}>
-                <img
-                  src={
-                    t.type === "success"
-                      ? "/assets/icons/check.svg"
-                      : "/assets/icons/close.svg"
-                  }
-                  className="toast-icon"
-                  alt=""
-                />
-                <span>{t.message}</span>
-              </div>
-            ))}
-          </div>
-        )
+        mounted && typeof document !== "undefined" && toasts.length > 0
+          ? createPortal(
+              <div className="toasts-container">
+                {toasts.map((t) => (
+                  <div key={t.id} className={`toast ${t.type}`}>
+                    <img
+                      src={
+                        t.type === "success"
+                          ? "/assets/icons/check.svg"
+                          : "/assets/icons/close.svg"
+                      }
+                      className="toast-icon"
+                      alt=""
+                    />
+                    <span>{t.message}</span>
+                  </div>
+                ))}
+              </div>,
+              document.body
+            )
+          : null
       }
     >
       {/* Active page views wrapped in a premium entrance animation container */}
@@ -913,7 +867,7 @@ export default function DashboardMainPage() {
       {/* 5-minute Inactivity Session Expired Overlay Modal */}
       {sessionExpired && (
         <div className="modal-overlay active">
-          <div className="modal" style={{ maxWidth: "420px" }}>
+          <div className="modal modal-sm">
             <div className="modal-icon">
               <img
                 src="/assets/icons/log-out.svg"
@@ -925,14 +879,7 @@ export default function DashboardMainPage() {
             <div className="modal-header">
               <div className="modal-title">Session Expired</div>
             </div>
-            <div
-              style={{
-                color: "var(--muted)",
-                fontSize: "13px",
-                lineHeight: 1.6,
-                marginBottom: "24px",
-              }}
-            >
+            <div className="text-muted mb-24" style={{ fontSize: "var(--text-xs)", lineHeight: 1.6 }}>
               Your session expired due to inactivity. Please sign in again to
               continue using ReelScale.
             </div>
@@ -953,36 +900,31 @@ export default function DashboardMainPage() {
 
       {/* Custom Confirm Modal */}
       {confirmModal && (
-        <div className="modal-overlay active" style={{ zIndex: 300 }}>
-          <div className="delete-modal" style={{ maxWidth: "420px", textAlign: "left" }}>
-            <div className="delete-icon" style={{ margin: "0 0 20px 0" }}>
+        <div className="modal-overlay active" style={{ zIndex: "var(--z-modal)" as any }}>
+          <div className="delete-modal modal-sm text-left">
+            <div className="delete-icon mb-20">
               <img
                 src="/assets/icons/delete.svg"
                 alt="Delete"
-                style={{
-                  filter:
-                    "invert(20%) sepia(85%) saturate(7324%) hue-rotate(355deg) brightness(93%) contrast(92%)",
-                }}
+                className="icon-red"
               />
             </div>
             <div className="delete-title">{confirmModal.title}</div>
-            <div className="delete-sub" style={{ textAlign: "left", marginBottom: "28px" }}>{confirmModal.message}</div>
-            <div className="delete-actions" style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <div className="delete-sub text-left mb-28">{confirmModal.message}</div>
+            <div className="delete-actions del-actions-end">
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost btn-auto"
                 onClick={() => setConfirmModal(null)}
-                style={{ flex: "none", width: "auto", minWidth: "100px" }}
               >
                 Cancel
               </button>
               <button
-                className="btn btn-danger"
+                className="btn btn-danger btn-auto"
                 onClick={async () => {
                   const action = confirmModal.onConfirm;
                   setConfirmModal(null);
                   await action();
                 }}
-                style={{ flex: "none", width: "auto", minWidth: "100px" }}
               >
                 Delete
               </button>
