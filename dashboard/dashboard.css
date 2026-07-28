@@ -2261,7 +2261,6 @@ tr:hover td {
     border-radius: var(--border-radius-99, 99px);
     padding: 10px 20px;
     width: max-content;
-    min-width: 280px;
     max-width: 420px;
     box-sizing: border-box;
     display: flex;
@@ -2271,9 +2270,9 @@ tr:hover td {
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform var(--duration-base) var(--ease-spring),
-        opacity var(--duration-base) ease,
-        scale var(--duration-base) var(--ease-spring),
-        z-index var(--duration-base) ease;
+                opacity var(--duration-base) ease,
+                scale var(--duration-base) var(--ease-spring),
+                z-index var(--duration-base) ease;
 }
 
 .toast.success {
