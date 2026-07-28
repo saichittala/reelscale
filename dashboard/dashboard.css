@@ -379,6 +379,7 @@ body {
     text-overflow: ellipsis;
     color: var(--muted);
     font-size: var(--text-xs);
+    text-transform: capitalize;
 }
 
 .logout-btn {
