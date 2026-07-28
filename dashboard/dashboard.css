@@ -2247,7 +2247,7 @@ tr:hover td {
     flex-direction: column;
     align-items: center;
     pointer-events: auto;
-    width: auto;
+    width: fit-content;
     max-width: 480px;
     height: auto;
     transition: gap var(--duration-base) ease;
@@ -2391,6 +2391,18 @@ tr:hover td {
 }
 
 @media(max-width:640px) {
+    .toasts-container {
+        width: calc(100% - 32px);
+        max-width: 380px;
+        top: 16px;
+    }
+
+    .toast {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
     .analytics-grid {
         grid-template-columns: 1fr
     }
