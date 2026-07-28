@@ -1694,13 +1694,13 @@ tr:hover td {
     flex: 1;
 }
 
-.btn-danger {
+.delete-modal .btn-danger {
     background: var(--red);
     color: var(--white);
     border: none;
 }
 
-.btn-danger:hover {
+.delete-modal .btn-danger:hover {
     background: var(--red2);
 }
 
