@@ -11,11 +11,11 @@ export default function LatestBlogs() {
 
   return (
     <section id="latest-blogs-section">
-      <div className="container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
+      <div className="container landing-blogs-container">
 
         {/* Section Header */}
-        <div style={{ textAlign: "center", marginBottom: "50px" }} className="reveal">
-          <div className="section-eyebrow" style={{ textTransform: "uppercase" }}>
+        <div className="landing-blogs-header reveal">
+          <div className="section-eyebrow">
             Blogs
           </div>
           <h2 className="section-title">
@@ -31,8 +31,8 @@ export default function LatestBlogs() {
         </div>
 
         {/* View All Button */}
-        <div style={{ textAlign: "center", marginTop: "40px" }} className="reveal">
-          <Link href="/blog" className="btn-secondary" style={{ textDecoration: "none" }}>
+        <div className="landing-blogs-footer reveal">
+          <Link href="/blog" className="btn-secondary">
             View all blogs
           </Link>
         </div>

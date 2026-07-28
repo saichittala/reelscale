@@ -441,7 +441,6 @@ export function Sales({
                         alt="Save"
                         title="Create Lead"
                         onClick={handleCreateLead}
-                        style={{ cursor: "pointer" }}
                       />
                       <img
                         src="/assets/icons/close.svg"
@@ -449,7 +448,6 @@ export function Sales({
                         alt="Cancel"
                         title="Cancel"
                         onClick={() => setNewLeadRow(false)}
-                        style={{ cursor: "pointer" }}
                       />
                     </div>
                   </td>

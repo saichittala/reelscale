@@ -1423,6 +1423,22 @@ em {
     padding: 120px 0;
 }
 
+.landing-blogs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.landing-blogs-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.landing-blogs-footer {
+    text-align: center;
+    margin-top: 40px;
+}
+
 /* FOOTER */
 footer {
     padding: 100px 48px 80px;
@@ -2607,4 +2623,326 @@ footer {
     .ed-hero-section {
         padding-top: 140px;
     }
+}
+
+/* ─────────────────────────── SERVICES DYNAMIC TEMPLATE CLASSES ─────────────────────────── */
+.btn-padded {
+    padding: 16px 36px !important;
+}
+
+.btn-padded-cta {
+    padding: 16px 40px !important;
+}
+
+.service-main {
+    padding-top: 120px;
+}
+
+.service-hero {
+    max-width: 1200px;
+    margin: 48px auto 96px;
+    padding: 0 32px;
+    text-align: center;
+    font-family: var(--primary-font);
+}
+
+.service-hero .section-eyebrow {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.service-hero .section-title {
+    font-size: clamp(28px, 4.5vw, 48px);
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.service-hero .section-sub {
+    margin: 0 auto 40px;
+    opacity: 1;
+    animation: none;
+    max-width: 720px;
+    font-size: var(--text-md);
+    line-height: 1.7;
+}
+
+.service-hero-ctas {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+}
+
+.service-trust-signals {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-size: var(--text-xs);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.service-trust-signals span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.service-location-pills {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+}
+
+.service-location-pills-label {
+    font-size: var(--text-xs);
+    color: var(--muted);
+    margin-right: 6px;
+}
+
+.service-location-pill {
+    padding: 6px 14px;
+    border-radius: var(--border-radius-99);
+    background: var(--white-03);
+    font-size: var(--text-xs);
+    color: var(--muted);
+}
+
+.service-benefits-section {
+    background: var(--bg);
+    padding: 112px 0;
+}
+
+.service-container-1200 {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.service-section-header-centered {
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+.service-section-header-centered .section-eyebrow {
+    margin-bottom: 16px;
+}
+
+.service-section-header-centered .section-title {
+    font-size: clamp(26px, 3.8vw, 38px);
+}
+
+.service-page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+}
+
+.service-page-card {
+    padding: 36px 32px;
+}
+
+.service-page-card .service-num {
+    margin-bottom: 20px;
+}
+
+.service-page-card .service-name {
+    margin-bottom: 12px;
+    font-size: var(--text-xl);
+}
+
+.service-page-card .service-desc {
+    line-height: 1.7;
+}
+
+.service-split-section {
+    max-width: 1200px;
+    margin: 112px auto;
+    padding: 0 32px;
+    font-family: var(--primary-font);
+}
+
+.service-split-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 64px;
+}
+
+.service-split-section .section-eyebrow {
+    margin-bottom: 16px;
+}
+
+.service-split-section .section-title {
+    font-size: 32px;
+    margin-bottom: 32px;
+}
+
+.service-deliverables-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.service-deliverable-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: var(--text-md);
+    color: var(--white);
+}
+
+.service-deliverable-item-bullet {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.service-workflow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.service-workflow-item {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.service-workflow-step-num {
+    color: var(--muted);
+    font-size: var(--text-lg);
+    font-weight: var(--fw-medium);
+    min-width: 28px;
+}
+
+.service-workflow-step-title {
+    color: var(--white);
+    font-size: var(--text-lg);
+    margin: 0 0 6px;
+    font-weight: var(--fw-medium);
+}
+
+.service-workflow-step-desc {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    margin: 0;
+    line-height: 1.7;
+}
+
+.service-pricing-header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.service-pricing-header .section-eyebrow {
+    margin-bottom: 16px;
+}
+
+.service-pricing-container-640 {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.service-pricing-card-override {
+    margin: 0 auto;
+    padding: 48px 36px;
+}
+
+.service-pricing-card-override .plan-cadence {
+    margin-bottom: 28px;
+}
+
+.service-pricing-card-override .plan-divider {
+    margin-bottom: 28px;
+}
+
+.service-pricing-card-override .plan-features {
+    margin-bottom: 36px;
+}
+
+.service-pricing-card-override .plan-features li {
+    margin-bottom: 14px;
+}
+
+.service-faq-section {
+    max-width: 840px;
+    margin: 112px auto;
+    padding: 0 32px;
+}
+
+.service-faq-header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.service-faq-header .section-eyebrow {
+    margin-bottom: 16px;
+}
+
+.service-faq-header .section-title {
+    font-size: clamp(26px, 3.8vw, 38px);
+}
+
+.service-faq-list {
+    opacity: 1;
+}
+
+.service-faq-item-override {
+    margin-bottom: 16px;
+}
+
+.service-faq-item-override .faq-question {
+    padding: 20px 0;
+}
+
+.service-faq-item-override .faq-answer-content {
+    padding-bottom: 20px;
+}
+
+.service-faq-item-override .faq-answer-content p {
+    margin: 0;
+    line-height: 1.8;
+    color: var(--muted);
+    font-size: var(--text-md);
+}
+
+.service-bottom-cta-section {
+    max-width: 1200px;
+    margin: 80px auto 140px;
+    padding: 0 32px;
+    text-align: center;
+    font-family: var(--primary-font);
+}
+
+.service-bottom-cta-box {
+    background: var(--white-03);
+    border-radius: var(--border-radius-1);
+    padding: 72px 40px;
+}
+
+.service-bottom-cta-box .section-eyebrow {
+    margin-bottom: 20px;
+}
+
+.service-bottom-cta-box .section-title {
+    font-size: clamp(26px, 3.8vw, 38px);
+    margin-bottom: 20px;
+}
+
+.service-bottom-cta-box .section-sub {
+    margin: 0 auto 40px;
+    max-width: 640px;
+    font-size: var(--text-md);
+    line-height: 1.7;
 }

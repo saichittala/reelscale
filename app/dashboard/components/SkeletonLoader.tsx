@@ -15,8 +15,8 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               <div className="skeleton-stat-card" key={i}>
                 <div className="skeleton-line skeleton"></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "40%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "40%" } as any}
                 ></div>
               </div>
             ))}
@@ -28,8 +28,8 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="skeleton-block skeleton"
-                  style={{ height: "40px" }}
+                  className="skeleton-block skeleton skeleton-h-var"
+                  style={{ "--h": "40px" } as any}
                   key={i}
                 ></div>
               ))}
@@ -40,8 +40,8 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="skeleton-block skeleton"
-                  style={{ height: "40px" }}
+                  className="skeleton-block skeleton skeleton-h-var"
+                  style={{ "--h": "40px" } as any}
                   key={i}
                 ></div>
               ))}
@@ -56,27 +56,27 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
       <>
         <div className="skeleton-controls">
           <div
-            className="skeleton-line skeleton"
-            style={{ height: "38px", width: "260px" }}
+            className="skeleton-line skeleton skeleton-w-var skeleton-h-var"
+            style={{ "--h": "38px", "--w": "260px" } as any}
           ></div>
           <div
-            className="skeleton-line skeleton"
-            style={{ height: "38px", width: "100px" }}
+            className="skeleton-line skeleton skeleton-w-var skeleton-h-var"
+            style={{ "--h": "38px", "--w": "100px" } as any}
           ></div>
           <div
-            className="skeleton-line skeleton"
-            style={{ height: "38px", width: "100px" }}
+            className="skeleton-line skeleton skeleton-w-var skeleton-h-var"
+            style={{ "--h": "38px", "--w": "100px" } as any}
           ></div>
         </div>
         <div className="skeleton-table">
           <div className="skeleton-table-header">
-            <div className="skeleton-line skeleton" style={{ width: "25%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "8%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "12%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "10%" }}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "25%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "8%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "12%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "10%" } as any}></div>
           </div>
           {Array(6)
             .fill(0)
@@ -84,32 +84,32 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               <div className="skeleton-table-row" key={i}>
                 <div className="skeleton-avatar skeleton"></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "20%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "20%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "15%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "15%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "15%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "15%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "8%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "8%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "12%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "12%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "15%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "15%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "10%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "10%" } as any}
                 ></div>
               </div>
             ))}
@@ -128,8 +128,8 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               <div className="skeleton-stat-card" key={i}>
                 <div className="skeleton-line skeleton"></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "40%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "40%" } as any}
                 ></div>
               </div>
             ))}
@@ -137,10 +137,7 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
         <div className="skeleton-grid-2">
           <div className="skeleton-glass-card">
             <div className="skeleton-line skeleton"></div>
-            <div
-              className="skeleton-chart-area skeleton"
-              style={{ marginTop: "16px", flex: 1 }}
-            ></div>
+            <div className="skeleton-chart-area skeleton"></div>
           </div>
           <div className="skeleton-glass-card">
             <div className="skeleton-line skeleton"></div>
@@ -148,8 +145,8 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="skeleton-block skeleton"
-                  style={{ height: "40px", marginTop: "12px" }}
+                  className="skeleton-block skeleton skeleton-h-var mt-12"
+                  style={{ "--h": "40px" } as any}
                   key={i}
                 ></div>
               ))}
@@ -163,40 +160,40 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
     return (
       <div className="skeleton-table">
         <div className="skeleton-table-header">
-          <div className="skeleton-line skeleton" style={{ width: "10%" }}></div>
-          <div className="skeleton-line skeleton" style={{ width: "20%" }}></div>
-          <div className="skeleton-line skeleton" style={{ width: "25%" }}></div>
-          <div className="skeleton-line skeleton" style={{ width: "20%" }}></div>
-          <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
-          <div className="skeleton-line skeleton" style={{ width: "10%" }}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "10%" } as any}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "20%" } as any}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "25%" } as any}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "20%" } as any}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
+          <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "10%" } as any}></div>
         </div>
         {Array(5)
           .fill(0)
           .map((_, i) => (
             <div className="skeleton-table-row" key={i}>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "10%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "10%" } as any}
               ></div>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "20%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "20%" } as any}
               ></div>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "25%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "25%" } as any}
               ></div>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "20%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "20%" } as any}
               ></div>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "15%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "15%" } as any}
               ></div>
               <div
-                className="skeleton-line skeleton"
-                style={{ width: "10%" }}
+                className="skeleton-line skeleton skeleton-w-var"
+                style={{ "--w": "10%" } as any}
               ></div>
             </div>
           ))}
@@ -207,47 +204,47 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
   if (type === "sales" || type === "blogs") {
     return (
       <>
-        <div className="skeleton-controls" style={{ marginBottom: "24px" }}>
+        <div className="skeleton-controls mb-24">
           <div
-            className="skeleton-line skeleton"
-            style={{ height: "38px", width: "200px" }}
+            className="skeleton-line skeleton skeleton-w-var skeleton-h-var"
+            style={{ "--h": "38px", "--w": "200px" } as any}
           ></div>
           <div
-            className="skeleton-line skeleton"
-            style={{ height: "38px", width: "200px" }}
+            className="skeleton-line skeleton skeleton-w-var skeleton-h-var"
+            style={{ "--h": "38px", "--w": "200px" } as any}
           ></div>
         </div>
         <div className="skeleton-table">
           <div className="skeleton-table-header">
-            <div className="skeleton-line skeleton" style={{ width: "25%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "20%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "25%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
-            <div className="skeleton-line skeleton" style={{ width: "15%" }}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "25%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "20%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "25%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
+            <div className="skeleton-line skeleton skeleton-w-var" style={{ "--w": "15%" } as any}></div>
           </div>
           {Array(6)
             .fill(0)
             .map((_, i) => (
               <div className="skeleton-table-row" key={i}>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "25%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "25%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "20%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "20%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "25%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "25%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "15%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "15%" } as any}
                 ></div>
                 <div
-                  className="skeleton-line skeleton"
-                  style={{ width: "15%" }}
+                  className="skeleton-line skeleton skeleton-w-var"
+                  style={{ "--w": "15%" } as any}
                 ></div>
               </div>
             ))}

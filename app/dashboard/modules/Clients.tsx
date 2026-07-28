@@ -310,11 +310,10 @@ export function Clients({
                             onChange={(e) => setNewClientName(e.target.value)}
                           />
                           <input
-                            className="phone-input td-input td-input-xl"
+                            className="phone-input td-input td-input-xl mt-neg4"
                             placeholder="Phone Number"
                             value={newClientPhone}
                             onChange={(e) => setNewClientPhone(e.target.value)}
-                            style={{ marginTop: "-4px" }}
                           />
                         </div>
                       </div>

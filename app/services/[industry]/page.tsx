@@ -1007,45 +1007,45 @@ export default async function IndustryServicePage({ params }: { params: Promise<
       <div dangerouslySetInnerHTML={{ __html: headerHtml }} />
 
       {/* Main Content */}
-      <main id="main-content" style={{ paddingTop: "120px" }}>
+      <main id="main-content" className="service-main">
         
         {/* Hero Section */}
-        <section style={{ maxWidth: "1200px", margin: "48px auto 96px", padding: "0 32px", textAlign: "center", fontFamily: "var(--primary-font)" }}>
-          <div className="section-eyebrow" style={{ display: "inline-block", marginBottom: "20px", textTransform: "uppercase" }}>{data.name}</div>
-          <h1 className="section-title" style={{ fontSize: "clamp(28px, 4.5vw, 48px)", lineHeight: "1.2", marginBottom: "24px" }}>
+        <section className="service-hero">
+          <div className="section-eyebrow">{data.name}</div>
+          <h1 className="section-title">
             {data.name}<br /><em>Hyderabad</em>
           </h1>
-          <p className="section-sub" style={{ margin: "0 auto 40px", opacity: 1, animation: "none", maxWidth: "720px", fontSize: "var(--text-md)", lineHeight: "1.7" }}>
+          <p className="section-sub">
             {data.subheadline} — {data.introText}
           </p>
           
-          <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", marginBottom: "48px" }}>
-            <a href="https://wa.me/919966239433?text=Hey%2520I%2520want%2520to%2520scale%2520our%2520content%2520creation." target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 36px" }}>
+          <div className="service-hero-ctas">
+            <a href="https://wa.me/919966239433?text=Hey%2520I%2520want%2520to%2520scale%2520our%2520content%2520creation." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded">
               Start your Reel
             </a>
-            <Link href="/#work" className="btn-secondary" style={{ padding: "16px 36px" }}>
+            <Link href="/#work" className="btn-secondary btn-padded">
               View Our Work
             </Link>
           </div>
 
           {/* Trust Signal Badges */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "32px", flexWrap: "wrap", fontSize: "var(--text-xs)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+          <div className="service-trust-signals">
+            <span>
               100M+ Organic Views Delivered
             </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <span>
               24-48h Fast Turnaround
             </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <span>
               On-Site Hyderabad Production
             </span>
           </div>
 
           {/* Location Keywords Pills */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", flexWrap: "wrap", marginTop: "28px" }}>
-            <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)", marginRight: "6px" }}>Available in:</span>
+          <div className="service-location-pills">
+            <span className="service-location-pills-label">Available in:</span>
             {data.locationKeywords.map((loc, idx) => (
-              <span key={idx} style={{ padding: "6px 14px", borderRadius: "var(--border-radius-99)", background: "var(--white-03)", fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+              <span key={idx} className="service-location-pill">
                 {loc}
               </span>
             ))}
@@ -1053,18 +1053,18 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Benefits Section */}
-        <section style={{ background: "var(--bg)", padding: "112px 0" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 32px" }}>
-            <div style={{ textAlign: "center", marginBottom: "64px" }}>
-              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Key Benefits</div>
-              <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Why Choose ReelScale?</h2>
+        <section className="service-benefits-section">
+          <div className="service-container-1200">
+            <div className="service-section-header-centered">
+              <div className="section-eyebrow">Key Benefits</div>
+              <h2 className="section-title">Why Choose ReelScale?</h2>
             </div>
-            <div className="services-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "32px" }}>
+            <div className="services-grid service-page-grid">
               {data.benefits.map((b, idx) => (
-                <div key={idx} className="service-card" style={{ opacity: 1, transform: "none", padding: "36px 32px" }}>
-                  <div className="service-num" style={{ marginBottom: "20px" }}>0{idx + 1}</div>
-                  <div className="service-name" style={{ marginBottom: "12px", fontSize: "var(--text-xl)" }}>{b.title}</div>
-                  <p className="service-desc" style={{ lineHeight: "1.7" }}>{b.desc}</p>
+                <div key={idx} className="service-card service-page-card">
+                  <div className="service-num">0{idx + 1}</div>
+                  <div className="service-name">{b.title}</div>
+                  <p className="service-desc">{b.desc}</p>
                 </div>
               ))}
             </div>
@@ -1072,15 +1072,15 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Deliverables & Process Split Section */}
-        <section style={{ maxWidth: "1200px", margin: "112px auto", padding: "0 32px", fontFamily: "var(--primary-font)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "64px" }}>
+        <section className="service-split-section">
+          <div className="service-split-grid">
             <div>
-              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>What You Get</div>
-              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "32px" }}>Deliverables</h2>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              <div className="section-eyebrow">What You Get</div>
+              <h2 className="section-title">Deliverables</h2>
+              <ul className="service-deliverables-list">
                 {data.deliverables.map((item, idx) => (
-                  <li key={idx} style={{ display: "flex", alignItems: "center", gap: "16px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-md)", color: "var(--white)" }}>
-                    <span style={{ color: "var(--muted)", fontSize: "14px" }}>•</span>
+                  <li key={idx} className="service-deliverable-item">
+                    <span className="service-deliverable-item-bullet">•</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -1088,15 +1088,15 @@ export default async function IndustryServicePage({ params }: { params: Promise<
             </div>
             
             <div>
-              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Our Workflow</div>
-              <h2 className="section-title" style={{ fontSize: "32px", marginBottom: "32px" }}>The Production Process</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <div className="section-eyebrow">Our Workflow</div>
+              <h2 className="section-title">The Production Process</h2>
+              <div className="service-workflow-list">
                 {data.process.map((p, idx) => (
-                  <div key={idx} style={{ display: "flex", gap: "20px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ color: "var(--muted)", fontSize: "var(--text-lg)", fontWeight: "var(--fw-medium)", minWidth: "28px" }}>{p.step}</div>
+                  <div key={idx} className="service-workflow-item">
+                    <div className="service-workflow-step-num">{p.step}</div>
                     <div>
-                      <h3 style={{ color: "var(--white)", fontSize: "var(--text-lg)", margin: "0 0 6px", fontWeight: "var(--fw-medium)" }}>{p.title}</h3>
-                      <p style={{ color: "var(--muted)", fontSize: "var(--text-sm)", margin: 0, lineHeight: "1.7" }}>{p.desc}</p>
+                      <h3 className="service-workflow-step-title">{p.title}</h3>
+                      <p className="service-workflow-step-desc">{p.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -1106,23 +1106,23 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Featured Pricing Highlight */}
-        <section style={{ background: "var(--bg)", padding: "112px 0" }}>
-          <div style={{ maxWidth: "640px", margin: "0 auto", padding: "0 32px" }}>
-            <div style={{ textAlign: "center", marginBottom: "56px" }}>
-              <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>Pricing Package</div>
-              <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Dedicated Plan</h2>
+        <section className="service-benefits-section">
+          <div className="service-pricing-container-640">
+            <div className="service-pricing-header">
+              <div className="section-eyebrow">Pricing Package</div>
+              <h2 className="section-title">Dedicated Plan</h2>
             </div>
-            <div className="pricing-card featured" style={{ margin: "0 auto", opacity: 1, transform: "none", padding: "48px 36px" }}>
+            <div className="pricing-card featured service-pricing-card-override">
               <div className="plan-name">{data.pricingPlan}</div>
               <div className="plan-price"><sup>₹</sup>{data.pricingPrice.replace("₹", "")}</div>
-              <div className="plan-cadence" style={{ marginBottom: "28px" }}>per month</div>
-              <div className="plan-divider" style={{ marginBottom: "28px" }}></div>
-              <ul className="plan-features" style={{ marginBottom: "36px" }}>
+              <div className="plan-cadence">per month</div>
+              <div className="plan-divider"></div>
+              <ul className="plan-features">
                 {data.pricingFeatures.map((f, idx) => (
-                  <li key={idx} style={{ marginBottom: "14px" }}>{f}</li>
+                  <li key={idx}>{f}</li>
                 ))}
               </ul>
-              <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520the%2520package." target="_blank" rel="noopener noreferrer" className="btn-plan btn-plan-red" style={{ padding: "16px 36px" }}>
+              <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520the%2520package." target="_blank" rel="noopener noreferrer" className="btn-plan btn-plan-red btn-padded">
                 Start your Reel
               </a>
             </div>
@@ -1130,23 +1130,23 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* FAQs Accordion */}
-        <section className="faq-section" style={{ maxWidth: "840px", margin: "112px auto", padding: "0 32px" }}>
-          <div style={{ textAlign: "center", marginBottom: "56px" }}>
-            <span className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "16px" }}>FAQ</span>
-            <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)" }}>Frequently Asked Questions</h2>
+        <section className="faq-section service-faq-section">
+          <div className="service-faq-header">
+            <span className="section-eyebrow">FAQ</span>
+            <h2 className="section-title">Frequently Asked Questions</h2>
           </div>
-          <div className="faq-list" style={{ opacity: 1 }}>
+          <div className="faq-list service-faq-list">
             {data.faqs.map((faq, idx) => (
-              <div key={idx} className="faq-item" style={{ marginBottom: "16px" }}>
-                <button className="faq-question" aria-expanded="false" aria-controls={`faq-ans-${idx}`} style={{ padding: "20px 0" }}>
+              <div key={idx} className="faq-item service-faq-item-override">
+                <button className="faq-question" aria-expanded="false" aria-controls={`faq-ans-${idx}`}>
                   <span>{faq.question}</span>
                   <svg className="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
                 <div className="faq-answer" id={`faq-ans-${idx}`}>
-                  <div className="faq-answer-content" style={{ paddingBottom: "20px" }}>
-                    <p style={{ margin: 0, lineHeight: "1.8", color: "var(--muted)", fontSize: "var(--text-md)" }}>{faq.answer}</p>
+                  <div className="faq-answer-content">
+                    <p>{faq.answer}</p>
                   </div>
                 </div>
               </div>
@@ -1155,16 +1155,16 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         </section>
 
         {/* Dedicated Bottom Conversion CTA Section */}
-        <section style={{ maxWidth: "1200px", margin: "80px auto 140px", padding: "0 32px", textAlign: "center", fontFamily: "var(--primary-font)" }}>
-          <div style={{ background: "var(--white-03)", borderRadius: "var(--border-radius-1)", padding: "72px 40px" }}>
-            <div className="section-eyebrow" style={{ textTransform: "uppercase", marginBottom: "20px" }}>Scale Your Brand</div>
-            <h2 className="section-title" style={{ fontSize: "clamp(26px, 3.8vw, 38px)", marginBottom: "20px" }}>
+        <section className="service-bottom-cta-section">
+          <div className="service-bottom-cta-box">
+            <div className="section-eyebrow">Scale Your Brand</div>
+            <h2 className="section-title">
               Ready to Scale Your Brand?
             </h2>
-            <p className="section-sub" style={{ margin: "0 auto 40px", maxWidth: "640px", fontSize: "var(--text-md)", lineHeight: "1.7" }}>
+            <p className="section-sub">
               Book a cinematic shoot with our Hyderabad team today. We handle scriptwriting, filming, editing, and distribution.
             </p>
-            <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520a%2520shoot." target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 40px" }}>
+            <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520a%2520shoot." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded-cta">
               Book a Shoot on WhatsApp
             </a>
           </div>
