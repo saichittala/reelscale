@@ -2247,7 +2247,8 @@ tr:hover td {
     flex-direction: column;
     align-items: center;
     pointer-events: auto;
-    width: 380px;
+    width: auto;
+    max-width: 480px;
     height: auto;
     transition: gap var(--duration-base) ease;
 }
@@ -2255,37 +2256,39 @@ tr:hover td {
 .toast {
     position: relative;
     pointer-events: auto;
-    background: #161616;
+    background: #070707;
     border: 1.2px solid var(--border);
-    border-radius: var(--border-radius-3, 12px);
-    padding: 12px 18px;
-    width: 100%;
+    border-radius: var(--border-radius-99, 99px);
+    padding: 10px 20px;
+    width: max-content;
+    min-width: 280px;
+    max-width: 420px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform var(--duration-base) var(--ease-spring),
-                opacity var(--duration-base) ease,
-                scale var(--duration-base) var(--ease-spring),
-                z-index var(--duration-base) ease;
+        opacity var(--duration-base) ease,
+        scale var(--duration-base) var(--ease-spring),
+        z-index var(--duration-base) ease;
 }
 
 .toast.success {
-    background: color-mix(in oklch, var(--green) 6%, #141414);
-    border-color: color-mix(in oklch, var(--green) 20%, var(--border));
+    background: #070707;
+    border-color: color-mix(in oklch, var(--green) 25%, var(--border));
 }
 
 .toast.error {
-    background: color-mix(in oklch, var(--red) 6%, #141414);
-    border-color: color-mix(in oklch, var(--red) 20%, var(--border));
+    background: #070707;
+    border-color: color-mix(in oklch, var(--red) 25%, var(--border));
 }
 
 .toast.loading {
-    background: color-mix(in oklch, var(--gold) 4%, #141414);
-    border-color: color-mix(in oklch, var(--gold) 15%, var(--border));
+    background: #070707;
+    border-color: color-mix(in oklch, var(--gold) 20%, var(--border));
 }
 
 .toast-icon-wrap {
@@ -2333,18 +2336,17 @@ tr:hover td {
     background: none;
     border: none;
     color: var(--white-30);
-    font-size: var(--text-lg);
     cursor: pointer;
     line-height: 1;
     padding: 0;
-    margin-top: -2px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
     transition: var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .toast-close-btn:hover {
@@ -2360,9 +2362,8 @@ tr:hover td {
 .toasts-container:not(:hover) .toast {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    transform: translateY(calc(var(--index) * 12px)) scale(calc(1 - var(--index) * 0.05));
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(var(--index) * 10px)) scale(calc(1 - var(--index) * 0.05));
     z-index: calc(100 - var(--index));
     opacity: calc(1 - var(--index) * 0.15);
 }
@@ -2383,7 +2384,7 @@ tr:hover td {
 
 .toasts-container:hover .toast {
     position: relative;
-    transform: translateY(0) scale(1) !important;
+    transform: translateX(0) translateY(0) scale(1) !important;
     opacity: 1 !important;
     z-index: 100 !important;
     pointer-events: auto !important;
