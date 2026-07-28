@@ -14,6 +14,7 @@ interface LayoutProps {
   salesFiltersBtn?: React.ReactNode;
   blogActionsBtn?: React.ReactNode;
   createBlogActionsBtn?: React.ReactNode;
+  toast?: React.ReactNode;
 }
 
 export function Layout({
@@ -28,6 +29,7 @@ export function Layout({
   salesFiltersBtn,
   blogActionsBtn,
   createBlogActionsBtn,
+  toast,
 }: LayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -301,6 +303,7 @@ export function Layout({
           </div>
         </div>
       )}
+      {toast}
     </div>
   );
 }

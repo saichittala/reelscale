@@ -98,22 +98,19 @@ export default function DashboardMainPage() {
   } | null>(null);
 
   // Toast message states
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-  const [toastTimer, setToastTimer] = useState<NodeJS.Timeout | null>(null);
+  const [toasts, setToasts] = useState<
+    Array<{ id: string; message: string; type: "success" | "error" }>
+  >([]);
 
   const showToast = useCallback(
     (msg: string, type: "success" | "error" = "success") => {
-      if (toastTimer) clearTimeout(toastTimer);
-      setToast({ message: msg, type });
-      const timer = setTimeout(() => {
-        setToast(null);
+      const id = Math.random().toString(36).substring(2, 9);
+      setToasts((prev) => [...prev, { id, message: msg, type }]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 3000);
-      setToastTimer(timer);
     },
-    [toastTimer]
+    []
   );
 
   // Check login authentication
@@ -787,6 +784,26 @@ export default function DashboardMainPage() {
       salesFiltersBtn={salesFiltersBtn}
       blogActionsBtn={blogActionsBtn}
       createBlogActionsBtn={createBlogActionsBtn}
+      toast={
+        toasts.length > 0 && (
+          <div className="toasts-container">
+            {toasts.map((t) => (
+              <div key={t.id} className={`toast ${t.type}`}>
+                <img
+                  src={
+                    t.type === "success"
+                      ? "/assets/icons/check.svg"
+                      : "/assets/icons/close.svg"
+                  }
+                  className="toast-icon"
+                  alt=""
+                />
+                <span>{t.message}</span>
+              </div>
+            ))}
+          </div>
+        )
+      }
     >
       {/* Active page views wrapped in a premium entrance animation container */}
       <div key={page} className="active-view">
@@ -891,21 +908,7 @@ export default function DashboardMainPage() {
 
       {/* Add / Edit Client Modal overlay has been replaced with inline editing */}
 
-      {/* Live Toast alert messages */}
-      {toast && (
-        <div className={`toast ${toast.type}`}>
-          <img
-            src={
-              toast.type === "success"
-                ? "/assets/icons/check.svg"
-                : "/assets/icons/close.svg"
-            }
-            className="toast-icon"
-            alt=""
-          />
-          <span>{toast.message}</span>
-        </div>
-      )}
+
 
       {/* 5-minute Inactivity Session Expired Overlay Modal */}
       {sessionExpired && (
