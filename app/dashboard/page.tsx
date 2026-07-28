@@ -105,11 +105,11 @@ export default function DashboardMainPage() {
 
   // Toast message states
   const [toasts, setToasts] = useState<
-    Array<{ id: string; message: string; type: "success" | "error" }>
+    Array<{ id: string; message: string; type: "success" | "error" | "loading" }>
   >([]);
 
   const showToast = useCallback(
-    (msg: string, type: "success" | "error" = "success") => {
+    (msg: string, type: "success" | "error" | "loading" = "success") => {
       const id = Math.random().toString(36).substring(2, 9);
       setToasts((prev) => [...prev, { id, message: msg, type }]);
       setTimeout(() => {
@@ -258,7 +258,7 @@ export default function DashboardMainPage() {
     id: string | number,
     clientData: Omit<Client, "id">
   ) => {
-    showToast("Updating...", "success");
+    showToast("Updating...", "loading");
     const backup = [...clients];
     setClients((prev) =>
       prev.map((c) => (String(c.id) === String(id) ? { ...c, ...clientData } : c))
@@ -297,7 +297,7 @@ export default function DashboardMainPage() {
   };
 
   const handleUpdateUser = async (id: string | number, userData: User) => {
-    showToast("Updating...", "success");
+    showToast("Updating...", "loading");
     // Optimistic UI updates
     setUsers((prev) =>
       prev.map((u) => (String(u.id) === String(id) ? { ...u, ...userData } : u))
@@ -359,7 +359,7 @@ export default function DashboardMainPage() {
     id: string | number,
     leadData: Omit<Lead, "id" | "createdDate">
   ) => {
-    showToast("Updating...", "success");
+    showToast("Updating...", "loading");
     const backup = [...leads];
     setLeads((prev) =>
       prev.map((l) => (String(l.id) === String(id) ? { ...l, ...leadData } : l))
@@ -394,7 +394,7 @@ export default function DashboardMainPage() {
   // Blog publishing actions
   const handleSaveBlog = async (blogData: Blog) => {
     if (blogData.id) {
-      showToast("Updating...", "success");
+      showToast("Updating...", "loading");
     }
     try {
       await apiSaveBlog(blogData);
@@ -741,15 +741,19 @@ export default function DashboardMainPage() {
               <div className="toasts-container">
                 {toasts.map((t) => (
                   <div key={t.id} className={`toast ${t.type}`}>
-                    <img
-                      src={
-                        t.type === "success"
-                          ? "/assets/icons/check.svg"
-                          : "/assets/icons/close.svg"
-                      }
-                      className="toast-icon"
-                      alt=""
-                    />
+                    {t.type === "loading" ? (
+                      <div className="toast-loading-spinner" />
+                    ) : (
+                      <img
+                        src={
+                          t.type === "success"
+                            ? "/assets/icons/check.svg"
+                            : "/assets/icons/close.svg"
+                        }
+                        className="toast-icon"
+                        alt=""
+                      />
+                    )}
                     <span>{t.message}</span>
                   </div>
                 ))}

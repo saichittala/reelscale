@@ -351,6 +351,7 @@ export function Users({
                 <td>{user.id}</td>
                 <td>
                   <input
+                    key={`${userId}-name-${user.name}`}
                     type="text"
                     className="user-name-input"
                     defaultValue={user.name}
@@ -365,6 +366,7 @@ export function Users({
                 </td>
                 <td>
                   <input
+                    key={`${userId}-email-${user.email}`}
                     type="email"
                     className="user-email-input"
                     defaultValue={user.email}
@@ -380,6 +382,7 @@ export function Users({
                 <td>
                   <div className="password-wrap">
                     <input
+                      key={`${userId}-password-${user.password}`}
                       type={passwordVisible[userId] ? "text" : "password"}
                       className="user-password-input"
                       id={`pass-${userId}`}

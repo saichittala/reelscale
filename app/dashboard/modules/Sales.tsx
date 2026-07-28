@@ -514,6 +514,7 @@ export function Sales({
                     </td>
                     <td>
                       <input
+                        key={`${leadId}-companyName-${item.companyName}`}
                         type="text"
                         className="company-input"
                         defaultValue={item.companyName || ""}
@@ -526,6 +527,7 @@ export function Sales({
                     <td className="dn">{item.contactPerson}</td>
                     <td>
                       <input
+                        key={`${leadId}-phoneNumber-${item.phoneNumber}`}
                         type="text"
                         className="phone-input"
                         defaultValue={item.phoneNumber || ""}
@@ -537,6 +539,7 @@ export function Sales({
                     </td>
                     <td>
                       <input
+                        key={`${leadId}-notes-${item.notes}`}
                         type="text"
                         className="note-input"
                         defaultValue={item.notes || ""}

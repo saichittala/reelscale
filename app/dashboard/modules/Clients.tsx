@@ -413,6 +413,7 @@ export function Clients({
                         </div>
                         <div className="client-fields-col">
                           <input
+                            key={`${c.id}-name-${c.name}`}
                             type="text"
                             className="company-input td-input td-input-name"
                             defaultValue={c.name}
@@ -420,6 +421,7 @@ export function Clients({
                             placeholder="Name"
                           />
                           <input
+                            key={`${c.id}-phone-${c.phone}`}
                             type="text"
                             className="phone-input td-input td-input-phone"
                             defaultValue={c.phone}
@@ -431,6 +433,7 @@ export function Clients({
                     </td>
                     <td>
                       <input
+                        key={`${c.id}-business-${c.business}`}
                         type="text"
                         className="company-input td-input td-input-2xl"
                         defaultValue={c.business}
@@ -440,6 +443,7 @@ export function Clients({
                     </td>
                     <td>
                       <input
+                        key={`${c.id}-instagram-${c.instagram}`}
                         type="text"
                         className="company-input td-input td-input-lg"
                         defaultValue={c.instagram}
@@ -449,6 +453,7 @@ export function Clients({
                     </td>
                     <td>
                       <input
+                        key={`${c.id}-reels-${c.reels}`}
                         type="number"
                         className="company-input td-input td-input-sm"
                         defaultValue={c.reels}
@@ -458,6 +463,7 @@ export function Clients({
                     </td>
                     <td>
                       <input
+                        key={`${c.id}-ppr-${c.ppr}`}
                         type="number"
                         className="company-input td-input td-input-md"
                         defaultValue={c.ppr}
