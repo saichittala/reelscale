@@ -558,7 +558,7 @@ export default function DashboardMainPage() {
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ opacity: 0.7 }}
+          className="opacity-70"
         >
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
           <line x1="16" y1="2" x2="16" y2="6" />
@@ -575,9 +575,8 @@ export default function DashboardMainPage() {
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className="chevron-icon-rotatable"
           style={{
-            transition: "transform 0.2s",
-            marginLeft: "4px",
             transform: salesFilterExpanded ? "rotate(180deg)" : "none",
           }}
         >
@@ -693,7 +692,7 @@ export default function DashboardMainPage() {
         <img
           src="/assets/icons/nav-analytics.svg"
           width="18"
-          style={{ opacity: 0.7 }}
+          className="opacity-70"
           alt=""
         />
         <span>Categories</span>
@@ -883,7 +882,7 @@ export default function DashboardMainPage() {
             <div className="modal-header">
               <div className="modal-title">Session Expired</div>
             </div>
-            <div className="text-muted mb-24" style={{ fontSize: "var(--text-xs)", lineHeight: 1.6 }}>
+            <div className="text-muted mb-24 modal-body-text">
               Your session expired due to inactivity. Please sign in again to
               continue using ReelScale.
             </div>
@@ -904,7 +903,7 @@ export default function DashboardMainPage() {
 
       {/* Custom Confirm Modal */}
       {confirmModal && (
-        <div className="modal-overlay active" style={{ zIndex: "var(--z-modal)" as any }}>
+        <div className="modal-overlay active">
           <div className="delete-modal modal-sm text-left">
             <div className="delete-icon mb-20">
               <img

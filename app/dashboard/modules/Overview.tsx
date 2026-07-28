@@ -98,12 +98,6 @@ export function Overview({ clients, isLoading }: OverviewProps) {
                     <img
                       src={c.image}
                       alt={displayName}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
                     />
                   ) : (
                     avatarChar
@@ -129,21 +123,15 @@ export function Overview({ clients, isLoading }: OverviewProps) {
               c.name && c.name.trim() ? c.name : c.business || "Unnamed Client";
             return (
               <div className="top-client" key={c.id}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "100%",
-                  }}
-                >
-                  <div className="client-name" style={{ marginLeft: "4px" }}>
+                <div className="client-info-col">
+                  <div className="client-name ml-4">
                     {displayName}
                   </div>
-                  <div className="client-biz" style={{ marginLeft: "4px" }}>
+                  <div className="client-biz ml-4">
                     {c.instagram || "—"}
                   </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
+                <div className="text-right">
                   <div className="badge badge-gold">
                     ₹{fmt(getClientRevenue(c))}
                   </div>

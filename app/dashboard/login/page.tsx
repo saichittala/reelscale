@@ -61,7 +61,7 @@ export default function DashboardLoginPage() {
               <img
                 src="/assets/logo.svg"
                 alt="ReelScale Logo"
-                style={{ width: "100%", height: "20px" }}
+                className="login-icon-frame"
               />
             </div>
           </a>
@@ -70,7 +70,7 @@ export default function DashboardLoginPage() {
         <div className="login-sub">Sign in to manage your clients & revenue</div>
 
         {error && (
-          <div className="login-error" style={{ display: "block" }}>
+          <div className="login-error">
             {error}
           </div>
         )}
@@ -104,17 +104,7 @@ export default function DashboardLoginPage() {
         </div>
 
         <button
-          className="btn btn-primary al-c"
-          style={{
-            width: "100%",
-            padding: "20px 24px",
-            marginTop: "32px",
-            fontSize: "14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
+          className="btn btn-primary login-submit-btn"
           onClick={handleSignIn}
           disabled={isSubmitting}
         >

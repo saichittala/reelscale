@@ -140,7 +140,7 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
 
         <div className="stat-card white">
           <div className="stat-label">Top Client</div>
-          <div className="stat-value" style={{ fontSize: "18px" }}>
+          <div className="stat-value analytics-card-stat">
             {topClient ? topClient.name || topClient.business || "—" : "—"}
           </div>
           <div className="stat-sub">
@@ -153,32 +153,19 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
       <div className="revenue-grid">
         <div className="glass-card">
           <div className="chart-title">Revenue Per Client</div>
-          <div className="chart-sub" style={{ marginBottom: "16px" }}>
+          <div className="chart-sub mb-16">
             Sorted by revenue · All clients
           </div>
-          <div
-            style={{
-              position: "relative",
-              flex: 1,
-              minHeight: "350px",
-            }}
-          >
+          <div className="analytics-chart-container">
             <canvas id="rev-chart"></canvas>
           </div>
         </div>
 
         <div className="glass-card">
-          <div className="chart-title" style={{ marginBottom: "24px" }}>
+          <div className="chart-title mb-24">
             Client Revenue Breakdown
           </div>
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              paddingRight: "4px",
-              maxHeight: "350px",
-            }}
-          >
+          <div className="analytics-list-container">
             {sortedClients.map((c, i) => {
               const rev = getClientRevenue(c);
               const pct =
@@ -189,20 +176,19 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
                   : c.business || "Unnamed Client";
               return (
                 <div
-                  className="rev-bar-wrap"
-                  style={{ marginBottom: "20px" }}
+                  className="rev-bar-wrap mb-20"
                   key={c.id}
                 >
                   <div className="rev-bar-label">
-                    <span style={{ fontWeight: 500, fontSize: "14px" }}>
+                    <span className="text-medium-14">
                       {i + 1}. {displayName}{" "}
-                      <span style={{ color: "var(--muted)", fontWeight: 400 }}>
+                      <span className="text-muted">
                         · {c.business || "—"}
                       </span>
                     </span>
-                    <span style={{ color: "var(--white)", fontWeight: 600 }}>
+                    <span className="text-semibold-white">
                       ₹{rev.toLocaleString("en-IN")}{" "}
-                      <span style={{ color: "var(--muted)", fontWeight: 400 }}>
+                      <span className="text-muted">
                         ({pct}%)
                       </span>
                     </span>

@@ -184,22 +184,12 @@ export function CreateBlog({
   const seoScore = Math.min(Math.round((passedCount / 7) * 100), 100);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 340px",
-        gap: "24px",
-        minHeight: "80vh",
-      }}
-    >
+    <div className="editor-grid">
       {/* LEFT COLUMN: Main Editor Area */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="editor-main-panel">
         {/* Basic Details Card */}
-        <div
-          className="glass-card"
-          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-        >
-          <div className="glass-card-label" style={{ marginBottom: "-4px" }}>
+        <div className="glass-card editor-main-panel">
+          <div className="glass-card-label mb-neg4">
             Basic Details
           </div>
 
@@ -240,11 +230,10 @@ export function CreateBlog({
           <div className="form-group">
             <label className="form-label">Short Description</label>
             <textarea
-              className="form-input"
+              className="form-input textarea-no-resize"
               id="eb-desc"
               rows={3}
               placeholder="Compose a short excerpt / description for cards..."
-              style={{ resize: "none", padding: "12px" }}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -252,79 +241,52 @@ export function CreateBlog({
         </div>
 
         {/* Markdown Text Area card */}
-        <div
-          className="glass-card"
-          style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "12px",
-            }}
-          >
-            <div className="glass-card-label" style={{ marginBottom: 0 }}>
+        <div className="glass-card flex-grow-1 flex-column">
+          <div className="chart-header">
+            <div className="glass-card-label mb-0">
               Markdown Editor
             </div>
 
             {/* Quick Helper Formatting Bar */}
-            <div
-              className="df-g8"
-              style={{
-                background: "var(--white-03)",
-                borderRadius: "var(--border-radius-3)",
-                padding: "2px",
-              }}
-            >
+            <div className="df-g8 editor-toolbar-helper">
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-sm"
                 type="button"
-                style={{ padding: "4px 8px", fontSize: "11px", fontWeight: 700 }}
                 onClick={() => insertAtCursor("## ")}
               >
                 H2
               </button>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-sm"
                 type="button"
-                style={{ padding: "4px 8px", fontSize: "11px", fontWeight: 700 }}
                 onClick={() => insertAtCursor("### ")}
               >
                 H3
               </button>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-sm"
                 type="button"
-                style={{ padding: "4px 8px", fontSize: "11px", fontWeight: 700 }}
                 onClick={() => insertAtCursor("**", "**")}
               >
                 B
               </button>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-sm italic"
                 type="button"
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "11px",
-                  fontStyle: "italic",
-                }}
                 onClick={() => insertAtCursor("> ")}
               >
                 Quote
               </button>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-sm"
                 type="button"
-                style={{ padding: "4px 8px", fontSize: "11px" }}
                 onClick={() => insertAtCursor("- ")}
               >
                 List
               </button>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost toolbar-btn-gold"
                 type="button"
-                style={{ padding: "4px 8px", fontSize: "11px", color: "var(--gold)" }}
                 onClick={() =>
                   insertAtCursor(
                     "[Book a Reel Shoot](https://wa.me/919966239433)"
@@ -338,31 +300,13 @@ export function CreateBlog({
 
           <textarea
             ref={contentRef}
-            className="form-input"
+            className="form-input editor-textarea"
             id="eb-content"
-            style={{
-              flexGrow: 1,
-              minHeight: "400px",
-              fontFamily: "monospace",
-              fontSize: "13px",
-              lineHeight: 1.6,
-              padding: "16px",
-              background: "var(--bg2)",
-              borderColor: "var(--border)",
-            }}
             placeholder="Compose your post using Markdown formatting..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "8px",
-              fontSize: "11px",
-              color: "var(--muted)",
-            }}
-          >
+          <div className="editor-char-counter-row">
             <span>Save Shortcut: Cmd / Ctrl + S</span>
             <span id="editor-char-counter">{content.length} characters</span>
           </div>
@@ -372,47 +316,16 @@ export function CreateBlog({
         <div className="glass-card">
           <div className="glass-card-label">Frequently Asked Questions (FAQ)</div>
 
-          <div
-            id="eb-faq-container"
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-          >
+          <div id="eb-faq-container" className="df-g12 flex-column">
             {faq.map((f, idx) => (
-              <div
-                className="faq-edit-row"
-                key={idx}
-                style={{
-                  background: "var(--white-03)",
-                  padding: "12px",
-                  borderRadius: "var(--border-radius-3)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      color: "var(--gold)",
-                    }}
-                  >
+              <div className="faq-edit-row faq-editor-row" key={idx}>
+                <div className="faq-row-header">
+                  <div className="faq-item-label">
                     FAQ Item #{idx + 1}
                   </div>
                   <button
-                    className="btn btn-ghost eb-faq-delete"
+                    className="btn btn-ghost eb-faq-delete faq-delete-btn"
                     type="button"
-                    style={{
-                      padding: "2px 8px",
-                      color: "var(--red)",
-                      fontSize: "11px",
-                    }}
                     onClick={() => handleRemoveFaq(idx)}
                   >
                     Remove
@@ -427,10 +340,9 @@ export function CreateBlog({
                   }
                 />
                 <textarea
-                  className="form-input faq-a-input"
+                  className="form-input faq-a-input textarea-no-resize"
                   rows={2}
                   placeholder="Answer text..."
-                  style={{ resize: "none" }}
                   value={f.answer}
                   onChange={(e) =>
                     handleFaqChange(idx, "answer", e.target.value)
@@ -441,13 +353,7 @@ export function CreateBlog({
           </div>
 
           <button
-            className="btn btn-ghost"
-            style={{
-              marginTop: "16px",
-              width: "100%",
-              border: "1px dashed var(--border)",
-              fontSize: "13px",
-            }}
+            className="btn btn-ghost add-faq-btn"
             onClick={handleAddFaq}
           >
             + Add FAQ Item
@@ -456,12 +362,9 @@ export function CreateBlog({
       </div>
 
       {/* RIGHT COLUMN: Metadata & SEO controls */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      <div className="editor-sidebar-panel">
         {/* Publish settings */}
-        <div
-          className="glass-card"
-          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-        >
+        <div className="glass-card editor-main-panel">
           <div className="glass-card-label">Publish Settings</div>
 
           <div className="form-group">
@@ -490,9 +393,8 @@ export function CreateBlog({
           </div>
 
           <button
-            className="btn btn-primary"
+            className="btn btn-primary w-full mt-8"
             id="save-blog-btn"
-            style={{ width: "100%", padding: "12px", marginTop: "8px" }}
             onClick={handleSave}
           >
             Save & Apply Updates
@@ -500,34 +402,19 @@ export function CreateBlog({
         </div>
 
         {/* Featured Image */}
-        <div
-          className="glass-card"
-          style={{ display: "flex", flexDirection: "column", gap: "14px" }}
-        >
+        <div className="glass-card sidebar-card-body">
           <div className="glass-card-label">Featured Image</div>
 
-          <div
-            style={{
-              width: "100%",
-              height: "140px",
-              borderRadius: "var(--border-radius-3)",
-              border: "1px solid var(--border)",
-              overflow: "hidden",
-              background: "var(--white-03)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className="editor-image-frame">
             {featuredImage ? (
               <img
                 id="eb-img-preview"
                 src={featuredImage}
                 alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                className="aspect-video-img"
               />
             ) : (
-              <div id="eb-img-empty" style={{ color: "var(--muted)", fontSize: "11px" }}>
+              <div id="eb-img-empty" className="td-muted-small">
                 No Image Selected
               </div>
             )}
@@ -564,24 +451,13 @@ export function CreateBlog({
         </div>
 
         {/* SEO Panel */}
-        <div
-          className="glass-card"
-          style={{ display: "flex", flexDirection: "column", gap: "14px" }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "14px",
-            }}
-          >
-            <div className="glass-card-label" style={{ marginBottom: 0 }}>
+        <div className="glass-card sidebar-card-body">
+          <div className="chart-header">
+            <div className="glass-card-label mb-0">
               SEO Optimization
             </div>
             <span
-              className={`badge ${seoScore > 70 ? "badge-green" : "badge-red"}`}
-              style={{ fontSize: "11px" }}
+              className={`badge ${seoScore > 70 ? "badge-green" : "badge-red"} text-xxs`}
             >
               Score: {seoScore}%
             </span>
@@ -612,85 +488,49 @@ export function CreateBlog({
           <div className="form-group">
             <label className="form-label">Meta Description</label>
             <textarea
-              className="form-input"
+              className="form-input textarea-no-resize"
               id="eb-meta-desc"
               rows={2}
               placeholder="Optional meta description override..."
-              style={{ resize: "none" }}
               value={metaDescription}
               onChange={(e) => setMetaDescription(e.target.value)}
             />
           </div>
 
           {/* SEO Optimization Checklist */}
-          <div
-            style={{
-              marginTop: "8px",
-              borderTop: "1px solid var(--border)",
-              paddingTop: "12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-              fontSize: "11px",
-              color: "var(--muted)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: hasTitle ? "var(--green)" : "var(--red)",
-                }}
-              >
+          <div className="seo-checklist-container">
+            <div className="seo-check-item">
+              <span className={hasTitle ? "text-green" : "text-red"}>
                 {hasTitle ? "✓" : "✗"}
               </span>{" "}
               Title length and structure
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: hasDesc ? "var(--green)" : "var(--red)",
-                }}
-              >
+            <div className="seo-check-item">
+              <span className={hasDesc ? "text-green" : "text-red"}>
                 {hasDesc ? "✓" : "✗"}
               </span>{" "}
               Short description excerpt
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: hasImg ? "var(--green)" : "var(--red)",
-                }}
-              >
+            <div className="seo-check-item">
+              <span className={hasImg ? "text-green" : "text-red"}>
                 {hasImg ? "✓" : "✗"}
               </span>{" "}
               Featured Image attached
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: hasKeyword ? "var(--green)" : "var(--red)",
-                }}
-              >
+            <div className="seo-check-item">
+              <span className={hasKeyword ? "text-green" : "text-red"}>
                 {hasKeyword ? "✓" : "✗"}
               </span>{" "}
               Focus keyword config
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: hasSlug ? "var(--green)" : "var(--red)",
-                }}
-              >
+            <div className="seo-check-item">
+              <span className={hasSlug ? "text-green" : "text-red"}>
                 {hasSlug ? "✓" : "✗"}
               </span>{" "}
               Clean URL slug format
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  color: longContent ? "var(--green)" : "var(--red)",
-                }}
-              >
+            <div className="seo-check-item">
+              <span className={longContent ? "text-green" : "text-red"}>
                 {longContent ? "✓" : "✗"}
               </span>{" "}
               Content article length

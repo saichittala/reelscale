@@ -39,23 +39,14 @@ export function BlogCategories({
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "600px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-      }}
-    >
+    <div className="blog-categories-wrap">
       <div className="glass-card">
         <div className="glass-card-label">Add New Category</div>
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div className="df-g12">
           <input
-            className="form-input"
+            className="form-input flex-grow-1"
             id="new-cat-input"
             placeholder="e.g. Video Editing, Sound Design"
-            style={{ flexGrow: 1 }}
             value={newCatInput}
             onChange={(e) => setNewCatInput(e.target.value)}
             onKeyDown={(e) => {
@@ -65,7 +56,6 @@ export function BlogCategories({
           <button
             className="btn btn-primary"
             id="add-cat-btn"
-            style={{ whiteSpace: "nowrap", padding: "0 20px" }}
             onClick={handleAdd}
           >
             Create Category
@@ -75,32 +65,15 @@ export function BlogCategories({
 
       <div className="glass-card">
         <div className="glass-card-label">Taxonomy Categories</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="category-list">
           {blogCategories.map((c, idx) => (
-            <div
-              className="category-row"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "12px 16px",
-                background: "var(--white-03)",
-                borderRadius: "var(--border-radius-3)",
-                border: "1px solid var(--border)",
-              }}
-              key={c}
-            >
-              <div style={{ fontWeight: "var(--fw-semibold)", color: "var(--white)" }}>
+            <div className="category-row" key={c}>
+              <div className="category-name">
                 {c}
               </div>
-              <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              <div className="df-g12 al-c">
                 <button
-                  className="btn btn-ghost delete-cat-btn"
-                  style={{
-                    color: "var(--red)",
-                    fontSize: "var(--text-sm)",
-                    padding: "4px 8px",
-                  }}
+                  className="btn btn-ghost delete-cat-btn delete-category-btn"
                   onClick={() => {
                     setConfirmModal({
                       title: "Delete Category",

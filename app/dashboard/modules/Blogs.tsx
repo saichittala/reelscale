@@ -206,12 +206,12 @@ export function Blogs({
       </div>
 
       {/* Blogs Table */}
-      <div className="table-wrap" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <div style={{ overflowX: "auto", width: "100%" }}>
+      <div className="table-wrap table-scroll-wrap">
+        <div className="table-inner-scroll">
           <table>
           <thead>
             <tr>
-              <th style={{ width: "40px", paddingLeft: "16px" }}>
+              <th className="th-checkbox">
                 <input
                   type="checkbox"
                   className="custom-checkbox"
@@ -222,10 +222,9 @@ export function Blogs({
               <th>Featured Image</th>
               <th
                 onClick={() => handleSort("title")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Blog Title</span>
                   <SortIcon active={blogSortKey === "title"} dir={blogSortDir} />
                 </div>
@@ -234,16 +233,15 @@ export function Blogs({
               <th>Status</th>
               <th
                 onClick={() => handleSort("date")}
-                className="sortable-header"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                className="sortable-header th-sortable"
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <div className="th-header-inner">
                   <span>Published Date</span>
                   <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
                 </div>
               </th>
               <th>Last Updated</th>
-              <th style={{ width: "140px" }}>Actions</th>
+              <th className="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -258,8 +256,8 @@ export function Blogs({
               </tr>
             ) : (
               pagedBlogs.map((b) => (
-                <tr style={{ height: "80px" }} key={b.id || b.slug}>
-                  <td style={{ width: "40px", paddingLeft: "16px" }}>
+                <tr className="blogs-table-row" key={b.id || b.slug}>
+                  <td className="td-checkbox">
                     <input
                       type="checkbox"
                       className="custom-checkbox"
@@ -267,60 +265,26 @@ export function Blogs({
                       onChange={(e) => handleSelectBlogRow(String(b.id || ""), e.target.checked)}
                     />
                   </td>
-                  <td style={{ width: "120px" }}>
-                    <div
-                      style={{
-                        width: "100px",
-                        height: "56px",
-                        borderRadius: "6px",
-                        border: "1px solid var(--border)",
-                        overflow: "hidden",
-                        background: "var(--white-03)",
-                      }}
-                    >
+                  <td className="td-featured-image">
+                    <div className="blog-thumbnail-frame">
                       {b.featuredImage ? (
                         <img
                           src={b.featuredImage}
                           alt=""
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
+                          className="blog-thumbnail-img"
                         />
                       ) : (
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: "100%",
-                            color: "var(--muted)",
-                            fontSize: "10px",
-                          }}
-                        >
+                        <div className="blog-thumbnail-placeholder">
                           No Image
                         </div>
                       )}
                     </div>
                   </td>
                   <td>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        color: "var(--white)",
-                        fontSize: "14px",
-                      }}
-                    >
+                    <div className="td-input-name">
                       {b.title}
                     </div>
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        color: "var(--muted)",
-                        marginTop: "2px",
-                      }}
-                    >
+                    <div className="td-muted-small">
                       {b.description
                         ? `${b.description.substring(0, 75)}...`
                         : "—"}
@@ -338,20 +302,19 @@ export function Blogs({
                       {b.status}
                     </span>
                   </td>
-                  <td style={{ color: "var(--muted)", fontSize: "13px" }}>
+                  <td className="td-date">
                     {b.publishedDate || "—"}
                   </td>
-                  <td style={{ color: "var(--muted)", fontSize: "13px" }}>
+                  <td className="td-date">
                     {b.updatedDate || "—"}
                   </td>
-                  <td style={{ width: "140px" }}>
+                  <td className="th-actions">
                     <div className="action-btns">
                       <img
                         src="/assets/icons/eye.svg"
                         alt="Preview"
                         className="preview-blog-btn"
                         title="Preview Post"
-                        style={{ cursor: "pointer" }}
                         onClick={() => {
                           if (typeof window !== "undefined") {
                             window.open(`/blog/${b.slug}`, "_blank");
@@ -363,7 +326,6 @@ export function Blogs({
                         alt="Edit"
                         className="edit-blog-btn"
                         title="Edit Post"
-                        style={{ cursor: "pointer" }}
                         onClick={() => onEditBlog(b)}
                       />
                       <img
@@ -371,7 +333,6 @@ export function Blogs({
                         alt="Delete"
                         className="delete-blog-btn"
                         title="Delete Post"
-                        style={{ cursor: "pointer" }}
                         onClick={() => {
                           setConfirmModal({
                             title: "Delete Blog Post",
