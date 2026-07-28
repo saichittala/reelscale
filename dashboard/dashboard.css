@@ -1160,7 +1160,7 @@ tr:hover td {
 .company-input:focus,
 .phone-input:focus,
 .note-input:focus {
-    border-color: var(--border);
+    border-color: var(--red);
     background: var(--white-03);
 }
 
@@ -1528,9 +1528,7 @@ tr:hover td {
     outline: none;
     border-color: var(--red);
     background: transparent;
-    box-shadow: 0px 0px 0px 3px #ff002533;
-
-
+    box-shadow: 0px 0px 0px 3px var(--red-10);
 }
 
 .form-input::placeholder {
@@ -2321,7 +2319,7 @@ tr:hover td {
 .user-password-input:focus,
 .user-role-input:focus,
 .user-input:focus {
-    border-color: var(--border);
+    border-color: var(--red);
     background: var(--white-03);
 }
 
@@ -3157,7 +3155,7 @@ tbody tr {
 }
 
 .search-wrap input:focus {
-    box-shadow: 0 0 0 3px rgba(232, 37, 30, 0.12);
+    box-shadow: 0 0 0 3px var(--red-10);
 }
 
 .company-input:focus,
@@ -3167,7 +3165,7 @@ tbody tr {
 .user-email-input:focus,
 .user-password-input:focus,
 .user-input:focus {
-    box-shadow: 0 0 0 2px rgba(232, 37, 30, 0.15);
+    box-shadow: 0 0 0 2px var(--red-10);
 }
 
 .date-filter-input:hover {
@@ -3216,6 +3214,17 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
     outline: none;
+}
+
+/* Hide HTML5 number input spin-buttons (steppers) to fit the premium design system */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
 }
 
 /* ==========================================================================
