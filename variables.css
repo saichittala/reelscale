@@ -23,6 +23,14 @@
     --text-5xl: 72px;
     --text-6xl: 96px;
 
+    /* ── TYPOGRAPHY — SEMANTIC / FLUID ── */
+    --text-15: 15px;
+    --text-display: clamp(32px, 4.5vw, 40px);
+    --text-display-lg: clamp(26px, 3.8vw, 38px);
+    --text-display-xl: clamp(22px, 3.2vw, 36px);
+    --text-stat: clamp(28px, 3.6vw, 42px);
+    --text-hero-sub: clamp(18px, 2.5vw, 24px);
+
     /* ── FONT WEIGHTS ── */
     --fw-light: 300;
     --fw-regular: 400;
@@ -32,8 +40,10 @@
     --fw-extrabold: 800;
 
     /* ── FONT FAMILIES ── */
-    --primary-font: -apple-system, BlinkMacSystemFont, 'Geist', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    /* Single unified system font stack — all components use --font */
     --font: -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
+    /* Alias for backward-compatibility — do not use in new code */
+    --primary-font: var(--font);
     --font-space-grotesk: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-instrument-serif: 'Instrument Serif', Georgia, serif;
     --font-bebas-neue: 'Bebas Neue', sans-serif;
@@ -96,22 +106,31 @@
         transform var(--duration-fast) var(--ease-bounce),
         box-shadow var(--duration-fast) ease;
 
-    /* ── BORDER RADII ── */
-    --border-radius-1: 16px;
-    --border-radius-2: 12px;
-    --border-radius-3: 8px;
-    --border-radius-4: 10px;
+    /* ── BORDER RADII — Semantic ── */
+    --radius-lg: 16px;         /* Cards, large containers */
+    --radius-md: 12px;         /* Medium cards, modals */
+    --radius-sm: 8px;          /* Buttons, inputs, small elements */
+    --radius-base: 10px;       /* Base interactive elements */
+    --radius-pill: 999px;      /* Full pill / badge */
+    --radius-full: 50%;        /* Circular avatars */
+    --radius-xs: 4px;          /* Tags, tiny chips */
+
+    /* ── BORDER RADII — Backward-compat numeric aliases ── */
+    /* Do not use in new code — use semantic names above */
+    --border-radius-1: var(--radius-lg);
+    --border-radius-2: var(--radius-md);
+    --border-radius-3: var(--radius-sm);
+    --border-radius-4: var(--radius-base);
     --border-radius-5: 7px;
-    --border-radius-99: 99px;
-    --radius-full: 50%;
-    --radius-pill: 999px;
-    --radius-xs: 4px;
+    --border-radius-99: var(--radius-pill);
 
     /* ── SHADOWS ── */
     --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.2);
     --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
     --shadow-lg: 0 8px 32px oklch(0 0 0 / 0.25), 0 2px 8px oklch(0 0 0 / 0.15);
     --shadow-xl: 0 16px 48px oklch(0 0 0 / 0.5);
+    --shadow-overlay: 0 20px 80px oklch(0 0 0 / 0.6);
+    --shadow-carousel: 0 20px 45px oklch(0 0 0 / 0.75), 0 0 2px oklch(1 0 0 / 0.1);
     --shadow-focus: 0 0 0 3px var(--red-10);
     --shadow-focus-sm: 0 0 0 2px var(--red-10);
     --shadow-focus-red: 0 0 0 3px oklch(62.944% 0.25583 25.982 / 0.18);
@@ -153,6 +172,12 @@
     --bg2: oklch(0.09 0 0);
     --bg3: oklch(0.09 0 0);
 
+    /* Semantic background overlays */
+    --bg-overlay: oklch(0 0 0 / 0.75);
+    --bg-overlay-dark: oklch(0 0 0 / 0.70);
+    --bg-overlay-light: oklch(0 0 0 / 0.50);
+    --bg-lowend: oklch(0.09 0 0 / 0.98);
+
     /* Accent — Red */
     --red: oklch(62.944% 0.25583 25.982);
     --red2: oklch(54.187% 0.21198 24.926);
@@ -174,6 +199,7 @@
 
     /* Accent — Green */
     --green: oklch(83.515% 0.20131 137.512);
+    --green-12: oklch(83.515% 0.20131 137.512 / 0.12);
 
     /* Accent — Blue */
     --blue: oklch(52.956% 0.2015 273.997);
@@ -186,7 +212,9 @@
 
     /* Surface / alpha layers */
     --card: oklch(1 0 0 / 0.04);
+    --white-02: oklch(1 0 0 / 0.02);
     --white-03: oklch(1 0 0 / 0.03);
+    --white-04: oklch(1 0 0 / 0.04);
     --white-05: oklch(1 0 0 / 0.05);
     --white-07: oklch(1 0 0 / 0.07);
     --white-10: oklch(1 0 0 / 0.10);
@@ -196,9 +224,6 @@
     --white-30: oklch(1 0 0 / 0.30);
     --white-35: oklch(1 0 0 / 0.35);
     --white-50: oklch(1 0 0 / 0.50);
-
-    /* Low-end device fallback */
-    --bg-lowend: oklch(0.09 0 0 / 0.98);
 }
 
 /* ─────────────────────────── LIGHT THEME ─────────────────────────── */
@@ -213,7 +238,9 @@
     --border: oklch(27.685% 0.00003 271.152 / 0.129);
 
     --card: oklch(100% 0.00011 271.152);
+    --white-02: oklch(20.768% 0.03985 265.767 / 0.015);
     --white-03: oklch(20.768% 0.03985 265.767 / 0.02);
+    --white-04: oklch(20.768% 0.03985 265.767 / 0.03);
     --white-05: oklch(20.768% 0.03985 265.767 / 0.04);
     --white-07: oklch(20.768% 0.03985 265.767 / 0.06);
     --white-10: oklch(20.768% 0.03985 265.767 / 0.08);
@@ -224,5 +251,8 @@
     --white-35: oklch(20.768% 0.03985 265.767 / 0.22);
     --white-50: oklch(20.768% 0.03985 265.767 / 0.50);
 
+    --bg-overlay: oklch(0 0 0 / 0.5);
+    --bg-overlay-dark: oklch(0 0 0 / 0.4);
+    --bg-overlay-light: oklch(0 0 0 / 0.3);
     --bg-lowend: oklch(98% 0 0 / 0.98);
 }

@@ -59,12 +59,17 @@ header {
     justify-content: space-between;
     z-index: 1000;
     align-items: center;
-    background: rgba(0, 0, 0, 0);
+    background: transparent;
     border-bottom: 1px solid transparent;
     -webkit-backdrop-filter: blur(0px);
     backdrop-filter: blur(0px);
     transition:
-        all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        background 1s var(--ease-bounce),
+        backdrop-filter 1s var(--ease-bounce),
+        border-color 1s var(--ease-bounce),
+        box-shadow 1s var(--ease-bounce),
+        padding 1s var(--ease-bounce),
+        transform 1s var(--ease-bounce);
     transform: translateY(8px);
     will-change: transform, background-color, backdrop-filter, padding;
 
@@ -78,11 +83,11 @@ header {
 
 /* Active when scrolled - Apple-style glassmorphism & fluid easing */
 header.scrolled {
-    background: rgba(0, 0, 0, 0.75);
+    background: var(--bg-overlay);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--white-07);
+    box-shadow: 0 10px 30px oklch(0 0 0 / 0.5), inset 0 1px 0 var(--white-05);
     transform: translateY(0px);
     padding: 12px 56px;
 
@@ -93,32 +98,9 @@ header.scrolled {
     }
 }
 
-/* BUTTON */
-.btn-primary {
-    background: var(--red);
-    color: var(--white);
-    padding: 14px 24px;
-    border-radius: var(--border-radius-99);
-    text-decoration: none;
-}
+/* BUTTON — defined fully below, this fragment is removed */
 
-/* HERO */
-#hero {
-    text-align: center;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 120px 24px 0;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 40px;
-}
 
-html {
-    scroll-behavior: smooth;
-}
 
 /* CUSTOM CURSOR */
 .cursor {
@@ -137,7 +119,7 @@ html {
     position: fixed;
     width: 36px;
     height: 36px;
-    border: 0.6px solid rgba(232, 37, 30, 0.5);
+    border: 0.6px solid var(--red-op);
     border-radius: var(--border-radius-99);
     pointer-events: none;
     z-index: 9998;
@@ -199,9 +181,9 @@ nav {
 nav a {
     color: var(--muted);
     text-decoration: none;
-    font-size: var(--text-lg);
-    font-weight: 400;
-    transition: color 0.2s;
+    font-size: var(--text-md);
+    font-weight: var(--fw-regular);
+    transition: color var(--transition-fast), background var(--transition-fast);
     padding: 8px 16px;
 
 }
@@ -234,14 +216,14 @@ nav a:hover {
 
 .btn-secondary {
     color: var(--white);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--white-20);
     padding: 14px 24px;
     border-radius: var(--border-radius-99);
     font-family: var(--primary-font);
     font-size: var(--text-sm);
-    font-weight: 400;
+    font-weight: var(--fw-regular);
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
     text-decoration: none;
     display: inline-block;
     background: transparent;
@@ -1249,7 +1231,7 @@ em {
 }
 
 .btn-plan-outline:hover {
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: var(--white-30);
     background: var(--white-03);
 }
 
@@ -1303,7 +1285,8 @@ em {
 .testi-quote {
     font-size: var(--text-md);
     line-height: 1.7;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--white);
+    opacity: var(--opacity-hover);
     font-weight: 300;
     margin-bottom: 28px;
 }
@@ -1377,7 +1360,7 @@ em {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(232, 37, 30, 0.1), transparent 70%);
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, var(--red-10), transparent 70%);
     pointer-events: none;
 }
 
@@ -1474,14 +1457,14 @@ footer {
     max-width: 1200px;
     margin: 48px auto 0;
     padding: 48px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--white-07);
     text-align: left;
 }
 
 .footer-directory-title {
-    font-size: 15px;
+    font-size: var(--text-15);
     color: var(--white);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
     margin-bottom: 24px;
     text-transform: none;
     letter-spacing: 0.02em;
@@ -1491,7 +1474,7 @@ footer {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px 36px;
-    font-size: 14px;
+    font-size: var(--text-sm);
 }
 
 .footer-directory-grid a {
@@ -1528,7 +1511,7 @@ footer {
 .social-btn:hover {
     border-color: var(--red);
     color: var(--red);
-    background: rgba(232, 37, 30, 0.05);
+    background: var(--red-10);
 }
 
 .footer-bottom {
@@ -1559,6 +1542,46 @@ footer {
     transform: translateY(0);
 }
 
+/* ── FOCUS VISIBLE SYSTEM (WCAG AA) ── */
+/* Global base — applies to any focusable element unless overridden */
+:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
+/* Navigation links */
+nav a:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+    border-radius: var(--border-radius-99);
+}
+
+/* Primary & secondary buttons */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-plan:focus-visible,
+.btn-plan-red:focus-visible,
+.btn-plan-outline:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+}
+
+/* Footer & social links */
+.footer-nav a:focus-visible,
+.social-btn:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Carousel slide focus */
+.ls-curved-carousel__slide:focus-visible {
+    outline: 2px solid var(--white-50);
+    outline-offset: 4px;
+}
+
+
 /* MOBILE */
 @media (max-width: 900px) {
     header {
@@ -1570,7 +1593,7 @@ footer {
 
     header.scrolled {
         padding: 10px 20px;
-        background: rgba(10, 10, 10, 0.75);
+        background: var(--bg-overlay);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         backdrop-filter: blur(20px) saturate(180%);
     }
@@ -1788,11 +1811,11 @@ footer {
 
 .faq-item:hover {
     background: var(--white-03);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--white-15);
 }
 
 .faq-item.active {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--white-02);
 }
 
 .faq-question {
@@ -1814,10 +1837,14 @@ footer {
     transition: color 0.3s ease;
 }
 
-.faq-question:focus,
-.faq-question:focus-visible {
+.faq-question:focus {
     outline: none;
-    box-shadow: none;
+}
+
+.faq-question:focus-visible {
+    outline: 2px solid var(--border);
+    outline-offset: -2px;
+    border-radius: var(--radius-sm);
 }
 
 .faq-question:hover {
@@ -1954,7 +1981,7 @@ footer {
     transform-style: preserve-3d;
     overflow: hidden;
     border-radius: 28px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 2px rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-carousel);
     contain: layout paint style;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -2046,28 +2073,6 @@ footer {
     }
 }
 
-/* ==========================================================================
-   LOW-MEMORY (2GB RAM) & LOW-SPEC HARDWARE EXTREME SPEED OVERRIDES
-   ========================================================================== */
-.low-end-device *:not(header):not(header *) {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-    filter: none !important;
-}
-
-.low-end-device .modal-content,
-.low-end-device .video-modal-container,
-.low-end-device .pricing-card {
-    background: rgba(12, 12, 12, 0.98) !important;
-}
-
-.low-end-device #cursor,
-.low-end-device #cursorRing {
-    display: none !important;
-}
-
 /* Off-screen layout containment for lightning-fast scrolling */
 #services,
 #portfolio,
@@ -2100,8 +2105,8 @@ footer {
 
 .ed-about-wrapper .section-eyebrow {
     color: var(--muted);
-    border-color: rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--white-12);
+    background: var(--white-02);
 }
 
 .ed-about-wrapper em {
@@ -2251,7 +2256,7 @@ footer {
 
 .ed-stat-card:hover {
     background: var(--white-03);
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: var(--white-15);
 }
 
 .ed-stat-card::before,
@@ -2331,7 +2336,7 @@ footer {
 
 .ed-purpose-card:hover {
     background: var(--white-03);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--white-15);
 }
 
 .ed-purpose-num {
@@ -2381,7 +2386,7 @@ footer {
 
 .ed-approach-card:hover {
     background: var(--white-03);
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: var(--white-15);
 }
 
 .ed-approach-card-header {
@@ -2437,13 +2442,13 @@ footer {
 .ed-diff-card {
     border-left: 2px solid var(--red);
     padding: 24px 32px;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--white-02);
     border-radius: 0 var(--border-radius-2) var(--border-radius-2) 0;
-    transition: background 0.3s ease;
+    transition: background var(--transition-fast);
 }
 
 .ed-diff-card:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--white-04);
 }
 
 .ed-diff-text {
@@ -2466,14 +2471,14 @@ footer {
 }
 
 .ed-team-role-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--white-02);
     border-radius: var(--border-radius-3);
     padding: 22px 20px;
-    transition: background 0.3s ease;
+    transition: background var(--transition-fast);
 }
 
 .ed-team-role-card:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--white-04);
 }
 
 .ed-team-role-title {
@@ -2502,17 +2507,17 @@ footer {
 }
 
 .ed-testimonial-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--white-02);
     border-radius: var(--border-radius-2);
     padding: 36px 32px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: background 0.3s ease;
+    transition: background var(--transition-fast);
 }
 
 .ed-testimonial-card:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--white-04);
 }
 
 .ed-testimonial-quote {
@@ -2572,7 +2577,7 @@ footer {
 
 .ed-newsletter-input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--white-04);
     border: 1px solid var(--border);
     border-radius: var(--border-radius-3);
     padding: 14px 20px;
@@ -2795,14 +2800,14 @@ footer {
     align-items: center;
     gap: 16px;
     padding: 16px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--white-07);
     font-size: var(--text-md);
     color: var(--white);
 }
 
 .service-deliverable-item-bullet {
     color: var(--muted);
-    font-size: 14px;
+    font-size: var(--text-sm);
 }
 
 .service-workflow-list {
@@ -2815,7 +2820,7 @@ footer {
     display: flex;
     gap: 20px;
     padding: 16px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--white-07);
 }
 
 .service-workflow-step-num {

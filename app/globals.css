@@ -111,8 +111,8 @@ body {
 /* Secondary Action Pill: Red 10% Opacity Active State */
 .blog-category-btn.active {
   font-size: var(--text-xs) !important;
-  background: rgba(232, 37, 30, 0.10) !important;
-  border-color: rgba(232, 37, 30, 0.35) !important;
+  background: var(--red-10) !important;
+  border-color: var(--red-op) !important;
   color: var(--white) !important;
   box-shadow: none !important;
   transform: none !important;
@@ -120,8 +120,8 @@ body {
 }
 
 .blog-category-btn.active:hover {
-  background: rgba(232, 37, 30, 0.16) !important;
-  border-color: rgba(232, 37, 30, 0.50) !important;
+  background: var(--red-20) !important;
+  border-color: var(--red-20) !important;
   color: var(--white) !important;
   box-shadow: none !important;
   transform: none !important;
@@ -632,14 +632,14 @@ body {
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--bg-overlay-dark);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: shareModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: shareModalFadeIn 0.2s var(--ease-spring);
 }
 
 .share-modal-content {
@@ -651,9 +651,9 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   padding: 28px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--shadow-overlay);
   position: relative;
-  animation: shareModalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: shareModalSlideUp 0.25s var(--ease-spring);
 }
 
 .share-modal-header {
@@ -779,7 +779,7 @@ body {
 }
 
 .share-option-btn.copied {
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--green-12);
 }
 
 .share-option-icon {
@@ -974,16 +974,7 @@ body {
   gap: 16px;
 }
 
-/* Reading Progress Bar */
-.reading-progress-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  background: var(--red);
-  z-index: 1001;
-  transition: width 0.1s ease;
-}
+/* Reading Progress Bar — canonical definition below at line ~1291 */
 
 
 /* SKELETON LOADERS */
@@ -1294,7 +1285,7 @@ body {
   left: 0;
   height: 3px;
   background-color: var(--red);
-  z-index: 9999;
+  z-index: var(--z-overlay);
   transition: width 0.1s ease-out;
 }
 

@@ -575,10 +575,7 @@ export default function DashboardMainPage() {
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="chevron-icon-rotatable"
-          style={{
-            transform: salesFilterExpanded ? "rotate(180deg)" : "none",
-          }}
+          className={`chevron-icon-rotatable${salesFilterExpanded ? " chevron-rotated" : ""}`}
         >
           <path d="m6 9 6 6 6-6" />
         </svg>

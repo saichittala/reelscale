@@ -2274,7 +2274,7 @@ tr:hover td {
 .toast {
     position: relative;
     pointer-events: auto;
-    background: #070707;
+    background: var(--bg);
     border: 1.2px solid var(--border);
     border-radius: var(--border-radius-99, 99px);
     padding: 10px 22px;
@@ -2285,7 +2285,7 @@ tr:hover td {
     gap: 12px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md), 0 4px 12px oklch(0 0 0 / 0.4);
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
         opacity 0.35s ease,
         scale 0.45s cubic-bezier(0.16, 1, 0.3, 1),
@@ -2310,17 +2310,17 @@ tr:hover td {
 }
 
 .toast.success {
-    background: #070707;
+    background: var(--bg);
     border-color: color-mix(in oklch, var(--green) 25%, var(--border));
 }
 
 .toast.error {
-    background: #070707;
+    background: var(--bg);
     border-color: color-mix(in oklch, var(--red) 25%, var(--border));
 }
 
 .toast.loading {
-    background: #070707;
+    background: var(--bg);
     border-color: color-mix(in oklch, var(--gold) 20%, var(--border));
 }
 
@@ -4363,6 +4363,11 @@ td:has(.cs-root[data-open="true"]) {
     transition: transform var(--transition-fast) !important;
     margin-left: 4px !important;
 }
+
+.chevron-rotated {
+    transform: rotate(180deg) !important;
+}
+
 
 .modal-body-text {
     font-size: var(--text-xs);
