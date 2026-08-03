@@ -660,6 +660,83 @@ export default function LandingInteractions() {
     document.addEventListener("keydown", onEscape);
 
     /* ═══════════════════════════════════════════════════
+       6. TESTIMONIALS EXPAND/COLLAPSE (Show More/Less)
+       ═══════════════════════════════════════════════════ */
+    const initTestimonials = () => {
+      document.querySelectorAll(".testi-card").forEach((card) => {
+        let quote = card.querySelector(".testi-quote") as HTMLElement | null;
+        if (!quote) return;
+
+        // Cache current expansion state
+        const isExpanded = card.classList.contains("expanded");
+        
+        // Clean up previous toggle button if re-running
+        card.querySelector(".testi-toggle-btn")?.remove();
+
+        // Unwrap if previously wrapped, to get clean measurements
+        const existingWrapper = card.querySelector(".testi-quote-wrapper");
+        if (existingWrapper) {
+          existingWrapper.parentNode?.insertBefore(quote, existingWrapper);
+          existingWrapper.remove();
+        }
+
+        // Temporarily remove classes to measure original clamp height accurately
+        card.classList.remove("expanded", "has-toggle");
+
+        // Check if the content actually overflows 4 lines
+        const hasOverflow = quote.scrollHeight > quote.clientHeight;
+
+        if (hasOverflow) {
+          card.classList.add("has-toggle");
+          if (isExpanded) {
+            card.classList.add("expanded");
+          }
+
+          // Create the wrapper
+          const wrapper = document.createElement("div");
+          wrapper.className = "testi-quote-wrapper";
+          quote.parentNode?.insertBefore(wrapper, quote);
+          wrapper.appendChild(quote);
+
+          const btn = document.createElement("button");
+          btn.className = "testi-toggle-btn";
+          btn.setAttribute("aria-label", isExpanded ? "show less testimonial content" : "show more testimonial content");
+          btn.innerHTML = `
+            <span class="btn-text">${isExpanded ? "show less" : "show more"}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          `;
+
+          wrapper.appendChild(btn);
+
+          btn.addEventListener("click", () => {
+            const nowExpanded = card.classList.toggle("expanded");
+            const textEl = btn.querySelector(".btn-text");
+            if (textEl) {
+              textEl.textContent = nowExpanded ? "show less" : "show more";
+            }
+            btn.setAttribute("aria-label", nowExpanded ? "show less testimonial content" : "show more testimonial content");
+          });
+        } else {
+          card.classList.remove("expanded");
+        }
+      });
+    };
+
+    // Defer initialization slightly to let styles render and layout compute
+    const testimonialTimeout = setTimeout(initTestimonials, 200);
+
+    // Re-evaluate on window resize
+    window.addEventListener("resize", initTestimonials);
+
+    // Push cleanups
+    cleanupFns.push(() => {
+      clearTimeout(testimonialTimeout);
+      window.removeEventListener("resize", initTestimonials);
+    });
+
+    /* ═══════════════════════════════════════════════════
        CLEANUP
        ═══════════════════════════════════════════════════ */
     return () => {

@@ -6,9 +6,10 @@ import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
 
 export const metadata: Metadata = {
-  title: "Reel Makers & Best Video Production Company | ReelScale",
-  description: "ReelScale is the best video production company and top-rated reel makers in Hyderabad. We deliver cinematic, high-retention corporate reels and commercial video ads.",
+  title: "Reel Makers & Video Production Services in Hyderabad | ReelScale",
+  description: "ReelScale is the leading agency for Reel Makers & Video Production Services in Hyderabad. We deliver cinematic, high-retention corporate reels and commercial video ads.",
   keywords: [
+    "Reel Makers & Video Production Services in Hyderabad",
     "reel makers",
     "reel maker",
     "ai reel makers",

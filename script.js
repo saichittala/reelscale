@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const carouselContainer = document.querySelector('.carousel-container');
   if (carouselContainer && carouselTrack) {
     const cards = carouselTrack.querySelectorAll('.carousel-card');
-    
+
     // Size metric helper functions
     const isMobile = () => window.innerWidth <= 768;
     const isTablet = () => window.innerWidth > 768 && window.innerWidth <= 1024;
@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isPaused = false;
     let isDragging = false;
     let isSnapping = false;
-    
+
     // Drag tracking variables
     let startX = 0;
     let startScrollPos = 0;
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Apply drag inertia to snap target
       let targetPos = scrollPos + dragVelocity * 80;
       const nearestCardIndex = Math.round(targetPos / interval);
-      
+
       snapStartPos = scrollPos;
       snapEndPos = nearestCardIndex * interval;
       snapProgress = 0;
@@ -489,7 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const staticLeft = idx * interval;
         const cardCenter = staticLeft - scrollPos + cardWidth / 2;
         const relativeCenter = cardCenter - screenCenter;
-        
+
         let x = relativeCenter / interval; // relative card offset index
 
         if (prefersReducedMotion || isLowEndDevice) {
@@ -561,5 +561,72 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // Testimonials Expand/Collapse (Show More/Less)
+  function initTestimonials() {
+    document.querySelectorAll(".testi-card").forEach((card) => {
+      let quote = card.querySelector(".testi-quote");
+      if (!quote) return;
+
+      // Cache current expansion state
+      const isExpanded = card.classList.contains("expanded");
+
+      // Clean up previous toggle button if re-running
+      card.querySelector(".testi-toggle-btn")?.remove();
+
+      // Unwrap if previously wrapped, to get clean measurements
+      const existingWrapper = card.querySelector(".testi-quote-wrapper");
+      if (existingWrapper) {
+        existingWrapper.parentNode.insertBefore(quote, existingWrapper);
+        existingWrapper.remove();
+      }
+
+      // Temporarily remove classes to measure original clamp height accurately
+      card.classList.remove("expanded", "has-toggle");
+
+      // Check if the content actually overflows 4 lines
+      const hasOverflow = quote.scrollHeight > quote.clientHeight;
+
+      if (hasOverflow) {
+        card.classList.add("has-toggle");
+        if (isExpanded) {
+          card.classList.add("expanded");
+        }
+
+        // Create the wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "testi-quote-wrapper";
+        quote.parentNode.insertBefore(wrapper, quote);
+        wrapper.appendChild(quote);
+
+        const btn = document.createElement("button");
+        btn.className = "testi-toggle-btn";
+        btn.setAttribute("aria-label", isExpanded ? "show less testimonial content" : "show more testimonial content");
+        btn.innerHTML = `
+          <span class="btn-text">${isExpanded ? "show less" : "show more"}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        `;
+
+        wrapper.appendChild(btn);
+
+        btn.addEventListener("click", () => {
+          const nowExpanded = card.classList.toggle("expanded");
+          btn.querySelector(".btn-text").textContent = nowExpanded ? "show less" : "show more";
+          btn.setAttribute("aria-label", nowExpanded ? "show less testimonial content" : "show more testimonial content");
+        });
+      } else {
+        // If it doesn't overflow anymore (e.g. screen became wider), make sure it's not marked expanded
+        card.classList.remove("expanded");
+      }
+    });
+  }
+
+  // Defer initialization slightly to let styles render and layout compute
+  setTimeout(initTestimonials, 200);
+
+  // Re-evaluate on window resize
+  window.addEventListener("resize", initTestimonials);
 
 });

@@ -1629,7 +1629,7 @@ tr:hover td {
 }
 
 .modal-overlay.active {
-    background: oklch(0 0 0 / 0.7);
+    background: var(--bg-overlay-dark);
     backdrop-filter: blur(14px);
     opacity: 1;
     pointer-events: auto;
@@ -2147,7 +2147,7 @@ tr:hover td {
     max-width: 420px;
     padding: var(--space-10);
 
-    background: oklch(0.11 0 0);
+    background: var(--bg2);
     border: 0.6px solid var(--border);
     border-radius: var(--border-radius-2);
 }
@@ -2496,7 +2496,7 @@ tr:hover td {
 
 
     .login-card {
-        background: oklch(0.11 0 0);
+        background: var(--bg2);
         border: 0.6px solid var(--border);
         border-radius: var(--border-radius-2);
         padding: var(--space-10);
@@ -2554,7 +2554,7 @@ tr:hover td {
     .mobile-menu-overlay {
         position: fixed;
         inset: 0;
-        background: oklch(0 0 0 / 0.70);
+        background: var(--bg-overlay-dark);
         z-index: var(--z-overlay);
         backdrop-filter: blur(4px);
     }
@@ -3980,7 +3980,7 @@ td:has(.cs-root[data-open="true"]) {
 .blog-thumbnail-frame {
     width: 100px;
     height: 56px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     overflow: hidden;
     background: var(--white-03);
