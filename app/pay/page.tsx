@@ -8,7 +8,7 @@ function PaymentContent() {
   // Query parameters state with defaults
   const [amount, setAmount] = useState("2500");
   const [service, setService] = useState("Reel Production");
-  const [recipient, setRecipient] = useState("Sai Chittala");
+  const [recipient, setRecipient] = useState("Chittala Sai Durga Surya Prakash");
   const [upiId, setUpiId] = useState("saichittala7@ybl");
 
   // Interactive states
