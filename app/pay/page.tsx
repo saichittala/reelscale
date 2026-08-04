@@ -141,7 +141,7 @@ function PaymentContent() {
       <div className="pay-container">
         
         {/* TOP: Logo & Verified badge */}
-        <header className="pay-header animate-item animate-delay-0">
+        <div className="pay-header animate-item animate-delay-0" role="banner">
           <img 
             src="/assets/logo.svg" 
             alt="ReelScale Logo" 
@@ -153,7 +153,7 @@ function PaymentContent() {
             <span className="verified-dot" />
             Verified Merchant
           </div>
-        </header>
+        </div>
 
         {/* TITLE SECTION */}
         <section className="pay-title-section animate-item animate-delay-1">
