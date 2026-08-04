@@ -206,7 +206,10 @@ nav a:hover {
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .btn-primary:hover {
@@ -225,7 +228,10 @@ nav a:hover {
     cursor: pointer;
     transition: border-color var(--transition-fast), background var(--transition-fast);
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     background: transparent;
 }
 
@@ -1511,18 +1517,21 @@ footer {
 
 .footer-nav {
     display: flex;
-    gap: 32px;
+    gap: 12px;
 }
 
 .footer-nav a {
     color: var(--muted);
     text-decoration: none;
     font-size: var(--text-md);
-    transition: color 0.2s;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-99);
+    transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .footer-nav a:hover {
     color: var(--white);
+    background: var(--white-10);
 }
 
 .footer-directory {
@@ -1543,21 +1552,30 @@ footer {
 }
 
 .footer-directory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     font-size: var(--text-sm);
 }
 
 .footer-directory-grid a {
     color: var(--muted);
     text-decoration: none;
-    transition: color 0.2s;
-    line-height: 1.6;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: var(--border-radius-99);
+    transition: color var(--transition-fast), background var(--transition-fast);
+    line-height: 1.2;
+    font-size: var(--text-sm);
+    white-space: nowrap;
 }
 
 .footer-directory-grid a:hover {
     color: var(--white);
+    background: var(--white-10);
 }
 
 .footer-social {
@@ -1807,7 +1825,7 @@ nav a:focus-visible {
         .btn-secondary {
             width: 100%;
             padding: 16px 24px;
-            font-size: var(--text-md);
+            font-size: var(--text-sm);
             justify-content: center;
         }
     }
@@ -2729,9 +2747,11 @@ nav a:focus-visible {
 }
 
 .service-hero .section-title {
-    font-size: clamp(28px, 4.5vw, 48px);
+    font-size: clamp(24px, 3.8vw, 38px);
     line-height: 1.2;
     margin-bottom: 24px;
+    opacity: 1;
+    animation: none;
 }
 
 .service-hero .section-sub {
@@ -2745,7 +2765,7 @@ nav a:focus-visible {
 
 .service-hero-ctas {
     display: flex;
-    gap: 20px;
+    gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
     margin-bottom: 48px;
@@ -2794,7 +2814,7 @@ nav a:focus-visible {
 
 .service-benefits-section {
     background: var(--bg);
-    padding: 112px 0;
+    padding: 140px 0;
 }
 
 .service-container-1200 {
@@ -2805,43 +2825,48 @@ nav a:focus-visible {
 
 .service-section-header-centered {
     text-align: center;
-    margin-bottom: 64px;
+    margin-bottom: 80px;
 }
 
 .service-section-header-centered .section-eyebrow {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .service-section-header-centered .section-title {
-    font-size: clamp(26px, 3.8vw, 38px);
+    font-size: clamp(22px, 3.2vw, 32px);
 }
 
 .service-page-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 32px;
+    gap: 48px;
 }
 
 .service-page-card {
-    padding: 36px 32px;
+    padding: 48px 40px;
 }
 
 .service-page-card .service-num {
-    margin-bottom: 20px;
+    font-family: var(--font-instrument-serif);
+    font-style: italic;
+    font-size: 36px;
+    font-weight: var(--fw-light);
+    color: var(--red);
+    margin-bottom: 24px;
 }
 
 .service-page-card .service-name {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     font-size: var(--text-xl);
 }
 
 .service-page-card .service-desc {
-    line-height: 1.7;
+    line-height: 1.75;
 }
 
 .service-split-section {
     max-width: 1200px;
-    margin: 112px auto;
+    margin: 140px auto;
     padding: 0 32px;
     font-family: var(--primary-font);
 }
@@ -2849,16 +2874,16 @@ nav a:focus-visible {
 .service-split-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 64px;
+    gap: 112px;
 }
 
 .service-split-section .section-eyebrow {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .service-split-section .section-title {
-    font-size: 32px;
-    margin-bottom: 32px;
+    font-size: 28px;
+    margin-bottom: 40px;
 }
 
 .service-deliverables-list {
@@ -2871,41 +2896,45 @@ nav a:focus-visible {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--white-07);
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
     font-size: var(--text-md);
     color: var(--white);
 }
 
 .service-deliverable-item-bullet {
-    color: var(--muted);
-    font-size: var(--text-sm);
+    color: var(--red);
+    font-size: var(--text-md);
+    font-weight: var(--fw-light);
 }
 
 .service-workflow-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
 }
 
 .service-workflow-item {
     display: flex;
     gap: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--white-07);
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
 }
 
 .service-workflow-step-num {
-    color: var(--muted);
-    font-size: var(--text-lg);
-    font-weight: var(--fw-medium);
-    min-width: 28px;
+    color: var(--red);
+    font-family: var(--font-instrument-serif);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    font-weight: var(--fw-light);
+    min-width: 36px;
+    margin-top: -2px;
 }
 
 .service-workflow-step-title {
     color: var(--white);
     font-size: var(--text-lg);
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     font-weight: var(--fw-medium);
 }
 
@@ -2913,8 +2942,10 @@ nav a:focus-visible {
     color: var(--muted);
     font-size: var(--text-sm);
     margin: 0;
-    line-height: 1.7;
+    line-height: 1.75;
 }
+
+
 
 .service-pricing-header {
     text-align: center;
@@ -2923,6 +2954,10 @@ nav a:focus-visible {
 
 .service-pricing-header .section-eyebrow {
     margin-bottom: 16px;
+}
+
+.service-pricing-header .section-title {
+    font-size: 28px;
 }
 
 .service-pricing-container-640 {
@@ -2954,7 +2989,7 @@ nav a:focus-visible {
 
 .service-faq-section {
     max-width: 840px;
-    margin: 112px auto;
+    margin: 112px auto 64px;
     padding: 0 32px;
 }
 
@@ -2968,61 +3003,52 @@ nav a:focus-visible {
 }
 
 .service-faq-header .section-title {
-    font-size: clamp(26px, 3.8vw, 38px);
+    font-size: clamp(22px, 3.2vw, 32px);
 }
 
 .service-faq-list {
     opacity: 1;
 }
 
-.service-faq-item-override {
-    margin-bottom: 16px;
-}
 
-.service-faq-item-override .faq-question {
-    padding: 20px 0;
-}
-
-.service-faq-item-override .faq-answer-content {
-    padding-bottom: 20px;
-}
-
-.service-faq-item-override .faq-answer-content p {
-    margin: 0;
-    line-height: 1.8;
-    color: var(--muted);
-    font-size: var(--text-md);
-}
 
 .service-bottom-cta-section {
-    max-width: 1200px;
-    margin: 80px auto 140px;
-    padding: 0 32px;
+    padding: 112px 32px 140px;
+    margin: 0 auto;
     text-align: center;
     font-family: var(--primary-font);
+    background: var(--bg);
 }
 
-.service-bottom-cta-box {
-    background: var(--white-03);
-    border-radius: var(--border-radius-1);
-    padding: 72px 40px;
+.service-bottom-cta-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
 }
 
-.service-bottom-cta-box .section-eyebrow {
-    margin-bottom: 20px;
+.service-bottom-cta-heading {
+    font-family: var(--primary-font);
+    font-size: clamp(28px, 4.2vw, 44px);
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--white);
+    margin: 0;
 }
 
-.service-bottom-cta-box .section-title {
-    font-size: clamp(26px, 3.8vw, 38px);
-    margin-bottom: 20px;
+.service-bottom-cta-heading em {
+    font-family: var(--font-instrument-serif);
+    font-style: italic;
+    color: var(--red);
+    font-weight: 400;
+    text-transform: none;
 }
 
-.service-bottom-cta-box .section-sub {
-    margin: 0 auto 40px;
-    max-width: 640px;
-    font-size: var(--text-md);
-    line-height: 1.7;
-}
+
 
 /* ─────────────────────────── KNOWLEDGE HUB ─────────────────────────── */
 #knowledge-hub {

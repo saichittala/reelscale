@@ -783,7 +783,7 @@ function resolveIndustryData(slug: string): IndustryData | undefined {
   // Resolve Location Details
   let locName = "Hyderabad";
   let locKeywords = ["Madhapur", "HITEC City", "Gachibowli", "Jubilee Hills"];
-  
+
   if (lowerSlug.includes("gachibowli")) {
     locName = "Gachibowli";
     locKeywords = ["Gachibowli", "HITEC City", "Madhapur", "Hyderabad"];
@@ -806,7 +806,7 @@ function resolveIndustryData(slug: string): IndustryData | undefined {
 
   // Determine Niche/Base Template
   let baseKey = "video-production-services";
-  
+
   if (lowerSlug.includes("restaurant")) baseKey = "restaurant-reels";
   else if (lowerSlug.includes("cafe")) baseKey = "cafes";
   else if (lowerSlug.includes("gym")) baseKey = "gym-reels";
@@ -825,7 +825,7 @@ function resolveIndustryData(slug: string): IndustryData | undefined {
   // Format dynamic titles and headlines matching Google queries
   const titleWords = slug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
   const cleanTitle = titleWords.replace("For ", "for ").replace("And ", "and ");
-  
+
   const metaTitle = `${cleanTitle} ${locName !== "Hyderabad" ? `${locName} ` : ""}Hyderabad | ReelScale`;
   const metaDesc = `ReelScale provides premium, high-retention ${cleanTitle.toLowerCase()} in ${locName}, Hyderabad. Scale your brand views and customer bookings with cinematic visual hooks.`;
   const headline = `${cleanTitle} in ${locName}`;
@@ -903,11 +903,11 @@ export async function generateMetadata({ params }: { params: Promise<{ industry:
 // Helper function to extract header/footer
 function getHeaderAndFooter() {
   const html = readFileSync(join(process.cwd(), "index.html"), "utf8");
-  
+
   // Extract Header
   const headerMatch = html.match(/<header[^>]*>([\s\S]*?)<\/header>/i);
   let headerHtml = headerMatch ? headerMatch[0] : "";
-  
+
   // Extract Footer
   const footerMatch = html.match(/<footer[^>]*>([\s\S]*?)<\/footer>/i);
   let footerHtml = footerMatch ? footerMatch[0] : "";
@@ -1009,7 +1009,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
 
       {/* Main Content */}
       <main id="main-content" className="service-main">
-        
+
         {/* Hero Section */}
         <section className="service-hero">
           <div className="section-eyebrow">{data.name}</div>
@@ -1019,7 +1019,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
           <p className="section-sub">
             {data.subheadline} — {data.introText}
           </p>
-          
+
           <div className="service-hero-ctas">
             <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded">
               Start your Reel
@@ -1029,17 +1029,26 @@ export default async function IndustryServicePage({ params }: { params: Promise<
             </Link>
           </div>
 
-          {/* Trust Signal Badges */}
-          <div className="service-trust-signals">
-            <span>
-              100M+ Organic Views Delivered
-            </span>
-            <span>
-              24-48h Fast Turnaround
-            </span>
-            <span>
-              On-Site Hyderabad Production
-            </span>
+          {/* Trust Signal Metrics (matches homepage) */}
+          <div className="metrics-list" style={{ marginTop: '120px', marginBottom: '120px' }}>
+            <div className="metric-row">
+              <div className="metric-num">
+                <span className="metric-digit">100+</span> million
+              </div>
+              <div className="metric-label">total views delivered</div>
+            </div>
+            <div className="metric-row">
+              <div className="metric-num">
+                <span className="metric-digit">100+</span> reels
+              </div>
+              <div className="metric-label">expertly created</div>
+            </div>
+            <div className="metric-row">
+              <div className="metric-num">
+                <span className="metric-digit">2-4x</span> growth
+              </div>
+              <div className="metric-label">average engagement lift</div>
+            </div>
           </div>
 
           {/* Location Keywords Pills */}
@@ -1081,13 +1090,13 @@ export default async function IndustryServicePage({ params }: { params: Promise<
               <ul className="service-deliverables-list">
                 {data.deliverables.map((item, idx) => (
                   <li key={idx} className="service-deliverable-item">
-                    <span className="service-deliverable-item-bullet">•</span>
+                    <span className="service-deliverable-item-bullet">—</span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <div className="section-eyebrow">Our Workflow</div>
               <h2 className="section-title">The Production Process</h2>
@@ -1138,7 +1147,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
           </div>
           <div className="faq-list service-faq-list">
             {data.faqs.map((faq, idx) => (
-              <div key={idx} className="faq-item service-faq-item-override">
+              <div key={idx} className="faq-item">
                 <button className="faq-question" aria-expanded="false" aria-controls={`faq-ans-${idx}`}>
                   <span>{faq.question}</span>
                   <svg className="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1157,14 +1166,10 @@ export default async function IndustryServicePage({ params }: { params: Promise<
 
         {/* Dedicated Bottom Conversion CTA Section */}
         <section className="service-bottom-cta-section">
-          <div className="service-bottom-cta-box">
-            <div className="section-eyebrow">Scale Your Brand</div>
-            <h2 className="section-title">
-              Ready to Scale Your Brand?
+          <div className="service-bottom-cta-inner">
+            <h2 className="service-bottom-cta-heading">
+              Ready to <em>Scale</em> Your Brand?
             </h2>
-            <p className="section-sub">
-              Book a cinematic shoot with our Hyderabad team today. We handle scriptwriting, filming, editing, and distribution.
-            </p>
             <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded-cta">
               Book a Shoot on WhatsApp
             </a>

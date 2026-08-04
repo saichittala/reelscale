@@ -1,0 +1,35 @@
+# Tasks
+
+- [x] Delete `app/services/[industry]/components/ServiceBottomCta.tsx`
+- [x] Modify `app/services/[industry]/page.tsx` to use the simplified bottom CTA structure
+- [x] Modify `styles.css` to add Visux-style CTA button, radial gradient, and reduce font sizes
+- [x] Build and verify Next.js application
+- [x] Modify `styles.css` to implement chromatic multi-color gradient
+- [x] Build and verify Next.js application (re-check)
+- [x] Modify `styles.css` to implement red-to-black gradient
+- [x] Build and verify Next.js application (final check)
+- [x] Modify `styles.css` to contain the gradient and prevent FAQ overlap
+- [x] Build and verify Next.js application (isolation check)
+- [x] Modify `styles.css` to remove bottom CTA background gradient entirely
+- [x] Build and verify Next.js application (clean background check)
+- [x] Revert CTA button to design system standard `btn-primary btn-padded-cta`
+- [x] Increase CTA section vertical padding and layout spacing (whitespace)
+- [x] Make dynamic services page sections "too luxury" (serif numbers, custom bullets, high letter-spacing, generous whitespace)
+- [x] Remove custom letter-spacing from section eyebrows
+- [x] Build and verify Next.js application (luxury design check)
+- [x] Replace inline trust badges with homepage metric container vertical stack
+- [x] Increase vertical spacing (whitespace) around metrics container to `160px`
+- [x] Stop page load animation of dynamic services hero titles
+- [x] Revert eyebrow headers style to match the homepage border capsule style (and no custom letter-spacing)
+- [x] Reduce dynamic service sections vertical whitespace and gaps slightly (to 120px / 140px)
+- [x] Reduce button gaps in dynamic service heroes and navigation items in the footer (gap 12px / 24px)
+- [x] Add dynamic "About" link to the footer navigation
+- [x] Update local services footer directory links styling to match footer navigation styles (About, Works, Pricing)
+- [x] Add hover pill background highlights and transitions to footer and directory links
+- [x] Style general buttons (`.btn-primary` and `.btn-secondary`) with flex centering alignment
+- [x] Change standard buttons font size on mobile to `var(--text-sm)` (14px)
+- [x] Convert local services footer directory grid to a centered flex-wrap tag pills layout
+- [x] Set local services navigation buttons to `display: inline-flex` hugging their content with `14px` size
+- [x] Sync service pages FAQs styling to match the homepage (stacked layout, border-bottom dividers, matching hover/active backgrounds)
+- [x] Build and verify Next.js application (final configuration check)
+- [x] Create walkthrough.md
