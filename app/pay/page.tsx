@@ -52,10 +52,35 @@ function PaymentContent() {
     }).format(num);
   };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // Allow only digits and decimal point
+    const sanitized = val.replace(/[^0-9.]/g, "");
+    setAmount(sanitized);
+
+    // Update URL dynamically
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (sanitized) {
+        params.set("amount", sanitized);
+      } else {
+        params.delete("amount");
+      }
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState(null, "", newUrl);
+    }
+  };
+
+  // Helper to extract clean numeric digits for UPI deep link amount parameter
+  const getNumericAmount = (val: string) => {
+    const cleaned = val.replace(/[^0-9.]/g, "");
+    return cleaned || "0";
+  };
+
   // UPI Url scheme builder
   const getUpiUrl = () => {
-    const cleanAmount = amount.replace(/,/g, "");
-    return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${cleanAmount}`;
+    const numericAmount = getNumericAmount(amount);
+    return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
   };
 
   // Copy to clipboard helper
@@ -85,7 +110,7 @@ function PaymentContent() {
 
   // Launch payment with device and platform redirections
   const triggerPayment = (app: string) => {
-    const cleanAmount = amount.replace(/,/g, "");
+    const numericAmount = getNumericAmount(amount);
     const upiUrl = getUpiUrl();
     setLoadingApp(app);
 
@@ -94,15 +119,15 @@ function PaymentContent() {
     
     if (app === "PhonePe") {
       if (isIos) {
-        deepLink = `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${cleanAmount}`;
+        deepLink = `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
       } else {
-        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${cleanAmount}#Intent;scheme=phonepe;package=com.phonepe.app;end`;
+        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=phonepe;package=com.phonepe.app;end`;
       }
     } else if (app === "GPay") {
       if (isIos) {
-        deepLink = `gpay://upi/pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${cleanAmount}`;
+        deepLink = `gpay://upi/pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
       } else {
-        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${cleanAmount}#Intent;scheme=gpay;package=com.google.android.apps.nbu.paisa.user;end`;
+        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=gpay;package=com.google.android.apps.nbu.paisa.user;end`;
       }
     }
 
@@ -133,7 +158,7 @@ function PaymentContent() {
 
   // QR Code URL builder using API
   const getQrCodeUrl = () => {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(getUpiUrl())}&color=090909&bgcolor=ffffff&qzone=1`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(getUpiUrl())}&color=000000&bgcolor=ffffff&qzone=1`;
   };
 
   return (
@@ -141,7 +166,7 @@ function PaymentContent() {
       <div className="pay-container">
         
         {/* TOP: Logo & Verified badge */}
-        <div className="pay-header animate-item animate-delay-0" role="banner">
+        <div className="pay-header" role="banner">
           <img 
             src="/assets/logo.svg" 
             alt="ReelScale Logo" 
@@ -156,15 +181,25 @@ function PaymentContent() {
         </div>
 
         {/* TITLE SECTION */}
-        <section className="pay-title-section animate-item animate-delay-1">
+        <section className="pay-title-section">
           <h1 className="pay-title">Complete your payment</h1>
           <p className="pay-subtitle">Choose your preferred UPI app to continue securely.</p>
         </section>
 
         {/* PAYMENT CARD */}
-        <article className="payment-card animate-item animate-delay-2">
-          <div className="card-amount-label">Amount to Pay</div>
-          <div className="card-amount">{formatCurrency(amount)}</div>
+        <article className="payment-card">
+          <div className="card-amount-label">Amount to Pay (Tap to edit)</div>
+          <div className="card-amount-input-wrapper">
+            <span className="card-amount-symbol">₹</span>
+            <input 
+              type="text" 
+              className="card-amount-input" 
+              value={amount} 
+              onChange={handleAmountChange} 
+              placeholder="0"
+              aria-label="Payment Amount"
+            />
+          </div>
           
           <div className="card-details-grid">
             <div className="card-detail-item">
@@ -199,11 +234,40 @@ function PaymentContent() {
                 )}
               </button>
             </div>
+
+            <div className="card-detail-item" style={{ gridColumn: "span 2" }}>
+              <button 
+                className="share-link-btn" 
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    copyToClipboard(window.location.href, setCopiedLink);
+                  }
+                }}
+              >
+                {copiedLink ? (
+                  <>
+                    <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "14px", height: "14px" }}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>Payment link copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "14px", height: "14px" }}>
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                      <polyline points="16 6 12 2 8 6" />
+                      <line x1="12" y1="2" x2="12" y2="15" />
+                    </svg>
+                    <span>Copy Payment Link</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </article>
 
         {/* PAYMENT OPTIONS */}
-        <section className="payment-options animate-item animate-delay-3">
+        <section className="payment-options">
           
           {/* PhonePe Button */}
           <button 
@@ -213,11 +277,7 @@ function PaymentContent() {
           >
             <div className="btn-left-content">
               <div className="upi-icon-container">
-                {/* PhonePe Stylized SVG */}
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="32" height="32" rx="8" fill="#5F259F"/>
-                  <path d="M16 6C10.48 6 6 10.48 6 16C6 21.52 10.48 26 16 26C21.52 26 26 21.52 26 16C26 10.48 21.52 6 16 6ZM18.25 19.33H16V22.5H13.75V19.33H12V17.08H13.75V15.08H12V12.83H13.75V9.5H16V12.83H18.25C19.7 12.83 20.88 13.83 20.88 15.08C20.88 16.33 19.7 17.08 18.25 17.08H16V19.33H18.25C18.66 19.33 19 19.67 19 20.08C19 20.5 18.66 20.83 18.25 20.83H18.25V19.33ZM18.25 15.08C18.25 15.08 16 15.08 16 15.08V12.83H18.25C18.88 12.83 19.38 13.33 19.38 13.96C19.38 14.58 18.88 15.08 18.25 15.08Z" fill="white"/>
-                </svg>
+                <img src="/assets/phonepe.svg" alt="PhonePe" />
               </div>
               <div className="payment-btn-text">
                 <span className="payment-btn-title">PhonePe</span>
@@ -245,14 +305,7 @@ function PaymentContent() {
           >
             <div className="btn-left-content">
               <div className="upi-icon-container">
-                {/* Google Pay Stylized Multi-Color G */}
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="32" height="32" rx="8" fill="#FFFFFF"/>
-                  <path d="M12.5 12.5C12.5 11.12 13.62 10 15 10H18C18.55 10 19 9.55 19 9C19 8.45 18.55 8 18 8H15C12.24 8 10 10.24 10 13V19C10 21.76 12.24 24 15 24H18C18.55 24 19 23.55 19 23C19 22.45 18.55 22 18 22H15C13.62 22 12.5 20.88 12.5 19.5V12.5Z" fill="#4285F4"/>
-                  <path d="M19 13C19 12.45 18.55 12 18 12C17.45 12 17 12.45 17 13V19C17 19.55 17.45 20 18 20C18.55 20 19 19.55 19 19V13Z" fill="#34A853"/>
-                  <path d="M22 12.5V19.5C22 20.88 20.88 22 19.5 22C19.5 22 19.5 22 19.5 22C18.95 22 18.5 22.45 18.5 23C18.5 23.55 18.95 24 19.5 24C21.98 24 24 21.98 24 19.5V12.5C24 10.02 21.98 8 19.5 8C18.95 8 18.5 8.45 18.5 9C18.5 9.55 18.95 10 19.5 10C20.88 10 22 11.12 22 12.5Z" fill="#FBBC05"/>
-                  <path d="M14.5 17C14.5 17.55 14.95 18 15.5 18C16.05 18 16.5 17.55 16.5 17V15C16.5 14.45 16.05 14 15.5 14C14.95 14 14.5 14.45 14.5 15V17Z" fill="#EA4335"/>
-                </svg>
+                <img src="/assets/gpay.svg" alt="Google Pay" />
               </div>
               <div className="payment-btn-text">
                 <span className="payment-btn-title">Google Pay</span>
@@ -311,7 +364,7 @@ function PaymentContent() {
         {/* DYNAMIC QR SECTION (ACCORDION) */}
         <section 
           id="qr-section"
-          className={`qr-accordion animate-item animate-delay-4 ${isQrOpen ? "open" : ""}`}
+          className={`qr-accordion ${isQrOpen ? "open" : ""}`}
         >
           <button 
             className="qr-header-btn" 
@@ -343,7 +396,7 @@ function PaymentContent() {
         </section>
 
         {/* BOTTOM: Trust badges */}
-        <footer className="pay-trust-footer animate-item animate-delay-5">
+        <footer className="pay-trust-footer">
           <div className="secure-label-wrap">
             <svg className="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />

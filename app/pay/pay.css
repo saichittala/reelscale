@@ -7,9 +7,9 @@
 .pay-page-wrapper {
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: var(--space-8) var(--space-4);
+    padding: 100px var(--space-4) 80px var(--space-4);
     background: var(--bg);
     color: var(--white);
     font-family: var(--font);
@@ -26,28 +26,7 @@
 }
 
 /* ─────────────────────────── ENTRANCE ANIMATIONS ─────────────────────────── */
-.animate-item {
-    opacity: 0;
-    transform: translateY(16px);
-    filter: blur(8px);
-    animation: payBlurFadeIn 0.8s var(--ease-spring) forwards;
-}
-
-.animate-delay-0 { animation-delay: 0ms; }
-.animate-delay-1 { animation-delay: 60ms; }
-.animate-delay-2 { animation-delay: 120ms; }
-.animate-delay-3 { animation-delay: 180ms; }
-.animate-delay-4 { animation-delay: 240ms; }
-.animate-delay-5 { animation-delay: 300ms; }
-.animate-delay-6 { animation-delay: 360ms; }
-
-@keyframes payBlurFadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-}
+/* Page entrance animations removed */
 
 /* ─────────────────────────── HEADER & BADGE ─────────────────────────── */
 .pay-header {
@@ -80,7 +59,6 @@
     font-size: var(--text-xs);
     color: var(--muted);
     font-weight: var(--fw-medium);
-    letter-spacing: -0.01em;
 }
 
 .verified-dot {
@@ -101,7 +79,8 @@
     font-weight: var(--fw-bold);
     color: var(--white);
     margin-bottom: var(--space-2);
-    letter-spacing: -0.02em;
+    animation: none !important;
+    opacity: 1 !important;
 }
 
 .pay-subtitle {
@@ -125,7 +104,7 @@
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     text-align: left;
-    transition: transform var(--duration-base) var(--ease-spring), box-shadow var(--duration-base) ease;
+    transition: box-shadow var(--duration-base) ease;
 }
 
 .payment-card:hover {
@@ -136,7 +115,6 @@
     font-size: var(--text-xs);
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     font-weight: var(--fw-semibold);
     margin-bottom: 2px;
 }
@@ -146,7 +124,6 @@
     font-weight: var(--fw-bold);
     color: var(--white);
     margin-bottom: var(--space-5);
-    letter-spacing: -0.02em;
     line-height: 1.1;
 }
 
@@ -200,7 +177,6 @@
     font-size: var(--text-sm);
     font-weight: var(--fw-semibold);
     color: var(--white);
-    letter-spacing: 0.02em;
 }
 
 .copy-btn {
@@ -223,6 +199,65 @@
 
 .copy-btn:active {
     transform: scale(0.92);
+}
+
+.card-amount-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 0.8px dashed var(--border);
+    padding-bottom: 8px;
+    margin-bottom: var(--space-5);
+}
+
+.card-amount-symbol {
+    font-size: var(--text-xl);
+    font-weight: var(--fw-bold);
+    color: var(--white);
+    line-height: 1.1;
+}
+
+.card-amount-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: var(--font);
+    font-size: var(--text-xl);
+    font-weight: var(--fw-bold);
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.card-amount-input::placeholder {
+    color: var(--muted);
+}
+
+.share-link-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    background: var(--white-03);
+    border: 0.8px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    color: var(--white);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: var(--transition-interactive);
+}
+
+.share-link-btn:hover {
+    background: var(--white-07);
+}
+
+.share-link-btn:active {
+    transform: scale(0.98);
 }
 
 /* ─────────────────────────── PAYMENT OPTIONS ─────────────────────────── */
@@ -253,14 +288,13 @@
 }
 
 .payment-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
     background: var(--white-05);
     border-color: var(--white-20);
     box-shadow: var(--shadow-md);
 }
 
 .payment-btn:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.98);
     background: var(--white-10);
 }
 
@@ -317,11 +351,6 @@
     width: 16px;
     height: 16px;
     stroke: currentColor;
-    transition: transform var(--duration-fast) ease;
-}
-
-.payment-btn:hover .chevron-icon {
-    transform: translateX(2px);
 }
 
 /* Loading Overlay inside Button */
@@ -425,7 +454,7 @@
 }
 
 .qr-image-wrapper {
-    background: var(--white);
+    background: #ffffff !important;
     padding: var(--space-4);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
@@ -492,7 +521,6 @@
     color: var(--muted);
     font-weight: var(--fw-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .shield-icon {
@@ -583,17 +611,16 @@
 
 .sheet-btn:hover {
     opacity: 0.92;
-    transform: translateY(-1px);
 }
 
 .sheet-btn:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.98);
 }
 
 /* ─────────────────────────── RESPONSIVE RULES ─────────────────────────── */
 @media (max-width: 576px) {
     .pay-page-wrapper {
-        padding: var(--space-5) var(--space-4);
+        padding: 80px var(--space-4) 60px var(--space-4);
     }
     
 
