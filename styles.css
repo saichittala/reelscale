@@ -91,15 +91,13 @@ header.scrolled {
     width: calc(100% - 48px);
     max-width: 960px;
     transform: translate(-50%, 16px);
-    padding: 10px 32px;
+    padding: 8px 16px;
     border-radius: 999px;
-    background: rgba(10, 10, 10, 0.75);
+    background: var(--bg-overlay);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
-    border: 1.5px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.6), 
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 0.8px solid var(--border);
+    box-shadow: none;
 
     .mob-btn-primary {
         background: var(--red) !important;
@@ -1694,13 +1692,13 @@ nav a:focus-visible {
     header.scrolled {
         width: calc(100% - 24px);
         transform: translate(-50%, 12px);
-        padding: 8px 16px;
+        padding: 8px 8px;
         border-radius: 999px;
-        background: rgba(10, 10, 10, 0.85);
+        background: var(--bg-overlay);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 0.8px solid var(--border);
+        box-shadow: none;
     }
 
     nav {

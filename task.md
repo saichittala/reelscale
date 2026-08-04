@@ -31,6 +31,7 @@
 - [x] Convert local services footer directory grid to a centered flex-wrap tag pills layout
 - [x] Set local services navigation buttons to `display: inline-flex` hugging their content with `14px` size
 - [x] Sync service pages FAQs styling to match the homepage (stacked layout, border-bottom dividers, matching hover/active backgrounds)
+- [x] Design centered floating pill header when scrolled for desktop and mobile viewports
 - [x] Git add, commit, and push dev changes to remote repository
 - [x] Run npm run deploy to build and publish static deployment via gh-pages
 - [x] Merge dev branch into main branch and push main to origin/main to trigger Vercel production deployment
