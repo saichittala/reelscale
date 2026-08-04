@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
+import QRCode from "qrcode";
 import "../../styles.css";
 import "./pay.css";
 
@@ -17,6 +18,7 @@ function PaymentContent() {
   const [loadingApp, setLoadingApp] = useState<string | null>(null);
   const [showIosBottomSheet, setShowIosBottomSheet] = useState(false);
   const [isIos, setIsIos] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
 
   // Parse query parameters entirely client-side to prevent Next.js SSR mismatch
   useEffect(() => {
@@ -62,6 +64,25 @@ function PaymentContent() {
     const numericAmount = getNumericAmount(amount);
     return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
   };
+
+  // Generate QR code locally on parameter change
+  useEffect(() => {
+    const upiUrl = getUpiUrl();
+    QRCode.toDataURL(upiUrl, {
+      margin: 1,
+      width: 250,
+      color: {
+        dark: "#000000",
+        light: "#ffffff"
+      }
+    })
+    .then(url => {
+      setQrDataUrl(url);
+    })
+    .catch(err => {
+      console.error("QR Code generation error", err);
+    });
+  }, [amount, service, recipient, upiId]);
 
   // Copy to clipboard helper
   const copyToClipboard = (text: string, setCopied: (c: boolean) => void) => {
@@ -134,11 +155,6 @@ function PaymentContent() {
         }
       }
     }, 2000);
-  };
-
-  // QR Code URL builder using API
-  const getQrCodeUrl = () => {
-    return `https://quickchart.io/qr?text=${encodeURIComponent(getUpiUrl())}&size=250&margin=1`;
   };
 
   return (
@@ -304,12 +320,17 @@ function PaymentContent() {
           <div id="qr-accordion-content" className="qr-content">
             <div className="qr-inner">
               <div className="qr-image-wrapper">
-                <img 
-                  src={getQrCodeUrl()} 
-                  alt="Payment QR Code" 
-                  className="qr-image"
-                  loading="lazy"
-                />
+                {qrDataUrl ? (
+                  <img 
+                    src={qrDataUrl} 
+                    alt="Payment QR Code" 
+                    className="qr-image"
+                  />
+                ) : (
+                  <div className="qr-spinner-placeholder">
+                    <div className="spinner" style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: '#000000' }} />
+                  </div>
+                )}
               </div>
               <p className="qr-instructions">
                 Scan this QR code using any UPI app (PhonePe, GPay, Paytm, BHIM) to complete your payment of {formatCurrency(amount)}.
