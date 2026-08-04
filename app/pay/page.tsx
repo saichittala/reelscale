@@ -13,7 +13,6 @@ function PaymentContent() {
 
   // Interactive states
   const [copiedUpi, setCopiedUpi] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
   const [isQrOpen, setIsQrOpen] = useState(false);
   const [loadingApp, setLoadingApp] = useState<string | null>(null);
   const [showIosBottomSheet, setShowIosBottomSheet] = useState(false);
@@ -50,25 +49,6 @@ function PaymentContent() {
       currency: "INR",
       maximumFractionDigits: 0
     }).format(num);
-  };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    // Allow only digits and decimal point
-    const sanitized = val.replace(/[^0-9.]/g, "");
-    setAmount(sanitized);
-
-    // Update URL dynamically
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (sanitized) {
-        params.set("amount", sanitized);
-      } else {
-        params.delete("amount");
-      }
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.replaceState(null, "", newUrl);
-    }
   };
 
   // Helper to extract clean numeric digits for UPI deep link amount parameter
@@ -188,18 +168,8 @@ function PaymentContent() {
 
         {/* PAYMENT CARD */}
         <article className="payment-card">
-          <div className="card-amount-label">Amount to Pay (Tap to edit)</div>
-          <div className="card-amount-input-wrapper">
-            <span className="card-amount-symbol">₹</span>
-            <input 
-              type="text" 
-              className="card-amount-input" 
-              value={amount} 
-              onChange={handleAmountChange} 
-              placeholder="0"
-              aria-label="Payment Amount"
-            />
-          </div>
+          <div className="card-amount-label">Amount to Pay</div>
+          <div className="card-amount">{formatCurrency(amount)}</div>
           
           <div className="card-details-grid">
             <div className="card-detail-item">
@@ -231,35 +201,6 @@ function PaymentContent() {
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                   </svg>
-                )}
-              </button>
-            </div>
-
-            <div className="card-detail-item" style={{ gridColumn: "span 2" }}>
-              <button 
-                className="share-link-btn" 
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    copyToClipboard(window.location.href, setCopiedLink);
-                  }
-                }}
-              >
-                {copiedLink ? (
-                  <>
-                    <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "14px", height: "14px" }}>
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    <span>Payment link copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "14px", height: "14px" }}>
-                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                      <polyline points="16 6 12 2 8 6" />
-                      <line x1="12" y1="2" x2="12" y2="15" />
-                    </svg>
-                    <span>Copy Payment Link</span>
-                  </>
                 )}
               </button>
             </div>
