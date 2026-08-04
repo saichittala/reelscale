@@ -300,6 +300,21 @@ function PaymentContent() {
 
         </section>
 
+        {/* SECURITY & REDIRECT NOTE */}
+        <div className="security-tip-card" role="note">
+          <div className="tip-header">
+            <svg className="tip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span>Having trouble paying?</span>
+          </div>
+          <p className="tip-content">
+            Some UPI apps decline direct page redirects for security reasons. If your payment is declined, simply <strong>copy the UPI ID</strong> above to pay, or scan the <strong>QR Code</strong> below.
+          </p>
+        </div>
+
         {/* DYNAMIC QR SECTION (ACCORDION) */}
         <section
           id="qr-section"

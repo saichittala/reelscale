@@ -585,6 +585,40 @@
     margin: 0;
 }
 
+.security-tip-card {
+    width: 100%;
+    background: rgba(235, 94, 40, 0.05);
+    border: 1px solid rgba(235, 94, 40, 0.15);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+    box-sizing: border-box;
+}
+
+.tip-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: #eb5e28;
+    font-size: var(--text-sm);
+    font-weight: var(--fw-semibold);
+    margin-bottom: 6px;
+}
+
+.tip-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+.tip-content {
+    font-size: var(--text-xs);
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
 /* ─────────────────────────── RESPONSIVE RULES ─────────────────────────── */
 @media (max-width: 576px) {
     .pay-page-wrapper {
