@@ -230,12 +230,6 @@ function PaymentContent() {
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
-            {loadingApp === "PhonePe" && (
-              <div className="btn-loading-overlay">
-                <span className="loading-text">Opening PhonePe...</span>
-                <div className="spinner" />
-              </div>
-            )}
           </button>
 
           {/* Google Pay Button */}
@@ -258,12 +252,6 @@ function PaymentContent() {
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
-            {loadingApp === "GPay" && (
-              <div className="btn-loading-overlay">
-                <span className="loading-text">Opening Google Pay...</span>
-                <div className="spinner" />
-              </div>
-            )}
           </button>
 
           {/* Other UPI Apps Button */}
@@ -292,12 +280,6 @@ function PaymentContent() {
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
-            {loadingApp === "Other" && (
-              <div className="btn-loading-overlay">
-                <span className="loading-text">Opening UPI Apps...</span>
-                <div className="spinner" />
-              </div>
-            )}
           </button>
 
         </section>
@@ -395,6 +377,15 @@ function PaymentContent() {
         </div>
 
       </div>
+
+      {loadingApp && (
+        <div className="page-loading-overlay" role="alert" aria-busy="true">
+          <div className="spinner" />
+          <span className="loading-text">
+            Opening {loadingApp === "GPay" ? "Google Pay" : loadingApp === "Other" ? "UPI Apps" : loadingApp}...
+          </span>
+        </div>
+      )}
     </main>
   );
 }
