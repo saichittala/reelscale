@@ -122,13 +122,13 @@ function PaymentContent() {
       if (isIos) {
         deepLink = `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
       } else {
-        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=phonepe;package=com.phonepe.app;end`;
+        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=upi;package=com.phonepe.app;end`;
       }
     } else if (app === "GPay") {
       if (isIos) {
         deepLink = `gpay://upi/pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
       } else {
-        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=gpay;package=com.google.android.apps.nbu.paisa.user;end`;
+        deepLink = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
       }
     }
 
