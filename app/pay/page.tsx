@@ -76,12 +76,12 @@ function PaymentContent() {
         light: "#ffffff"
       }
     })
-    .then(url => {
-      setQrDataUrl(url);
-    })
-    .catch(err => {
-      console.error("QR Code generation error", err);
-    });
+      .then(url => {
+        setQrDataUrl(url);
+      })
+      .catch(err => {
+        console.error("QR Code generation error", err);
+      });
   }, [amount, service, recipient, upiId]);
 
   // Copy to clipboard helper
@@ -117,7 +117,7 @@ function PaymentContent() {
 
     // Deep link variables
     let deepLink = upiUrl;
-    
+
     if (app === "PhonePe") {
       if (isIos) {
         deepLink = `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(recipient)}&cu=INR&am=${numericAmount}`;
@@ -134,7 +134,7 @@ function PaymentContent() {
 
     // Set a timer to check if focus left the browser
     const start = Date.now();
-    
+
     // Attempt redirect
     window.location.href = deepLink;
 
@@ -160,15 +160,15 @@ function PaymentContent() {
   return (
     <main className="pay-page-wrapper">
       <div className="pay-container">
-        
+
         {/* TOP: Logo & Verified badge */}
         <div className="pay-header" role="banner">
-          <img 
-            src="/assets/logo.svg" 
-            alt="ReelScale Logo" 
-            className="payment-logo" 
-            width={120} 
-            height={20} 
+          <img
+            src="/assets/logo.svg"
+            alt="ReelScale Logo"
+            className="payment-logo"
+            width={120}
+            height={20}
           />
           <div className="verified-badge">
             <span className="verified-dot" />
@@ -186,7 +186,7 @@ function PaymentContent() {
         <article className="payment-card">
           <div className="card-amount-label">Amount to Pay</div>
           <div className="card-amount">{formatCurrency(amount)}</div>
-          
+
           <div className="card-details-grid">
             <div className="card-detail-item">
               <span className="card-detail-label">Service</span>
@@ -196,14 +196,14 @@ function PaymentContent() {
               <span className="card-detail-label">Recipient</span>
               <span className="card-detail-value">{recipient}</span>
             </div>
-            
+
             <div className="card-upi-item">
               <div className="upi-text-wrap">
                 <span className="card-detail-label">UPI ID</span>
                 <span className="upi-id-value">{upiId}</span>
               </div>
-              <button 
-                className="copy-btn" 
+              <button
+                className="copy-btn"
                 onClick={() => copyToClipboard(upiId, setCopiedUpi)}
                 title="Copy UPI ID"
                 aria-label="Copy UPI ID"
@@ -225,10 +225,10 @@ function PaymentContent() {
 
         {/* PAYMENT OPTIONS */}
         <section className="payment-options">
-          
+
           {/* PhonePe Button */}
-          <button 
-            className="payment-btn" 
+          <button
+            className="payment-btn"
             onClick={() => triggerPayment("PhonePe")}
             disabled={loadingApp !== null}
           >
@@ -249,8 +249,8 @@ function PaymentContent() {
           </button>
 
           {/* Google Pay Button */}
-          <button 
-            className="payment-btn" 
+          <button
+            className="payment-btn"
             onClick={() => triggerPayment("GPay")}
             disabled={loadingApp !== null}
           >
@@ -271,8 +271,8 @@ function PaymentContent() {
           </button>
 
           {/* Other UPI Apps Button */}
-          <button 
-            className="payment-btn" 
+          <button
+            className="payment-btn"
             onClick={() => triggerPayment("Other")}
             disabled={loadingApp !== null}
           >
@@ -280,10 +280,10 @@ function PaymentContent() {
               <div className="upi-icon-container">
                 {/* Custom generic UPI Logo */}
                 <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="32" height="32" rx="8" fill="var(--white-10)"/>
-                  <path d="M7 10L14 13.5L21 10L14 6.5L7 10Z" fill="var(--white)"/>
-                  <path d="M7 22L14 25.5L21 22V15L14 18.5L7 15V22Z" fill="var(--white)" fillOpacity="0.8"/>
-                  <path d="M25 13L21 15L25 17L29 15L25 13Z" fill="var(--red)"/>
+                  <rect width="32" height="32" rx="8" fill="var(--white-10)" />
+                  <path d="M7 10L14 13.5L21 10L14 6.5L7 10Z" fill="var(--white)" />
+                  <path d="M7 22L14 25.5L21 22V15L14 18.5L7 15V22Z" fill="var(--white)" fillOpacity="0.8" />
+                  <path d="M25 13L21 15L25 17L29 15L25 13Z" fill="var(--red)" />
                 </svg>
               </div>
               <div className="payment-btn-text">
@@ -301,12 +301,12 @@ function PaymentContent() {
         </section>
 
         {/* DYNAMIC QR SECTION (ACCORDION) */}
-        <section 
+        <section
           id="qr-section"
           className={`qr-accordion ${isQrOpen ? "open" : ""}`}
         >
-          <button 
-            className="qr-header-btn" 
+          <button
+            className="qr-header-btn"
             onClick={() => setIsQrOpen(!isQrOpen)}
             aria-expanded={isQrOpen}
             aria-controls="qr-accordion-content"
@@ -316,14 +316,14 @@ function PaymentContent() {
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
-          
+
           <div id="qr-accordion-content" className="qr-content">
             <div className="qr-inner">
               <div className="qr-image-wrapper">
                 {qrDataUrl ? (
-                  <img 
-                    src={qrDataUrl} 
-                    alt="Payment QR Code" 
+                  <img
+                    src={qrDataUrl}
+                    alt="Payment QR Code"
                     className="qr-image"
                   />
                 ) : (
@@ -354,7 +354,7 @@ function PaymentContent() {
             </svg>
             100% Secure UPI Payment
           </div>
-          
+
           <div className="trust-badge-row">
             <div className="trust-item">
               <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -363,7 +363,7 @@ function PaymentContent() {
               </svg>
               <span>No card details stored</span>
             </div>
-            
+
             <div className="trust-item">
               <svg className="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
@@ -376,7 +376,7 @@ function PaymentContent() {
         </footer>
 
         {/* IOS BACKDROP BOTTOM SHEET */}
-        <div 
+        <div
           className={`bottom-sheet-backdrop ${showIosBottomSheet ? "open" : ""}`}
           onClick={() => setShowIosBottomSheet(false)}
         />
@@ -386,7 +386,7 @@ function PaymentContent() {
           <p className="sheet-description">
             Tap Open below to continue with your installed UPI app.
           </p>
-          <button 
+          <button
             className="sheet-btn"
             onClick={() => {
               window.location.href = getUpiUrl();

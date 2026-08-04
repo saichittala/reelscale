@@ -570,12 +570,11 @@
 }
 .pay-thank-you-card {
     width: 100%;
-    background: #ffffff03;
-    border: 0.8px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
+    background: transparent;
+    border: none;
+    padding: 0;
     margin-top: var(--space-4);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
     text-align: center;
 }
 
