@@ -28,13 +28,6 @@ export default function BlogCard({ post }: BlogCardProps) {
         </div>
 
         <h3 className="blog-card-title">{post.title}</h3>
-
-        <div className="blog-card-divider"></div>
-
-        <div className="blog-card-author">
-          <span className="blog-card-by">by:</span>
-          <span className="blog-card-author-name">{post.author || "ReelScale"}</span>
-        </div>
       </div>
     </Link>
   );
