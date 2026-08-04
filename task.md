@@ -39,6 +39,10 @@
 - [x] Fix blog category routing to decode URI parameters (resolving the "No published articles found" space decoding error)
 - [x] Remove outer borders, backgrounds, padding, divider lines, and author footers from blog cards
 - [x] Align text details to the exact outer boundaries of the blog card image container
+- [x] Create high-fidelity payment launcher page at `/pay` with dynamic amount/service parameter binding
+- [x] Style payment launcher utilizing design system variables only, fully responsive to data-theme toggle
+- [x] Implement PhonePe and GPay deep linking logic with Android intents and iOS universal schemes
+- [x] Implement dynamic QR code generator fallback block and clipboard copiers for merchant details
 - [x] Git add, commit, and push dev changes to remote repository
 - [x] Run npm run deploy to build and publish static deployment via gh-pages
 - [x] Merge dev branch into main branch and push main to origin/main to trigger Vercel production deployment
