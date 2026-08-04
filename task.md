@@ -37,6 +37,8 @@
 - [x] Set scrolled header backdrop filter blur to `10px` for both desktop and mobile viewports
 - [x] Swap author name in blogs database and api route fallbacks from Sai Chittala to John Doe
 - [x] Fix blog category routing to decode URI parameters (resolving the "No published articles found" space decoding error)
+- [x] Remove outer borders, backgrounds, padding, divider lines, and author footers from blog cards
+- [x] Align text details to the exact outer boundaries of the blog card image container
 - [x] Git add, commit, and push dev changes to remote repository
 - [x] Run npm run deploy to build and publish static deployment via gh-pages
 - [x] Merge dev branch into main branch and push main to origin/main to trigger Vercel production deployment
