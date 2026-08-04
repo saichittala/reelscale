@@ -111,6 +111,9 @@ function PaymentContent() {
 
   // Launch payment with device and platform redirections
   const triggerPayment = (app: string) => {
+    // Automatically copy UPI ID to clipboard in background for fast manual fallback if needed
+    copyToClipboard(upiId, () => {});
+
     const numericAmount = getNumericAmount(amount);
     const upiUrl = getUpiUrl();
     setLoadingApp(app);
