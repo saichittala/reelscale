@@ -138,7 +138,7 @@ function PaymentContent() {
 
   // QR Code URL builder using API
   const getQrCodeUrl = () => {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(getUpiUrl())}&color=000000&bgcolor=ffffff&qzone=1`;
+    return `https://quickchart.io/qr?text=${encodeURIComponent(getUpiUrl())}&size=250&margin=1`;
   };
 
   return (
