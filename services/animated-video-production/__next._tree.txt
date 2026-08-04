@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/1v7zon58x480u.css","style"]
 :HL["/_next/static/chunks/150q7b9v7cyng.css","style"]
-:HL["/_next/static/chunks/1pa62k9fwjsnk.css","style"]
+:HL["/_next/static/chunks/3j2ucr7itpvp0.css","style"]
 :HL["https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"animated-video-production","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"Ud6I2CYYUml2_EP94IVnj"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"services","param":null,"prefetchHints":0,"slots":{"children":{"name":"industry","param":{"type":"d","key":"animated-video-production","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"elr4irmBWe2ar30uHArYR"}
