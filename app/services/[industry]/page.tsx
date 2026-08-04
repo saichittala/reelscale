@@ -1021,7 +1021,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
           </p>
           
           <div className="service-hero-ctas">
-            <a href="https://wa.me/919966239433?text=Hey%2520I%2520want%2520to%2520scale%2520our%2520content%2520creation." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded">
+            <a href="https://wa.me/919966239433?text=Hey%2C%20I%20want%20to%20scale%20our%20content%20creation." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded">
               Start your Reel
             </a>
             <Link href="/#work" className="btn-secondary btn-padded">
@@ -1123,7 +1123,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
                   <li key={idx}>{f}</li>
                 ))}
               </ul>
-              <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520the%2520package." target="_blank" rel="noopener noreferrer" className="btn-plan btn-plan-red btn-padded">
+              <a href="https://wa.me/919966239433?text=Hey%20ReelScale%2C%20I%20want%20to%20book%20the%20package." target="_blank" rel="noopener noreferrer" className="btn-plan btn-plan-red btn-padded">
                 Start your Reel
               </a>
             </div>
@@ -1165,7 +1165,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
             <p className="section-sub">
               Book a cinematic shoot with our Hyderabad team today. We handle scriptwriting, filming, editing, and distribution.
             </p>
-            <a href="https://wa.me/919966239433?text=Hey%2520ReelScale%2C%2520I%2520want%2520to%2520book%2520a%2520shoot." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded-cta">
+            <a href="https://wa.me/919966239433?text=Hey%20ReelScale%2C%20I%20want%20to%20book%20a%20shoot." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded-cta">
               Book a Shoot on WhatsApp
             </a>
           </div>
