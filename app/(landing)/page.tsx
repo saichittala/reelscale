@@ -297,24 +297,6 @@ export default function Home() {
       <div dangerouslySetInnerHTML={{ __html: footerHtml }} />
 
       <Script async src="https://www.instagram.com/embed.js" />
-      <Script async src="https://www.googletagmanager.com/gtag/js?id=G-2F6CKK0MY3" />
-      <Script id="google-analytics">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-2F6CKK0MY3');
-        `}
-      </Script>
-      <Script id="clarity">
-        {`
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "wwiioh52bs");
-        `}
-      </Script>
     </>
   );
 }

@@ -127,7 +127,7 @@ function PaymentContent() {
   // Trigger standardized upi://pay deep link redirect on mobile, with timeout fallback
   const triggerUpiPayment = (appName: string) => {
     // Copy UPI ID to clipboard silently in the background as a fallback measure
-    copyToClipboard(upiId, () => {});
+    copyToClipboard(upiId, () => { });
 
     const upiUrl = getUpiUrl();
     setLoadingApp(appName);
