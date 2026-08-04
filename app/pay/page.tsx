@@ -378,7 +378,7 @@ function PaymentContent() {
         {/* THANK YOU BANNER */}
         <div className="pay-thank-you-card">
           <p className="thank-you-text">
-            💛 Thanks for choosing ReelScale. We can't wait to create your next masterpiece. See you soon! 🎬
+            💛 Thanks for choosing ReelScale. We can't wait to<br />create your next masterpiece. See you soon! 🎬
           </p>
         </div>
 
