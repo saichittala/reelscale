@@ -21,7 +21,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
-  const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
+  const decodedCategory = decodeURIComponent(category);
+  const capitalized = decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1);
   return {
     title: `${capitalized} Blogs | ReelScale`,
     description: `Browse blog posts relating to ${capitalized} from the Team ReelScale editors.`,
@@ -33,15 +34,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
+  const decodedCategory = decodeURIComponent(category);
   const publishedBlogs = getPublishedBlogs();
   
   // Filter by category
   const filteredBlogs = publishedBlogs.filter(
-    (b) => b.category.toLowerCase() === category.toLowerCase()
+    (b) => b.category.toLowerCase() === decodedCategory.toLowerCase()
   );
   
   const allCategories = Array.from(new Set(publishedBlogs.map((b) => b.category)));
-  const currentCategoryName = allCategories.find((c) => c.toLowerCase() === category.toLowerCase()) || category;
+  const currentCategoryName = allCategories.find((c) => c.toLowerCase() === decodedCategory.toLowerCase()) || decodedCategory;
 
   return (
     <BlogLayout>
@@ -58,7 +60,7 @@ export default async function CategoryPage({ params }: Props) {
         {/* Wrangle Index Layout: Sidebar + Grid */}
         <div className="blog-index-layout">
           {allCategories.length > 0 && (
-            <CategorySidebar categories={allCategories} activeCategory={category} />
+            <CategorySidebar categories={allCategories} activeCategory={decodedCategory} />
           )}
 
           <main className="blog-index-main">

@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: Props) {
     description: post.description,
     featuredImage: post.featuredImage,
     category: post.category,
-    author: post.author || "Sai Chittala",
+    author: post.author || "John Doe",
     readTime,
   };
 
@@ -186,10 +186,10 @@ export default async function BlogPostPage({ params }: Props) {
           <h1>{post.title}</h1>
           <div className="blog-post-meta">
             <div className="blog-post-author-img">
-              {(post.author || 'Sai Chittala')[0]}
+              {(post.author || 'John Doe')[0]}
             </div>
             <div>
-              <div className="blog-post-author-name">{post.author || 'Sai Chittala'}</div>
+              <div className="blog-post-author-name">{post.author || 'John Doe'}</div>
               <div className="blog-post-publish-date">
                 Published on {post.publishedDate} · {readTime}
               </div>

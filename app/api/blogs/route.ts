@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           updatedDate: new Date().toISOString().split('T')[0],
           status: data.status || "Draft",
           content: data.content || "",
-          author: data.author || "Sai Chittala",
+          author: data.author || "John Doe",
           metaTitle: data.metaTitle || "",
           metaDescription: data.metaDescription || "",
           focusKeyword: data.focusKeyword || "",

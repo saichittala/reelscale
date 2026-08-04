@@ -32,6 +32,9 @@
 - [x] Set local services navigation buttons to `display: inline-flex` hugging their content with `14px` size
 - [x] Sync service pages FAQs styling to match the homepage (stacked layout, border-bottom dividers, matching hover/active backgrounds)
 - [x] Design centered floating pill header when scrolled for desktop and mobile viewports
+- [x] Remove box shadows, configure `0.8px` borders, use `var(--bg-overlay)` (75% black), and set vertical/horizontal padding
+- [x] Configure header scroll transition animation to a smooth `1.2s` with custom ease-in-out cubic bezier curve
+- [x] Set scrolled header backdrop filter blur to `10px` for both desktop and mobile viewports
 - [x] Git add, commit, and push dev changes to remote repository
 - [x] Run npm run deploy to build and publish static deployment via gh-pages
 - [x] Merge dev branch into main branch and push main to origin/main to trigger Vercel production deployment
