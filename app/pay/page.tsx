@@ -336,6 +336,13 @@ function PaymentContent() {
           </div>
         </section>
 
+        {/* THANK YOU BANNER */}
+        <div className="pay-thank-you-card">
+          <p className="thank-you-text">
+            💛 Thanks for choosing ReelScale. We can't wait to create your next masterpiece. See you soon! 🎬
+          </p>
+        </div>
+
         {/* BOTTOM: Trust badges */}
         <footer className="pay-trust-footer">
           <div className="secure-label-wrap">
