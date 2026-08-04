@@ -33,4 +33,5 @@
 - [x] Sync service pages FAQs styling to match the homepage (stacked layout, border-bottom dividers, matching hover/active backgrounds)
 - [x] Git add, commit, and push dev changes to remote repository
 - [x] Run npm run deploy to build and publish static deployment via gh-pages
+- [x] Merge dev branch into main branch and push main to origin/main to trigger Vercel production deployment
 - [x] Create walkthrough.md

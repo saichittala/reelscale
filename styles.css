@@ -51,8 +51,10 @@ body {
 header {
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 50%;
+    transform: translate(-50%, 8px);
+    width: 100%;
+    max-width: 100%;
     padding: 18px 120px;
     display: flex;
     height: 72px;
@@ -60,18 +62,21 @@ header {
     z-index: 1000;
     align-items: center;
     background: transparent;
-    border-bottom: 1px solid transparent;
+    border: 1px solid transparent;
+    border-radius: 0px;
     -webkit-backdrop-filter: blur(0px);
     backdrop-filter: blur(0px);
     transition:
-        background 1s var(--ease-bounce),
-        backdrop-filter 1s var(--ease-bounce),
-        border-color 1s var(--ease-bounce),
-        box-shadow 1s var(--ease-bounce),
-        padding 1s var(--ease-bounce),
-        transform 1s var(--ease-bounce);
-    transform: translateY(8px);
-    will-change: transform, background-color, backdrop-filter, padding;
+        background 0.6s var(--ease-bounce),
+        backdrop-filter 0.6s var(--ease-bounce),
+        border-color 0.6s var(--ease-bounce),
+        border-radius 0.6s var(--ease-bounce),
+        box-shadow 0.6s var(--ease-bounce),
+        padding 0.6s var(--ease-bounce),
+        width 0.6s var(--ease-bounce),
+        max-width 0.6s var(--ease-bounce),
+        transform 0.6s var(--ease-bounce);
+    will-change: transform, background-color, backdrop-filter, padding, width, max-width, border-radius;
 
     .mob-btn-primary {
         background: transparent !important;
@@ -81,15 +86,20 @@ header {
     }
 }
 
-/* Active when scrolled - Apple-style glassmorphism & fluid easing */
+/* Active when scrolled - Centered Floating Pill design */
 header.scrolled {
-    background: var(--bg-overlay);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--white-07);
-    box-shadow: 0 10px 30px oklch(0 0 0 / 0.5), inset 0 1px 0 var(--white-05);
-    transform: translateY(0px);
-    padding: 12px 56px;
+    width: calc(100% - 48px);
+    max-width: 960px;
+    transform: translate(-50%, 16px);
+    padding: 10px 32px;
+    border-radius: 999px;
+    background: rgba(10, 10, 10, 0.75);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.6), 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
     .mob-btn-primary {
         background: var(--red) !important;
@@ -1682,10 +1692,15 @@ nav a:focus-visible {
     }
 
     header.scrolled {
-        padding: 10px 20px;
-        background: var(--bg-overlay);
+        width: calc(100% - 24px);
+        transform: translate(-50%, 12px);
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(10, 10, 10, 0.85);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
 
     nav {
