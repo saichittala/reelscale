@@ -1219,7 +1219,7 @@ em {
     background-position: center;
     background-repeat: no-repeat;
     border-radius: var(--border-radius-99);
-    background-color: #000000;
+    background-color: oklch(1 0 0 / 0.2);
     border: 1.5px solid oklch(1 0 0 / 0.3);
     box-shadow: none;
     display: inline-flex;
@@ -1230,14 +1230,14 @@ em {
 
 /* Pro Package: Red background, 30% opacity red border, white checkmark */
 .pricing-card.featured .plan-features li::before {
-    background-color: var(--red);
+    background-color: var(--red-20);
     border: 1.5px solid oklch(62.944% 0.25583 25.982 / 0.3);
     box-shadow: none;
 }
 
 /* Luxe Package: Gold background, 30% opacity gold border, white checkmark */
 .pricing-card.luxe .plan-features li::before {
-    background-color: var(--gold);
+    background-color: oklch(0.75 0.10 85 / 0.2);
     border: 1.5px solid oklch(0.75 0.10 85 / 0.3);
     box-shadow: none;
 }

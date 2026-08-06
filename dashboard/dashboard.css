@@ -1812,7 +1812,7 @@ tr:hover td {
     height: var(--icon-md);
     border: 1px solid var(--border);
     border-radius: var(--radius-xs);
-    background: var(--white-03);
+    background: var(--white-20);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -1824,7 +1824,7 @@ tr:hover td {
 
 .custom-checkbox:hover {
     border-color: var(--white-30);
-    background: var(--white-05);
+    background: var(--white-30);
 }
 
 .custom-checkbox:checked {
@@ -3454,11 +3454,11 @@ tbody tr {
 
 .custom-checkbox:not(:disabled):hover {
     border-color: var(--white-35);
-    background: var(--white-07);
+    background: var(--white-30);
 }
 
 .custom-checkbox:not(:disabled):active {
-    background: var(--white-10);
+    background: var(--white-35);
 }
 
 /* ─── TOGGLE SWITCH ───────────────────────────────────────── */
