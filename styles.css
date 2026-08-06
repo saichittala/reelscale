@@ -1220,25 +1220,25 @@ em {
     background-repeat: no-repeat;
     border-radius: var(--border-radius-99);
     background-color: #000000;
-    border: 1.5px solid #000000;
-    box-shadow: 0 0 0 1px var(--border);
+    border: 1.5px solid oklch(1 0 0 / 0.3);
+    box-shadow: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
-/* Pro Package: Red background and border, white checkmark */
+/* Pro Package: Red background, 30% opacity red border, white checkmark */
 .pricing-card.featured .plan-features li::before {
     background-color: var(--red);
-    border: 1.5px solid var(--red);
+    border: 1.5px solid oklch(62.944% 0.25583 25.982 / 0.3);
     box-shadow: none;
 }
 
-/* Luxe Package: Gold background and border, white checkmark */
+/* Luxe Package: Gold background, 30% opacity gold border, white checkmark */
 .pricing-card.luxe .plan-features li::before {
     background-color: var(--gold);
-    border: 1.5px solid var(--gold);
+    border: 1.5px solid oklch(0.75 0.10 85 / 0.3);
     box-shadow: none;
 }
 
