@@ -1214,10 +1214,32 @@ em {
     content: '';
     width: 20px;
     height: 20px;
-    background-image: url('/assets/checkbox.svg');
-    background-size: contain;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 11px;
+    background-position: center;
     background-repeat: no-repeat;
     border-radius: var(--border-radius-99);
+    background-color: #000000;
+    border: 1.5px solid #000000;
+    box-shadow: 0 0 0 1px var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Pro Package: Red background and border, white checkmark */
+.pricing-card.featured .plan-features li::before {
+    background-color: var(--red);
+    border: 1.5px solid var(--red);
+    box-shadow: none;
+}
+
+/* Luxe Package: Gold background and border, white checkmark */
+.pricing-card.luxe .plan-features li::before {
+    background-color: var(--gold);
+    border: 1.5px solid var(--gold);
+    box-shadow: none;
 }
 
 .btn-plan {
