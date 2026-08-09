@@ -54,11 +54,11 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
   },
   {
-    videoSrc: "./assets/clients/mk-fashions.mp4",
+    videoSrc: "./assets/clients/mk-fashion.mp4",
     posterSrc: "./assets/clients/mk-fashions.webp",
     client: "Clothing",
     stat: "3.8x Conversion",
-    video: "/assets/clients/mk-fashions.mp4",
+    video: "/assets/clients/mk-fashion.mp4",
   },
 ];
 
@@ -683,7 +683,7 @@ export default function LandingInteractions() {
 
         // Cache current expansion state
         const isExpanded = card.classList.contains("expanded");
-        
+
         // Clean up previous toggle button if re-running
         card.querySelector(".testi-toggle-btn")?.remove();
 
@@ -747,7 +747,7 @@ export default function LandingInteractions() {
       document.body.classList.toggle("mobile-menu-open");
     };
     mobileMenuBtn?.addEventListener("click", onMobileMenuClick);
-    
+
     // Close mobile menu on link clicks
     const menuLinks = document.querySelectorAll("#nav-links a");
     const onMenuLinkClick = () => {
@@ -773,10 +773,10 @@ export default function LandingInteractions() {
     navLinks.forEach((link) => {
       const href = link.getAttribute("href");
       const isHome = activePath === "/" || activePath === "";
-      const isMatch = isHome 
-        ? (href === "/" || href === "") 
+      const isMatch = isHome
+        ? (href === "/" || href === "")
         : (href && href !== "/" && activePath.startsWith(href));
-      
+
       if (isMatch) {
         link.classList.add("active");
       } else {
