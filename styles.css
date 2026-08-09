@@ -3457,3 +3457,27 @@ body.mobile-menu-open {
         padding: 0 8px;
     }
 }
+
+/* Apple-style metrics animation */
+.growth-page-wrapper #metrics .metric-row {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.growth-page-wrapper #metrics .metrics-list.visible .metric-row {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.growth-page-wrapper #metrics .metrics-list.visible .metric-row:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.growth-page-wrapper #metrics .metrics-list.visible .metric-row:nth-child(2) {
+    transition-delay: 0.15s;
+}
+
+.growth-page-wrapper #metrics .metrics-list.visible .metric-row:nth-child(3) {
+    transition-delay: 0.3s;
+}

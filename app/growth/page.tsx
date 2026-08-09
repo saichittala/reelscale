@@ -64,7 +64,8 @@ function getGrowthPageData() {
     .replace(/href="#pricing"/g, 'href="/pricing"');
 
   testimonialsHtml = testimonialsHtml
-    .replace(/\.\/assets\//g, '/assets/');
+    .replace(/\.\/assets\//g, '/assets/')
+    .replace(/\/assets\/icons\/star-f\.svg/g, '/assets/icons/star-green.svg');
 
   faqHtml = faqHtml
     .replace(/\.\/assets\//g, '/assets/');

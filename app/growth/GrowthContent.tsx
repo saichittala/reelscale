@@ -1,10 +1,58 @@
 "use client";
 
+import { useEffect, useState, useRef } from "react";
 import LandingInteractions from "../(landing)/components/LandingInteractions";
 
 interface GrowthContentProps {
   headerHtml: string;
   footerHtml: string;
+}
+
+function CountUp({ end, duration = 2000, decimals = 0, suffix = "" }: { end: number; duration?: number; decimals?: number; suffix?: string }) {
+  const [value, setValue] = useState(0);
+  const nodeRef = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          let startTime: number | null = null;
+          
+          const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = timestamp - startTime;
+            const percentage = Math.min(progress / duration, 1);
+            
+            // Cubic bezier deceleration (ease out)
+            const easeOut = 1 - Math.pow(1 - percentage, 3);
+            const current = easeOut * end;
+            
+            setValue(current);
+            
+            if (percentage < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              setValue(end);
+            }
+          };
+          
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (nodeRef.current) {
+      observer.observe(nodeRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  return <span ref={nodeRef}>{value.toFixed(decimals)}{suffix}</span>;
 }
 
 export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthContentProps, "testimonialsHtml" | "faqHtml">) {
@@ -21,13 +69,13 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
       <LandingInteractions />
 
       {/* Dynamic Header with custom CTA for Growth page */}
-      <div 
-        dangerouslySetInnerHTML={{ 
+      <div
+        dangerouslySetInnerHTML={{
           __html: headerHtml
             .replace(/Start\s+your\s+Reel/gi, 'Grow my brand')
             .replace(/href="https:\/\/wa\.me\/[^"]*"/g, 'href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20grow%20my%20brand."')
-        }} 
-        suppressHydrationWarning 
+        }}
+        suppressHydrationWarning
       />
 
       <main id="main-content">
@@ -59,9 +107,9 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             </div>
 
             <div className="growth-hero-image-container">
-              <img 
-                src="/assets/growth/growth-hero.png" 
-                alt="ReelScale Growth Dashboard Mockup" 
+              <img
+                src="/assets/growth/growth-hero.png"
+                alt="ReelScale Growth Dashboard Mockup"
                 className="growth-hero-image"
                 loading="eager"
               />
@@ -73,15 +121,30 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
         <section id="metrics">
           <div className="metrics-list reveal">
             <div className="metric-row">
-              <div className="metric-num"><span className="metric-digit">84.6%</span> retention</div>
+              <div className="metric-num">
+                <span className="metric-digit">
+                  <CountUp end={84.6} decimals={1} suffix="%" />
+                </span>{" "}
+                retention
+              </div>
               <div className="metric-label">average video retention rate</div>
             </div>
             <div className="metric-row">
-              <div className="metric-num"><span className="metric-digit">3.8x</span> conversion</div>
+              <div className="metric-num">
+                <span className="metric-digit">
+                  <CountUp end={3.8} decimals={1} suffix="x" />
+                </span>{" "}
+                conversion
+              </div>
               <div className="metric-label">average sales conversion lift</div>
             </div>
             <div className="metric-row">
-              <div className="metric-num"><span className="metric-digit">50M+</span> views</div>
+              <div className="metric-num">
+                <span className="metric-digit">
+                  <CountUp end={50} suffix="M+" />
+                </span>{" "}
+                views
+              </div>
               <div className="metric-label">high-intent organic views delivered</div>
             </div>
           </div>
@@ -320,11 +383,11 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             {/* Testimonial 1 */}
             <div className="testi-card">
               <div className="testi-stars">
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
               </div>
 
               <p className="testi-quote">
@@ -348,11 +411,11 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             {/* Testimonial 2 */}
             <div className="testi-card">
               <div className="testi-stars">
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
               </div>
 
               <p className="testi-quote">
@@ -376,11 +439,11 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             {/* Testimonial 3 */}
             <div className="testi-card">
               <div className="testi-stars">
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
-                <img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+                <img src="/assets/icons/star-green.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
               </div>
 
               <p className="testi-quote">
@@ -514,7 +577,7 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             </p>
             <a href="https://wa.me/919966239433?text=Hey%2C%20I%20visited%20the%20ReelScale%20Growth%20page%20and%20I%27d%20like%20to%20grow%20my%20brand."
               target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "20px 48px", fontSize: "16px" }}>
-              Grow My Brand →
+              Grow My Brand
             </a>
           </div>
         </section>
