@@ -1,5 +1,5 @@
 1:"$Sreact.fragment"
-3:I[58658,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/3e4lj7vkbcc96.js"],"default"]
+3:I[58658,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/0mkneivy_9t03.js"],"default"]
 9:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 a:"$Sreact.suspense"
 :HL["/_next/static/chunks/23rjvs-_jylsk.css","style"]
@@ -79,8 +79,8 @@ a:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"tcAR7nXn5Wjwc-FYZVNNr"}
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"2p-GfVdIyFhw5FuW-tjNJ"}
 6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/23rjvs-_jylsk.css","precedence":"next"}]
-7:["$","script","script-0",{"src":"/_next/static/chunks/3e4lj7vkbcc96.js","async":true}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/0mkneivy_9t03.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
 b:null
