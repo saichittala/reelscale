@@ -39,7 +39,7 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
             <div className="hero-lines"></div>
 
             <h1 className="hero-title" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", margin: "0 auto 48px auto", lineHeight: "1.2", maxWidth: "800px" }}>
-              We <em>create and grow</em> brands on social.
+              We <em>create and grow</em><br />brands on social.
             </h1>
             <div className="hero-ctas">
               <a
