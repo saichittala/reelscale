@@ -16,7 +16,7 @@ export default function WorksContent({ headerHtml, worksHtml, footerHtml }: Work
       {/* Dynamic Header */}
       <div dangerouslySetInnerHTML={{ __html: headerHtml }} />
 
-      <main id="main-content" style={{ padding: "60px 0" }}>
+      <main id="main-content" style={{ padding: "160px 0 60px 0" }}>
         <div dangerouslySetInnerHTML={{ __html: worksHtml }} />
       </main>
 

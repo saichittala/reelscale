@@ -1096,7 +1096,7 @@ body {
 
 .blog-layout-content-wrap {
   min-height: 80vh;
-  padding-top: 120px;
+  padding-top: 160px;
   padding-bottom: 60px;
 }
 
@@ -1172,7 +1172,7 @@ body {
   }
 
   .blog-layout-content-wrap {
-    padding-top: 80px;
+    padding-top: 120px;
     padding-bottom: 40px;
   }
 

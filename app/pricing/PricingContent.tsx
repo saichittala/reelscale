@@ -19,7 +19,7 @@ export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: 
       <main id="main-content" style={{ padding: "0" }}>
 
         {/* Page Hero Header */}
-        <section id="hero" style={{ minHeight: "auto", padding: "160px 0 80px 0" }}>
+        <section id="hero" style={{ minHeight: "auto", padding: "200px 0 80px 0" }}>
           <div className="hero-bg"></div>
           <div className="display-flex fd-c width-100" style={{ zIndex: 1, position: "relative" }}>
             <div className="hero-lines"></div>

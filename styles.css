@@ -269,7 +269,7 @@ nav a.active {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 140px 24px 0;
+    padding: 180px 24px 0;
     padding-bottom: 40px;
     position: relative;
     overflow: hidden;
@@ -2271,7 +2271,7 @@ nav a:focus-visible {
 
 /* HERO SECTION - COMPACT CLASSY SPACING */
 .ed-hero-section {
-    padding-top: 140px;
+    padding-top: 180px;
     padding-bottom: 60px;
 }
 
@@ -2774,7 +2774,7 @@ nav a:focus-visible {
     }
 
     .ed-hero-section {
-        padding-top: 140px;
+        padding-top: 180px;
     }
 }
 
@@ -2788,7 +2788,7 @@ nav a:focus-visible {
 }
 
 .service-main {
-    padding-top: 120px;
+    padding-top: 160px;
 }
 
 .service-hero {
@@ -3343,6 +3343,7 @@ body.mobile-menu-open {
     color: #000000 !important;
     font-weight: 600 !important;
 }
+
 .growth-page-wrapper .btn-primary:hover,
 .growth-page-wrapper .btn-plan-red:hover {
     color: #000000 !important;
@@ -3361,6 +3362,7 @@ body.mobile-menu-open {
     background: var(--red) !important;
     font-weight: 600 !important;
 }
+
 .growth-page-wrapper header.scrolled .mob-btn-primary:hover {
     color: #000000 !important;
 }
@@ -3425,15 +3427,11 @@ body.mobile-menu-open {
 .growth-hero-image {
     width: 100%;
     height: auto;
+    transition: transform .5s cubic-bezier(.16, 1, .3, 1), box-shadow .5s cubic-bezier(.16, 1, .3, 1);
     display: block;
-    border-radius: 20px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.growth-hero-image:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(199, 255, 159, 0.25);
+    /* box-shadow: 0 30px 60px #0009, 0 0 0 1px #ffffff14; */
+    aspect-ratio: 1.72;
+    object-fit: scale-down;
 }
 
 @keyframes fadeInUpHeroImage {
