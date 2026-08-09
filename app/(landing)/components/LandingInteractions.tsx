@@ -53,6 +53,13 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
     stat: "4.2x Engagement Lift",
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
   },
+  {
+    videoSrc: "./assets/clients/mk-fashions.mp4",
+    posterSrc: "./assets/clients/mk-fashions.webp",
+    client: "Clothing",
+    stat: "3.8x Conversion",
+    video: "/assets/clients/mk-fashions.mp4",
+  },
 ];
 
 
@@ -117,6 +124,14 @@ export default function LandingInteractions() {
             style="width:100%; max-width:540px; margin:auto;"></blockquote>
         `;
         window.instgrm?.Embeds?.process?.();
+      } else if (videoUrl.toLowerCase().endsWith(".mp4")) {
+        wrapper.innerHTML = `
+          <div class="video-meta">
+            <div class="video-client">${clientName}</div>
+            <div class="video-stat">${statText}</div>
+          </div>
+          <video src="${videoUrl}" autoplay controls loop playsinline style="width:100%; max-height:80vh; border-radius:12px; outline:none; background:#000;"></video>
+        `;
       } else {
         wrapper.innerHTML = `
           <div class="video-meta">
