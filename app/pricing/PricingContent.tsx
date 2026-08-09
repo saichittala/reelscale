@@ -51,7 +51,7 @@ export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: 
         </section>
 
         {/* SECTION 2: SOCIAL GROWTH PLANS */}
-        <section id="growth-pricing" style={{ padding: "100px 0" }}>
+        <section id="growth-pricing" className="growth-page-wrapper" style={{ padding: "100px 0" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
 
             <div className="reveal" style={{ marginBottom: "80px" }}>
