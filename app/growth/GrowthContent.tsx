@@ -69,6 +69,24 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
           </div>
         </section>
 
+        {/* METRICS (Conversion, retention-focused, and highly credible metrics) */}
+        <section id="metrics">
+          <div className="metrics-list reveal">
+            <div className="metric-row">
+              <div className="metric-num"><span className="metric-digit">84.6%</span> retention</div>
+              <div className="metric-label">average video retention rate</div>
+            </div>
+            <div className="metric-row">
+              <div className="metric-num"><span className="metric-digit">3.8x</span> conversion</div>
+              <div className="metric-label">average sales conversion lift</div>
+            </div>
+            <div className="metric-row">
+              <div className="metric-num"><span className="metric-digit">50M+</span> views</div>
+              <div className="metric-label">high-intent organic views delivered</div>
+            </div>
+          </div>
+        </section>
+
         {/* 2. SERVICES ECOSYSTEM (Spacious padding & elegant font highlights) */}
         <section id="services">
           <div className="services-inner">
