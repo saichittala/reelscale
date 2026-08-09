@@ -57,7 +57,7 @@ function getGrowthPageData() {
   headerHtml = headerHtml
     .replace(/\/assets\/logo\.svg/g, '/assets/logo-green.svg')
     .replace(/<a href="\/?" class="logo">([\s\S]*?)<\/a>/i, (match, p1) => {
-      return `<a href="/" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">${p1}<span style="color:#C7FF9F; font-size:14px; font-weight:500; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:16px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>`;
+      return `<a href="/" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">${p1}<span style="color:#C7FF9F; font-size:16px; font-weight:600; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:20px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>`;
     })
     .replace(/href="#"/g, 'href="/"')
     .replace(/href="#work"/g, 'href="/works"')
@@ -72,7 +72,7 @@ function getGrowthPageData() {
   footerHtml = footerHtml
     .replace(/\/assets\/logo\.svg/g, '/assets/logo-green.svg')
     .replace(/<a href="\/?" class="logo">([\s\S]*?)<\/a>/i, (match, p1) => {
-      return `<a href="/" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">${p1}<span style="color:#C7FF9F; font-size:14px; font-weight:500; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:16px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>`;
+      return `<a href="/" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">${p1}<span style="color:#C7FF9F; font-size:16px; font-weight:600; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:20px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>`;
     })
     .replace(/href="#"/g, 'href="/"')
     .replace(/href="#work"/g, 'href="/works"')
