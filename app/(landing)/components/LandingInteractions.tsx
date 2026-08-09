@@ -164,9 +164,7 @@ export default function LandingInteractions() {
           const poster = data.posterSrc || "";
           slide.innerHTML = `
             <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
-            <video loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);">
-              <source src="${data.videoSrc}" type="video/mp4" />
-            </video>
+            <video src="${data.videoSrc}" loop muted playsinline autoplay preload="auto" poster="${poster}" class="ls-curved-carousel__media ls-curved-carousel__video" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; opacity:0; transition:opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index:1; transform:translateZ(0);"></video>
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
@@ -616,11 +614,12 @@ export default function LandingInteractions() {
 
     const portfolioHandlers: Array<[Element, EventListener]> = [];
     document.querySelectorAll(".portfolio-item").forEach((item) => {
-      const handler = (() => {
+      const handler = ((e: Event) => {
         const video = item.getAttribute("data-video");
         const client = item.getAttribute("data-client") || "";
         const stat = item.getAttribute("data-stat") || "";
         if (video) {
+          e.preventDefault();
           openVideo(video, client, stat);
         }
       }) as EventListener;
