@@ -3376,3 +3376,15 @@ body.mobile-menu-open {
     color: var(--green-brand) !important;
     background: var(--green-brand-10) !important;
 }
+
+/* Remove background image for hero only on the growth page */
+.growth-page-wrapper .hero-bg {
+    background-image: none !important;
+}
+
+/* Make footer navigation wrap on mobile view when it fills width */
+@media (max-width: 900px) {
+    .footer-nav {
+        flex-wrap: wrap !important;
+    }
+}
