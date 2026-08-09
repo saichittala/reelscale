@@ -3388,3 +3388,57 @@ body.mobile-menu-open {
         flex-wrap: wrap !important;
     }
 }
+
+/* Growth Hero Image Container and glow */
+.growth-page-wrapper #hero {
+    overflow: visible !important;
+    padding-bottom: 80px !important;
+}
+
+.growth-hero-image-container {
+    margin: 64px auto 0;
+    max-width: 1040px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    padding: 0 24px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUpHeroImage 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.4s;
+}
+
+.growth-hero-image-container::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 5%;
+    background: radial-gradient(circle, rgba(199, 255, 159, 0.15) 0%, transparent 70%);
+    filter: blur(50px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.growth-hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.growth-hero-image:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(199, 255, 159, 0.25);
+}
+
+@keyframes fadeInUpHeroImage {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

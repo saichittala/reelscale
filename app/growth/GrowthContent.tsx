@@ -57,6 +57,15 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
                 View our work
               </a>
             </div>
+
+            <div className="growth-hero-image-container">
+              <img 
+                src="/assets/growth/growth-hero.png" 
+                alt="ReelScale Growth Dashboard Mockup" 
+                className="growth-hero-image"
+                loading="eager"
+              />
+            </div>
           </div>
         </section>
 
