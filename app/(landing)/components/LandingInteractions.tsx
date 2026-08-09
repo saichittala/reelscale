@@ -54,7 +54,7 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
     video: "https://www.youtube.com/embed/ziM_K-n6svk",
   },
   {
-    videoSrc: "./assets/clients/mk-fashion.mp4",
+    videoSrc: "./assets/clients/mk-fashions.mp4",
     posterSrc: "./assets/clients/mk-fashions.webp",
     client: "Clothing",
     stat: "3.8x Conversion",
