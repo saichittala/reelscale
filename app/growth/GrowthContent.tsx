@@ -20,8 +20,15 @@ export default function GrowthContent({ headerHtml, footerHtml }: Omit<GrowthCon
     <div className="growth-page-wrapper">
       <LandingInteractions />
 
-      {/* Dynamic Header */}
-      <div dangerouslySetInnerHTML={{ __html: headerHtml }} />
+      {/* Dynamic Header with custom CTA for Growth page */}
+      <div 
+        dangerouslySetInnerHTML={{ 
+          __html: headerHtml
+            .replace(/Start\s+your\s+Reel/gi, 'Grow my brand')
+            .replace(/href="https:\/\/wa\.me\/[^"]*"/g, 'href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20grow%20my%20brand."')
+        }} 
+        suppressHydrationWarning 
+      />
 
       <main id="main-content">
 

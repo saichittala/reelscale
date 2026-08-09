@@ -346,7 +346,8 @@ h1 {
 }
 
 h1 em {
-    font-style: normal;
+    font-style: italic !important;
+    font-weight: var(--fw-light);
     color: var(--red);
     -webkit-text-stroke: 0px;
     font-family: var(--font-instrument-serif) !important;
