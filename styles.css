@@ -1722,7 +1722,7 @@ nav a:focus-visible {
         top: 0 !important;
         padding: 12px 24px !important;
         border-radius: 0 !important;
-        height: 64px;
+        height: 64px !important;
         -webkit-backdrop-filter: blur(0px);
         backdrop-filter: blur(0px);
     }
@@ -1735,6 +1735,7 @@ nav a:focus-visible {
         top: 0 !important;
         padding: 12px 24px !important;
         border-radius: 0 !important;
+        height: 64px !important;
         background: var(--bg-overlay);
         -webkit-backdrop-filter: blur(10px) saturate(180%);
         backdrop-filter: blur(10px) saturate(180%);
