@@ -1981,7 +1981,7 @@ nav a:focus-visible {
     color: var(--white);
     font-family: var(--primary-font);
     font-size: var(--text-md);
-    line-height: 1.45;
+    line-height: 1.5;
     font-weight: 500;
     transition: color 0.3s ease;
 }
@@ -3211,17 +3211,19 @@ nav a:focus-visible {
     .mobile-menu-btn .close-icon {
         opacity: 0;
         transform: rotate(-90deg);
+        pointer-events: none;
     }
 
     body.mobile-menu-open .mobile-menu-btn .hamburger-icon {
         opacity: 0 !important;
         transform: rotate(90deg);
+        pointer-events: none;
     }
 
     body.mobile-menu-open .mobile-menu-btn .close-icon {
         opacity: 1 !important;
         transform: rotate(0deg) !important;
-        display: block !important;
+        pointer-events: auto !important;
     }
 
     #nav-links a {
@@ -3288,9 +3290,10 @@ body.mobile-menu-open {
         border-left: none !important;
         border-right: none !important;
         border-top: none !important;
-        padding: 18px 24px !important;
+        padding: 12px 24px !important;
         height: 64px !important;
         z-index: 999999 !important;
+        transition: none !important;
     }
 
     body.mobile-menu-open #nav-links {
