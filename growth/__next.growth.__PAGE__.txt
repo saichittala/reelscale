@@ -23,7 +23,7 @@ a:"$Sreact.suspense"
           <img src="/assets/logo-green.svg" alt="ReelScale - Premium Reel Production Agency in Hyderabad" width="120"
             height="20" decoding="async" style="width: 120px; height: 20px;">
         </div>
-      <span style="color:#C7FF9F; font-size:14px; font-weight:500; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:16px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>
+      <span style="color:#C7FF9F; font-size:16px; font-weight:600; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:20px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>
     </div>
 
     <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
@@ -46,7 +46,7 @@ a:"$Sreact.suspense"
           <img src="/assets/logo-green.svg" alt="ReelScale - Professional Instagram Reel Making Company in Hyderabad"
             width="120" height="20" style="width:120px; height: 20px;">
         </div>
-      <span style="color:#C7FF9F; font-size:14px; font-weight:500; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:16px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>
+      <span style="color:#C7FF9F; font-size:16px; font-weight:600; font-family:var(--primary-font); border-left:1px solid rgba(255,255,255,0.25); padding-left:8px; line-height:20px; display:inline-block; letter-spacing:0.5px;">Growth</span></a>
 
       <nav class="footer-nav">
         <a href="/">Home</a>
@@ -79,7 +79,7 @@ a:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"t6E9o7Yq7VyHgW5hW4S0L"}
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"tcAR7nXn5Wjwc-FYZVNNr"}
 6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/23rjvs-_jylsk.css","precedence":"next"}]
 7:["$","script","script-0",{"src":"/_next/static/chunks/3e4lj7vkbcc96.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
