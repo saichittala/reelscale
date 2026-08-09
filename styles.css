@@ -192,6 +192,7 @@ nav a {
     font-weight: var(--fw-regular);
     transition: color var(--transition-fast), background var(--transition-fast);
     padding: 8px 16px;
+    border-radius: var(--border-radius-99);
 
 }
 
@@ -1243,7 +1244,7 @@ em {
 /* Pro Package: Red border, white checkmark */
 .pricing-card.featured .plan-features li::before {
     background-color: transparent;
-    border: 1.5px solid oklch(62.944% 0.25583 25.982 / 0.3);
+    border: 1.5px solid oklch(from var(--red) l c h / 0.3);
     box-shadow: none;
 }
 
@@ -3317,4 +3318,46 @@ body.mobile-menu-open {
         grid-template-columns: 1fr !important;
         gap: 20px !important;
     }
+}
+
+/* ── GROWTH PAGE COLOR BRAND SYSTEM OVERRIDE (Only for Growth Page) ── */
+.growth-page-wrapper {
+    /* Override Red brand variables dynamically inside this container */
+    --red: var(--green-brand) !important;
+    --red2: var(--green-brand-hover) !important;
+    --red-op: var(--green-brand-op) !important;
+    --red-10: var(--green-brand-10) !important;
+    --red-20: var(--green-brand-20) !important;
+    --red-hover-bg: rgba(199, 255, 159, 0.15) !important;
+    --red-active-bg: var(--green-brand-active) !important;
+
+    /* Override focus shadow */
+    --shadow-focus: 0 0 0 3px var(--green-brand-10) !important;
+    --shadow-focus-sm: 0 0 0 2px var(--green-brand-10) !important;
+    --shadow-focus-red: 0 0 0 3px rgba(199, 255, 159, 0.18) !important;
+}
+
+/* Ensure button text visibility/contrast with bright green backgrounds */
+.growth-page-wrapper .btn-primary,
+.growth-page-wrapper .mob-btn-primary,
+.growth-page-wrapper .btn-plan-red {
+    color: #000000 !important;
+    font-weight: 600 !important;
+}
+.growth-page-wrapper .btn-primary:hover,
+.growth-page-wrapper .mob-btn-primary:hover,
+.growth-page-wrapper .btn-plan-red:hover {
+    color: #000000 !important;
+}
+
+/* Ensure 'MOST POPULAR' badge has dark text for readability on green */
+.growth-page-wrapper .pricing-card.featured::after {
+    color: #000000 !important;
+    font-weight: 600 !important;
+}
+
+/* Adjust glowing dot shadows, tick boxes, and scroll indicators for green brand */
+.growth-page-wrapper .step-dot {
+    color: var(--green-brand) !important;
+    background: var(--green-brand-10) !important;
 }

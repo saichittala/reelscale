@@ -194,6 +194,16 @@
     --red-hover-bg: oklch(0.4 0.2 25 / 0.2);
     --red-active-bg: oklch(0.45 0.22 25);
 
+    /* Accent — Green (Growth Brand Override) */
+    --green-brand: #C7FF9F;
+    --green-brand-10: rgba(199, 255, 159, 0.10);
+    --green-brand-20: rgba(199, 255, 159, 0.20);
+    --green-brand-30: rgba(199, 255, 159, 0.30);
+    --green-brand-op: rgba(199, 255, 159, 0.31);
+    --green-brand-hover: #bcf794;
+    --green-brand-active: #a1eb75;
+
+
     /* Accent — Gold */
     --gold: oklch(0.75 0.10 85);
     --gold-10: oklch(0.75 0.10 85 / 0.10);
