@@ -2,7 +2,7 @@
 2:I[27286,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/3lq-6o6m7t6q4.js"],"default"]
 8:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 9:"$Sreact.suspense"
-:HL["/_next/static/chunks/23rjvs-_jylsk.css","style"]
+:HL["/_next/static/chunks/2djonlkmmu00j.css","style"]
 3:T6d9,<header id="header">
     <div class="logo-wrapper" style="display: flex; align-items: center; gap: 8px;">
       <button class="mobile-menu-btn" aria-label="Toggle navigation"
@@ -79,8 +79,8 @@
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"AboutPage\",\"@id\":\"https://reelscale.in/about#webpage\",\"url\":\"https://reelscale.in/about\",\"name\":\"About ReelScale — Building Brands People Remember\",\"description\":\"ReelScale creates premium short-form cinematic content engineered to generate attention, trust, and revenue for growing businesses.\"},{\"@type\":\"BreadcrumbList\",\"@id\":\"https://reelscale.in/about#breadcrumbs\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://reelscale.in\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"About Us\",\"item\":\"https://reelscale.in/about\"}]}]}"}}],["$","$L2",null,{"headerHtml":"$3","footerHtml":"$4"}]],["$L5","$L6"],"$L7"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"2p-GfVdIyFhw5FuW-tjNJ"}
-5:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/23rjvs-_jylsk.css","precedence":"next"}]
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"AboutPage\",\"@id\":\"https://reelscale.in/about#webpage\",\"url\":\"https://reelscale.in/about\",\"name\":\"About ReelScale — Building Brands People Remember\",\"description\":\"ReelScale creates premium short-form cinematic content engineered to generate attention, trust, and revenue for growing businesses.\"},{\"@type\":\"BreadcrumbList\",\"@id\":\"https://reelscale.in/about#breadcrumbs\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://reelscale.in\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"About Us\",\"item\":\"https://reelscale.in/about\"}]}]}"}}],["$","$L2",null,{"headerHtml":"$3","footerHtml":"$4"}]],["$L5","$L6"],"$L7"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"q36vr2lV9WI6x7KQpcsdS"}
+5:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2djonlkmmu00j.css","precedence":"next"}]
 6:["$","script","script-0",{"src":"/_next/static/chunks/3lq-6o6m7t6q4.js","async":true}]
 7:["$","$L8",null,{"children":["$","$9",null,{"name":"Next.MetadataOutlet","children":"$@a"}]}]
 a:null
