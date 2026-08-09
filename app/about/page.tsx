@@ -41,13 +41,13 @@ function getHeaderAndFooter() {
   // Adjust relative links for Next routing
   headerHtml = headerHtml
     .replace(/href="#"/g, 'href="/"')
-    .replace(/href="#work"/g, 'href="/#work"')
-    .replace(/href="#pricing"/g, 'href="/#pricing"');
+    .replace(/href="#work"/g, 'href="/works"')
+    .replace(/href="#pricing"/g, 'href="/pricing"');
 
   footerHtml = footerHtml
     .replace(/href="#"/g, 'href="/"')
-    .replace(/href="#work"/g, 'href="/#work"')
-    .replace(/href="#pricing"/g, 'href="/#pricing"');
+    .replace(/href="#work"/g, 'href="/works"')
+    .replace(/href="#pricing"/g, 'href="/pricing"');
 
   cachedHeaderHtml = headerHtml;
   cachedFooterHtml = footerHtml;

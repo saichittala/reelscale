@@ -626,7 +626,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Defer initialization slightly to let styles render and layout compute
   setTimeout(initTestimonials, 200);
 
-  // Re-evaluate on window resize
-  window.addEventListener("resize", initTestimonials);
+  // Mobile Menu Toggle
+  const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+  const menuLinks = document.querySelectorAll("#nav-links a");
+  
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener("click", () => {
+      document.body.classList.toggle("mobile-menu-open");
+    });
+  }
+
+  menuLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      document.body.classList.remove("mobile-menu-open");
+    });
+  });
 
 });

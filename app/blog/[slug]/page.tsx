@@ -246,7 +246,7 @@ export default async function BlogPostPage({ params }: Props) {
                   WhatsApp enquiry
                 </a>
                 <Link 
-                  href="/#pricing" 
+                  href="/pricing" 
                   className="btn-secondary blog-cta-btn-link"
                 >
                   View packages

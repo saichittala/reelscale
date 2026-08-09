@@ -1024,7 +1024,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
             <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded">
               Start your Reel
             </a>
-            <Link href="/#work" className="btn-secondary btn-padded">
+            <Link href="/works" className="btn-secondary btn-padded">
               View Our Work
             </Link>
           </div>

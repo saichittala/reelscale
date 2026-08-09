@@ -727,8 +727,48 @@ export default function LandingInteractions() {
     // Defer initialization slightly to let styles render and layout compute
     const testimonialTimeout = setTimeout(initTestimonials, 200);
 
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+    const onMobileMenuClick = () => {
+      document.body.classList.toggle("mobile-menu-open");
+    };
+    mobileMenuBtn?.addEventListener("click", onMobileMenuClick);
+    
+    // Close mobile menu on link clicks
+    const menuLinks = document.querySelectorAll("#nav-links a");
+    const onMenuLinkClick = () => {
+      document.body.classList.remove("mobile-menu-open");
+    };
+    menuLinks.forEach((link) => {
+      link.addEventListener("click", onMenuLinkClick);
+    });
+
+    cleanupFns.push(() => {
+      mobileMenuBtn?.removeEventListener("click", onMobileMenuClick);
+      menuLinks.forEach((link) => {
+        link.removeEventListener("click", onMenuLinkClick);
+      });
+    });
+
     // Re-evaluate on window resize
     window.addEventListener("resize", initTestimonials);
+
+    // Highlight Active Nav & Footer Links
+    const activePath = window.location.pathname;
+    const navLinks = document.querySelectorAll("header nav a, footer nav a, .footer-nav a");
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
+      const isHome = activePath === "/" || activePath === "";
+      const isMatch = isHome 
+        ? (href === "/" || href === "") 
+        : (href && href !== "/" && activePath.startsWith(href));
+      
+      if (isMatch) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
 
     // Push cleanups
     cleanupFns.push(() => {
