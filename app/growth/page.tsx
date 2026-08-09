@@ -55,6 +55,7 @@ function getGrowthPageData() {
 
   // Adjust relative links for Next routing
   headerHtml = headerHtml
+    .replace(/\/assets\/logo\.svg/g, '/assets/logo-green.svg')
     .replace(/href="#"/g, 'href="/"')
     .replace(/href="#work"/g, 'href="/works"')
     .replace(/href="#pricing"/g, 'href="/pricing"');
@@ -66,6 +67,7 @@ function getGrowthPageData() {
     .replace(/\.\/assets\//g, '/assets/');
 
   footerHtml = footerHtml
+    .replace(/\/assets\/logo\.svg/g, '/assets/logo-green.svg')
     .replace(/href="#"/g, 'href="/"')
     .replace(/href="#work"/g, 'href="/works"')
     .replace(/href="#pricing"/g, 'href="/pricing"');
