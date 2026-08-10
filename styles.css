@@ -3331,7 +3331,7 @@ body.mobile-menu-open {
     --red-op: var(--green-brand-op) !important;
     --red-10: var(--green-brand-10) !important;
     --red-20: var(--green-brand-20) !important;
-    --red-hover-bg: rgba(199, 255, 159, 0.15) !important;
+    --red-hover-bg: rgba(199, 255, 159, 0.25) !important;
     --red-active-bg: var(--green-brand-active) !important;
 
     /* Override focus shadow */

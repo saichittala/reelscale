@@ -196,9 +196,9 @@
 
     /* Accent — Green (Growth Brand Override) */
     --green-brand: #C7FF9F;
-    --green-brand-10: rgba(199, 255, 159, 0.10);
-    --green-brand-20: rgba(199, 255, 159, 0.20);
-    --green-brand-30: rgba(199, 255, 159, 0.30);
+    --green-brand-10: rgba(199, 255, 159, 0.25);
+    --green-brand-20: rgba(199, 255, 159, 0.35);
+    --green-brand-30: rgba(199, 255, 159, 0.45);
     --green-brand-op: rgba(199, 255, 159, 0.31);
     --green-brand-hover: #bcf794;
     --green-brand-active: #a1eb75;
