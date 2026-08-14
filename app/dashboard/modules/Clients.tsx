@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Client } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { SortIcon } from "../components/SortIcon";
+import { CustomSelect } from "../components/CustomSelect";
 
 interface ClientsProps {
   clients: Client[];
@@ -32,6 +33,17 @@ const STANDARD_PLANS: Record<string, { price: number; reels: number }> = {
   "Standard (Prod)": { price: 19999, reels: 10 },
   "Growth (Prod)": { price: 24999, reels: 15 },
 };
+
+// Dropdown options constants
+const billingTypeOptions = [
+  { value: "reel-to-reel", label: "Reel-to-Reel" },
+  { value: "subscription", label: "Subscription" },
+];
+
+const planOptions = [
+  { value: "Custom", label: "Custom Plan" },
+  ...Object.keys(STANDARD_PLANS).map((p) => ({ value: p, label: p })),
+];
 
 // ─── METADATA PARSING & SERIALIZATION ENGINE ───
 function parseClientInstagram(instagram: string, currentPpr: number) {
@@ -540,11 +552,11 @@ export function Clients({
                       />
                     </td>
                     <td>
-                      <select
-                        className="td-select"
+                      <CustomSelect
+                        size="sm"
                         value={newBillingType}
-                        onChange={(e) => {
-                          const type = e.target.value as "reel-to-reel" | "subscription";
+                        onChange={(val) => {
+                          const type = val as "reel-to-reel" | "subscription";
                           setNewBillingType(type);
                           if (type === "subscription") {
                             setNewSubscriptionPlan("Custom");
@@ -552,18 +564,15 @@ export function Clients({
                             setNewSubscriptionPlan("");
                           }
                         }}
-                      >
-                        <option value="reel-to-reel">Reel-to-Reel</option>
-                        <option value="subscription">Subscription</option>
-                      </select>
+                        options={billingTypeOptions}
+                      />
                     </td>
                     <td>
                       {newBillingType === "subscription" ? (
-                        <select
-                          className="td-select"
+                        <CustomSelect
+                          size="sm"
                           value={newSubscriptionPlan}
-                          onChange={(e) => {
-                            const plan = e.target.value;
+                          onChange={(plan) => {
                             setNewSubscriptionPlan(plan);
                             if (plan !== "Custom") {
                               const planInfo = STANDARD_PLANS[plan];
@@ -574,12 +583,8 @@ export function Clients({
                               }
                             }
                           }}
-                        >
-                          <option value="Custom">Custom Plan</option>
-                          {Object.keys(STANDARD_PLANS).map((p) => (
-                            <option key={p} value={p}>{p}</option>
-                          ))}
-                        </select>
+                          options={planOptions}
+                        />
                       ) : (
                         <span className="td-muted">—</span>
                       )}
@@ -734,27 +739,21 @@ export function Clients({
                         />
                       </td>
                       <td>
-                        <select
-                          className="td-select"
+                        <CustomSelect
+                          size="sm"
                           value={meta.billingType}
-                          onChange={(e) => handleUpdateBillingModel(c, e.target.value as any)}
-                        >
-                          <option value="reel-to-reel">Reel-to-Reel</option>
-                          <option value="subscription">Subscription</option>
-                        </select>
+                          onChange={(val) => handleUpdateBillingModel(c, val as any)}
+                          options={billingTypeOptions}
+                        />
                       </td>
                       <td>
                         {meta.billingType === "subscription" ? (
-                          <select
-                            className="td-select"
+                          <CustomSelect
+                            size="sm"
                             value={meta.subscriptionPlan}
-                            onChange={(e) => handleUpdatePlan(c, e.target.value)}
-                          >
-                            <option value="Custom">Custom Plan</option>
-                            {Object.keys(STANDARD_PLANS).map((p) => (
-                              <option key={p} value={p}>{p}</option>
-                            ))}
-                          </select>
+                            onChange={(plan) => handleUpdatePlan(c, plan)}
+                            options={planOptions}
+                          />
                         ) : (
                           <span className="td-muted">—</span>
                         )}
