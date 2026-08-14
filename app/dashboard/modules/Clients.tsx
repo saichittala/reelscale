@@ -636,15 +636,22 @@ export function Clients({
                       <td>
                         <div className="client-name-col">
                           <div className="client-avatar">
-                            {c.image ? (
-                              <img
-                                src={c.image}
-                                alt={displayName}
-                                className="avatar-img"
-                              />
-                            ) : (
-                              avatarChar
-                            )}
+                            {(() => {
+                              const cleanImg = String(c.image || "").trim().toLowerCase();
+                              const hasValidImage = cleanImg !== "" &&
+                                                    cleanImg !== "—" &&
+                                                    cleanImg !== "image url" &&
+                                                    (cleanImg.startsWith("http") || cleanImg.startsWith("/"));
+                              return hasValidImage ? (
+                                <img
+                                  src={c.image}
+                                  alt={displayName}
+                                  className="avatar-img"
+                                />
+                              ) : (
+                                avatarChar
+                              );
+                            })()}
                           </div>
                           <div className="client-fields-col">
                             <input

@@ -89,14 +89,21 @@ export function Overview({ clients, isLoading }: OverviewProps) {
                       : undefined
                   }
                 >
-                  {c.image ? (
-                    <img
-                      src={c.image}
-                      alt={displayName}
-                    />
-                  ) : (
-                    avatarChar
-                  )}
+                  {(() => {
+                    const cleanImg = String(c.image || "").trim().toLowerCase();
+                    const hasValidImage = cleanImg !== "" &&
+                                          cleanImg !== "—" &&
+                                          cleanImg !== "image url" &&
+                                          (cleanImg.startsWith("http") || cleanImg.startsWith("/"));
+                    return hasValidImage ? (
+                      <img
+                        src={c.image}
+                        alt={displayName}
+                      />
+                    ) : (
+                      avatarChar
+                    );
+                  })()}
                 </div>
                 <div className="client-meta">
                   <div className="client-name">{displayName}</div>
