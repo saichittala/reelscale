@@ -53,13 +53,17 @@ export async function POST(request: NextRequest) {
       case "add": {
         const result = await proxyToGoogleScript({
           action: "add",
-          clientName: data.name,
+          clientName: data.clientName || data.name,
           business: data.business,
           phone: data.phone,
           instagram: data.instagram,
           reels: Number(data.reels),
           pricePerReel: Number(data.pricePerReel),
           image: data.image || "",
+          billingModel: data.billingModel || "Reel-to-Reel",
+          plan: data.plan || "",
+          baseRate: Number(data.baseRate || 0),
+          bargain: Number(data.bargain || 0),
         });
         return NextResponse.json(result);
       }
@@ -67,13 +71,17 @@ export async function POST(request: NextRequest) {
         const result = await proxyToGoogleScript({
           action: "update",
           id: data.id,
-          clientName: data.name,
+          clientName: data.clientName || data.name,
           business: data.business,
           phone: data.phone,
           instagram: data.instagram,
           reels: Number(data.reels),
           pricePerReel: Number(data.pricePerReel),
           image: data.image || "",
+          billingModel: data.billingModel || "Reel-to-Reel",
+          plan: data.plan || "",
+          baseRate: Number(data.baseRate || 0),
+          bargain: Number(data.bargain || 0),
         });
         return NextResponse.json(result);
       }

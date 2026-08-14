@@ -15,6 +15,11 @@ export interface Client {
   reels: number;
   ppr: number;
   image: string;
+  billingModel?: string;
+  plan?: string;
+  baseRate?: number;
+  bargain?: number;
+  revenue?: number;
 }
 
 export interface Lead {

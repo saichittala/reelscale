@@ -45,41 +45,6 @@ const planOptions = [
   ...Object.keys(STANDARD_PLANS).map((p) => ({ value: p, label: p })),
 ];
 
-// ─── METADATA PARSING & SERIALIZATION ENGINE ───
-function parseClientInstagram(instagram: string, currentPpr: number) {
-  const cleanInsta = instagram || "";
-  const match = cleanInsta.match(/^(.*?)(?:\s*\[(.*?)\])?$/);
-  const handle = match ? match[1].trim() : cleanInsta;
-  const metaStr = match && match[2] ? match[2] : "";
-  const meta: Record<string, string> = {};
-  if (metaStr) {
-    metaStr.split(";").forEach((pair) => {
-      const [k, v] = pair.split(":");
-      if (k && v) meta[k.trim()] = v.trim();
-    });
-  }
-  return {
-    handle,
-    billingType: (meta.billingType || "reel-to-reel") as "reel-to-reel" | "subscription",
-    subscriptionPlan: meta.subscriptionPlan || "Custom",
-    flatFee: meta.flatFee ? Number(meta.flatFee) : 0,
-    basePpr: meta.basePpr ? Number(meta.basePpr) : currentPpr || 0,
-  };
-}
-
-function serializeClientInstagram(handle: string, meta: { billingType: string; subscriptionPlan: string; flatFee: number; basePpr: number }) {
-  const parts = [];
-  if (meta.billingType) parts.push(`billingType:${meta.billingType}`);
-  if (meta.subscriptionPlan) parts.push(`subscriptionPlan:${meta.subscriptionPlan}`);
-  if (meta.flatFee) parts.push(`flatFee:${meta.flatFee}`);
-  if (meta.basePpr) parts.push(`basePpr:${meta.basePpr}`);
-  
-  if (parts.length > 0) {
-    return `${handle} [${parts.join(";")}]`;
-  }
-  return handle;
-}
-
 export function Clients({
   clients,
   isLoading,
@@ -120,10 +85,6 @@ export function Clients({
   }
 
   const getClientRevenue = (c: Client) => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
-    if (meta.billingType === "subscription") {
-      return meta.flatFee || Math.round((c.reels || 0) * (c.ppr || 0));
-    }
     return (c.reels || 0) * (c.ppr || 0);
   };
 
@@ -131,8 +92,8 @@ export function Clients({
   const filteredClients = clients.filter((x) => {
     const name = x.name || "";
     const business = x.business || "";
-    const parsedInsta = parseClientInstagram(x.instagram, x.ppr).handle;
-    return (name + business + parsedInsta)
+    const instagram = x.instagram || "";
+    return (name + business + instagram)
       .toLowerCase()
       .includes(search.toLowerCase());
   });
@@ -205,24 +166,20 @@ export function Clients({
       const reelsVal = Number(newClientReels || 0);
       const rateVal = Number(newClientPpr || 0);
       const baseRateVal = Number(newBasePpr || newClientPpr || 0);
-      
-      const meta = {
-        billingType: newBillingType,
-        subscriptionPlan: newBillingType === "subscription" ? newSubscriptionPlan : "",
-        flatFee: newBillingType === "subscription" ? rateVal : 0,
-        basePpr: baseRateVal
-      };
-      
-      const serializedInsta = serializeClientInstagram(newClientInstagram, meta);
+      const discountPct = baseRateVal > rateVal ? Math.round(((baseRateVal - rateVal) / baseRateVal) * 100) : 0;
       
       await onAddClient({
         name: newClientName,
         business: newClientBusiness,
         phone: newClientPhone,
-        instagram: serializedInsta,
+        instagram: newClientInstagram,
         reels: reelsVal,
         ppr: newBillingType === "subscription" ? (rateVal / (reelsVal || 1)) : rateVal,
         image: "",
+        billingModel: newBillingType === "subscription" ? "Subscription" : "Reel-to-Reel",
+        plan: newBillingType === "subscription" ? newSubscriptionPlan : "",
+        baseRate: baseRateVal,
+        bargain: discountPct,
       });
       
       setNewClientName("");
@@ -254,132 +211,124 @@ export function Clients({
       reels: c.reels || 0,
       ppr: c.ppr || 0,
       image: c.image || "",
-      [field]: field === "reels" || field === "ppr" ? Number(value || 0) : value,
+      billingModel: c.billingModel || "Reel-to-Reel",
+      plan: c.plan || "",
+      baseRate: Number(c.baseRate || 0),
+      bargain: Number(c.bargain || 0),
+      [field]: field === "reels" || field === "ppr" || field === "baseRate" || field === "bargain" ? Number(value || 0) : value,
     };
     if (c[field] === updatedClient[field]) return;
     await onUpdateClient(c.id, updatedClient);
   };
 
   const handleUpdateBillingModel = async (c: Client, type: "reel-to-reel" | "subscription") => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
-    if (meta.billingType === type) return;
+    if ((c.billingModel?.toLowerCase() === "subscription" && type === "subscription") ||
+        (c.billingModel?.toLowerCase() !== "subscription" && type === "reel-to-reel")) {
+      return;
+    }
     
-    const newMeta = {
-      ...meta,
-      billingType: type,
-      subscriptionPlan: type === "subscription" ? "Custom" : "",
-      flatFee: type === "subscription" ? (c.reels * c.ppr) || 14999 : 0,
-      basePpr: type === "reel-to-reel" ? c.ppr : meta.basePpr || c.ppr
-    };
-    
-    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+    const isSub = type === "subscription";
+    const reels = c.reels || 0;
+    const actualRate = isSub ? (reels * c.ppr) || 14999 : c.ppr;
+    const baseRate = isSub ? c.baseRate || actualRate : c.baseRate || c.ppr;
+    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
     
     const updatedClient = {
       name: c.name || "",
       business: c.business || "",
       phone: c.phone || "",
-      instagram: serializedInsta,
-      reels: c.reels || 0,
-      ppr: type === "subscription" ? (newMeta.flatFee / (c.reels || 1)) : c.ppr,
-      image: c.image || ""
+      instagram: c.instagram || "",
+      reels: reels,
+      ppr: isSub ? (actualRate / (reels || 1)) : c.ppr,
+      image: c.image || "",
+      billingModel: isSub ? "Subscription" : "Reel-to-Reel",
+      plan: isSub ? "Custom" : "",
+      baseRate: baseRate,
+      bargain: discountPct,
     };
     
     await onUpdateClient(c.id, updatedClient);
   };
 
   const handleUpdatePlan = async (c: Client, plan: string) => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
-    if (meta.subscriptionPlan === plan) return;
-    
-    const newMeta = {
-      ...meta,
-      subscriptionPlan: plan,
-    };
+    if (c.plan === plan) return;
     
     let reels = c.reels;
-    let flatFee = meta.flatFee;
+    let actualRate = c.reels * c.ppr;
+    let baseRate = c.baseRate || actualRate;
     
     if (plan !== "Custom") {
       const planInfo = STANDARD_PLANS[plan];
       if (planInfo) {
         reels = planInfo.reels;
-        flatFee = planInfo.price;
-        newMeta.flatFee = planInfo.price;
-        newMeta.basePpr = planInfo.price;
+        actualRate = planInfo.price;
+        baseRate = planInfo.price;
       }
     } else {
-      flatFee = flatFee || (c.reels * c.ppr) || 14999;
-      newMeta.flatFee = flatFee;
-      newMeta.basePpr = flatFee;
+      actualRate = actualRate || 14999;
+      baseRate = baseRate || actualRate;
     }
     
-    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
     
     const updatedClient = {
       name: c.name || "",
       business: c.business || "",
       phone: c.phone || "",
-      instagram: serializedInsta,
+      instagram: c.instagram || "",
       reels: reels,
-      ppr: flatFee / (reels || 1),
-      image: c.image || ""
+      ppr: actualRate / (reels || 1),
+      image: c.image || "",
+      billingModel: "Subscription",
+      plan: plan,
+      baseRate: baseRate,
+      bargain: discountPct,
     };
     
     await onUpdateClient(c.id, updatedClient);
   };
 
   const handleUpdateRate = async (c: Client, rateValue: number) => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
+    const isSub = c.billingModel?.toLowerCase() === "subscription";
+    const reels = c.reels || 0;
+    const actualRate = rateValue;
+    const baseRate = c.baseRate || actualRate;
+    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
     
-    if (meta.billingType === "subscription") {
-      const newMeta = {
-        ...meta,
-        flatFee: rateValue
-      };
-      const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
-      const updatedClient = {
-        name: c.name || "",
-        business: c.business || "",
-        phone: c.phone || "",
-        instagram: serializedInsta,
-        reels: c.reels || 0,
-        ppr: rateValue / (c.reels || 1),
-        image: c.image || ""
-      };
-      await onUpdateClient(c.id, updatedClient);
-    } else {
-      const newMeta = {
-        ...meta,
-      };
-      const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
-      const updatedClient = {
-        name: c.name || "",
-        business: c.business || "",
-        phone: c.phone || "",
-        instagram: serializedInsta,
-        reels: c.reels || 0,
-        ppr: rateValue,
-        image: c.image || ""
-      };
-      await onUpdateClient(c.id, updatedClient);
-    }
-  };
-
-  const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
-    const newMeta = {
-      ...meta,
-      basePpr: baseRateValue
-    };
-    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
     const updatedClient = {
       name: c.name || "",
       business: c.business || "",
       phone: c.phone || "",
-      instagram: serializedInsta,
-      reels: c.reels || 0,
+      instagram: c.instagram || "",
+      reels: reels,
+      ppr: isSub ? (actualRate / (reels || 1)) : actualRate,
+      image: c.image || "",
+      billingModel: c.billingModel || "Reel-to-Reel",
+      plan: c.plan || "",
+      baseRate: baseRate,
+      bargain: discountPct,
+    };
+    await onUpdateClient(c.id, updatedClient);
+  };
+
+  const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
+    const isSub = c.billingModel?.toLowerCase() === "subscription";
+    const reels = c.reels || 0;
+    const actualRate = isSub ? (reels * c.ppr) : c.ppr;
+    const discountPct = baseRateValue > actualRate ? Math.round(((baseRateValue - actualRate) / baseRateValue) * 100) : 0;
+    
+    const updatedClient = {
+      name: c.name || "",
+      business: c.business || "",
+      phone: c.phone || "",
+      instagram: c.instagram || "",
+      reels: reels,
       ppr: c.ppr,
-      image: c.image || ""
+      image: c.image || "",
+      billingModel: c.billingModel || "Reel-to-Reel",
+      plan: c.plan || "",
+      baseRate: baseRateValue,
+      bargain: discountPct,
     };
     await onUpdateClient(c.id, updatedClient);
   };
@@ -663,13 +612,13 @@ export function Clients({
                       : "?"
                   ).toUpperCase();
 
-                  // Parse Instagram column details
-                  const meta = parseClientInstagram(c.instagram, c.ppr);
-
-                  // Calculate bargain metrics
-                  const actualRate = meta.billingType === "subscription" ? meta.flatFee || Math.round(c.reels * c.ppr) : c.ppr;
-                  const baseRate = meta.basePpr || actualRate;
-                  const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
+                  // Determine active billing model fields
+                  const isSub = c.billingModel?.toLowerCase() === "subscription";
+                  const billingModelValue = isSub ? "subscription" : "reel-to-reel";
+                  const planValue = c.plan || "Custom";
+                  const actualRate = isSub ? Math.round(c.reels * c.ppr) : c.ppr;
+                  const baseRate = c.baseRate || actualRate;
+                  const discountPct = c.bargain || (baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0);
 
                   return (
                     <tr key={c.id}>
@@ -726,31 +675,27 @@ export function Clients({
                       </td>
                       <td>
                         <input
-                          key={`${c.id}-instagram-${meta.handle}`}
+                          key={`${c.id}-instagram-${c.instagram}`}
                           type="text"
                           className="company-input td-input td-input-lg"
-                          defaultValue={meta.handle}
-                          onBlur={(e) => {
-                            const newHandle = e.target.value;
-                            const serializedInsta = serializeClientInstagram(newHandle, meta);
-                            updateClientField(c, "instagram", serializedInsta);
-                          }}
+                          defaultValue={c.instagram}
+                          onBlur={(e) => updateClientField(c, "instagram", e.target.value)}
                           placeholder="Instagram"
                         />
                       </td>
                       <td>
                         <CustomSelect
                           size="sm"
-                          value={meta.billingType}
+                          value={billingModelValue}
                           onChange={(val) => handleUpdateBillingModel(c, val as any)}
                           options={billingTypeOptions}
                         />
                       </td>
                       <td>
-                        {meta.billingType === "subscription" ? (
+                        {isSub ? (
                           <CustomSelect
                             size="sm"
-                            value={meta.subscriptionPlan}
+                            value={planValue}
                             onChange={(plan) => handleUpdatePlan(c, plan)}
                             options={planOptions}
                           />
@@ -772,8 +717,12 @@ export function Clients({
                               phone: c.phone || "",
                               instagram: c.instagram,
                               reels: reelsVal,
-                              ppr: meta.billingType === "subscription" ? (actualRate / (reelsVal || 1)) : c.ppr,
-                              image: c.image || ""
+                              ppr: isSub ? (actualRate / (reelsVal || 1)) : c.ppr,
+                              image: c.image || "",
+                              billingModel: c.billingModel,
+                              plan: c.plan,
+                              baseRate: c.baseRate,
+                              bargain: c.bargain,
                             };
                             await onUpdateClient(c.id, updatedClient);
                           }}
@@ -787,7 +736,7 @@ export function Clients({
                           className="company-input td-input td-input-md"
                           defaultValue={actualRate}
                           onBlur={(e) => handleUpdateRate(c, Number(e.target.value || 0))}
-                          placeholder={meta.billingType === "subscription" ? "Monthly Fee" : "Price/Reel"}
+                          placeholder={isSub ? "Monthly Fee" : "Price/Reel"}
                         />
                       </td>
                       <td>
@@ -797,7 +746,7 @@ export function Clients({
                           className="company-input td-input td-input-md"
                           defaultValue={baseRate}
                           onBlur={(e) => handleUpdateBaseRate(c, Number(e.target.value || 0))}
-                          placeholder={meta.billingType === "subscription" ? "Base Plan Price" : "Base Price/Reel"}
+                          placeholder={isSub ? "Base Plan Price" : "Base Price/Reel"}
                         />
                       </td>
                       <td>

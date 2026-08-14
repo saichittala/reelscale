@@ -187,16 +187,22 @@ export async function apiDeleteUser(id: string | number): Promise<void> {
 export async function fetchClients(): Promise<Client[]> {
   const response = await customFetch(GAS_CLIENTS_URL);
   const data = await response.json();
-  if (Array.isArray(data)) {
-    return data.map((row: any) => ({
+  const list = data.clients || data || [];
+  if (Array.isArray(list)) {
+    return list.map((row: any) => ({
       id: row.id,
-      name: row.clientName || "",
+      name: row.clientName || row.name || "",
       business: row.business || "",
       phone: row.phone || "",
       instagram: row.instagram || "",
       reels: Number(row.reels || 0),
-      ppr: Number(row.pricePerReel || 0),
+      ppr: Number(row.pricePerReel || row.ppr || 0),
       image: row.image || "",
+      billingModel: row.billingModel || "Reel-to-Reel",
+      plan: row.plan || "",
+      baseRate: Number(row.baseRate || 0),
+      bargain: Number(row.bargain || 0),
+      revenue: Number(row.revenue || 0),
     }));
   }
   return [];
@@ -209,6 +215,7 @@ export async function apiAddClient(
     method: "POST",
     body: JSON.stringify({
       action: "add",
+      clientName: client.name,
       name: client.name,
       business: client.business,
       phone: client.phone,
@@ -216,6 +223,10 @@ export async function apiAddClient(
       reels: Number(client.reels),
       pricePerReel: Number(client.ppr),
       image: client.image || "",
+      billingModel: client.billingModel || "Reel-to-Reel",
+      plan: client.plan || "",
+      baseRate: Number(client.baseRate || 0),
+      bargain: Number(client.bargain || 0),
     }),
   });
   const result = await response.json();
@@ -233,6 +244,7 @@ export async function apiUpdateClient(
     body: JSON.stringify({
       action: "update",
       id,
+      clientName: client.name,
       name: client.name,
       business: client.business,
       phone: client.phone,
@@ -240,6 +252,10 @@ export async function apiUpdateClient(
       reels: Number(client.reels),
       pricePerReel: Number(client.ppr),
       image: client.image || "",
+      billingModel: client.billingModel || "Reel-to-Reel",
+      plan: client.plan || "",
+      baseRate: Number(client.baseRate || 0),
+      bargain: Number(client.bargain || 0),
     }),
   });
   const result = await response.json();

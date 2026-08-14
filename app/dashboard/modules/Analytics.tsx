@@ -12,30 +12,7 @@ interface AnalyticsProps {
 export function Analytics({ clients, isLoading }: AnalyticsProps) {
   const chartInstanceRef = useRef<any>(null);
 
-  const parseClientInstagram = (instagram: string, currentPpr: number) => {
-    const cleanInsta = instagram || "";
-    const match = cleanInsta.match(/^(.*?)(?:\s*\[(.*?)\])?$/);
-    const metaStr = match && match[2] ? match[2] : "";
-    const meta: Record<string, string> = {};
-    if (metaStr) {
-      metaStr.split(";").forEach((pair) => {
-        const [k, v] = pair.split(":");
-        if (k && v) meta[k.trim()] = v.trim();
-      });
-    }
-    return {
-      billingType: meta.billingType || "reel-to-reel",
-      flatFee: meta.flatFee ? Number(meta.flatFee) : 0,
-    };
-  };
-
-  const getClientRevenue = (c: Client) => {
-    const meta = parseClientInstagram(c.instagram, c.ppr);
-    if (meta.billingType === "subscription") {
-      return meta.flatFee || Math.round((c.reels || 0) * (c.ppr || 0));
-    }
-    return (c.reels || 0) * (c.ppr || 0);
-  };
+  const getClientRevenue = (c: Client) => c.revenue || (c.reels || 0) * (c.ppr || 0);
 
   const totalClients = clients.length;
   const totalRevenue = clients.reduce((sum, c) => sum + getClientRevenue(c), 0);
