@@ -222,8 +222,9 @@ export function Clients({
   };
 
   const handleUpdateBillingModel = async (c: Client, type: "reel-to-reel" | "subscription") => {
-    if ((c.billingModel?.toLowerCase() === "subscription" && type === "subscription") ||
-        (c.billingModel?.toLowerCase() !== "subscription" && type === "reel-to-reel")) {
+    const modelStr = String(c.billingModel || "").toLowerCase();
+    if ((modelStr === "subscription" && type === "subscription") ||
+        (modelStr !== "subscription" && type === "reel-to-reel")) {
       return;
     }
     
@@ -289,7 +290,7 @@ export function Clients({
   };
 
   const handleUpdateRate = async (c: Client, rateValue: number) => {
-    const isSub = c.billingModel?.toLowerCase() === "subscription";
+    const isSub = String(c.billingModel || "").toLowerCase() === "subscription";
     const reels = c.reels || 0;
     const actualRate = rateValue;
     const baseRate = c.baseRate || actualRate;
@@ -312,7 +313,7 @@ export function Clients({
   };
 
   const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
-    const isSub = c.billingModel?.toLowerCase() === "subscription";
+    const isSub = String(c.billingModel || "").toLowerCase() === "subscription";
     const reels = c.reels || 0;
     const actualRate = isSub ? (reels * c.ppr) : c.ppr;
     const discountPct = baseRateValue > actualRate ? Math.round(((baseRateValue - actualRate) / baseRateValue) * 100) : 0;
@@ -606,7 +607,7 @@ export function Clients({
                   const avatarChar = (nameStr ? nameStr[0] : businessStr ? businessStr[0] : "?").toUpperCase();
 
                   // Determine active billing model fields
-                  const isSub = c.billingModel?.toLowerCase() === "subscription";
+                  const isSub = String(c.billingModel || "").toLowerCase() === "subscription";
                   const billingModelValue = isSub ? "subscription" : "reel-to-reel";
                   const planValue = c.plan || "Custom";
                   const actualRate = isSub ? Math.round(c.reels * c.ppr) : c.ppr;
