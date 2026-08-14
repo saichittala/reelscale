@@ -600,17 +600,10 @@ export function Clients({
                 {pagedClients.map((c) => {
                   const rev = getClientRevenue(c);
                   const pct = Math.round((rev / maxRevenue) * 100);
-                  const displayName =
-                    c.name && c.name.trim()
-                      ? c.name
-                      : c.business || "Unnamed Client";
-                  const avatarChar = (
-                    c.name && c.name.trim()
-                      ? c.name.trim()[0]
-                      : c.business && c.business.trim()
-                      ? c.business.trim()[0]
-                      : "?"
-                  ).toUpperCase();
+                  const nameStr = String(c.name || "").trim();
+                  const businessStr = String(c.business || "").trim();
+                  const displayName = nameStr || businessStr || "Unnamed Client";
+                  const avatarChar = (nameStr ? nameStr[0] : businessStr ? businessStr[0] : "?").toUpperCase();
 
                   // Determine active billing model fields
                   const isSub = c.billingModel?.toLowerCase() === "subscription";
