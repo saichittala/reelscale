@@ -79,7 +79,7 @@ a:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"M-NNtzpS8CQ9rAm3e5Q-Q"}
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"s7i2opfGWlQ_D5bvNP_3_"}
 6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2s6vbt60nchmn.css","precedence":"next"}]
 7:["$","script","script-0",{"src":"/_next/static/chunks/3woot5oq2afk6.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
