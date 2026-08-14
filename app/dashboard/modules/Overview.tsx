@@ -69,15 +69,10 @@ export function Overview({ clients, isLoading }: OverviewProps) {
         <div className="glass-card">
           <div className="glass-card-label">Top Clients by Revenue</div>
           {topClients.map((c, i) => {
-            const displayName =
-              c.name && c.name.trim() ? c.name : c.business || "Unnamed Client";
-            const avatarChar = (
-              c.name && c.name.trim()
-                ? c.name.trim()[0]
-                : c.business && c.business.trim()
-                ? c.business.trim()[0]
-                : "?"
-            ).toUpperCase();
+            const nameStr = String(c.name || "").trim();
+            const businessStr = String(c.business || "").trim();
+            const displayName = nameStr || businessStr || "Unnamed Client";
+            const avatarChar = (nameStr ? nameStr[0] : businessStr ? businessStr[0] : "?").toUpperCase();
 
             const isGold = i === 0;
 
@@ -106,7 +101,7 @@ export function Overview({ clients, isLoading }: OverviewProps) {
                 <div className="client-meta">
                   <div className="client-name">{displayName}</div>
                   <div className="client-biz">
-                    {c.business || "—"} · {c.reels || 0} reels
+                    {businessStr || "—"} · {c.reels || 0} reels
                   </div>
                 </div>
                 <div className="client-rev">₹{fmt(getClientRevenue(c))}</div>
@@ -119,8 +114,9 @@ export function Overview({ clients, isLoading }: OverviewProps) {
         <div className="glass-card">
           <div className="glass-card-label">Recent Clients</div>
           {recentClients.map((c) => {
-            const displayName =
-              c.name && c.name.trim() ? c.name : c.business || "Unnamed Client";
+            const nameStr = String(c.name || "").trim();
+            const businessStr = String(c.business || "").trim();
+            const displayName = nameStr || businessStr || "Unnamed Client";
             return (
               <div className="top-client" key={c.id}>
                 <div className="client-info-col">
