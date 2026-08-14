@@ -3,7 +3,7 @@ import { User, Client, Lead, Blog } from "../types";
 export const GAS_USERS_URL =
   "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
 export const GAS_CLIENTS_URL =
-  "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
+  "https://script.google.com/macros/s/AKfycbwtHct0aXYy6VshpSelyPt1HpdlZuBahocjc1Ml1wKCKAHlUP74vCRYBPhFVZVmVQX0/exec";
 export const GAS_SALES_URL =
   "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
 export const GAS_BLOGS_URL =

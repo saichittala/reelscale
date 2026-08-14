@@ -3,7 +3,7 @@ import { checkRole } from "../rbac";
 
 export const dynamic = "force-dynamic";
 
-const GOOGLE_SCRIPT_CLIENTS_URL = process.env.GOOGLE_SCRIPT_CLIENTS_URL || "https://script.google.com/macros/s/AKfycbylr9KMErADMLGAmqoUZa9lIzhoIwOqw3mAWfPPGUpRQjIimzAqnzfGJYGX8LLKsSoC/exec";
+const GOOGLE_SCRIPT_CLIENTS_URL = process.env.GOOGLE_SCRIPT_CLIENTS_URL || "https://script.google.com/macros/s/AKfycbwtHct0aXYy6VshpSelyPt1HpdlZuBahocjc1Ml1wKCKAHlUP74vCRYBPhFVZVmVQX0/exec";
 
 async function proxyToGoogleScript(body: Record<string, unknown>) {
   const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL, {
