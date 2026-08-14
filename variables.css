@@ -195,7 +195,7 @@
     --red-active-bg: oklch(0.45 0.22 25);
 
     /* Accent — Green (Growth Brand Override) */
-    --green-brand: #C7FF9F;
+    --green-brand: #C3F80B;
     --green-brand-10: rgba(199, 255, 159, 0.25);
     --green-brand-20: rgba(199, 255, 159, 0.35);
     --green-brand-30: rgba(199, 255, 159, 0.45);

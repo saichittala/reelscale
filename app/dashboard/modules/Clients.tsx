@@ -23,6 +23,51 @@ interface ClientsProps {
   >;
 }
 
+// ─── STANDARD PRICING PLANS ───
+const STANDARD_PLANS: Record<string, { price: number; reels: number }> = {
+  "Presence (Growth)": { price: 14999, reels: 4 },
+  "Growth (Growth)": { price: 24999, reels: 6 },
+  "Scale (Growth)": { price: 34999, reels: 10 },
+  "Starter (Prod)": { price: 11499, reels: 5 },
+  "Standard (Prod)": { price: 19999, reels: 10 },
+  "Growth (Prod)": { price: 24999, reels: 15 },
+};
+
+// ─── METADATA PARSING & SERIALIZATION ENGINE ───
+function parseClientInstagram(instagram: string, currentPpr: number) {
+  const cleanInsta = instagram || "";
+  const match = cleanInsta.match(/^(.*?)(?:\s*\[(.*?)\])?$/);
+  const handle = match ? match[1].trim() : cleanInsta;
+  const metaStr = match && match[2] ? match[2] : "";
+  const meta: Record<string, string> = {};
+  if (metaStr) {
+    metaStr.split(";").forEach((pair) => {
+      const [k, v] = pair.split(":");
+      if (k && v) meta[k.trim()] = v.trim();
+    });
+  }
+  return {
+    handle,
+    billingType: (meta.billingType || "reel-to-reel") as "reel-to-reel" | "subscription",
+    subscriptionPlan: meta.subscriptionPlan || "Custom",
+    flatFee: meta.flatFee ? Number(meta.flatFee) : 0,
+    basePpr: meta.basePpr ? Number(meta.basePpr) : currentPpr || 0,
+  };
+}
+
+function serializeClientInstagram(handle: string, meta: { billingType: string; subscriptionPlan: string; flatFee: number; basePpr: number }) {
+  const parts = [];
+  if (meta.billingType) parts.push(`billingType:${meta.billingType}`);
+  if (meta.subscriptionPlan) parts.push(`subscriptionPlan:${meta.subscriptionPlan}`);
+  if (meta.flatFee) parts.push(`flatFee:${meta.flatFee}`);
+  if (meta.basePpr) parts.push(`basePpr:${meta.basePpr}`);
+  
+  if (parts.length > 0) {
+    return `${handle} [${parts.join(";")}]`;
+  }
+  return handle;
+}
+
 export function Clients({
   clients,
   isLoading,
@@ -42,13 +87,16 @@ export function Clients({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  // Inline additions states
+  // New client form states
   const [newClientName, setNewClientName] = useState("");
   const [newClientBusiness, setNewClientBusiness] = useState("");
   const [newClientPhone, setNewClientPhone] = useState("");
   const [newClientInstagram, setNewClientInstagram] = useState("");
   const [newClientReels, setNewClientReels] = useState("");
-  const [newClientPpr, setNewClientPpr] = useState("");
+  const [newClientPpr, setNewClientPpr] = useState(""); // Rate / fee
+  const [newBillingType, setNewBillingType] = useState<"reel-to-reel" | "subscription">("reel-to-reel");
+  const [newSubscriptionPlan, setNewSubscriptionPlan] = useState<string>("Custom");
+  const [newBasePpr, setNewBasePpr] = useState<string>("");
 
   // Reset to page 1 when search or sorting changes
   useEffect(() => {
@@ -59,14 +107,20 @@ export function Clients({
     return <SkeletonLoader type="clients" />;
   }
 
-  const getClientRevenue = (c: Client) => (c.reels || 0) * (c.ppr || 0);
+  const getClientRevenue = (c: Client) => {
+    const meta = parseClientInstagram(c.instagram, c.ppr);
+    if (meta.billingType === "subscription") {
+      return meta.flatFee || Math.round((c.reels || 0) * (c.ppr || 0));
+    }
+    return (c.reels || 0) * (c.ppr || 0);
+  };
 
   // Filter clients by search term (name, business, instagram)
   const filteredClients = clients.filter((x) => {
     const name = x.name || "";
     const business = x.business || "";
-    const instagram = x.instagram || "";
-    return (name + business + instagram)
+    const parsedInsta = parseClientInstagram(x.instagram, x.ppr).handle;
+    return (name + business + parsedInsta)
       .toLowerCase()
       .includes(search.toLowerCase());
   });
@@ -136,27 +190,45 @@ export function Clients({
       return;
     }
     try {
+      const reelsVal = Number(newClientReels || 0);
+      const rateVal = Number(newClientPpr || 0);
+      const baseRateVal = Number(newBasePpr || newClientPpr || 0);
+      
+      const meta = {
+        billingType: newBillingType,
+        subscriptionPlan: newBillingType === "subscription" ? newSubscriptionPlan : "",
+        flatFee: newBillingType === "subscription" ? rateVal : 0,
+        basePpr: baseRateVal
+      };
+      
+      const serializedInsta = serializeClientInstagram(newClientInstagram, meta);
+      
       await onAddClient({
         name: newClientName,
         business: newClientBusiness,
         phone: newClientPhone,
-        instagram: newClientInstagram,
-        reels: Number(newClientReels || 0),
-        ppr: Number(newClientPpr || 0),
+        instagram: serializedInsta,
+        reels: reelsVal,
+        ppr: newBillingType === "subscription" ? (rateVal / (reelsVal || 1)) : rateVal,
         image: "",
       });
+      
       setNewClientName("");
       setNewClientBusiness("");
       setNewClientPhone("");
       setNewClientInstagram("");
       setNewClientReels("");
       setNewClientPpr("");
+      setNewBasePpr("");
+      setNewBillingType("reel-to-reel");
+      setNewSubscriptionPlan("Custom");
       setNewClientRow(false);
     } catch (e: any) {
       showToast(e.message || "Failed to create client", "error");
     }
   };
 
+  // Sync edits to the database
   const updateClientField = async (
     c: Client,
     field: keyof Omit<Client, "id">,
@@ -173,6 +245,130 @@ export function Clients({
       [field]: field === "reels" || field === "ppr" ? Number(value || 0) : value,
     };
     if (c[field] === updatedClient[field]) return;
+    await onUpdateClient(c.id, updatedClient);
+  };
+
+  const handleUpdateBillingModel = async (c: Client, type: "reel-to-reel" | "subscription") => {
+    const meta = parseClientInstagram(c.instagram, c.ppr);
+    if (meta.billingType === type) return;
+    
+    const newMeta = {
+      ...meta,
+      billingType: type,
+      subscriptionPlan: type === "subscription" ? "Custom" : "",
+      flatFee: type === "subscription" ? (c.reels * c.ppr) || 14999 : 0,
+      basePpr: type === "reel-to-reel" ? c.ppr : meta.basePpr || c.ppr
+    };
+    
+    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+    
+    const updatedClient = {
+      name: c.name || "",
+      business: c.business || "",
+      phone: c.phone || "",
+      instagram: serializedInsta,
+      reels: c.reels || 0,
+      ppr: type === "subscription" ? (newMeta.flatFee / (c.reels || 1)) : c.ppr,
+      image: c.image || ""
+    };
+    
+    await onUpdateClient(c.id, updatedClient);
+  };
+
+  const handleUpdatePlan = async (c: Client, plan: string) => {
+    const meta = parseClientInstagram(c.instagram, c.ppr);
+    if (meta.subscriptionPlan === plan) return;
+    
+    const newMeta = {
+      ...meta,
+      subscriptionPlan: plan,
+    };
+    
+    let reels = c.reels;
+    let flatFee = meta.flatFee;
+    
+    if (plan !== "Custom") {
+      const planInfo = STANDARD_PLANS[plan];
+      if (planInfo) {
+        reels = planInfo.reels;
+        flatFee = planInfo.price;
+        newMeta.flatFee = planInfo.price;
+        newMeta.basePpr = planInfo.price;
+      }
+    } else {
+      flatFee = flatFee || (c.reels * c.ppr) || 14999;
+      newMeta.flatFee = flatFee;
+      newMeta.basePpr = flatFee;
+    }
+    
+    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+    
+    const updatedClient = {
+      name: c.name || "",
+      business: c.business || "",
+      phone: c.phone || "",
+      instagram: serializedInsta,
+      reels: reels,
+      ppr: flatFee / (reels || 1),
+      image: c.image || ""
+    };
+    
+    await onUpdateClient(c.id, updatedClient);
+  };
+
+  const handleUpdateRate = async (c: Client, rateValue: number) => {
+    const meta = parseClientInstagram(c.instagram, c.ppr);
+    
+    if (meta.billingType === "subscription") {
+      const newMeta = {
+        ...meta,
+        flatFee: rateValue
+      };
+      const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+      const updatedClient = {
+        name: c.name || "",
+        business: c.business || "",
+        phone: c.phone || "",
+        instagram: serializedInsta,
+        reels: c.reels || 0,
+        ppr: rateValue / (c.reels || 1),
+        image: c.image || ""
+      };
+      await onUpdateClient(c.id, updatedClient);
+    } else {
+      const newMeta = {
+        ...meta,
+      };
+      const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+      const updatedClient = {
+        name: c.name || "",
+        business: c.business || "",
+        phone: c.phone || "",
+        instagram: serializedInsta,
+        reels: c.reels || 0,
+        ppr: rateValue,
+        image: c.image || ""
+      };
+      await onUpdateClient(c.id, updatedClient);
+    }
+  };
+
+  const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
+    const meta = parseClientInstagram(c.instagram, c.ppr);
+    const newMeta = {
+      ...meta,
+      basePpr: baseRateValue
+    };
+    const serializedInsta = serializeClientInstagram(meta.handle, newMeta);
+    const updatedClient = {
+      name: c.name || "",
+      business: c.business || "",
+      phone: c.phone || "",
+      instagram: serializedInsta,
+      reels: c.reels || 0,
+      ppr: c.ppr,
+      image: c.image || ""
+    };
     await onUpdateClient(c.id, updatedClient);
   };
 
@@ -215,6 +411,12 @@ export function Clients({
     }
   };
 
+  // Preview properties for New Client Inline Addition Row
+  const previewRate = Number(newClientPpr || 0);
+  const previewBase = Number(newBasePpr || newClientPpr || 0);
+  const previewDiscount = previewBase > previewRate ? Math.round(((previewBase - previewRate) / previewBase) * 100) : 0;
+  const newRevenuePreview = newBillingType === "subscription" ? previewRate : Number(newClientReels || 0) * previewRate;
+
   return (
     <>
       {/* Controls: Search and Sort */}
@@ -227,7 +429,7 @@ export function Clients({
           />
           <input
             id="search-input"
-            placeholder="Search clients..."
+            placeholder="Search clients by name, business, insta..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="form-input search-input-padded"
@@ -260,6 +462,8 @@ export function Clients({
               </th>
               <th>Business</th>
               <th>Insta ID</th>
+              <th>Billing Model</th>
+              <th>Plan</th>
               <th
                 onClick={() => handleSort("reels")}
                 className="sortable-header th-sortable"
@@ -269,7 +473,9 @@ export function Clients({
                   <SortIcon active={sortKey === "reels"} dir={sortDir} />
                 </div>
               </th>
-              <th>Price/Reel</th>
+              <th>Rate / Plan Price</th>
+              <th>Base Rate</th>
+              <th>Bargain</th>
               <th
                 onClick={() => handleSort("revenue")}
                 className="sortable-header th-sortable"
@@ -279,14 +485,13 @@ export function Clients({
                   <SortIcon active={sortKey === "revenue"} dir={sortDir} />
                 </div>
               </th>
-              <th>Revenue Share</th>
               <th className="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
             {totalItems === 0 && !newClientRow ? (
               <tr>
-                <td colSpan={9}>
+                <td colSpan={12}>
                   <div className="empty">
                     <div className="empty-icon">◎</div>
                     <div className="empty-text">No clients found</div>
@@ -304,13 +509,13 @@ export function Clients({
                         <div className="client-avatar">?</div>
                         <div className="client-fields-col">
                           <input
-                            className="company-input td-input td-input-xl"
+                            className="company-input td-input td-input-name"
                             placeholder="Client Name"
                             value={newClientName}
                             onChange={(e) => setNewClientName(e.target.value)}
                           />
                           <input
-                            className="phone-input td-input td-input-xl mt-neg4"
+                            className="phone-input td-input td-input-phone"
                             placeholder="Phone Number"
                             value={newClientPhone}
                             onChange={(e) => setNewClientPhone(e.target.value)}
@@ -335,6 +540,51 @@ export function Clients({
                       />
                     </td>
                     <td>
+                      <select
+                        className="td-select"
+                        value={newBillingType}
+                        onChange={(e) => {
+                          const type = e.target.value as "reel-to-reel" | "subscription";
+                          setNewBillingType(type);
+                          if (type === "subscription") {
+                            setNewSubscriptionPlan("Custom");
+                          } else {
+                            setNewSubscriptionPlan("");
+                          }
+                        }}
+                      >
+                        <option value="reel-to-reel">Reel-to-Reel</option>
+                        <option value="subscription">Subscription</option>
+                      </select>
+                    </td>
+                    <td>
+                      {newBillingType === "subscription" ? (
+                        <select
+                          className="td-select"
+                          value={newSubscriptionPlan}
+                          onChange={(e) => {
+                            const plan = e.target.value;
+                            setNewSubscriptionPlan(plan);
+                            if (plan !== "Custom") {
+                              const planInfo = STANDARD_PLANS[plan];
+                              if (planInfo) {
+                                setNewClientReels(String(planInfo.reels));
+                                setNewClientPpr(String(planInfo.price));
+                                setNewBasePpr(String(planInfo.price));
+                              }
+                            }
+                          }}
+                        >
+                          <option value="Custom">Custom Plan</option>
+                          {Object.keys(STANDARD_PLANS).map((p) => (
+                            <option key={p} value={p}>{p}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="td-muted">—</span>
+                      )}
+                    </td>
+                    <td>
                       <input
                         type="number"
                         className="company-input td-input td-input-sm"
@@ -347,13 +597,34 @@ export function Clients({
                       <input
                         type="number"
                         className="company-input td-input td-input-md"
-                        placeholder="Price/Reel"
+                        placeholder={newBillingType === "subscription" ? "Monthly Fee" : "Price/Reel"}
                         value={newClientPpr}
                         onChange={(e) => setNewClientPpr(e.target.value)}
                       />
                     </td>
-                    <td>—</td>
-                    <td>—</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="company-input td-input td-input-md"
+                        placeholder="Base Rate"
+                        value={newBasePpr}
+                        onChange={(e) => setNewBasePpr(e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      {previewDiscount > 0 ? (
+                        <span className="bargain-badge bargained">
+                          -{previewDiscount}% Bargained
+                        </span>
+                      ) : (
+                        <span className="bargain-badge no-bargain">
+                          0% Bargain
+                        </span>
+                      )}
+                    </td>
+                    <td className="td-bold-green">
+                      ₹{newRevenuePreview.toLocaleString("en-IN")}
+                    </td>
                     <td>
                       <div className="action-btns action-btns-row">
                         <img
@@ -373,135 +644,198 @@ export function Clients({
                   </tr>
                 )}
                 {pagedClients.map((c) => {
-                const rev = getClientRevenue(c);
-                const pct = Math.round((rev / maxRevenue) * 100);
-                const displayName =
-                  c.name && c.name.trim()
-                    ? c.name
-                    : c.business || "Unnamed Client";
-                const avatarChar = (
-                  c.name && c.name.trim()
-                    ? c.name.trim()[0]
-                    : c.business && c.business.trim()
-                    ? c.business.trim()[0]
-                    : "?"
-                ).toUpperCase();
+                  const rev = getClientRevenue(c);
+                  const pct = Math.round((rev / maxRevenue) * 100);
+                  const displayName =
+                    c.name && c.name.trim()
+                      ? c.name
+                      : c.business || "Unnamed Client";
+                  const avatarChar = (
+                    c.name && c.name.trim()
+                      ? c.name.trim()[0]
+                      : c.business && c.business.trim()
+                      ? c.business.trim()[0]
+                      : "?"
+                  ).toUpperCase();
 
-                return (
-                  <tr key={c.id}>
-                    <td className="td-checkbox">
-                      <input
-                        type="checkbox"
-                        className="custom-checkbox"
-                        checked={selectedClientIds.includes(String(c.id))}
-                        onChange={(e) => handleSelectClientRow(String(c.id), e.target.checked)}
-                      />
-                    </td>
-                    <td>
-                      <div className="client-name-col">
-                        <div className="client-avatar">
-                          {c.image ? (
-                            <img
-                              src={c.image}
-                              alt={displayName}
-                              className="avatar-img"
-                            />
-                          ) : (
-                            avatarChar
-                          )}
-                        </div>
-                        <div className="client-fields-col">
-                          <input
-                            key={`${c.id}-name-${c.name}`}
-                            type="text"
-                            className="company-input td-input td-input-name"
-                            defaultValue={c.name}
-                            onBlur={(e) => updateClientField(c, "name", e.target.value)}
-                            placeholder="Name"
-                          />
-                          <input
-                            key={`${c.id}-phone-${c.phone}`}
-                            type="text"
-                            className="phone-input td-input td-input-phone"
-                            defaultValue={c.phone}
-                            onBlur={(e) => updateClientField(c, "phone", e.target.value)}
-                            placeholder="Phone"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <input
-                        key={`${c.id}-business-${c.business}`}
-                        type="text"
-                        className="company-input td-input td-input-2xl"
-                        defaultValue={c.business}
-                        onBlur={(e) => updateClientField(c, "business", e.target.value)}
-                        placeholder="Business"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        key={`${c.id}-instagram-${c.instagram}`}
-                        type="text"
-                        className="company-input td-input td-input-lg"
-                        defaultValue={c.instagram}
-                        onBlur={(e) => updateClientField(c, "instagram", e.target.value)}
-                        placeholder="Instagram"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        key={`${c.id}-reels-${c.reels}`}
-                        type="number"
-                        className="company-input td-input td-input-sm"
-                        defaultValue={c.reels}
-                        onBlur={(e) => updateClientField(c, "reels", e.target.value)}
-                        placeholder="Reels"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        key={`${c.id}-ppr-${c.ppr}`}
-                        type="number"
-                        className="company-input td-input td-input-md"
-                        defaultValue={c.ppr}
-                        onBlur={(e) => updateClientField(c, "ppr", e.target.value)}
-                        placeholder="Price/Reel"
-                      />
-                    </td>
-                    <td className="td-rev">
-                      ₹{rev.toLocaleString("en-IN")}
-                    </td>
-                    <td className="td-minw">
-                      <div className="rev-bar">
-                        <div
-                          className="rev-bar-fill"
-                          style={{ width: `${pct}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                    <td className="th-actions">
-                      <div className="action-btns">
-                        <img
-                          src="/assets/icons/delete.svg"
-                          alt="Delete"
-                          className="del-client"
-                          title="Delete Client"
-                          onClick={() => {
-                            setConfirmModal({
-                              title: "Delete Client",
-                              message: `Are you sure you want to delete client "${displayName}"?`,
-                              onConfirm: () => onDeleteClient(c.id),
-                            });
-                          }}
+                  // Parse Instagram column details
+                  const meta = parseClientInstagram(c.instagram, c.ppr);
+
+                  // Calculate bargain metrics
+                  const actualRate = meta.billingType === "subscription" ? meta.flatFee || Math.round(c.reels * c.ppr) : c.ppr;
+                  const baseRate = meta.basePpr || actualRate;
+                  const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
+
+                  return (
+                    <tr key={c.id}>
+                      <td className="td-checkbox">
+                        <input
+                          type="checkbox"
+                          className="custom-checkbox"
+                          checked={selectedClientIds.includes(String(c.id))}
+                          onChange={(e) => handleSelectClientRow(String(c.id), e.target.checked)}
                         />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </>
+                      </td>
+                      <td>
+                        <div className="client-name-col">
+                          <div className="client-avatar">
+                            {c.image ? (
+                              <img
+                                src={c.image}
+                                alt={displayName}
+                                className="avatar-img"
+                              />
+                            ) : (
+                              avatarChar
+                            )}
+                          </div>
+                          <div className="client-fields-col">
+                            <input
+                              key={`${c.id}-name-${c.name}`}
+                              type="text"
+                              className="company-input td-input td-input-name"
+                              defaultValue={c.name}
+                              onBlur={(e) => updateClientField(c, "name", e.target.value)}
+                              placeholder="Name"
+                            />
+                            <input
+                              key={`${c.id}-phone-${c.phone}`}
+                              type="text"
+                              className="phone-input td-input td-input-phone"
+                              defaultValue={c.phone}
+                              onBlur={(e) => updateClientField(c, "phone", e.target.value)}
+                              placeholder="Phone"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <input
+                          key={`${c.id}-business-${c.business}`}
+                          type="text"
+                          className="company-input td-input td-input-2xl"
+                          defaultValue={c.business}
+                          onBlur={(e) => updateClientField(c, "business", e.target.value)}
+                          placeholder="Business"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          key={`${c.id}-instagram-${meta.handle}`}
+                          type="text"
+                          className="company-input td-input td-input-lg"
+                          defaultValue={meta.handle}
+                          onBlur={(e) => {
+                            const newHandle = e.target.value;
+                            const serializedInsta = serializeClientInstagram(newHandle, meta);
+                            updateClientField(c, "instagram", serializedInsta);
+                          }}
+                          placeholder="Instagram"
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className="td-select"
+                          value={meta.billingType}
+                          onChange={(e) => handleUpdateBillingModel(c, e.target.value as any)}
+                        >
+                          <option value="reel-to-reel">Reel-to-Reel</option>
+                          <option value="subscription">Subscription</option>
+                        </select>
+                      </td>
+                      <td>
+                        {meta.billingType === "subscription" ? (
+                          <select
+                            className="td-select"
+                            value={meta.subscriptionPlan}
+                            onChange={(e) => handleUpdatePlan(c, e.target.value)}
+                          >
+                            <option value="Custom">Custom Plan</option>
+                            {Object.keys(STANDARD_PLANS).map((p) => (
+                              <option key={p} value={p}>{p}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="td-muted">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <input
+                          key={`${c.id}-reels-${c.reels}`}
+                          type="number"
+                          className="company-input td-input td-input-sm"
+                          defaultValue={c.reels}
+                          onBlur={async (e) => {
+                            const reelsVal = Number(e.target.value || 0);
+                            const updatedClient = {
+                              name: c.name || "",
+                              business: c.business || "",
+                              phone: c.phone || "",
+                              instagram: c.instagram,
+                              reels: reelsVal,
+                              ppr: meta.billingType === "subscription" ? (actualRate / (reelsVal || 1)) : c.ppr,
+                              image: c.image || ""
+                            };
+                            await onUpdateClient(c.id, updatedClient);
+                          }}
+                          placeholder="Reels"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          key={`${c.id}-rate-${actualRate}`}
+                          type="number"
+                          className="company-input td-input td-input-md"
+                          defaultValue={actualRate}
+                          onBlur={(e) => handleUpdateRate(c, Number(e.target.value || 0))}
+                          placeholder={meta.billingType === "subscription" ? "Monthly Fee" : "Price/Reel"}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          key={`${c.id}-basePpr-${baseRate}`}
+                          type="number"
+                          className="company-input td-input td-input-md"
+                          defaultValue={baseRate}
+                          onBlur={(e) => handleUpdateBaseRate(c, Number(e.target.value || 0))}
+                          placeholder={meta.billingType === "subscription" ? "Base Plan Price" : "Base Price/Reel"}
+                        />
+                      </td>
+                      <td>
+                        {discountPct > 0 ? (
+                          <span className="bargain-badge bargained" title={`Base: ₹${baseRate.toLocaleString("en-IN")} | Actual: ₹${actualRate.toLocaleString("en-IN")}`}>
+                            -{discountPct}% Bargained
+                          </span>
+                        ) : (
+                          <span className="bargain-badge no-bargain">
+                            0% Bargain
+                          </span>
+                        )}
+                      </td>
+                      <td className="td-rev td-bold-green">
+                        ₹{rev.toLocaleString("en-IN")}
+                      </td>
+                      <td className="th-actions">
+                        <div className="action-btns">
+                          <img
+                            src="/assets/icons/delete.svg"
+                            alt="Delete"
+                            className="del-client"
+                            title="Delete Client"
+                            onClick={() => {
+                              setConfirmModal({
+                                title: "Delete Client",
+                                message: `Are you sure you want to delete client "${displayName}"?`,
+                                onConfirm: () => onDeleteClient(c.id),
+                              });
+                            }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </>
             )}
           </tbody>
         </table>
@@ -524,7 +858,7 @@ export function Clients({
                 {getPageNumbers().map((pageNum, index) =>
                   pageNum === "..." ? (
                     <span key={`ellipsis-${index}`} className="pagination-ellipsis">
-                      &hellip;
+                      &thinsp;&hellip;&thinsp;
                     </span>
                   ) : (
                     <button

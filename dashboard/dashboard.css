@@ -4373,3 +4373,81 @@ td:has(.cs-root[data-open="true"]) {
     font-size: var(--text-xs);
     line-height: 1.6;
 }
+
+/* ─── CUSTOM BILLING MODEL & BARGAIN FEATURES ─── */
+.td-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 6px 10px;
+    border-radius: var(--border-radius-2);
+    font-size: var(--text-xs);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    width: 100%;
+    min-width: 125px;
+    box-sizing: border-box;
+}
+
+.td-select:hover, .td-select:focus {
+    border-color: var(--green-brand);
+    background: var(--white-03);
+}
+
+.bargain-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-99);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.bargain-badge.bargained {
+    background: var(--green-brand-10);
+    color: var(--green-brand);
+    border: 1px solid rgba(195, 248, 11, 0.2);
+}
+
+.bargain-badge.no-bargain {
+    background: var(--white-05);
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+.billing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-2);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.billing-badge.reel-to-reel {
+    background: rgba(0, 180, 216, 0.1);
+    color: #00b4d8;
+    border: 1px solid rgba(0, 180, 216, 0.2);
+}
+
+.billing-badge.subscription {
+    background: rgba(147, 51, 234, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.td-muted {
+    color: var(--muted);
+    font-size: var(--text-xs);
+}
+
+.td-bold-green {
+    color: var(--green-brand) !important;
+    font-weight: 600;
+}
