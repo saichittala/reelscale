@@ -74,6 +74,7 @@ export function Clients({
   const [newBillingType, setNewBillingType] = useState<"reel-to-reel" | "subscription">("reel-to-reel");
   const [newSubscriptionPlan, setNewSubscriptionPlan] = useState<string>("Custom");
   const [newBasePpr, setNewBasePpr] = useState<string>("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Reset to page 1 when search or sorting changes
   useEffect(() => {
@@ -158,10 +159,12 @@ export function Clients({
   };
 
   const handleSaveNewClient = async () => {
+    if (isSaving) return;
     if (!newClientBusiness.trim()) {
       showToast("Business name is required", "error");
       return;
     }
+    setIsSaving(true);
     try {
       const reelsVal = Number(newClientReels || 0);
       const rateVal = Number(newClientPpr || 0);
@@ -194,6 +197,8 @@ export function Clients({
       setNewClientRow(false);
     } catch (e: any) {
       showToast(e.message || "Failed to create client", "error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -582,12 +587,16 @@ export function Clients({
                     </td>
                     <td>
                       <div className="action-btns action-btns-row">
-                        <img
-                          src="/assets/icons/check.svg"
-                          className="save-client-btn"
-                          alt="Save"
-                          onClick={handleSaveNewClient}
-                        />
+                        {isSaving ? (
+                          <div className="btn-loader" style={{ margin: 0, width: "16px", height: "16px" }}></div>
+                        ) : (
+                          <img
+                            src="/assets/icons/check.svg"
+                            className="save-client-btn"
+                            alt="Save"
+                            onClick={handleSaveNewClient}
+                          />
+                        )}
                         <img
                           src="/assets/icons/close.svg"
                           className="cancel-client-btn"
