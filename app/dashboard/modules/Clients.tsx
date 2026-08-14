@@ -586,7 +586,7 @@ export function Clients({
                       ₹{newRevenuePreview.toLocaleString("en-IN")}
                     </td>
                     <td>
-                      <div className="action-btns action-btns-row">
+                      <div className="action-btns">
                         {isSaving ? (
                           <div className="btn-loader" style={{ margin: 0, width: "16px", height: "16px" }}></div>
                         ) : (
