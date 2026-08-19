@@ -3410,21 +3410,21 @@ body.mobile-menu-open {
     color: #000000 !important;
 }
 
-/* On mobile, before scrolling, primary button has transparent background and green text */
-.growth-page-wrapper header .mob-btn-primary {
+/* Before scrolling, header button has transparent background and green text */
+.growth-page-wrapper .btn-primary.mob-btn-primary {
     color: var(--red) !important;
     background: transparent !important;
     border: 1px solid var(--red) !important;
 }
 
 /* Once scrolled, it has a solid green background, so we use black text for contrast */
-.growth-page-wrapper header.scrolled .mob-btn-primary {
+.growth-page-wrapper header.scrolled .btn-primary.mob-btn-primary {
     color: #000000 !important;
     background: var(--red) !important;
     font-weight: 600 !important;
 }
 
-.growth-page-wrapper header.scrolled .mob-btn-primary:hover {
+.growth-page-wrapper header.scrolled .btn-primary.mob-btn-primary:hover {
     color: #000000 !important;
 }
 
