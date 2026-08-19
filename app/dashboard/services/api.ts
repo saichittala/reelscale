@@ -188,29 +188,55 @@ export async function fetchClients(): Promise<Client[]> {
   const response = await customFetch(GAS_CLIENTS_URL);
   const data = await response.json();
   const list = data.clients || data || [];
+
+  // Read local dates dictionary
+  let localDates: Record<string, string> = {};
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("reelscale_client_dates");
+      if (stored) localDates = JSON.parse(stored);
+    } catch (e) {
+      console.warn("Error reading local client dates", e);
+    }
+  }
+
+  const DEFAULT_CLIENT_DATES: Record<number | string, string> = {
+    1: "2026-06-15",
+    2: "2026-07-10",
+    3: "2026-07-20",
+    4: "2026-08-01",
+    6: "2026-08-05",
+    7: "2026-08-10",
+    8: "2026-08-14"
+  };
+
   if (Array.isArray(list)) {
-    return list.map((row: any) => ({
-      id: row.id,
-      name: row.clientName || row.name || "",
-      business: row.business || "",
-      phone: row.phone || "",
-      instagram: row.instagram || "",
-      reels: Number(row.reels || 0),
-      ppr: Number(row.pricePerReel || row.ppr || 0),
-      image: row.image || "",
-      billingModel: row.billingModel || "Reel-to-Reel",
-      plan: row.plan || "",
-      baseRate: Number(row.baseRate || 0),
-      bargain: Number(row.bargain || 0),
-      revenue: Number(row.revenue || 0),
-    }));
+    return list.map((row: any) => {
+      const rowId = String(row.id);
+      return {
+        id: row.id,
+        name: row.clientName || row.name || "",
+        business: row.business || "",
+        phone: row.phone || "",
+        instagram: row.instagram || "",
+        reels: Number(row.reels || 0),
+        ppr: Number(row.pricePerReel || row.ppr || 0),
+        image: row.image || "",
+        billingModel: row.billingModel || "Reel-to-Reel",
+        plan: row.plan || "",
+        baseRate: Number(row.baseRate || 0),
+        bargain: Number(row.bargain || 0),
+        revenue: Number(row.revenue || 0),
+        date: row.date || row.createdDate || localDates[rowId] || DEFAULT_CLIENT_DATES[rowId] || "2026-08-14",
+      };
+    });
   }
   return [];
 }
 
 export async function apiAddClient(
   client: Omit<Client, "id">
-): Promise<void> {
+): Promise<any> {
   const response = await customFetch(GAS_CLIENTS_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -227,18 +253,43 @@ export async function apiAddClient(
       plan: client.plan || "",
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
+      date: client.date || "",
     }),
   });
   const result = await response.json();
   if (!result.success) {
     throw new Error(result.message || "Add client failed");
   }
+
+  const newId = result.id || (result.client && result.client.id);
+  if (newId && typeof window !== "undefined" && client.date) {
+    try {
+      const stored = localStorage.getItem("reelscale_client_dates");
+      const localDates = stored ? JSON.parse(stored) : {};
+      localDates[String(newId)] = client.date;
+      localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+    } catch (e) {
+      console.warn("Failed to save local date mapping on add", e);
+    }
+  }
+  return result;
 }
 
 export async function apiUpdateClient(
   id: string | number,
   client: Omit<Client, "id">
 ): Promise<void> {
+  if (typeof window !== "undefined" && client.date) {
+    try {
+      const stored = localStorage.getItem("reelscale_client_dates");
+      const localDates = stored ? JSON.parse(stored) : {};
+      localDates[String(id)] = client.date;
+      localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+    } catch (e) {
+      console.warn("Failed to save local date mapping on update", e);
+    }
+  }
+
   const response = await customFetch(GAS_CLIENTS_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -256,6 +307,7 @@ export async function apiUpdateClient(
       plan: client.plan || "",
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
+      date: client.date || "",
     }),
   });
   const result = await response.json();

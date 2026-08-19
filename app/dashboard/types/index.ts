@@ -20,6 +20,7 @@ export interface Client {
   baseRate?: number;
   bargain?: number;
   revenue?: number;
+  date?: string;
 }
 
 export interface Lead {

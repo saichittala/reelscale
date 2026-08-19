@@ -56,7 +56,7 @@ export default function DashboardLoginPage() {
     <div className="login-wrap">
       <div className="login-card">
         <div className="login-logo">
-          <a href="#" className="logo" onClick={(e) => e.preventDefault()}>
+          <a href="/" className="logo">
             <div>
               <img
                 src="/assets/logo.svg"

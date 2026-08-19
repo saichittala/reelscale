@@ -90,6 +90,18 @@ export default function LandingInteractions() {
   const pathname = usePathname();
 
   useEffect(() => {
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isLowMemoryHardware = Boolean(
+      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 2) ||
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
+    );
+    const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware;
+
+    if (isLowEndDevice) {
+      document.documentElement.classList.add("low-end-device");
+    }
+
     /* ═══════════════════════════════════════════════════
        1. 3D CURVED CAROUSEL ENGINE (GSAP)
        ═══════════════════════════════════════════════════ */
@@ -147,7 +159,7 @@ export default function LandingInteractions() {
     };
 
     const runCarousel = () => {
-      if (!carouselEl || !stageEl || !ringEl || typeof gsap === "undefined") return;
+      if (!carouselEl || !stageEl || !ringEl) return;
       const N = COVERFLOW_CARDS.length;
 
       // 1. Populate original slides dynamically
@@ -160,7 +172,7 @@ export default function LandingInteractions() {
         slide.setAttribute("data-stat", data.stat);
 
         const isVideo = data.videoSrc.toLowerCase().endsWith(".mp4");
-        if (isVideo) {
+        if (isVideo && !isLowEndDevice) {
           const poster = data.posterSrc || "";
           slide.innerHTML = `
             <img src="${poster}" alt="${data.client}" draggable="false" class="ls-curved-carousel__media ls-curved-carousel__poster" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; z-index:0; transform:translateZ(0);" />
@@ -170,8 +182,9 @@ export default function LandingInteractions() {
             </div>
           `;
         } else {
+          const imgSrc = (isVideo && isLowEndDevice) ? (data.posterSrc || "") : data.videoSrc;
           slide.innerHTML = `
-            <img src="${data.videoSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; transform:translateZ(0);" />
+            <img src="${imgSrc}" alt="${data.client}" loading="lazy" draggable="false" class="ls-curved-carousel__media" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; transform:translateZ(0);" />
             <div class="ls-curved-carousel__label" style="z-index:2;">
               <span class="ls-curved-carousel__client">${data.client}</span>
             </div>
@@ -179,6 +192,25 @@ export default function LandingInteractions() {
         }
         ringEl.appendChild(slide);
       });
+
+      // If it is a low-spec/low-memory device, bypass GSAP timeline, auto-rotation ticker, and ScrollTrigger to optimize RAM and CPU
+      if (isLowEndDevice) {
+        // Setup click handler for modal video on each slide
+        const slides = ringEl.querySelectorAll(".ls-curved-carousel__slide") as NodeListOf<HTMLElement>;
+        slides.forEach((slide) => {
+          slide.addEventListener("click", () => {
+            const video = slide.getAttribute("data-video");
+            const client = slide.getAttribute("data-client") || "";
+            const stat = slide.getAttribute("data-stat") || "";
+            if (video) {
+              openVideo(video, client, stat);
+            }
+          });
+        });
+        return;
+      }
+
+      if (typeof gsap === "undefined") return;
 
       // 2. Duplicate slides if original count is less than slidesInRing
       const isMobile = window.innerWidth <= 768;
@@ -503,7 +535,10 @@ export default function LandingInteractions() {
       });
     };
 
-    if (typeof (window as any).gsap !== "undefined") {
+    if (isLowEndDevice) {
+      // Bypass GSAP and ScrollTrigger dynamic script downloads entirely on low-end devices to save RAM/Network
+      runCarousel();
+    } else if (typeof (window as any).gsap !== "undefined") {
       if (typeof (window as any).ScrollTrigger !== "undefined") {
         runCarousel();
       } else {
@@ -531,18 +566,6 @@ export default function LandingInteractions() {
     /* ═══════════════════════════════════════════════════
        2. CUSTOM CURSOR (Paused on Idle / Touch / Low Memory)
        ═══════════════════════════════════════════════════ */
-    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isLowMemoryHardware = Boolean(
-      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 2) ||
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
-    );
-    const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware;
-
-    if (isLowEndDevice) {
-      document.documentElement.classList.add("low-end-device");
-    }
-
     const cursor = document.getElementById("cursor");
     const ring = document.getElementById("cursorRing");
     const header = document.querySelector("header");

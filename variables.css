@@ -19,9 +19,9 @@
     --text-xl: 20px;
     --text-2xl: 24px;
     --text-3xl: 40px;
-    --text-4xl: 56px;
-    --text-5xl: 72px;
-    --text-6xl: 96px;
+    --text-4xl: 48px;
+    --text-5xl: 56px;
+    --text-6xl: 64px;
 
     /* ── TYPOGRAPHY — SEMANTIC / FLUID ── */
     --text-15: 15px;
@@ -196,9 +196,9 @@
 
     /* Accent — Green (Growth Brand Override) */
     --green-brand: #C3F80B;
-    --green-brand-10: rgba(199, 255, 159, 0.25);
-    --green-brand-20: rgba(199, 255, 159, 0.35);
-    --green-brand-30: rgba(199, 255, 159, 0.45);
+    --green-brand-10: rgba(199, 255, 159, 0.10);
+    --green-brand-20: rgba(199, 255, 159, 0.20);
+    --green-brand-30: rgba(199, 255, 159, 0.30);
     --green-brand-op: rgba(199, 255, 159, 0.31);
     --green-brand-hover: #bcf794;
     --green-brand-active: #a1eb75;

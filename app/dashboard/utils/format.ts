@@ -1,15 +1,25 @@
 export function fmt(n: number): string {
+  if (n >= 1000000000) {
+    const val = n / 1000000000;
+    return val.toFixed(2).replace(/\.?0+$/, "") + "B";
+  }
+  if (n >= 1000000) {
+    const val = n / 1000000;
+    return val.toFixed(2).replace(/\.?0+$/, "") + "M";
+  }
   if (n >= 100000) {
-    return (n / 100000).toFixed(1) + "L";
+    const val = n / 100000;
+    return val.toFixed(2).replace(/\.?0+$/, "") + "L";
   }
   if (n >= 1000) {
-    return (n / 1000).toFixed(1) + "K";
+    const val = n / 1000;
+    return val.toFixed(2).replace(/\.?0+$/, "") + "K";
   }
   return String(n);
 }
 
 export function fmtFull(n: number): string {
-  return "₹" + n.toLocaleString("en-IN");
+  return "₹" + fmt(n);
 }
 
 export function toDateStr(d: Date): string {

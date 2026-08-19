@@ -15,8 +15,10 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
   const getClientRevenue = (c: Client) => c.revenue || (c.reels || 0) * (c.ppr || 0);
 
   const totalClients = clients.length;
-  const totalRevenue = clients.reduce((sum, c) => sum + getClientRevenue(c), 0);
-  const avgRevenue = totalClients ? Math.round(totalRevenue / totalClients) : 0;
+  const totalMonthlyRevenue = clients.reduce((sum, c) => sum + getClientRevenue(c), 0);
+  const totalMonthlyReels = clients.reduce((sum, c) => sum + (c.reels || 0), 0);
+  const avgMonthlyRevenue = totalClients ? Math.round(totalMonthlyRevenue / totalClients) : 0;
+  const avgPricePerReel = totalMonthlyReels ? Math.round(totalMonthlyRevenue / totalMonthlyReels) : 0;
 
   const sortedClients = [...clients].sort(
     (a, b) => getClientRevenue(b) - getClientRevenue(a)
@@ -58,7 +60,7 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
           }),
           datasets: [
             {
-              label: "Revenue (₹)",
+              label: "Monthly Revenue (₹)",
               data: chartData.map((c) => getClientRevenue(c)),
               backgroundColor: chartData.map((_, i) =>
                 i === 0
@@ -125,17 +127,31 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
       {/* Metrics Row */}
       <div className="stat-grid">
         <div className="stat-card red">
-          <div className="stat-label">Total Revenue</div>
-          <div className="stat-value red">{fmt(totalRevenue)}</div>
-          <div className="stat-sub">{fmtFull(totalRevenue)}</div>
+          <div className="stat-label">Monthly Revenue (MRR)</div>
+          <div className="stat-value red">{fmt(totalMonthlyRevenue)}</div>
+          <div className="stat-sub">{fmtFull(totalMonthlyRevenue)}</div>
+        </div>
+
+        <div className="stat-card blue">
+          <div className="stat-label">Annual Revenue (ARR)</div>
+          <div className="stat-value blue">{fmt(totalMonthlyRevenue * 12)}</div>
+          <div className="stat-sub">{fmtFull(totalMonthlyRevenue * 12)}</div>
         </div>
 
         <div className="stat-card gold">
-          <div className="stat-label">Avg Revenue/Client</div>
+          <div className="stat-label">Avg Monthly Rev/Client</div>
           <div className="stat-value gold">
-            ₹{avgRevenue ? fmt(avgRevenue) : 0}
+            ₹{avgMonthlyRevenue ? fmt(avgMonthlyRevenue) : 0}
           </div>
           <div className="stat-sub">Per client average</div>
+        </div>
+
+        <div className="stat-card green">
+          <div className="stat-label">Avg Price Per Reel</div>
+          <div className="stat-value green">
+            ₹{avgPricePerReel ? avgPricePerReel.toLocaleString("en-IN") : 0}
+          </div>
+          <div className="stat-sub">Agency average rate</div>
         </div>
 
         <div className="stat-card white">
@@ -144,7 +160,7 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
             {topClient ? topClient.name || topClient.business || "—" : "—"}
           </div>
           <div className="stat-sub">
-            {topClient ? fmtFull(getClientRevenue(topClient)) : ""}
+            {topClient ? `${fmtFull(getClientRevenue(topClient))}/mo` : ""}
           </div>
         </div>
       </div>
@@ -152,9 +168,9 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
       {/* Grid: Charts & Share Breakdown */}
       <div className="revenue-grid">
         <div className="glass-card">
-          <div className="chart-title">Revenue Per Client</div>
+          <div className="chart-title">Monthly Revenue Per Client</div>
           <div className="chart-sub mb-16">
-            Sorted by revenue · All clients
+            Sorted by monthly revenue · All clients
           </div>
           <div className="analytics-chart-container">
             <canvas id="rev-chart"></canvas>
@@ -163,13 +179,13 @@ export function Analytics({ clients, isLoading }: AnalyticsProps) {
 
         <div className="glass-card">
           <div className="chart-title mb-24">
-            Client Revenue Breakdown
+            Client Monthly Revenue Breakdown
           </div>
           <div className="analytics-list-container">
             {sortedClients.map((c, i) => {
               const rev = getClientRevenue(c);
               const pct =
-                totalRevenue > 0 ? Math.round((rev / totalRevenue) * 100) : 0;
+                totalMonthlyRevenue > 0 ? Math.round((rev / totalMonthlyRevenue) * 100) : 0;
               const displayName =
                 c.name && c.name.trim()
                   ? c.name

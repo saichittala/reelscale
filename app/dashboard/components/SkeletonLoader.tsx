@@ -9,7 +9,7 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
     return (
       <>
         <div className="skeleton-stat-grid">
-          {Array(3)
+          {Array(4)
             .fill(0)
             .map((_, i) => (
               <div className="skeleton-stat-card" key={i}>
@@ -122,7 +122,7 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
     return (
       <>
         <div className="skeleton-stat-grid">
-          {Array(3)
+          {Array(5)
             .fill(0)
             .map((_, i) => (
               <div className="skeleton-stat-card" key={i}>

@@ -87,6 +87,40 @@ export default function DashboardMainPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [newClientRow, setNewClientRow] = useState(false);
 
+  // Month filter state
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+
+  const getMonthYearKey = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+
+  const getMonthYearLabel = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleString("en-US", { month: "long", year: "numeric" });
+  };
+
+  const availableMonths = clients
+    .reduce((acc: { key: string; label: string }[], c) => {
+      const key = getMonthYearKey(c.date);
+      const label = getMonthYearLabel(c.date);
+      if (key && !acc.some((m) => m.key === key)) {
+        acc.push({ key, label });
+      }
+      return acc;
+    }, [])
+    .sort((a, b) => a.key.localeCompare(b.key));
+
+  const filteredClientsByMonth = clients.filter((c) => {
+    if (selectedMonth === "all") return true;
+    if (!c.date) return false;
+    return c.date.startsWith(selectedMonth);
+  });
+
   useEffect(() => {
     setSelectedLeadIds([]);
     setSelectedClientIds([]);
@@ -122,10 +156,10 @@ export default function DashboardMainPage() {
   // Check login authentication
   useEffect(() => {
     const authFlag = localStorage.getItem("reelscale_auth") === "1";
-    if (!authFlag) {
+    if (!authFlag && !sessionExpired) {
       router.push("/dashboard/login/");
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, sessionExpired, router]);
 
   // Force RBAC path constraints on view load
   useEffect(() => {
@@ -247,6 +281,26 @@ export default function DashboardMainPage() {
       await apiAddClient(clientData);
       showToast("Client added successfully");
       const data = await fetchClients();
+      
+      // Auto-assign local storage date mapping if not returned by server
+      if (typeof window !== "undefined" && clientData.date) {
+        try {
+          const stored = localStorage.getItem("reelscale_client_dates") || "{}";
+          const localDates = JSON.parse(stored);
+          const maxIdClient = data.reduce((max: Client | null, curr: Client) => {
+            if (!max) return curr;
+            return Number(curr.id) > Number(max.id) ? curr : max;
+          }, null);
+          if (maxIdClient && !localDates[String(maxIdClient.id)]) {
+            localDates[String(maxIdClient.id)] = clientData.date;
+            localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+            maxIdClient.date = clientData.date;
+          }
+        } catch (e) {
+          console.warn("Failed to map added client date locally", e);
+        }
+      }
+
       setClients(data);
       localStorage.setItem("clients_cache", JSON.stringify(data));
     } catch (err: any) {
@@ -731,6 +785,9 @@ export default function DashboardMainPage() {
       salesFiltersBtn={salesFiltersBtn}
       blogActionsBtn={blogActionsBtn}
       createBlogActionsBtn={createBlogActionsBtn}
+      selectedMonth={selectedMonth}
+      setSelectedMonth={setSelectedMonth}
+      availableMonths={availableMonths}
       toast={
         mounted && typeof document !== "undefined" && toasts.length > 0
           ? createPortal(
@@ -810,7 +867,7 @@ export default function DashboardMainPage() {
       {/* Active page views wrapped in a premium entrance animation container */}
       <div key={page} className="active-view">
         {page === "dashboard" && (
-          <Overview clients={clients} isLoading={clientsLoading} />
+          <Overview clients={filteredClientsByMonth} isLoading={clientsLoading} />
         )}
 
         {page === "clients" && (
@@ -830,7 +887,7 @@ export default function DashboardMainPage() {
         )}
 
         {page === "analytics" && (
-          <Analytics clients={clients} isLoading={clientsLoading} />
+          <Analytics clients={filteredClientsByMonth} isLoading={clientsLoading} />
         )}
 
         {page === "users" && (

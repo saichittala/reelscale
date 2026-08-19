@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
           plan: data.plan || "",
           baseRate: Number(data.baseRate || 0),
           bargain: Number(data.bargain || 0),
+          date: data.date || "",
         });
         return NextResponse.json(result);
       }
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
           plan: data.plan || "",
           baseRate: Number(data.baseRate || 0),
           bargain: Number(data.bargain || 0),
+          date: data.date || "",
         });
         return NextResponse.json(result);
       }

@@ -18,10 +18,11 @@ export function Overview({ clients, isLoading }: OverviewProps) {
   // Calculate statistics
   const totalClients = clients.length;
   const totalReels = clients.reduce((sum, c) => sum + (c.reels || 0), 0);
-  const totalRevenue = clients.reduce(
+  const monthlyRevenue = clients.reduce(
     (sum, c) => sum + getClientRevenue(c),
     0
   );
+  const annualRevenue = monthlyRevenue * 12;
 
   // Sorting for top clients
   const topClients = [...clients]
@@ -36,29 +37,38 @@ export function Overview({ clients, isLoading }: OverviewProps) {
       {/* Metrics Row */}
       <div className="stat-grid">
         <div className="stat-card red">
-          <div className="stat-label">Total Clients</div>
+          <div className="stat-label">Active Clients</div>
           <div className="stat-value">{totalClients}</div>
-          <div className="stat-sub dn">Active accounts</div>
+          <div className="stat-sub dn">Active monthly accounts</div>
           <div className="stat-icon">
             <img src="/assets/icons/nav-clients.svg" alt="Clients Icon" />
           </div>
         </div>
 
         <div className="stat-card gold">
-          <div className="stat-label">Total Reels</div>
+          <div className="stat-label">Monthly Reels</div>
           <div className="stat-value gold">{totalReels.toLocaleString()}</div>
-          <div className="stat-sub dn">Reels created</div>
+          <div className="stat-sub dn">Reels targeted / month</div>
           <div className="stat-icon">
             <img src="/assets/icons/reels.svg" alt="Reels Icon" />
           </div>
         </div>
 
         <div className="stat-card white">
-          <div className="stat-label">Total Revenue</div>
-          <div className="stat-value green">{fmtFull(totalRevenue)}</div>
-          <div className="stat-sub dn">{fmt(totalRevenue)}</div>
+          <div className="stat-label">Monthly Revenue (MRR)</div>
+          <div className="stat-value green">{fmtFull(monthlyRevenue)}</div>
+          <div className="stat-sub dn">{fmt(monthlyRevenue)}</div>
           <div className="stat-icon">
-            <img src="/assets/icons/revenue.svg" alt="Revenue Icon" />
+            <img src="/assets/icons/revenue.svg" alt="MRR Icon" />
+          </div>
+        </div>
+
+        <div className="stat-card green">
+          <div className="stat-label">Annual Recurring Revenue (ARR)</div>
+          <div className="stat-value green">{fmtFull(annualRevenue)}</div>
+          <div className="stat-sub dn">{fmt(annualRevenue)}</div>
+          <div className="stat-icon">
+            <img src="/assets/icons/revenue.svg" alt="ARR Icon" />
           </div>
         </div>
       </div>
@@ -67,7 +77,7 @@ export function Overview({ clients, isLoading }: OverviewProps) {
       <div className="dash-clients-grid">
         {/* Top Clients by Revenue */}
         <div className="glass-card">
-          <div className="glass-card-label">Top Clients by Revenue</div>
+          <div className="glass-card-label">Top Clients by Monthly Revenue</div>
           {topClients.map((c, i) => {
             const nameStr = String(c.name || "").trim();
             const businessStr = String(c.business || "").trim();
@@ -108,7 +118,7 @@ export function Overview({ clients, isLoading }: OverviewProps) {
                 <div className="client-meta">
                   <div className="client-name">{displayName}</div>
                   <div className="client-biz">
-                    {businessStr || "—"} · {c.reels || 0} reels
+                    {businessStr || "—"} · {c.reels || 0} reels/mo
                   </div>
                 </div>
                 <div className="client-rev">₹{fmt(getClientRevenue(c))}</div>
@@ -136,7 +146,7 @@ export function Overview({ clients, isLoading }: OverviewProps) {
                 </div>
                 <div className="text-right">
                   <div className="badge badge-gold">
-                    ₹{fmt(getClientRevenue(c))}
+                    ₹{fmt(getClientRevenue(c))}/mo
                   </div>
                 </div>
               </div>

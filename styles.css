@@ -280,7 +280,7 @@ nav a.active {
     inset: 0;
     /* background: radial-gradient(ellipse 65% 55% at 50% 50%, rgba(193, 18, 31, 0.18) 0%, rgba(193, 18, 31, 0.10) 28%, rgba(193, 18, 31, 0.04) 55%, transparent 75%); */
     pointer-events: none;
-    background-image: url('/assets/bg.webp');
+    /* background-image: url('/assets/bg.webp'); */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2221,6 +2221,64 @@ nav a:focus-visible {
     }
 }
 
+/* Low end device fallback for 3D curved carousel: flat horizontal scroll */
+.low-end-device .ls-curved-carousel {
+    height: auto !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: block !important;
+    padding: 24px 20px !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    transform: none !important;
+    transform-style: flat !important;
+    contain: layout paint style !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    opacity: 1 !important;
+}
+
+.low-end-device .ls-curved-carousel__stage {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+    perspective: none !important;
+}
+
+.low-end-device .ls-curved-carousel__ring {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 16px !important;
+    width: max-content !important;
+    height: auto !important;
+    transform: none !important;
+    transform-style: flat !important;
+}
+
+.low-end-device .ls-curved-carousel__slide {
+    position: relative !important;
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    height: 420px !important;
+    transform: none !important;
+    scroll-snap-align: start !important;
+    box-shadow: none !important;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)) !important;
+    background: #111 !important;
+}
+
+@media (max-width: 768px) {
+    .low-end-device .ls-curved-carousel__slide {
+        flex: 0 0 220px !important;
+        width: 220px !important;
+        height: 330px !important;
+    }
+}
+
 /* Off-screen layout containment for lightning-fast scrolling */
 #services,
 #portfolio,
@@ -3483,4 +3541,89 @@ body.mobile-menu-open {
 
 .growth-page-wrapper #metrics .metrics-list.visible .metric-row:nth-child(3) {
     transition-delay: 0.3s;
+}
+
+/* Announcement Bar styles */
+.announcement-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 32px auto;
+    z-index: 10;
+    position: relative;
+}
+
+.announcement-bar {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(195, 248, 11, 0.02);
+    border: 1px solid rgba(195, 248, 11, 0.3);
+    border-radius: 100px;
+    padding: 0 0 0 16px;
+    text-decoration: none;
+    transition: all var(--duration-fast) var(--ease-smooth);
+    overflow: hidden;
+    height: 36px;
+}
+
+.announcement-bar:hover {
+    background: rgba(195, 248, 11, 0.06);
+    border-color: var(--green-brand);
+    box-shadow: 0 4px 20px rgba(195, 248, 11, 0.15);
+}
+
+.announcement-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font);
+}
+
+.announcement-separator {
+    width: 6px;
+    height: 6px;
+    background: var(--blue);
+    border-radius: 1px;
+    margin: 0 12px;
+    flex-shrink: 0;
+}
+
+.announcement-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    margin-right: 16px;
+    letter-spacing: 0.2px;
+    font-family: var(--font);
+}
+
+.announcement-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--white);
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.announcement-bar:hover .announcement-btn {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--green-brand);
+}
+
+@media (max-width: 600px) {
+    .announcement-text {
+        font-size: 12px;
+        margin-right: 12px;
+    }
+    .announcement-label {
+        font-size: 10px;
+    }
+    .announcement-separator {
+        margin: 0 8px;
+    }
 }

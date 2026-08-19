@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User, DashboardPage } from "../types";
+import { CustomSelect } from "./CustomSelect";
 
 interface LayoutProps {
   page: DashboardPage;
@@ -15,6 +16,9 @@ interface LayoutProps {
   blogActionsBtn?: React.ReactNode;
   createBlogActionsBtn?: React.ReactNode;
   toast?: React.ReactNode;
+  selectedMonth?: string;
+  setSelectedMonth?: (month: string) => void;
+  availableMonths?: { key: string; label: string }[];
 }
 
 export function Layout({
@@ -30,6 +34,9 @@ export function Layout({
   blogActionsBtn,
   createBlogActionsBtn,
   toast,
+  selectedMonth,
+  setSelectedMonth,
+  availableMonths = [],
 }: LayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -145,7 +152,7 @@ export function Layout({
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={sidebarCollapsed ? "Expand" : "Collapse"}
         ></button>
-        <div className="dashboard-logo">
+        <a href="/" className="dashboard-logo" style={{ display: "block", textDecoration: "none" }}>
           <img
             src={
               sidebarCollapsed
@@ -157,7 +164,7 @@ export function Layout({
           {!sidebarCollapsed && (
             <div className="logo-sub">Reel Production House</div>
           )}
-        </div>
+        </a>
         <div className="nav">
           {nav.map((n) => (
             <button
@@ -228,6 +235,22 @@ export function Layout({
 
           <div className="topbar-actions">
             <div className="df-g8">
+              {/* Month Filter Selector */}
+              {selectedMonth !== undefined && setSelectedMonth && availableMonths.length > 0 && 
+               (page === "dashboard" || page === "clients" || page === "analytics") && (
+                <div className="month-filter-wrap">
+                  <CustomSelect
+                    value={selectedMonth}
+                    onChange={setSelectedMonth}
+                    options={[
+                      { value: "all", label: "All Months" },
+                      ...availableMonths.map((m) => ({ value: m.key, label: m.label })),
+                    ]}
+                    align="right"
+                  />
+                </div>
+              )}
+
               {page === "clients" && addClientBtn}
               {page === "sales" && salesFiltersBtn}
               {page === "sales" && addSaleBtn}
