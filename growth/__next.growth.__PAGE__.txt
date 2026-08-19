@@ -1,9 +1,9 @@
 1:"$Sreact.fragment"
-3:I[58658,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/3woot5oq2afk6.js"],"default"]
+3:I[58658,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/41qt17160f068.js"],"default"]
 9:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
 a:"$Sreact.suspense"
-:HL["/_next/static/chunks/2s6vbt60nchmn.css","style"]
-2:T461,{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://reelscale.in/growth#webpage","url":"https://reelscale.in/growth","name":"Social Media Marketing & Digital Marketing Agency | ReelScale Growth","description":"Scale your business with ReelScale Growth, a premier digital marketing agency. We specialize in complete social media management, organic brand growth, high-converting Meta & Instagram ad campaigns, and cinematic reel production."},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale Growth","image":"https://reelscale.in/assets/logo.png","url":"https://reelscale.in/growth","telephone":"+919966239433","priceRange":"$$","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressRegion":"Telangana","addressCountry":"IN"},"sameAs":["https://www.instagram.com/reelscale.in"]},{"@type":"BreadcrumbList","@id":"https://reelscale.in/growth#breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://reelscale.in"},{"@type":"ListItem","position":2,"name":"Growth","item":"https://reelscale.in/growth"}]}]}4:T805,<header id="header">
+:HL["/_next/static/chunks/44u4uw-ccqc14.css","style"]
+2:T461,{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://reelscale.in/growth#webpage","url":"https://reelscale.in/growth","name":"Social Media Marketing & Digital Marketing Agency | ReelScale Growth","description":"Scale your business with ReelScale Growth, a premier digital marketing agency. We specialize in complete social media management, organic brand growth, high-converting Meta & Instagram ad campaigns, and cinematic reel production."},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale Growth","image":"https://reelscale.in/assets/logo.png","url":"https://reelscale.in/growth","telephone":"+919966239433","priceRange":"$$","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressRegion":"Telangana","addressCountry":"IN"},"sameAs":["https://www.instagram.com/reelscale.in"]},{"@type":"BreadcrumbList","@id":"https://reelscale.in/growth#breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://reelscale.in"},{"@type":"ListItem","position":2,"name":"Growth","item":"https://reelscale.in/growth"}]}]}4:T7e0,<header id="header">
     <div class="logo-wrapper" style="display: flex; align-items: center; gap: 8px;">
       <button class="mobile-menu-btn" aria-label="Toggle navigation"
         style="background: transparent; border: none; color: var(--white); cursor: pointer; display: none; padding: 0;">
@@ -29,7 +29,6 @@ a:"$Sreact.suspense"
     <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
       <nav id="nav-links">
         <a href="/">Home</a>
-        <a href="/growth">Growth</a>
         <a href="/works">Work</a>
         <a href="/pricing">Pricing</a>
       </nav>
@@ -39,7 +38,7 @@ a:"$Sreact.suspense"
         Start your Reel
       </a>
     </div>
-  </header>5:T7e1,<footer>
+  </header>5:T7bc,<footer>
     <div class="footer-inner">
       <a href="/" class="logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">
         <div>
@@ -50,7 +49,6 @@ a:"$Sreact.suspense"
 
       <nav class="footer-nav">
         <a href="/">Home</a>
-        <a href="/growth">Growth</a>
         <a href="/works">Work</a>
         <a href="/pricing">Pricing</a>
         <a href="/dashboard/login/">Login</a>
@@ -79,8 +77,8 @@ a:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"FOO8DMjtzqIQq79Md-LNz"}
-6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2s6vbt60nchmn.css","precedence":"next"}]
-7:["$","script","script-0",{"src":"/_next/static/chunks/3woot5oq2afk6.js","async":true}]
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","$L3",null,{"headerHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"MqLEYWipL28SiIShMpNpT"}
+6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/44u4uw-ccqc14.css","precedence":"next"}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/41qt17160f068.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
 b:null
