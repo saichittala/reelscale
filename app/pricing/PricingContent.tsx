@@ -36,7 +36,6 @@ export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: 
               __html: pricingHtml
                 .replace(/<section id="pricing"[^>]*>/i, '')
                 .replace(/<\/section>/i, '')
-                .replace(/<div class="pricing-inner">/i, '')
                 // Remove the first header inside pricingHtml to avoid duplicate titles
                 .replace(/<div class="reveal">[\s\S]*?<\/h2>\s*<\/div>/i, '')
             }} suppressHydrationWarning /></div>
