@@ -32,22 +32,14 @@ export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: 
 
         {/* SECTION 1: REEL PRODUCTION PLANS (Extracted from index.html) */}
         <section style={{ padding: "100px 0" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }} suppressHydrationWarning>
-            <div className="reveal" style={{ marginBottom: "60px" }}>
-              <div className="section-eyebrow">Production Division</div>
-              <h2 className="section-title" style={{ margin: "12px 0 0 0" }}>Reel Production <em>Plans</em></h2>
-            </div>
-
-            {/* We render the pricingHtml but strip out its section wrappers since we wrap it cleanly */}
-            <div dangerouslySetInnerHTML={{
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }} suppressHydrationWarning><div className="reveal" style={{ marginBottom: "60px" }}><div className="section-eyebrow">Production Division</div><h2 className="section-title" style={{ margin: "12px 0 0 0" }}>Reel Production <em>Plans</em></h2></div><div dangerouslySetInnerHTML={{
               __html: pricingHtml
                 .replace(/<section id="pricing"[^>]*>/i, '')
                 .replace(/<\/section>/i, '')
                 .replace(/<div class="pricing-inner">/i, '')
                 // Remove the first header inside pricingHtml to avoid duplicate titles
                 .replace(/<div class="reveal">[\s\S]*?<\/h2>\s*<\/div>/i, '')
-            }} suppressHydrationWarning />
-          </div>
+            }} suppressHydrationWarning /></div>
         </section>
 
         {/* SECTION 2: SOCIAL GROWTH PLANS */}
