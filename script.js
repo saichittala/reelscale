@@ -173,65 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  document.querySelectorAll(".portfolio-item").forEach(item => {
-
-    item.addEventListener("click", () => {
-
-      const video = item.getAttribute("data-video");
-      const client = item.getAttribute("data-client");
-      const stat = item.getAttribute("data-stat");
-
-      if (!video) return;
-
-      // Instagram support
-      if (
-        video.includes("instagram.com") ||
-        video.includes("instagr.am")
-      ) {
-
-        wrapper.innerHTML = `
-          <div class="video-meta">
-            <div class="video-client">${client || ""}</div>
-            <div class="video-stat">${stat || ""}</div>
-          </div>
-
-          <blockquote
-            class="instagram-media"
-            data-instgrm-permalink="${video}"
-            data-instgrm-version="14"
-            style="width:100%; max-width:540px; margin:auto;">
-          </blockquote>
-        `;
-
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-
-      } else {
-
-        // YouTube support
-        wrapper.innerHTML = `
-          <div class="video-meta">
-            <div class="video-client">${client || ""}</div>
-            <div class="video-stat">${stat || ""}</div>
-          </div>
-
-          <iframe 
-            src="${video}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
-            title="Video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen>
-          </iframe>
-        `;
-      }
-
-      modal.classList.add("active");
-
-    });
-
-  });
 
   function closeModal() {
     modal.classList.remove("active");

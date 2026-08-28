@@ -635,20 +635,7 @@ export default function LandingInteractions() {
     });
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 
-    const portfolioHandlers: Array<[Element, EventListener]> = [];
-    document.querySelectorAll(".portfolio-item").forEach((item) => {
-      const handler = ((e: Event) => {
-        const video = item.getAttribute("data-video");
-        const client = item.getAttribute("data-client") || "";
-        const stat = item.getAttribute("data-stat") || "";
-        if (video) {
-          e.preventDefault();
-          openVideo(video, client, stat);
-        }
-      }) as EventListener;
-      item.addEventListener("click", handler);
-      portfolioHandlers.push([item, handler]);
-    });
+
 
     /* ═══════════════════════════════════════════════════
        5. FAQ ACCORDION
@@ -825,7 +812,6 @@ export default function LandingInteractions() {
       document.removeEventListener("keydown", onEscape);
       closeBtn?.removeEventListener("click", closeModal);
       backdrop?.removeEventListener("click", closeModal);
-      portfolioHandlers.forEach(([item, handler]) => item.removeEventListener("click", handler));
       faqHandlers.forEach(([btn, handler]) => btn.removeEventListener("click", handler));
     };
   }, [pathname]);

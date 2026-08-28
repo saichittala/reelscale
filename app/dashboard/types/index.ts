@@ -59,6 +59,66 @@ export interface Blog {
   faq?: FAQ[];
 }
 
+export interface DocumentLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  rate: number;
+  amount: number;
+}
+
+export interface BusinessDocument {
+  id: string;
+  number: string;
+  type: "Invoice" | "Quotation";
+  status: "Draft" | "Generated" | "Sent" | "Paid" | "Expired" | "Cancelled";
+  clientId: string | number;
+  clientName: string;
+  companyName: string;
+  clientEmail: string;
+  clientPhone: string;
+  billingAddress: string;
+  gstin?: string;
+  projectName: string;
+  service: string;
+  issueDate: string;
+  dueDate: string;
+  validityDate?: string;
+  lineItems: DocumentLineItem[];
+  subtotal: number;
+  discount: number;
+  tax: number;
+  expenses: number;
+  total: number;
+  paymentDetails: {
+    accountName: string;
+    bank: string;
+    accountNumber: string;
+    ifsc: string;
+    upiId: string;
+    terms: string;
+  };
+  terms: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClientContract {
+  id: string;
+  contractNumber: string;
+  clientId: string | number;
+  clientName: string;
+  contractType: string;
+  startDate: string;
+  endDate: string;
+  status: "Draft" | "Active" | "Expired" | "Cancelled";
+  amount: number;
+  notes?: string;
+  createdAt: string;
+}
+
 export type DashboardPage =
   | "dashboard"
   | "clients"
@@ -67,4 +127,6 @@ export type DashboardPage =
   | "sales"
   | "blogs"
   | "create-blog"
-  | "blog-categories";
+  | "blog-categories"
+  | "resources";
+

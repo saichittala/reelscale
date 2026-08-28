@@ -118,6 +118,11 @@ export function Layout({
             icon: "/assets/icons/blog.svg",
             label: "Blogs",
           },
+          {
+            id: "resources" as DashboardPage,
+            icon: "/assets/icons/nav-resources.svg",
+            label: "Resources",
+          },
         ];
 
   const titles: Record<string, string> = {
@@ -129,6 +134,7 @@ export function Layout({
     blogs: "Blog Management",
     "create-blog": "Create Blog Post",
     "blog-categories": "Blog Categories",
+    resources: "Resources",
   };
 
   const subs: Record<string, string> = {
@@ -140,6 +146,7 @@ export function Layout({
     blogs: "Manage your publication and draft posts",
     "create-blog": "Compose, preview and optimize your article",
     "blog-categories": "Manage blog taxonomies and organization",
+    resources: "Create, manage, and download client documents",
   };
 
   return (

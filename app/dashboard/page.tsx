@@ -35,6 +35,7 @@ import { Sales } from "./modules/Sales";
 import { Blogs } from "./modules/Blogs";
 import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
+import { Resources } from "./modules/Resources";
 
 export default function DashboardMainPage() {
   const router = useRouter();
@@ -959,6 +960,14 @@ export default function DashboardMainPage() {
             blogCategories={blogCategories}
             onAddCategory={handleAddCategory}
             onDeleteCategory={handleDeleteCategory}
+            showToast={showToast}
+            setConfirmModal={setConfirmModal}
+          />
+        )}
+
+        {page === "resources" && (
+          <Resources
+            clients={clients}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
           />
