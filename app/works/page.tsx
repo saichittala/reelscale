@@ -5,14 +5,14 @@ import WorksContent from "./WorksContent";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Portfolio | ReelScale — Reels that perform.",
-  description: "Explore our portfolio of high-retention cinematic Reels and professional video production work in Hyderabad.",
+  title: "Our Portfolio & Reels Case Studies | ReelScale Hyderabad",
+  description: "Watch premium cinematic Instagram Reels, brand videos, and commercial campaigns created by ReelScale in Hyderabad. View our high-retention video production portfolio.",
   alternates: {
     canonical: "https://reelscale.in/works",
   },
   openGraph: {
-    title: "Portfolio | ReelScale — Reels that perform.",
-    description: "Explore our portfolio of high-retention cinematic Reels and professional video production work in Hyderabad.",
+    title: "Our Portfolio & Reels Case Studies | ReelScale Hyderabad",
+    description: "Watch premium cinematic Instagram Reels, brand videos, and commercial campaigns created by ReelScale in Hyderabad. View our high-retention video production portfolio.",
     url: "https://reelscale.in/works",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],

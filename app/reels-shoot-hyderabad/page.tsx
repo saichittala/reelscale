@@ -6,13 +6,13 @@ import "../../styles.css";
 
 export const metadata: Metadata = {
   title: "Reels Shoot in Hyderabad | Professional Instagram Reels Shoot",
-  description: "Looking for a professional reels shoot in Hyderabad? ReelScale offers cinematic short-form video shoots, professional lighting, and scriptwriting in Madhapur, Gachibowli, and Jubilee Hills.",
+  description: "Book a professional reels shoot in Hyderabad. Premium camera gear, wireless studio audio, and on-site directing in Madhapur, Hitech City, Gachibowli, and Jubilee Hills.",
   alternates: {
     canonical: "https://reelscale.in/reels-shoot-hyderabad",
   },
   openGraph: {
     title: "Reels Shoot in Hyderabad | Professional Instagram Reels Shoot",
-    description: "Looking for a professional reels shoot in Hyderabad? ReelScale offers cinematic short-form video shoots, professional lighting, and scriptwriting in Madhapur, Gachibowli, and Jubilee Hills.",
+    description: "Book a professional reels shoot in Hyderabad. Premium camera gear, wireless studio audio, and on-site directing in Madhapur, Hitech City, Gachibowli, and Jubilee Hills.",
     url: "https://reelscale.in/reels-shoot-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -140,6 +140,20 @@ export default function SEOPage() {
     "Jubilee Hills",
     "Banjara Hills",
     "HITEC City"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "Planning a Professional Reels Shoot in Hyderabad",
+      "text": "Successful short-form videos require careful planning. We manage everything from initial concept ideation and scripting to professional set direction across Madhapur, HITEC City, and Jubilee Hills, ensuring you feel confident and look natural on camera."
+    },
+    {
+      "heading": "On-Site Direction and High-End Production Gear",
+      "text": "During your shoot, our professional director guides you through pacing, eye contact, and vocal delivery. We use cinema-grade cameras, professional studio key lights, and isolated wireless lapel microphones to guarantee high-end visual and audio quality."
+    },
+    {
+      "heading": "Saves Time and Delivers Consistent Monthly Content",
+      "text": "Instead of spending hours filming average phone videos every week, our structured reels shoot lets you batch-produce a full month's worth of content (12 high-converting reels) in a single 3-hour session."
+    }
   ]
 };
 

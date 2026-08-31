@@ -5,14 +5,14 @@ import AboutContent from "./AboutContent";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "About Us | ReelScale — Building Brands People Remember",
-  description: "ReelScale creates premium short-form cinematic content engineered to generate attention, trust, and revenue for growing businesses.",
+  title: "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad",
+  description: "Discover the team behind ReelScale, a leading reel shoot and video editing agency in Hyderabad. We write, film, and edit cinematic Instagram Reels and commercial videos that build authority and drive leads organically.",
   alternates: {
     canonical: "https://reelscale.in/about",
   },
   openGraph: {
-    title: "About ReelScale | Building Brands People Remember",
-    description: "Premium short-form video production company helping businesses build authority, consistency, and customer trust.",
+    title: "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad",
+    description: "Discover the team behind ReelScale, a leading reel shoot and video editing agency in Hyderabad. We write, film, and edit cinematic Instagram Reels and commercial videos that build authority and drive leads organically.",
     url: "https://reelscale.in/about",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],

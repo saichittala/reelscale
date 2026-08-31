@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Interior Design Reels in Hyderabad | Luxury Home Walkthroughs",
-  description: "Showcase your architectural design work with premium interior reels in Hyderabad. Real estate and interior design walkthrough videos by ReelScale.",
+  title: "Interior Reels & Architect Video Production in Hyderabad | ReelScale",
+  description: "Showcase architecture and homes with high-end interior reels in Hyderabad. Professional home tour walkthroughs, styling video shoots, and interior editing in Gachibowli, Manikonda, and Hitech City.",
   alternates: {
     canonical: "https://reelscale.in/interior-reels-hyderabad",
   },
   openGraph: {
-    title: "Interior Design Reels in Hyderabad | Luxury Home Walkthroughs",
-    description: "Showcase your architectural design work with premium interior reels in Hyderabad. Real estate and interior design walkthrough videos by ReelScale.",
+    title: "Interior Reels & Architect Video Production in Hyderabad | ReelScale",
+    description: "Showcase architecture and homes with high-end interior reels in Hyderabad. Professional home tour walkthroughs, styling video shoots, and interior editing in Gachibowli, Manikonda, and Hitech City.",
     url: "https://reelscale.in/interior-reels-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Gachibowli",
     "Banjara Hills",
     "Financial District"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "How Interior Design Reels Attract High-Ticket Projects",
+      "text": "For interior designers and architects in premium markets like Gachibowli, Jubilee Hills, and Financial District, static images are no longer enough. High-end interior walkthrough reels reveal the spatial depth, lighting, texture, and flow of premium spaces, convincing high-budget clients of your expertise."
+    },
+    {
+      "heading": "The Art of Cinematic Architecture Videography",
+      "text": "Shooting interiors requires deep control over dynamic range, wide-angle lens setups, and smooth stabilization. We capture natural lighting, material details (marble, woodwork, textiles), and smart transitions, presenting luxury homes in their best light."
+    },
+    {
+      "heading": "Voiceover Scripting and Designer Branding",
+      "text": "Our interior design reels include professional scripting and isolated voiceover setups. Describing your design process, material choices, and space optimization adds educational value (E-E-A-T) and positions you as a leading authority figure."
+    }
   ]
 };
 

@@ -226,7 +226,6 @@ export function Users({
                 onChange={handleSelectAll}
               />
             </th>
-            <th>ID</th>
             <th
               onClick={() => handleSort("name")}
               className="sortable-header th-sortable"
@@ -255,7 +254,6 @@ export function Users({
           {newUserRow && (
             <tr className="new-user-row">
               <td></td>
-              <td>Auto</td>
               <td>
                 <input
                   id="new-user-name"
@@ -327,7 +325,7 @@ export function Users({
           {/* Existing Users Rows */}
           {totalItems === 0 && !newUserRow ? (
             <tr>
-              <td colSpan={7}>
+              <td colSpan={6}>
                 <div className="empty">
                   <div className="empty-icon">◎</div>
                   <div className="empty-text">No users found</div>
@@ -348,7 +346,6 @@ export function Users({
                     onChange={(e) => handleSelectRow(userId, e.target.checked)}
                   />
                 </td>
-                <td>{user.id}</td>
                 <td>
                   <input
                     key={`${userId}-name-${user.name}`}

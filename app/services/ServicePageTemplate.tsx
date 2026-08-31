@@ -19,6 +19,11 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface KnowledgeHubSection {
+  heading: string;
+  text: string;
+}
+
 export interface ServicePageData {
   name: string;
   headline: string;
@@ -32,6 +37,7 @@ export interface ServicePageData {
   pricingFeatures: string[];
   faqs: FAQItem[];
   locationKeywords: string[];
+  knowledgeHub?: KnowledgeHubSection[];
 }
 
 interface ServicePageTemplateProps {
@@ -217,35 +223,49 @@ export default function ServicePageTemplate({ headerHtml, footerHtml, data, isMa
           </div>
         </section>
 
-        {isMainVideoProduction && (
+        {data.knowledgeHub ? (
           <section id="knowledge-hub">
             <div className="kh-container-flat">
-              <h3 className="kh-flat-heading">ReelScale Knowledge Hub</h3>
-              <p className="kh-flat-paragraph">
-                ReelScale is the best video production company in Hyderabad, providing premium end-to-end video production services to brands, creators, and corporate companies. Our services help local and national brands drive social media growth and build deep brand authority.
-              </p>
-
-              <h3 className="kh-flat-heading">Professional Video Production Services in Hyderabad</h3>
-              <p className="kh-flat-paragraph">
-                Our professional videography services in Hyderabad encompass high-concept brand films, detailed product shoots, and corporate video production. We serve companies across major micro-markets including Gachibowli, Madhapur, HITEC City, Jubilee Hills, and Banjara Hills.
-              </p>
-
-              <h3 className="kh-flat-heading">Commercial Video Production & Corporate Video Production</h3>
-              <p className="kh-flat-paragraph">
-                We produce commercial video ads and corporate films that establish E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness). Our team offers professional drone videography, event coverage, and multi-cam podcast production services to deliver outstanding brand exposure.
-              </p>
-
-              <h3 className="kh-flat-heading">Organic Social Media Growth & Reel Marketing</h3>
-              <p className="kh-flat-paragraph">
-                As a leading short form content agency, we act as a dedicated Instagram reels agency and content creation agency. Our specialized reel makers and video editors handle pacing, color grading, sound design, and subtitle styling centered in visual safe zones.
-              </p>
-
-              <h3 className="kh-flat-heading">Why Professional Reels Outperform DIY Content</h3>
-              <p className="kh-flat-paragraph">
-                Unlike DIY recordings, professional video editing and production offer cinema-grade dynamic range, studio lighting, and audio isolation. These factors prevent viewer bounces, maximize average watch time, and satisfy search algorithms to boost organic reach.
-              </p>
+              <h3 className="kh-flat-heading">{data.name} Knowledge Hub</h3>
+              {data.knowledgeHub.map((kh, idx) => (
+                <div key={idx} style={{ marginBottom: "24px" }}>
+                  <h3 className="kh-flat-heading" style={{ marginTop: "24px" }}>{kh.heading}</h3>
+                  <p className="kh-flat-paragraph">{kh.text}</p>
+                </div>
+              ))}
             </div>
           </section>
+        ) : (
+          isMainVideoProduction && (
+            <section id="knowledge-hub">
+              <div className="kh-container-flat">
+                <h3 className="kh-flat-heading">ReelScale Knowledge Hub</h3>
+                <p className="kh-flat-paragraph">
+                  ReelScale is the best video production company in Hyderabad, providing premium end-to-end video production services to brands, creators, and corporate companies. Our services help local and national brands drive social media growth and build deep brand authority.
+                </p>
+
+                <h3 className="kh-flat-heading">Professional Video Production Services in Hyderabad</h3>
+                <p className="kh-flat-paragraph">
+                  Our professional videography services in Hyderabad encompass high-concept brand films, detailed product shoots, and corporate video production. We serve companies across major micro-markets including Gachibowli, Madhapur, HITEC City, Jubilee Hills, and Banjara Hills.
+                </p>
+
+                <h3 className="kh-flat-heading">Commercial Video Production & Corporate Video Production</h3>
+                <p className="kh-flat-paragraph">
+                  We produce commercial video ads and corporate films that establish E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness). Our team offers professional drone videography, event coverage, and multi-cam podcast production services to deliver outstanding brand exposure.
+                </p>
+
+                <h3 className="kh-flat-heading">Organic Social Media Growth & Reel Marketing</h3>
+                <p className="kh-flat-paragraph">
+                  As a leading short form content agency, we act as a dedicated Instagram reels agency and content creation agency. Our specialized reel makers and video editors handle pacing, color grading, sound design, and subtitle styling centered in visual safe zones.
+                </p>
+
+                <h3 className="kh-flat-heading">Why Professional Reels Outperform DIY Content</h3>
+                <p className="kh-flat-paragraph">
+                  Unlike DIY recordings, professional video editing and production offer cinema-grade dynamic range, studio lighting, and audio isolation. These factors prevent viewer bounces, maximize average watch time, and satisfy search algorithms to boost organic reach.
+                </p>
+              </div>
+            </section>
+          )
         )}
 
       </main>

@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Cafe Reels Production in Hyderabad | Cafe Video Marketing",
-  description: "Create viral cafe reels in Hyderabad. ReelScale shoots aesthetic coffee pours, satisfying dessert plating, and cozy interior videos that drive weekend foot traffic.",
+  title: "Cafe Reels & Restaurant Video Production in Hyderabad | ReelScale",
+  description: "Drive restaurant walk-ins with cinematic cafe reels in Hyderabad. Professional food shoots, cafe promos, and mouthwatering food reels production in Banjara Hills, Jubilee Hills, and Hitech City.",
   alternates: {
     canonical: "https://reelscale.in/cafe-reels-hyderabad",
   },
   openGraph: {
-    title: "Cafe Reels Production in Hyderabad | Cafe Video Marketing",
-    description: "Create viral cafe reels in Hyderabad. ReelScale shoots aesthetic coffee pours, satisfying dessert plating, and cozy interior videos that drive weekend foot traffic.",
+    title: "Cafe Reels & Restaurant Video Production in Hyderabad | ReelScale",
+    description: "Drive restaurant walk-ins with cinematic cafe reels in Hyderabad. Professional food shoots, cafe promos, and mouthwatering food reels production in Banjara Hills, Jubilee Hills, and Hitech City.",
     url: "https://reelscale.in/cafe-reels-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Gachibowli",
     "Film Nagar",
     "Banjara Hills"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "How Cafe Reels Drive Restaurant Walk-ins in Hyderabad",
+      "text": "For cafes in trendy hotspots like Jubilee Hills, Madhapur, and Banjara Hills, visual appeal is everything. Cinematic cafe reels highlighting coffee pours, aesthetic plating, and cozy decor build mouthwatering anticipation, encouraging foodies and weekend crowds to visit."
+    },
+    {
+      "heading": "The ROI of Professional Food Videography",
+      "text": "Using professional macro lenses and stabilized cameras, we capture steam, sizzles, and textures that smartphone cameras miss. Beat-synced food preparation transitions maximize viewer retention, leading to higher engagement and social shares."
+    },
+    {
+      "heading": "Custom Menu Highlight & Signature Dish Shoots",
+      "text": "We design and film specialized reel content around your signature dishes, seasonal menu upgrades, or festive specials. Every shoot includes optimized copywritten scripts, hooks, and local food blogger hashtags."
+    }
   ]
 };
 

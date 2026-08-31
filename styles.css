@@ -83,6 +83,12 @@ header {
         color: var(--red) !important;
         transition: border-color 0.4s ease, transform 0.4s ease, padding 0.4s ease, background 0.4s ease, color 0.4s ease;
     }
+
+    .mob-btn-primary:hover {
+        background: var(--red) !important;
+        color: var(--white) !important;
+        transform: scale(1.02);
+    }
 }
 
 /* Active when scrolled - Centered Floating Pill design */
@@ -102,6 +108,11 @@ header.scrolled {
         background: var(--red) !important;
         border: 1px solid transparent !important;
         color: var(--white) !important;
+    }
+
+    .mob-btn-primary:hover {
+        background: var(--red2) !important;
+        transform: scale(1.02);
     }
 }
 
@@ -196,9 +207,9 @@ nav a {
 
 }
 
-nav a:hover {
-    color: var(--white);
-    background: var(--white-10);
+#nav-links a:hover {
+    color: var(--red) !important;
+    background: var(--white-05);
     border-radius: var(--border-radius-99);
 }
 
@@ -3417,6 +3428,11 @@ body.mobile-menu-open {
     border: 1px solid var(--red) !important;
 }
 
+.growth-page-wrapper .btn-primary.mob-btn-primary:hover {
+    color: #000000 !important;
+    background: var(--red) !important;
+}
+
 /* Once scrolled, it has a solid green background, so we use black text for contrast */
 .growth-page-wrapper header.scrolled .btn-primary.mob-btn-primary {
     color: #000000 !important;
@@ -3426,6 +3442,7 @@ body.mobile-menu-open {
 
 .growth-page-wrapper header.scrolled .btn-primary.mob-btn-primary:hover {
     color: #000000 !important;
+    background: var(--red2) !important;
 }
 
 /* Ensure 'MOST POPULAR' badge has dark text for readability on green */
@@ -3620,9 +3637,11 @@ body.mobile-menu-open {
         font-size: 12px;
         margin-right: 12px;
     }
+
     .announcement-label {
         font-size: 10px;
     }
+
     .announcement-separator {
         margin: 0 8px;
     }

@@ -5,14 +5,14 @@ import GrowthContent from "./GrowthContent";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Social Media Marketing & Digital Marketing Agency | ReelScale Growth",
-  description: "Scale your business with ReelScale Growth, a premier digital marketing agency. We specialize in complete social media management, organic brand growth, high-converting Meta & Instagram ad campaigns, and cinematic reel production.",
+  title: "Social Growth & Meta Ads Agency in Hyderabad | ReelScale",
+  description: "Supercharge your brand's reach with ReelScale's complete social media management, creative growth systems, and performance-optimized Meta ad campaigns in Hyderabad.",
   alternates: {
     canonical: "https://reelscale.in/growth",
   },
   openGraph: {
-    title: "Social Media Marketing & Digital Marketing Agency | ReelScale Growth",
-    description: "Scale your business with ReelScale Growth, a premier digital marketing agency. We specialize in complete social media management, organic brand growth, high-converting Meta & Instagram ad campaigns, and cinematic reel production.",
+    title: "Social Growth & Meta Ads Agency in Hyderabad | ReelScale",
+    description: "Supercharge your brand's reach with ReelScale's complete social media management, creative growth systems, and performance-optimized Meta ad campaigns in Hyderabad.",
     url: "https://reelscale.in/growth",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],

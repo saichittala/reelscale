@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Reel Production Company in Hyderabad | ReelScale",
-  description: "ReelScale is the leading reel production company in Hyderabad. We deliver end-to-end cinematic corporate reels, commercial video ads, and short-form content scaling.",
+  title: "Reel Production Company in Hyderabad | Professional Video Agency",
+  description: "Partner with the premium reel production company in Hyderabad. End-to-end filming, editing, and sound design for brands and businesses in Hitech City, Jubilee Hills, and Gachibowli.",
   alternates: {
     canonical: "https://reelscale.in/reel-production-company-hyderabad",
   },
   openGraph: {
-    title: "Reel Production Company in Hyderabad | ReelScale",
-    description: "ReelScale is the leading reel production company in Hyderabad. We deliver end-to-end cinematic corporate reels, commercial video ads, and short-form content scaling.",
+    title: "Reel Production Company in Hyderabad | Professional Video Agency",
+    description: "Partner with the premium reel production company in Hyderabad. End-to-end filming, editing, and sound design for brands and businesses in Hitech City, Jubilee Hills, and Gachibowli.",
     url: "https://reelscale.in/reel-production-company-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Kondapur",
     "Begumpet",
     "Secunderabad"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "Why Work with a Dedicated Reel Production Company in Hyderabad",
+      "text": "Short-form video is highly strategic. As the leading reel production company in Hyderabad, we merge copywriting, professional direction, cinematic lighting, and custom sound design to turn views into active business leads in Gachibowli, Madhapur, and Hitech City."
+    },
+    {
+      "heading": "End-to-End Vertical and Horizontal Video Production",
+      "text": "While we specialize in high-retention vertical short-form content (9:16) for Instagram Reels and YouTube Shorts, we also produce premium horizontal corporate video assets, founder interviews, and commercial video ads."
+    },
+    {
+      "heading": "Topical Authority & Video SEO for Social Algorithms",
+      "text": "Every video is optimized with clean subtitle placements, correct pacing to maximize average watch time, and local hashtags, ensuring your brand establishes dominant topical authority across search and social platforms."
+    }
   ]
 };
 

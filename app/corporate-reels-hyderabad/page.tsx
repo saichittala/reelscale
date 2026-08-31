@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Corporate Reels Shoot in Hyderabad | Business Video Production",
-  description: "Enhance your brand authority with corporate reels shoot in Hyderabad. Professional business videos, company profiles, team highlights, and founder interviews in HITEC City.",
+  title: "Corporate Reels & Business Video Production in Hyderabad | ReelScale",
+  description: "Build company trust with high-impact corporate reels in Hyderabad. Premium brand films, employee spotlights, and business promos in Financial District, Hitech City, and Madhapur.",
   alternates: {
     canonical: "https://reelscale.in/corporate-reels-hyderabad",
   },
   openGraph: {
-    title: "Corporate Reels Shoot in Hyderabad | Business Video Production",
-    description: "Enhance your brand authority with corporate reels shoot in Hyderabad. Professional business videos, company profiles, team highlights, and founder interviews in HITEC City.",
+    title: "Corporate Reels & Business Video Production in Hyderabad | ReelScale",
+    description: "Build company trust with high-impact corporate reels in Hyderabad. Premium brand films, employee spotlights, and business promos in Financial District, Hitech City, and Madhapur.",
     url: "https://reelscale.in/corporate-reels-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Financial District",
     "Madhapur",
     "Banjara Hills"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "How Corporate Reels Build Employer Brand & Authority",
+      "text": "For corporate companies in HITEC City, Gachibowli, and Financial District, social media is key to attracting talent and clients. High-impact corporate reels highlighting team culture, employee spotlights, and founder messages project authentic brand value."
+    },
+    {
+      "heading": "The ROI of Professional Business Video Production",
+      "text": "A professionally directed and edited business reel builds E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness) far better than stock footage. We script and shoot client case studies, office walkthroughs, and milestone videos that drive B2B leads."
+    },
+    {
+      "heading": "Minimal-Disruption Office Filming Workflows",
+      "text": "Our experienced video production crew works efficiently on-site. We plan shots, set up compact, high-quality audio and lighting gear, and direct your team members to capture authentic moments with minimal disruption to your daily operations."
+    }
   ]
 };
 

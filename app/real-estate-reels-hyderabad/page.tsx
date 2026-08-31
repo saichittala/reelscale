@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Real Estate Reels in Hyderabad | Luxury Property Video Agency",
-  description: "Sell properties faster with cinematic real estate reels in Hyderabad. Luxury property walkthroughs, apartment promos, and villa videography in Gachibowli and Financial District.",
+  title: "Real Estate Reels & Property Video Production in Hyderabad | ReelScale",
+  description: "Sell properties faster with cinematic real estate reels in Hyderabad. Professional villa walkthroughs, property reels shoots, and broker branding in Gachibowli, Kondapur, and Financial District.",
   alternates: {
     canonical: "https://reelscale.in/real-estate-reels-hyderabad",
   },
   openGraph: {
-    title: "Real Estate Reels in Hyderabad | Luxury Property Video Agency",
-    description: "Sell properties faster with cinematic real estate reels in Hyderabad. Luxury property walkthroughs, apartment promos, and villa videography in Gachibowli and Financial District.",
+    title: "Real Estate Reels & Property Video Production in Hyderabad | ReelScale",
+    description: "Sell properties faster with cinematic real estate reels in Hyderabad. Professional villa walkthroughs, property reels shoots, and broker branding in Gachibowli, Kondapur, and Financial District.",
     url: "https://reelscale.in/real-estate-reels-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Financial District",
     "Narsingi",
     "Madhapur"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "How Real Estate Reels Drive Property Sales in Hyderabad",
+      "text": "For real estate brokers and developers in premium Hyderabad areas like Kokapet, Gachibowli, and Financial District, video is the ultimate sales tool. Cinematic property reels allow prospective buyers to tour a villa or apartment virtually, highlighting key selling points and layout features."
+    },
+    {
+      "heading": "Professional Property Walkthroughs & Drone Videography",
+      "text": "High-quality real estate video production utilizes wide-angle lenses, stabilizer rigs, and drone aerial footage. This reveals the scale of the community, building amenities, and luxury architectural details, attracting serious buyers."
+    },
+    {
+      "heading": "Personal Branding for Real Estate Brokers",
+      "text": "Reels that feature the broker presenting the home build deep personal trust. Our scripts and professional sound editing ensure you present properties with clarity, establishing authority in the Hyderabad real estate market."
+    }
   ]
 };
 

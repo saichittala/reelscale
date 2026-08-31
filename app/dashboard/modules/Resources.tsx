@@ -15,12 +15,12 @@ interface ResourcesProps {
 
 // Predefined Payment Details for ReelScale
 const DEFAULT_PAYMENT_DETAILS = {
-  accountName: "ReelScale Co.",
-  bank: "ICICI Bank",
-  accountNumber: "102938475622",
-  ifsc: "ICIC0001092",
-  upiId: "reelscale@icici",
-  terms: "50% upfront payment to secure booking, 50% upon final delivery of videos.",
+  accountName: "Chittala Sai Durga Surya Prakash",
+  bank: "HDFC Bank - Ambajipeta",
+  accountNumber: "50100657038254",
+  ifsc: "HDFC0008100",
+  upiId: "saichittala7@ybl",
+  terms: "100% upfront payment is due instantly to secure booking.",
 };
 
 // Formatting helpers
@@ -291,7 +291,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
         expenses: 0,
         total: 61360,
         paymentDetails: DEFAULT_PAYMENT_DETAILS,
-        terms: "Payment terms: 50% upfront, 50% on project sign-off.",
+        terms: DEFAULT_PAYMENT_DETAILS.terms,
         notes: "Thank you for collaborating with ReelScale! We create reels that retain, convert and scale.",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -784,7 +784,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                 </div>
 
                 {showNewClientForm && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px", padding: "16px", background: "var(--white-03)", borderRadius: "8px", border: "1px solid var(--border)" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "16px" }}>
                     <div className="form-group">
                       <label>Client Contact Name *</label>
                       <input type="text" className="form-input" placeholder="e.g. Alice Miller" value={activeDoc.clientName} onChange={(e) => handleUpdateField("clientName", e.target.value)} />
@@ -1009,7 +1009,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                     {/* Header: Logo & Title */}
                     <div className="a4-header">
                       <div className="a4-logo">
-                        <img src="/assets/logo-green.svg" alt="ReelScale Logo" style={{ height: "24px" }} />
+                        <img src="/assets/r_light.svg" alt="ReelScale Logo" style={{ height: "24px" }} />
                       </div>
                       <div className="a4-document-title">{activeDoc.type}</div>
                     </div>

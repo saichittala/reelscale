@@ -120,7 +120,7 @@ export function Layout({
           },
           {
             id: "resources" as DashboardPage,
-            icon: "/assets/icons/nav-resources.svg",
+            icon: "/assets/icons/nav-resources-v2.svg",
             label: "Resources",
           },
         ];

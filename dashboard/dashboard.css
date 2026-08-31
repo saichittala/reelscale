@@ -692,8 +692,8 @@ body {
 }
 
 .sidebar.collapsed .dashboard-logo img {
-    width: 24px;
-    height: auto;
+    width: 100%;
+    height: 100%;
 }
 
 .sidebar.collapsed .logo-sub {
@@ -1787,7 +1787,8 @@ tr:hover td {
     margin-bottom: 16px
 }
 
-.form-label {
+.form-label,
+.form-group label {
     display: block;
     font-size: var(--text-sm) !important;
     font-weight: 300;
@@ -4404,7 +4405,8 @@ td:has(.cs-root[data-open="true"]) {
     box-sizing: border-box;
 }
 
-.td-select:hover, .td-select:focus {
+.td-select:hover,
+.td-select:focus {
     border-color: var(--green-brand);
     background: var(--white-03);
 }
@@ -4473,11 +4475,11 @@ td:has(.cs-root[data-open="true"]) {
 }
 
 /* Segmented Control Styles matching user image */
-.segmented-control {
+.segmented-control-pill {
     display: inline-flex;
     background: oklch(0.12 0 0);
     padding: 4px;
-    border-radius: 100px;
+    border-radius: 99px;
     border: 1px solid var(--border);
     align-items: center;
 }
@@ -4488,7 +4490,7 @@ td:has(.cs-root[data-open="true"]) {
     font-weight: 500;
     color: var(--muted);
     border: 1px solid transparent;
-    border-radius: 100px;
+    border-radius: 99px;
     cursor: pointer;
     background: transparent;
     transition: all var(--duration-fast) var(--ease-smooth);
@@ -4517,7 +4519,8 @@ td:has(.cs-root[data-open="true"]) {
 .table-inner-scroll th:nth-child(2),
 .table-inner-scroll td:nth-child(2) {
     position: sticky;
-    left: 40px; /* offset by checkbox column width (40px) */
+    left: 40px;
+    /* offset by checkbox column width (40px) */
     z-index: 10;
     background: var(--bg);
     border-right: 1px solid var(--white-07);
@@ -4569,7 +4572,8 @@ td:has(.cs-root[data-open="true"]) {
 
 /* Custom premium scrollbar matching light/dark theme design system */
 .table-inner-scroll::-webkit-scrollbar {
-    height: 8px; /* horizontal scrollbar height */
+    height: 8px;
+    /* horizontal scrollbar height */
     width: 8px;
 }
 
@@ -4601,26 +4605,26 @@ td:has(.cs-root[data-open="true"]) {
 .resources-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+    gap: 16px;
     margin-top: 24px;
 }
 
 .resource-card {
     background: var(--white-03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
+    border: none;
+    border-radius: var(--border-radius-2);
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
     min-height: 180px;
 }
 
 .resource-card:hover {
     background: var(--white-05);
-    border-color: var(--white-20);
+    transform: translateY(-2px);
 }
 
 .resource-card-title {
@@ -4708,7 +4712,7 @@ td:has(.cs-root[data-open="true"]) {
     display: flex;
     background: var(--white-05);
     padding: 4px;
-    border-radius: 8px;
+    border-radius: 99px;
     border: 1px solid var(--border);
     margin-bottom: 8px;
 }
@@ -4721,7 +4725,7 @@ td:has(.cs-root[data-open="true"]) {
     color: var(--muted);
     font-size: 14px;
     font-weight: 500;
-    border-radius: 6px;
+    border-radius: 99px;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
 }
@@ -4854,13 +4858,15 @@ td:has(.cs-root[data-open="true"]) {
 .a4-document-container {
     width: 100%;
     box-sizing: border-box;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
 }
 
 .a4-document {
     background: #ffffff;
     color: #111115 !important;
-    width: 100%;
-    max-width: 800px;
+    width: 800px;
     margin: 0 auto;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     border-radius: 2px;
@@ -4872,11 +4878,19 @@ td:has(.cs-root[data-open="true"]) {
     flex-direction: column;
     justify-content: space-between;
     min-height: 1050px;
+    flex-shrink: 0;
 }
 
 /* Inside A4 styles (always force clean white/black print layout) */
-.a4-document *, .a4-document h1, .a4-document h2, .a4-document h3, .a4-document h4, .a4-document th, .a4-document td {
+.a4-document *,
+.a4-document h1,
+.a4-document h2,
+.a4-document h3,
+.a4-document h4,
+.a4-document th,
+.a4-document td {
     color: #111115 !important;
+    font-family: var(--font, sans-serif);
 }
 
 .a4-header {
@@ -4899,7 +4913,7 @@ td:has(.cs-root[data-open="true"]) {
 .a4-document-title {
     font-size: 32px;
     font-weight: 400;
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: 'Instrument Serif', Georgia, serif !important;
     text-transform: capitalize;
 }
 
@@ -4962,7 +4976,8 @@ td:has(.cs-root[data-open="true"]) {
     line-height: 1.4;
 }
 
-.a4-items-table td.text-right, .a4-items-table th.text-right {
+.a4-items-table td.text-right,
+.a4-items-table th.text-right {
     text-align: right;
 }
 
@@ -5130,7 +5145,7 @@ td:has(.cs-root[data-open="true"]) {
     .document-workspace {
         grid-template-columns: 1fr;
     }
-    
+
     .preview-panel {
         position: static;
         max-height: none;
@@ -5139,26 +5154,44 @@ td:has(.cs-root[data-open="true"]) {
 
 /* Print Overrides styling */
 @media print {
-    body, html {
+
+    body,
+    html {
         background: #ffffff !important;
         color: #111115 !important;
     }
-    .no-print, .sidebar, .topbar, .topbar-actions, .details-panel, .resources-header, .sidebar-toggle, .btn, .segmented-control, .toast, .save-status-indicator, .modal-overlay {
+
+    .no-print,
+    .sidebar,
+    .topbar,
+    .topbar-actions,
+    .details-panel,
+    .resources-header,
+    .sidebar-toggle,
+    .btn,
+    .segmented-control,
+    .toast,
+    .save-status-indicator,
+    .modal-overlay {
         display: none !important;
     }
-    .main, .content {
+
+    .main,
+    .content {
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
         background: #ffffff !important;
         display: block !important;
     }
+
     .document-workspace {
         display: block !important;
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
     }
+
     .preview-panel {
         padding: 0 !important;
         margin: 0 !important;
@@ -5170,6 +5203,7 @@ td:has(.cs-root[data-open="true"]) {
         position: static !important;
         display: block !important;
     }
+
     .a4-document {
         box-shadow: none !important;
         border: none !important;
@@ -5183,4 +5217,4 @@ td:has(.cs-root[data-open="true"]) {
 
 .filter-select {
     width: 160px !important;
-}
+}

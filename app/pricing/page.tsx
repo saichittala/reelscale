@@ -5,14 +5,14 @@ import PricingContent from "./PricingContent";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Pricing | ReelScale — Simple. Scalable. No surprises.",
-  description: "View our simple and scalable pricing plans for cinematic Instagram Reels and professional short-form video production services.",
+  title: "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost",
+  description: "Explore transparent pricing packages for professional reels shoots and video editing services in Hyderabad. Scale your brand's social media presence with no hidden costs.",
   alternates: {
     canonical: "https://reelscale.in/pricing",
   },
   openGraph: {
-    title: "Pricing | ReelScale — Simple. Scalable. No surprises.",
-    description: "View our simple and scalable pricing plans for cinematic Instagram Reels and professional short-form video production services.",
+    title: "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost",
+    description: "Explore transparent pricing packages for professional reels shoots and video editing services in Hyderabad. Scale your brand's social media presence with no hidden costs.",
     url: "https://reelscale.in/pricing",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],

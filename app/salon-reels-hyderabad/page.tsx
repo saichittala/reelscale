@@ -5,14 +5,14 @@ import ServicePageTemplate from "../services/ServicePageTemplate";
 import "../../styles.css";
 
 export const metadata: Metadata = {
-  title: "Salon Reels Production in Hyderabad | Beauty & Hair Styling Reels",
-  description: "Looking for premium salon reels shoot in Hyderabad? ReelScale creates aesthetic transformation videos, before/after hair styling reels, and beauty promos.",
+  title: "Salon Reels & Beauty Video Production in Hyderabad | ReelScale",
+  description: "Attract beauty salon clients with premium salon reels in Hyderabad. Professional hair transform shoots, spa promos, and makeup reels editing in Jubilee Hills, Banjara Hills, and Gachibowli.",
   alternates: {
     canonical: "https://reelscale.in/salon-reels-hyderabad",
   },
   openGraph: {
-    title: "Salon Reels Production in Hyderabad | Beauty & Hair Styling Reels",
-    description: "Looking for premium salon reels shoot in Hyderabad? ReelScale creates aesthetic transformation videos, before/after hair styling reels, and beauty promos.",
+    title: "Salon Reels & Beauty Video Production in Hyderabad | ReelScale",
+    description: "Attract beauty salon clients with premium salon reels in Hyderabad. Professional hair transform shoots, spa promos, and makeup reels editing in Jubilee Hills, Banjara Hills, and Gachibowli.",
     url: "https://reelscale.in/salon-reels-hyderabad",
     siteName: "ReelScale",
     images: ["https://reelscale.in/assets/logo.png"],
@@ -136,6 +136,20 @@ export default function SEOPage() {
     "Madhapur",
     "Gachibowli",
     "Begumpet"
+  ],
+  "knowledgeHub": [
+    {
+      "heading": "How Salon Reels Build Trust & Attract Beauty Clients",
+      "text": "In the beauty industry, clients buy outcomes. Salon reels in premium neighborhoods like Jubilee Hills and Banjara Hills must showcase high-quality transitions (before/after transformations), hair color accuracy, and premium styling details to build trust and drive direct bookings."
+    },
+    {
+      "heading": "The Importance of Color-Accurate Video Editing",
+      "text": "For salons, correct color grading is vital to show the real tones of hair colors, balayage, and makeup. Our professional video editors use specialized studio-grade tools to ensure hair colors are represented accurately, protecting your brand's credibility."
+    },
+    {
+      "heading": "Professional Ring Lighting and Softbox Setups",
+      "text": "Our salon reels shoots use professional mobile studio lighting (softboxes, diffuse ring lights) that highlight the texture and shine of hair and skin, elevating the visual quality far above typical smartphone recordings."
+    }
   ]
 };
 

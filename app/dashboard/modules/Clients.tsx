@@ -971,7 +971,7 @@ export function Clients({
         </div>
 
         {/* Model Filter Toggle - Segmented control style */}
-        <div className="segmented-control">
+        <div className="segmented-control-pill">
           <button
             type="button"
             className={`segmented-control-item ${activeModelFilter === "all" ? "active" : ""}`}
