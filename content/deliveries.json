@@ -1,0 +1,35 @@
+[
+  {
+    "id": "del-101",
+    "clientId": 8,
+    "month": "2026-10",
+    "title": "Reel 01: Nex Arena Turf Weekend Blitz Highlights",
+    "deliveredDate": "2026-10-04",
+    "link": "https://www.instagram.com/reel/DBa123xyz/",
+    "status": "Delivered",
+    "notes": "Color graded 4K edit with trending audio",
+    "createdAt": "2026-10-04T10:00:00.000Z"
+  },
+  {
+    "id": "del-102",
+    "clientId": 8,
+    "month": "2026-10",
+    "title": "Reel 02: Midnight Football Match POV & Goals",
+    "deliveredDate": "2026-10-09",
+    "link": "https://www.instagram.com/reel/DBc456abc/",
+    "status": "Delivered",
+    "notes": "Gimbal action shots + sound design",
+    "createdAt": "2026-10-09T14:30:00.000Z"
+  },
+  {
+    "id": "del-103",
+    "clientId": 8,
+    "month": "2026-10",
+    "title": "Reel 03: Customer Spotlight - Corporate Cup Trophy Reveal",
+    "deliveredDate": "2026-10-14",
+    "link": "https://www.instagram.com/reel/DBf789def/",
+    "status": "Delivered",
+    "notes": "Interview snippets & drone overview",
+    "createdAt": "2026-10-14T12:00:00.000Z"
+  }
+]

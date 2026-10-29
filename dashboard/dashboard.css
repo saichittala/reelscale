@@ -1819,6 +1819,66 @@ tr:hover td {
     color: var(--muted)
 }
 
+/* ─────────────────────────────────────────────────────────────
+   DESIGN SYSTEM BROWSER AUTOFILL (RED 10% BACKGROUND + WHITE TEXT)
+   ───────────────────────────────────────────────────────────── */
+input,
+textarea,
+select {
+    color-scheme: dark;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--white) !important;
+    caret-color: var(--white) !important;
+    color: var(--white) !important;
+    -webkit-box-shadow: 0 0 0 1000px #2a1215 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset !important;
+    box-shadow: 0 0 0 1000px #2a1215 inset !important;
+    box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset !important;
+    border: 0.6px solid var(--red-op) !important;
+    border-radius: var(--border-radius-2) !important;
+    font-family: var(--font) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:focus {
+    border-color: var(--red) !important;
+    -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
+    box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
+}
+
+/* Standard pseudo-class for Firefox and modern browsers */
+input:autofill,
+textarea:autofill,
+select:autofill,
+.form-input:autofill {
+    background-color: var(--red-10) !important;
+    color: var(--white) !important;
+    border: 0.6px solid var(--red-op) !important;
+}
+
+input:autofill:focus,
+.form-input:autofill:focus {
+    background-color: var(--red-10) !important;
+    border-color: var(--red) !important;
+    box-shadow: 0 0 0 3px var(--red-10) !important;
+}
+
 /* CUSTOM CHECKBOX */
 .custom-checkbox {
     appearance: none;
@@ -3674,26 +3734,26 @@ input[type="number"] {
    ========================================================================== */
 
 :root {
-    --cs-bg: oklch(0.12 0 0);
-    --cs-border: var(--border);
-    --cs-shadow: 0 8px 32px oklch(0 0 0 / 0.55), 0 2px 8px oklch(0 0 0 / 0.3), inset 0 0.6px 0 var(--white-07);
-    --cs-option-color: var(--muted);
-    --cs-option-hover-bg: var(--white-07);
-    --cs-option-hover-color: var(--white);
-    --cs-option-selected-color: var(--white);
+    --cs-bg: #141414;
+    --cs-border: rgba(255, 255, 255, 0.12);
+    --cs-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0.6px 0 rgba(255, 255, 255, 0.08);
+    --cs-option-color: rgba(255, 255, 255, 0.78);
+    --cs-option-hover-bg: rgba(255, 255, 255, 0.09);
+    --cs-option-hover-color: #ffffff;
+    --cs-option-selected-color: #ffffff;
     --cs-trigger-hover-bg: var(--white-05);
     --cs-trigger-border: var(--border);
     --bg-toast: oklch(0.13 0 0 / 0.45);
 }
 
 [data-theme="light"] {
-    --cs-bg: oklch(1 0 0);
-    --cs-border: var(--border);
-    --cs-shadow: 0 8px 32px oklch(0 0 0 / 0.08), 0 2px 8px oklch(0 0 0 / 0.04), inset 0 0.6px 0 var(--white-50);
-    --cs-option-color: var(--muted);
-    --cs-option-hover-bg: var(--white-07);
-    --cs-option-hover-color: var(--white);
-    --cs-option-selected-color: var(--white);
+    --cs-bg: #ffffff;
+    --cs-border: rgba(0, 0, 0, 0.12);
+    --cs-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 0.6px 0 rgba(255, 255, 255, 0.8);
+    --cs-option-color: rgba(0, 0, 0, 0.75);
+    --cs-option-hover-bg: rgba(0, 0, 0, 0.06);
+    --cs-option-hover-color: #000000;
+    --cs-option-selected-color: #000000;
     --cs-trigger-hover-bg: var(--white-05);
     --cs-trigger-border: var(--border);
     --bg-toast: oklch(1 0 0 / 0.45);
@@ -3819,7 +3879,7 @@ td:has(.cs-root[data-open="true"]) {
 /* ─── DROPDOWN PANEL ──────────────────────────────────────── */
 .cs-panel {
     position: absolute;
-    z-index: var(--z-overlay);
+    z-index: 9999;
     top: calc(100% + 6px);
     left: 0;
 
@@ -3827,8 +3887,6 @@ td:has(.cs-root[data-open="true"]) {
     border: 0.6px solid var(--cs-border);
     border-radius: var(--border-radius-4);
     box-shadow: var(--cs-shadow);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     overflow: hidden;
     animation: cs-panel-in 160ms var(--ease-spring) forwards;
     transform-origin: top left;
@@ -3854,6 +3912,11 @@ td:has(.cs-root[data-open="true"]) {
     max-width: 220px;
     max-height: 220px;
     overflow-y: auto;
+}
+
+.cs-panel-sm .cs-option {
+    padding: 6px 10px;
+    font-size: var(--text-xs);
 }
 
 /* Panel entrance animation — opacity + subtle vertical shift only */
@@ -3918,7 +3981,7 @@ td:has(.cs-root[data-open="true"]) {
 /* Selected */
 .cs-option-selected {
     color: var(--cs-option-selected-color);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 /* ─── OPTION LABEL ────────────────────────────────────────── */

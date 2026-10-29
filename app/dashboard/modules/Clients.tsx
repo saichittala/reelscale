@@ -3,6 +3,9 @@ import { Client } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { SortIcon } from "../components/SortIcon";
 import { CustomSelect } from "../components/CustomSelect";
+import { ReelTrackerModal } from "../components/ReelTrackerModal";
+import { fetchDeliveries } from "../services/api";
+import { IconFilm } from "../components/Icons";
 
 interface ClientsProps {
   clients: Client[];
@@ -76,6 +79,32 @@ export function Clients({
   const [editingClientId, setEditingClientId] = useState<string | number | null>(null);
   const [editClientData, setEditClientData] = useState<Client | null>(null);
   const [activeModelFilter, setActiveModelFilter] = useState<"all" | "bm" | "rtr">("all");
+  // Reel delivery tracking modal states
+  const [trackerClient, setTrackerClient] = useState<Client | null>(null);
+  const [isTrackerOpen, setIsTrackerOpen] = useState(false);
+  const [deliveryCounts, setDeliveryCounts] = useState<Record<string, number>>({});
+
+  const loadDeliveriesSummary = async () => {
+    try {
+      const res = await fetchDeliveries();
+      const list = res.deliveries || [];
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const counts: Record<string, number> = {};
+      list.forEach((d) => {
+        if (d.month === currentMonth && d.status === "Delivered") {
+          const idKey = String(d.clientId);
+          counts[idKey] = (counts[idKey] || 0) + 1;
+        }
+      });
+      setDeliveryCounts(counts);
+    } catch (e) {
+      console.warn("Could not load deliveries summary", e);
+    }
+  };
+
+  useEffect(() => {
+    loadDeliveriesSummary();
+  }, [clients]);
 
   if (isLoading) {
     return <SkeletonLoader type="clients" />;
@@ -900,7 +929,37 @@ export function Clients({
           </td>
         )}
         <td>
-          <span className="client-reels-text" style={{ fontWeight: 500 }}>{c.reels}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span className="client-reels-text" style={{ fontWeight: 500 }}>{c.reels}</span>
+            {isSub && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTrackerClient(c);
+                  setIsTrackerOpen(true);
+                }}
+                title="Click to view/manage this month's delivered reels & share link"
+                style={{
+                  background: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green-12)" : "var(--red-10)",
+                  border: `0.6px solid ${(deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red-op)"}`,
+                  color: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red)",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  padding: "2px 8px",
+                  borderRadius: "var(--border-radius-99)",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  transition: "var(--transition-fast)",
+                }}
+              >
+                <IconFilm size={12} />
+                <span>{deliveryCounts[String(c.id)] || 0}/{c.reels} Del.</span>
+              </button>
+            )}
+          </div>
         </td>
 
         <td>
@@ -924,6 +983,32 @@ export function Clients({
         </td>
         <td className="th-actions" onClick={(e) => e.stopPropagation()}>
           <div className="action-btns">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setTrackerClient(c);
+                setIsTrackerOpen(true);
+              }}
+              title="Track Monthly Deliveries & Copy Client Link"
+              style={{
+                background: isSub ? "var(--red-10)" : "var(--white-05)",
+                border: `0.6px solid ${isSub ? "var(--red-op)" : "var(--border)"}`,
+                color: isSub ? "var(--red)" : "var(--muted)",
+                borderRadius: "var(--border-radius-99)",
+                padding: "4px 10px",
+                fontSize: "11px",
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                transition: "var(--transition-fast)",
+              }}
+            >
+              <IconFilm size={12} />
+              <span>{isSub ? "Tracker" : "Log"}</span>
+            </button>
             <img
               src="/assets/icons/edit.svg"
               alt="Edit"
@@ -1188,7 +1273,16 @@ export function Clients({
           </div>
         </div>
       )}
+      {/* ─── REEL TRACKER MODAL ─── */}
+      <ReelTrackerModal
+        isOpen={isTrackerOpen}
+        onClose={() => setIsTrackerOpen(false)}
+        client={trackerClient}
+        showToast={showToast}
+        onDeliveriesUpdated={loadDeliveriesSummary}
+      />
     </>
   );
 }
+
 export default Clients;

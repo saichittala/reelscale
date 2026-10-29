@@ -57,7 +57,9 @@ export function CustomSelect({
   useEffect(() => {
     if (open) {
       const idx = options.findIndex((o) => o.value.toLowerCase() === value?.toLowerCase());
-      setFocusedIndex(idx >= 0 ? idx : 0);
+      setFocusedIndex(idx >= 0 ? idx : -1);
+    } else {
+      setFocusedIndex(-1);
     }
   }, [open, value, options]);
 

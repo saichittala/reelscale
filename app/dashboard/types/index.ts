@@ -119,6 +119,18 @@ export interface ClientContract {
   createdAt: string;
 }
 
+export interface DeliveredReel {
+  id: string;
+  clientId: string | number;
+  month: string; // Format "YYYY-MM", e.g. "2026-10"
+  title: string;
+  deliveredDate: string; // Format "YYYY-MM-DD", e.g. "2026-10-24"
+  link?: string;
+  status: "Delivered" | "In Review" | "Scheduled";
+  notes?: string;
+  createdAt?: string;
+}
+
 export type DashboardPage =
   | "dashboard"
   | "clients"
@@ -129,4 +141,5 @@ export type DashboardPage =
   | "create-blog"
   | "blog-categories"
   | "resources";
+
 

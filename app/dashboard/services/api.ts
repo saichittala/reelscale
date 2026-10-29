@@ -1,4 +1,4 @@
-import { User, Client, Lead, Blog } from "../types";
+import { User, Client, Lead, Blog, DeliveredReel } from "../types";
 
 export const GAS_USERS_URL =
   "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
@@ -477,3 +477,119 @@ export async function apiDeleteBlog(id: string | number): Promise<void> {
     throw new Error(result.message || "Delete failed");
   }
 }
+
+// ==============================
+// DELIVERIES API SERVICES
+// ==============================
+export async function fetchDeliveries(
+  clientId?: string | number,
+  month?: string
+): Promise<{ deliveries: DeliveredReel[]; driveLink?: string; showDriveLink?: boolean }> {
+  try {
+    const params = new URLSearchParams();
+    if (clientId) params.append("clientId", String(clientId));
+    if (month && month !== "all") params.append("month", month);
+
+    const response = await fetch(`/api/deliveries?${params.toString()}`);
+    const data = await response.json();
+    if (data.success && Array.isArray(data.deliveries)) {
+      if (typeof window !== "undefined") {
+        // Cache in localStorage for offline / fast fallback
+        localStorage.setItem(`reelscale_deliveries_cache`, JSON.stringify(data.deliveries));
+      }
+      return {
+        deliveries: data.deliveries,
+        driveLink: data.driveLink || "",
+        showDriveLink: data.showDriveLink !== false,
+      };
+    }
+    return { deliveries: [], driveLink: "", showDriveLink: true };
+  } catch (error) {
+    console.warn("fetchDeliveries API error, falling back to cache:", error);
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(`reelscale_deliveries_cache`);
+        if (cached) {
+          let list: DeliveredReel[] = JSON.parse(cached);
+          if (clientId) list = list.filter((d) => String(d.clientId) === String(clientId));
+          if (month && month !== "all") list = list.filter((d) => d.month === month);
+          return { deliveries: list, driveLink: "", showDriveLink: true };
+        }
+      } catch {}
+    }
+    return { deliveries: [], driveLink: "", showDriveLink: true };
+  }
+}
+
+export async function apiSaveMonthDriveLink(
+  clientId: string | number,
+  month: string,
+  driveLink: string,
+  showDriveLink: boolean = true
+): Promise<void> {
+  const response = await fetch("/api/deliveries", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "setDriveLink",
+      clientId,
+      month,
+      driveLink,
+      showDriveLink,
+    }),
+  });
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to save monthly drive link");
+  }
+}
+
+export async function apiAddDelivery(
+  delivery: Omit<DeliveredReel, "id">
+): Promise<DeliveredReel> {
+  const response = await fetch("/api/deliveries", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "add",
+      delivery,
+    }),
+  });
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to add delivery");
+  }
+  return result.delivery;
+}
+
+export async function apiUpdateDelivery(delivery: DeliveredReel): Promise<void> {
+  const response = await fetch("/api/deliveries", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "update",
+      delivery,
+    }),
+  });
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to update delivery");
+  }
+}
+
+export async function apiDeleteDelivery(id: string): Promise<void> {
+  const response = await fetch("/api/deliveries", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "delete",
+      id,
+    }),
+  });
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to delete delivery");
+  }
+}
+
+
