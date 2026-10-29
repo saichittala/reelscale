@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "build:static": "node scripts/build-static.js",
-    "deploy": "npm run build:static && gh-pages -d out"
+    "deploy": "node scripts/deploy.js"
   },
   "dependencies": {
     "next": "^16.2.9",
