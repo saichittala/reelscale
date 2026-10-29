@@ -1,0 +1,847 @@
+1:"$Sreact.fragment"
+a:I[91133,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/34qrqucei3q4-.js"],"default"]
+10:I[79520,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/34qrqucei3q4-.js"],""]
+11:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
+12:"$Sreact.suspense"
+14:I[22016,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/14mrh2-p_w84d.js","/_next/static/chunks/34qrqucei3q4-.js"],""]
+2:T1547,{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://reelscale.in/#organization","name":"ReelScale | Best Video Production Company & Reel Makers","url":"https://reelscale.in","logo":{"@type":"ImageObject","url":"https://reelscale.in/assets/logo.png","caption":"ReelScale Logo"},"sameAs":["https://instagram.com/reelscale"]},{"@type":"WebSite","@id":"https://reelscale.in/#website","url":"https://reelscale.in","name":"ReelScale","publisher":{"@id":"https://reelscale.in/#organization"}},{"@type":"LocalBusiness","@id":"https://reelscale.in/#localbusiness","name":"ReelScale Co. | Best Video Production Company & Reel Makers","url":"https://reelscale.in","logo":"https://reelscale.in/assets/logo.png","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","streetAddress":"Madhapur, HITEC City","addressLocality":"Hyderabad","addressRegion":"Telangana","postalCode":"500081","addressCountry":"IN"},"geo":{"@type":"GeoCoordinates","latitude":"17.4483","longitude":"78.3741"},"areaServed":[{"@type":"AdministrativeArea","name":"Hyderabad"},{"@type":"AdministrativeArea","name":"Madhapur"},{"@type":"AdministrativeArea","name":"Gachibowli"},{"@type":"AdministrativeArea","name":"Kondapur"},{"@type":"AdministrativeArea","name":"HITEC City"},{"@type":"AdministrativeArea","name":"Jubilee Hills"},{"@type":"AdministrativeArea","name":"Banjara Hills"}]},{"@type":"ProfessionalService","@id":"https://reelscale.in/#service","name":"ReelScale | Reel Makers & Best Video Production Company Hyderabad","url":"https://reelscale.in","image":"https://reelscale.in/assets/logo.png","priceRange":"₹₹","telephone":"+919966239433","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressCountry":"IN"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is ReelScale?","acceptedAnswer":{"@type":"Answer","text":"ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention, build brand authority, and scale your client acquisition organically."}},{"@type":"Question","name":"How does short-form video help grow my business?","acceptedAnswer":{"@type":"Answer","text":"Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering highly targeted organic impressions to your ideal clients without expensive ad spend."}},{"@type":"Question","name":"What is included in ReelScale's end-to-end service?","acceptedAnswer":{"@type":"Answer","text":"We manage the entire content production pipeline. This includes scriptwriting, visual asset design, high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy, and performance analysis."}},{"@type":"Question","name":"How long does it take to see results?","acceptedAnswer":{"@type":"Answer","text":"While organic growth builds over time, most clients see a significant rise in video views, profile traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates typically rise steadily as content authority compiles."}},{"@type":"Question","name":"Do I need to film the content myself?","acceptedAnswer":{"@type":"Answer","text":"Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile device, and our production team handles the rest."}},{"@type":"Question","name":"What makes cinematic reels different from standard video editing?","acceptedAnswer":{"@type":"Answer","text":"Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize premium color grading, seamless custom transitions, high-impact sound design, and custom typography to create an immersive visual experience that increases audience retention."}},{"@type":"Question","name":"Which platforms do you optimize for?","acceptedAnswer":{"@type":"Answer","text":"We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of each target platform."}},{"@type":"Question","name":"What is your pricing model?","acceptedAnswer":{"@type":"Answer","text":"We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom packages."}},{"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Click \"Start your Reel\" to book a strategy call or send us an email. We'll hop on a quick call to audit your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap."}},{"@type":"Question","name":"Do you write the video scripts for me?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive conversion goals."}}]}]}0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],"$L3","$L4","$L5","$L6","$L7"],["$L8"],"$L9"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"TQNNi1_iqq16Yk-nsNkK8"}
+3:["$","$La",null,{}]
+b:T6ca,<header id="header">
+    <div class="logo-wrapper" style="display: flex; align-items: center; gap: 8px;">
+      <button class="mobile-menu-btn" aria-label="Toggle navigation"
+        style="background: transparent; border: none; color: var(--white); cursor: pointer; display: none; padding: 0;">
+        <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8.5H21M3 15.5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
+      <a href="/" class="logo">
+        <div>
+          <img src="/assets/logo.svg" alt="ReelScale - Premium Reel Production Agency in Hyderabad" width="120"
+            height="20" decoding="async" style="width: 120px; height: 20px;">
+        </div>
+      </a>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <nav id="nav-links">
+        <a href="/">Home</a>
+        <a href="/works">Work</a>
+        <a href="/pricing">Pricing</a>
+      </nav>
+
+      <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+        target="_blank" class="btn-primary mob-btn-primary">
+        Start your Reel
+      </a>
+    </div>
+  </header>4:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$b"}}]
+c:T7484,
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="display-flex fd-c width-100">
+      <div class="hero-lines"></div>
+
+      <!-- Announcement Bar -->
+      <div class="announcement-wrapper">
+        <a href="/growth" class="announcement-bar">
+          <span class="announcement-text">Want Your Brand to Grow on Social Media?</span>
+          <div class="announcement-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </div>
+        </a>
+      </div>
+
+      <!-- <div class="hero-eyebrow">Scale Faster With Better Content</div> -->
+
+      <h1>Grow Your Brand<br>With <em>Reels</em></h1>
+      <p class="hero-sub display-none">
+        ReelScale is the best video production company and leading reel makers in Hyderabad. We build high-retention
+        cinematic Instagram Reels, YouTube
+        Shorts, and brand videos that grow your audience and acquire clients organically in Gachibowli, Madhapur,
+        Kondapur, and HITEC City.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+          target="_blank" class="btn-primary">
+          Start your Reel
+        </a>
+        <a href="#work" class="btn-secondary">View Work</a>
+      </div>
+
+    </div>
+
+
+    <!-- 3D Curved Carousel ring -->
+    <div class="ls-curved-carousel fadeout">
+      <div class="ls-curved-carousel__stage">
+        <div class="ls-curved-carousel__ring" id="curvedCarouselRing">
+          <!-- Slides injected by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap display-none">
+    <div class="ticker">
+      <div class="ticker-item">10M+ Views Delivered <span>✦</span></div>
+      <div class="ticker-item">Instagram Reels <span>✦</span></div>
+      <div class="ticker-item">YouTube Shorts <span>✦</span></div>
+      <!-- <div class="ticker-item">1–2h Turnaround <span>✦</span></div> -->
+      <div class="ticker-item">20+ Reels Created <span>✦</span></div>
+      <div class="ticker-item">2–4x Engagement Growth <span>✦</span></div>
+      <div class="ticker-item">Instagram Reels <span>✦</span></div>
+      <div class="ticker-item">YouTube Shorts <span>✦</span></div>
+      <div class="ticker-item">10M+ Views Delivered <span>✦</span></div>
+      <!-- <div class="ticker-item">1–2h Turnaround <span>✦</span></div> -->
+      <div class="ticker-item">20+ Reels Created <span>✦</span></div>
+      <div class="ticker-item">2–4x Engagement Growth <span>✦</span></div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <section id="metrics">
+    <div class="metrics-list reveal">
+      <div class="metric-row">
+        <div class="metric-num"><span class="metric-digit">100+</span> million</div>
+        <div class="metric-label">total views delivered</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-num"><span class="metric-digit">100+</span> reels</div>
+        <div class="metric-label">expertly created</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-num"><span class="metric-digit">2-4x</span> growth</div>
+        <div class="metric-label">average engagement lift</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-inner">
+      <div class="services-header reveal">
+        <div>
+          <div class="section-eyebrow">What We Do</div>
+          <h2 class="section-title">End-to-end<br>Reel Production</h2>
+        </div>
+        <p class="section-sub">Every reel is strategically planned, professionally produced, and optimized to help your
+          business attract more customers—not just more views.
+
+        </p>
+      </div>
+      <div class="services-grid reveal">
+        <div class="service-card">
+          <div class="service-card-header">
+            <div class="service-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+            </div>
+            <div class="service-name">Strategy</div>
+          </div>
+          <div class="service-card-divider"></div>
+          <p class="service-desc">Plan content that attracts customers and drives measurable growth.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-card-header">
+            <div class="service-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <div class="service-name">Production</div>
+          </div>
+          <div class="service-card-divider"></div>
+          <p class="service-desc">Film content with cinematic quality and premium brand positioning.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-card-header">
+            <div class="service-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </div>
+            <div class="service-name">Editing</div>
+          </div>
+          <div class="service-card-divider"></div>
+          <p class="service-desc">Deliver content within hours with premium polished finishing.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-card-header">
+            <div class="service-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+            </div>
+            <div class="service-name">Growth</div>
+          </div>
+          <div class="service-card-divider"></div>
+          <p class="service-desc">Optimize content using insights for measurable business growth always.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- WHY CHOOSE US -->
+  <section id="why">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow reveal">Why ReelScale Co.</div>
+        <h2 class="section-title reveal">Luxury Content.<br> Measurable Results.</h2>
+        <div class="why-list reveal">
+          <div class="why-item">
+            <div class="why-num">01</div>
+            <div class="why-content">
+              <h3>Fast Without Compromise</h3>
+              <p>Luxury-quality reels delivered in just 1–2 hours.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">02</div>
+            <div class="why-content">
+              <h3>Crafted to Stand Out</h3>
+              <p>Premium cinematography that instantly elevates your brand.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">03</div>
+            <div class="why-content">
+              <h3>Every Shot Has Purpose</h3>
+              <p>Strategy-driven storytelling designed to attract ideal customers.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-num">04</div>
+            <div class="why-content">
+              <h3>Content That Sells</h3>
+              <p>Built to generate attention, trust, leads, and long-term growth.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-visual reveal">
+        <div class="why-visual-inner">
+          <div class="big-stat">1–2 hrs</div>
+          <div class="big-stat-label">Average Delivery Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="work">
+    <div class="work-inner">
+      <div class="work-header reveal">
+        <div>
+          <div class="section-eyebrow">Portfolio</div>
+          <h2 class="section-title">Reels that<br>perform.</h2>
+        </div>
+        <a href="#" class="btn-secondary">View All Work</a>
+      </div>
+      <div class="portfolio-grid reveal">
+        <a class="portfolio-item"
+          href="https://www.instagram.com/reel/DaCLa1di0HS/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+          target="_blank" rel="noopener noreferrer" style="
+        background: url(./assets/clients/parthu.webp);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        " data-video="./assets/clients/parthu.mp4" data-client="Interiors" data-stat="1.2M Organic Reach">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Interiors</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
+          </div>
+        </a>
+
+        <a class="portfolio-item" href="https://www.instagram.com/reels/DY3bF7xPJ5_/" target="_blank"
+          rel="noopener noreferrer" style="
+        background: url(./assets/clients/avinash-salon.webp);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        " data-video="./assets/clients/avinash-salon.mp4" data-client="Salons" data-stat="2x Leads in 24hrs">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Salons</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
+          </div>
+
+        </a>
+        <a class="portfolio-item" href="https://www.instagram.com/p/DYhpQstRCBU/" target="_blank"
+          rel="noopener noreferrer" style="
+        background: url(./assets/clients/maitrova.webp);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        " data-video="./assets/clients/maitrova.mp4" data-client="Clothing" data-stat="2.4M Views">
+
+          <div class="portfolio-play">▶</div>
+
+          <div class="portfolio-overlay">
+            <div class="portfolio-client">Clothing</div>
+            <!-- <div class="portfolio-stat">Increased 2x leads in 24hrs</div> -->
+          </div>
+
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div style="text-align:center" class="reveal">
+      <div class="section-eyebrow">The Process</div>
+      <h2 class="section-title">Four steps to scale.</h2>
+    </div>
+    <div class="process-steps reveal">
+      <div class="process-step">
+        <div class="step-dot">01</div>
+        <div class="step-title">Strategy</div>
+        <p class="step-desc">A tailored content roadmap built around your business goals.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">02</div>
+        <div class="step-title">Production</div>
+        <p class="step-desc">Premium reels crafted to capture attention and build trust.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">03</div>
+        <div class="step-title">Delivery</div>
+        <p class="step-desc">Fast turnaround with polished, ready-to-publish content.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-dot">04</div>
+        <div class="step-title">Scale</div>
+        <p class="step-desc">Performance-driven content that grows your brand and leads.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="pricing-inner">
+      <div class="reveal">
+        <div class="section-eyebrow">Pricing</div>
+        <h2 class="section-title">Simple. Scalable.<br>No surprises.</h2>
+      </div>
+      <div class="pricing-grid reveal">
+        <div class="pricing-card">
+          <div class="plan-name">Plus</div>
+          <div class="plan-price"><sup>₹</sup>14,499</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>6 Reels Delivered / Month</li>
+            <li>Professional Reel Editing</li>
+            <li>Viral Style Transitions</li>
+            <li>Caption Optimization</li>
+            <li>Brand Consistency Styling</li>
+            <li>Instant Delivery</li>
+            <li>1 Revision Per Reel</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+            target="_blank" class="btn-plan btn-plan-outline">
+            Start Your Reel
+          </a>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><sup>₹</sup>19,999</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>8 Reels Delivered / Month</li>
+            <li>Professional + Cinematic Editing</li>
+            <li>Advanced Visual Transitions</li>
+            <li>Engagement-Focused Hooks</li>
+            <li>Caption + CTA Optimization</li>
+            <li>1 Monthly Strategy Call</li>
+            <li>1 Hour Priority Delivery</li>
+            <li>Unlimited Revisions</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+            target="_blank" class="btn-plan btn-plan-red">
+            Start your Reel
+          </a>
+        </div>
+
+        <div class="pricing-card luxe">
+          <div class="plan-name">Luxe</div>
+          <div class="plan-price"><sup>₹</sup>27,999</div>
+          <div class="plan-cadence">per month</div>
+          <div class="plan-divider"></div>
+
+          <ul class="plan-features">
+            <li>12 Reels Delivered / Month</li>
+            <li>Premium Cinematic Editing</li>
+            <li>Advanced Motion Effects</li>
+            <li>Viral Scripting Support</li>
+            <li>High-Converting CTA Structuring</li>
+            <li>Dedicated Content Strategist</li>
+            <li>2 Monthly Strategy Calls</li>
+            <li>2 Hour Priority Delivery</li>
+            <li>Unlimited Revisions</li>
+          </ul>
+
+          <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+            target="_blank" class="btn-plan btn-plan-outline btn-plan-luxe">
+            Start Your Reel
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div style="text-align:center" class="reveal">
+      <div class="section-eyebrow">Client Results</div>
+      <h2 class="section-title">Real brands.<br>Real growth.</h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+        </div>
+
+        <p class="testi-quote">
+          "Working with ReelScale has completely changed how we present our villa projects online. Their team captured
+          every detail beautifully and delivered premium-quality reels that truly reflect our craftsmanship. We've
+          received significantly more inquiries and stronger engagement since partnering with them."
+        </p>
+
+        <div class="testi-result">4.2x</div>
+        <div class="testi-result-label">Engagement Lift</div>
+
+        <div class="testi-divider"></div>
+
+        <div class="testi-author">
+          <div class="testi-avatar">JI</div>
+          <div>
+            <div class="testi-name">Jak</div>
+            <div class="testi-role">CEO, Jak Interiors</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+        </div>
+        <p class="testi-quote">"We wanted our 3BHK interior projects to stand out, and ReelScale exceeded our
+          expectations. The storytelling, camera work, and editing are on another level. Every reel feels premium, and
+          our clients constantly mention the quality of our social media presence."</p>
+        <div class="testi-result">1.2M</div>
+        <div class="testi-result-label">Organic Reach</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">
+          <div class="testi-avatar">PI</div>
+          <div>
+            <div class="testi-name">Parthu</div>
+            <div class="testi-role">CEO, Parthu Interiors</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+          <img src="./assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />
+        </div>
+        <p class="testi-quote">"ReelScale perfectly captured the experience of our salon. The videos looked cinematic,
+          the turnaround was fast, and the content helped us reach many new customers organically. They're now our go-to
+          team for content creation."</p>
+        <div class="testi-result">2x</div>
+        <div class="testi-result-label">Leads in 24 Hours</div>
+        <div class="testi-divider"></div>
+        <div class="testi-author">
+          <div class="testi-avatar">AS</div>
+          <div>
+            <div class="testi-name">Avinash</div>
+            <div class="testi-role">CEO, Avinash Salon</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section id="faq">
+    <div class="faq-container">
+      <div style="text-align: center; margin-bottom: 64px;">
+        <span class="section-eyebrow reveal">FAQ</span>
+        <h2 class="section-title reveal">Frequently Asked Questions</h2>
+        <p class="section-sub reveal" style="margin: 20px auto 0;">Got questions? We've got answers. Explore our
+          commonly asked questions to learn how we help businesses scale.</p>
+      </div>
+
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>What is ReelScale?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>ReelScale is a premium cinematic short-form video content creation agency. We specialize in producing
+                high-retention Instagram Reels, TikToks, and YouTube Shorts designed specifically to capture attention,
+                build brand authority, and scale your client acquisition organically.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How does short-form video help grow my business?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Cinematic short-form videos capture attention within the critical first 3 seconds, building rapid trust
+                and brand equity. Algorithms on Instagram, YouTube, and TikTok prioritize short-form videos, delivering
+                highly targeted organic impressions to your ideal clients without expensive ad spend.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>What is included in ReelScale's end-to-end service?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>We manage the entire content production pipeline. This includes scriptwriting, visual asset design,
+                high-end cinematic video editing, custom sound design, captions, hook optimization, publishing strategy,
+                and performance analysis.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How long does it take to see results?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>While organic growth builds over time, most clients see a significant rise in video views, profile
+                traffic, and social engagement within the first 30 days of consistent posting. Lead generation rates
+                typically rise steadily as content authority compiles.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Do I need to film the content myself?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Yes, but we make it completely effortless. We provide custom-written scripts, detailed recording guides
+                (angles, lighting, pacing), and live support. You simply record the raw footage on a standard mobile
+                device, and our production team handles the rest.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>What makes cinematic reels different from standard video editing?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Unlike basic editing services that just cut clips and add generic templates, cinematic reels utilize
+                premium color grading, seamless custom transitions, high-impact sound design, and custom typography to
+                create an immersive visual experience that increases audience retention.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Which platforms do you optimize for?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>We tailor each piece of content for Instagram Reels, YouTube Shorts, TikTok, and LinkedIn Video. We
+                optimize the metadata, video length, title formatting, and script hooks to match the unique algorithm of
+                each target platform.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>What is your pricing model?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>We offer subscription-based packages based on the monthly volume of reels you need. Check our Pricing
+                section above to view details for the Startup, Scale, and Enterprise plans, or contact us for custom
+                packages.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How do we get started?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Click "Start your Reel" to book a strategy call or send us an email. We'll hop on a quick call to audit
+                your current brand presence, outline a tailored content pipeline, and set up your onboarding roadmap.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Do you write the video scripts for me?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Yes. Our in-house copywriters develop 100% of your scripts. Every script starts with a high-converting
+                hook, delivers direct value to retain viewers, and ends with a strong call-to-action tailored to drive
+                conversion goals.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LATEST BLOGS SECTION PLACEHOLDER -->
+  5:["$","main",null,{"id":"main-content","children":[["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$c"}}],"$Ld","$Le"]}]
+f:T6aa,<footer>
+    <div class="footer-inner">
+      <a href="/" class="logo">
+        <div>
+          <img src="/assets/logo.svg" alt="ReelScale - Professional Instagram Reel Making Company in Hyderabad"
+            width="120" height="20" style="width:120px; height: 20px;">
+        </div>
+      </a>
+
+      <nav class="footer-nav">
+        <a href="/">Home</a>
+        <a href="/works">Work</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/dashboard/login/">Login</a>
+      </nav>
+    </div>
+
+    <!-- Services / Industries Directory Grid for Local SEO and Internal Linking -->
+    <div class="footer-directory">
+      <div class="footer-directory-title">
+        Local Reel Production Services (Hyderabad)</div>
+      <div class="footer-directory-grid">
+        <a href="/services/restaurant-reels">Restaurant Reel Production</a>
+        <a href="/services/gym-reels">Gym Reel Production</a>
+        <a href="/services/interior-designers">Interior Design Reels</a>
+        <a href="/services/salons">Salon Reel Shoots</a>
+        <a href="/services/fashion-brands">Fashion Brand Video Shoots</a>
+        <a href="/services/real-estate">Real Estate Video Production</a>
+        <a href="/services/healthcare">Healthcare Video Marketing</a>
+        <a href="/services/cafes">Cafe Reel Production</a>
+        <a href="/services/startups">Startup Video Agency</a>
+        <a href="/services/corporate-companies">Corporate Video Production</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
+        Hyderabad.</span>
+    </div>
+  </footer>6:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$f"}}]
+7:["$","$L10",null,{"async":true,"src":"https://www.instagram.com/embed.js"}]
+8:["$","script","script-0",{"src":"/_next/static/chunks/34qrqucei3q4-.js","async":true}]
+9:["$","$L11",null,{"children":["$","$12",null,{"name":"Next.MetadataOutlet","children":"$@13"}]}]
+d:["$","section",null,{"id":"latest-blogs-section","children":["$","div",null,{"className":"container landing-blogs-container","children":[["$","div",null,{"className":"landing-blogs-header reveal","children":[["$","div",null,{"className":"section-eyebrow","children":"Blogs"}],["$","h2",null,{"className":"section-title","children":"Latest from our blog"}]]}],["$","div",null,{"className":"blog-grid reveal","children":[["$","$L14","1782729623895",{"href":"/blog/how-to-create-instagram-reels-that-go-viral-2026","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1200&auto=format&fit=crop","alt":"How to Create Instagram Reels That Actually Go Viral in 2026","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"15 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Create Instagram Reels That Actually Go Viral in 2026"}]]}]]}],["$","$L14","1782730017402",{"href":"/blog/professional-reel-production-vs-diy","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?q=80&w=1200&auto=format&fit=crop","alt":"Professional Reel Production vs DIY Videos: Which Gives Better Results?","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"14 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"Professional Reel Production vs DIY Videos: Which Gives Better Results?"}]]}]]}],["$","$L14","1782661105001",{"href":"/blog/short-form-video-high-ticket-b2b-leads","className":"blog-card","children":[["$","div",null,{"className":"blog-card-img-wrap","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop","alt":"How to Use Short-Form Video to Generate High-Ticket B2B Leads","className":"blog-card-img","loading":"lazy"}]}],["$","div",null,{"className":"blog-card-content","children":[["$","div",null,{"className":"blog-card-meta","children":[["$","span",null,{"children":"2026-06-29"}],["$","span",null,{"children":"•"}],["$","span",null,{"children":"2 min read"}]]}],["$","h3",null,{"className":"blog-card-title","children":"How to Use Short-Form Video to Generate High-Ticket B2B Leads"}]]}]]}]]}],["$","div",null,{"className":"landing-blogs-footer reveal","children":["$","$L14",null,{"href":"/blog","className":"btn-secondary","children":"View all blogs"}]}]]}]}]
+15:T161a,
+
+  <!-- FINAL CTA -->
+  <section id="cta">
+    <div class="cta-inner">
+      <div class="section-eyebrow reveal" style="display:inline-block">Ready to Scale?</div>
+      <h2 class="reveal">Your content<br>should <em style="color:var(--red)">Work </em>for you.</h2>
+      <p class="reveal">Book a free strategy call. No pitch. No fluff. Just a real conversation about your growth.</p>
+      <div class="cta-btn-group reveal">
+        <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability."
+          target="_blank" class="btn-primary">
+          Start your Reel</a>
+        <a href="mailto:reelscale7@gmail.com" class="btn-secondary">Send Email</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- KNOWLEDGE HUB -->
+  <!-- KNOWLEDGE HUB -->
+  <!-- KNOWLEDGE HUB -->
+  <section id="knowledge-hub">
+    <div class="kh-container-flat">
+      <h3 class="kh-flat-heading">ReelScale Knowledge Hub</h3>
+      <p class="kh-flat-paragraph">
+        ReelScale is the best video production company in Hyderabad, providing premium end-to-end video production
+        services to brands, creators, and corporate companies. Our services help local and national brands drive organic
+        social media growth and build deep brand authority.
+      </p>
+
+      <h3 class="kh-flat-heading">Professional Video Production Services in Hyderabad</h3>
+      <p class="kh-flat-paragraph">
+        Our professional videography services in Hyderabad encompass high-concept brand films, detailed product shoots,
+        and corporate video production. We serve companies across major micro-markets including Gachibowli, Madhapur,
+        HITEC City, Jubilee Hills, and Banjara Hills.
+      </p>
+
+      <h3 class="kh-flat-heading">Commercial Video Production & Corporate Video Production</h3>
+      <p class="kh-flat-paragraph">
+        We produce commercial video ads and corporate films that establish E-E-A-T (Experience, Expertise,
+        Authoritativeness, and Trustworthiness). Our team offers professional drone videography, event coverage, and
+        multi-cam podcast production services to deliver outstanding brand exposure.
+      </p>
+
+      <h3 class="kh-flat-heading">Organic Social Media Growth & Reel Marketing</h3>
+      <p class="kh-flat-paragraph">
+        As a leading short form content agency, we act as a dedicated Instagram reels agency and content creation
+        agency. Our specialized reel makers and video editors handle pacing, color grading, sound design, and subtitle
+        styling centered in visual safe zones.
+      </p>
+
+      <h3 class="kh-flat-heading">Why Professional Reels Outperform DIY Content</h3>
+      <p class="kh-flat-paragraph">
+        Unlike DIY recordings, professional video editing and production offer cinema-grade dynamic range, studio
+        lighting, and audio isolation. These factors prevent viewer bounces, maximize average watch time, and satisfy
+        search algorithms to boost organic reach.
+      </p>
+
+      <h3 class="kh-flat-heading">Industry-Specific Video Strategies</h3>
+      <p class="kh-flat-paragraph">
+        We develop customized video marketing campaigns for specific local niches. We create real estate and interior
+        design walkthroughs, gym and fitness marketing videos, café promos, restaurant food reels, and healthcare
+        educational videos.
+      </p>
+
+      <h3 class="kh-flat-heading">The ReelScale Video Production Workflow</h3>
+      <p class="kh-flat-paragraph">
+        Our scriptwriting process utilizes the Hook-Body-Payoff framework, identifying target customer queries within
+        the first 1.5 seconds. During the shooting process, we establish three-point lighting and capture clean vocals
+        with wireless lapel microphones. Our editing methodology features pattern interrupts and audio gating.
+      </p>
+
+      <h3 class="kh-flat-heading">Comparing Professional Production vs DIY Video Workflows</h3>
+      <p class="kh-flat-paragraph">
+        Professional agencies project authority using cinema-grade, color-corrected dynamic range. DIY captures suffer
+        from phone compression and noise. Professional audio is isolated and EQ-balanced, while DIY audio is prone to
+        room echoes. Professionally paced reels maximize viewer retention, while DIY layouts have high bounce rates.
+        Partnering with a video production company saves your team 10 to 15 hours weekly, providing much higher
+        conversion rates and ROI.
+      </p>
+
+      <h3 class="kh-flat-heading">Local Business Video Marketing Guide for Hyderabad</h3>
+      <p class="kh-flat-paragraph">
+        To rank in Hyderabad, businesses in micro-markets like Gachibowli or Jubilee Hills must connect digital assets
+        to geographic locations. Local SEO is boosted when your videos mention landmarks, utilize geo-tags, and are
+        embedded on pages optimized with LocalBusiness and FAQ schema structured data.
+      </p>
+
+      <h3 class="kh-flat-heading">The Essential Video Production Checklist</h3>
+      <p class="kh-flat-paragraph">
+        Before recording, ensure camera resolution is set to 4K at 24fps or 30fps. Verify that your wireless microphone
+        is connected and vocal levels peak between -12dB and -6dB. Clean all lens elements to prevent light streaks,
+        establish three-point lighting balance, and keep captions centered inside visual safe zones.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <!-- FOOTER -->
+  e:["$","div",null,{"dangerouslySetInnerHTML":{"__html":"$15"}}]
+13:null
