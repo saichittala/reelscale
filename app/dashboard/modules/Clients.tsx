@@ -985,29 +985,15 @@ export function Clients({
           <div className="action-btns">
             <button
               type="button"
+              className={`edit-client tracker-btn ${isSub ? "is-sub" : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setTrackerClient(c);
                 setIsTrackerOpen(true);
               }}
-              title="Track Monthly Deliveries & Copy Client Link"
-              style={{
-                background: isSub ? "var(--red-10)" : "var(--white-05)",
-                border: `0.6px solid ${isSub ? "var(--red-op)" : "var(--border)"}`,
-                color: isSub ? "var(--red)" : "var(--muted)",
-                borderRadius: "var(--border-radius-99)",
-                padding: "4px 10px",
-                fontSize: "11px",
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-                transition: "var(--transition-fast)",
-              }}
+              title={isSub ? "Track Monthly Deliveries & Copy Client Link" : "View / Add Delivery Log"}
             >
-              <IconFilm size={12} />
-              <span>{isSub ? "Tracker" : "Log"}</span>
+              <IconFilm size={18} />
             </button>
             <img
               src="/assets/icons/edit.svg"

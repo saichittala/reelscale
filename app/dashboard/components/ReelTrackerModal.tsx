@@ -27,6 +27,7 @@ import {
   IconEyeOff,
   IconClose,
   IconWhatsApp,
+  IconChevronDown,
 } from "./Icons";
 
 interface ReelTrackerModalProps {
@@ -69,6 +70,7 @@ export function ReelTrackerModal({
   const [showDriveToClient, setShowDriveToClient] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingDrive, setIsSavingDrive] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Form states for adding / editing a delivery
   const [isEditingId, setIsEditingId] = useState<string | null>(null);
@@ -378,151 +380,140 @@ export function ReelTrackerModal({
             paddingRight: "2px",
           }}
         >
-          {/* 2. Streamlined Client Share Link Banner */}
+          {/* 2. Action & Share Strip (All Secondary Buttons) */}
           <div
             style={{
-              padding: "12px 14px",
+              padding: "10px 14px",
               background: "var(--white-02)",
-              border: "0.6px solid var(--border)",
               borderRadius: "var(--border-radius-2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: "12px",
+              gap: "8px",
               flexWrap: "wrap",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  background: "var(--bg)",
-                  border: "0.6px solid var(--border)",
-                  borderRadius: "var(--border-radius-2)",
-                  padding: "4px 8px",
-                  fontSize: "var(--text-xs)",
-                  color: "var(--white)",
-                  fontFamily: "monospace",
-                }}
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="btn-secondary btn-sm"
+                title="Click to copy live client portal URL"
               >
-                <IconLink size={12} style={{ color: "var(--muted)" }} />
-                <span>{portalUrl.replace(/^https?:\/\//, "")}</span>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  title="Copy link"
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "0 2px",
-                    display: "flex",
-                    alignItems: "center",
-                    color: copiedLink ? "var(--green)" : "var(--muted)",
-                  }}
-                >
-                  {copiedLink ? <IconCheck size={12} /> : <IconCopy size={12} />}
-                </button>
-              </div>
+                {copiedLink ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconLink size={12} />}
+                <span>{copiedLink ? "Link Copied!" : "Copy Link"}</span>
+              </button>
 
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  background: "var(--red-10)",
-                  border: "0.6px solid var(--red-op)",
-                  borderRadius: "var(--border-radius-2)",
-                  padding: "4px 8px",
-                  fontSize: "var(--text-xs)",
-                  color: "var(--white)",
-                }}
+              <button
+                type="button"
+                onClick={handleCopyPasscode}
+                className="btn-secondary btn-sm"
+                title={`Passcode: ${passcode} (Click to copy)`}
               >
-                <IconKey size={12} style={{ color: "var(--red)" }} />
-                <span style={{ color: "var(--muted)" }}>Passcode:</span>
-                <span style={{ fontFamily: "monospace", fontWeight: 600 }}>{passcode}</span>
-                <button
-                  type="button"
-                  onClick={handleCopyPasscode}
-                  title="Copy passcode"
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "0 2px",
-                    display: "flex",
-                    alignItems: "center",
-                    color: copiedPasscode ? "var(--green)" : "var(--muted)",
-                  }}
-                >
-                  {copiedPasscode ? <IconCheck size={12} /> : <IconCopy size={12} />}
-                </button>
-              </div>
-            </div>
+                {copiedPasscode ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconKey size={12} />}
+                <span>{copiedPasscode ? "Passcode Copied!" : `Passcode: ${passcode}`}</span>
+              </button>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <button
                 type="button"
                 onClick={handleCopyWhatsAppMsg}
-                className="btn btn-ghost btn-sm"
-                style={{
-                  border: "0.6px solid var(--border)",
-                  fontSize: "var(--text-xs)",
-                  height: "30px",
-                  padding: "0 10px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
+                className="btn-secondary btn-sm"
+                title="Copy client portal WhatsApp message with link and passcode"
               >
-                {copiedMsg ? <IconCheck size={13} style={{ color: "var(--green)" }} /> : <IconWhatsApp size={13} style={{ color: "var(--green)" }} />}
+                {copiedMsg ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconWhatsApp size={12} style={{ color: "var(--green)" }} />}
                 <span>{copiedMsg ? "Copied" : "Copy for WhatsApp"}</span>
               </button>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {monthlyDriveLink && (
+                <a
+                  href={monthlyDriveLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary btn-sm"
+                  title="Open monthly Google Drive deliverables folder"
+                >
+                  <IconFolder size={12} style={{ color: "var(--gold)" }} />
+                  <span>Drive</span>
+                  <IconArrowUpRight size={11} />
+                </a>
+              )}
 
               <a
                 href={portalUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="btn btn-primary btn-sm"
-                style={{
-                  fontSize: "var(--text-xs)",
-                  height: "30px",
-                  padding: "0 12px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  textDecoration: "none",
-                }}
+                className="btn-secondary btn-sm"
+                title="Preview client tracking portal"
               >
                 <span>Preview</span>
-                <IconArrowUpRight size={12} />
+                <IconArrowUpRight size={11} />
               </a>
+
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="btn-secondary btn-sm"
+                style={{
+                  background: showAdvanced ? "var(--white-10)" : "transparent",
+                  color: showAdvanced ? "var(--white)" : "var(--muted)",
+                }}
+                title={showAdvanced ? "Hide advanced metrics and Drive configuration" : "Show advanced metrics and Drive configuration"}
+              >
+                <span>Advance Info</span>
+                <IconChevronDown
+                  size={12}
+                  style={{
+                    transform: showAdvanced ? "rotate(180deg)" : "none",
+                    transition: "transform 0.2s ease",
+                  }}
+                />
+              </button>
             </div>
           </div>
 
-          {/* 3. Monthly Delivery Overview */}
+          {/* 3. Minimal Delivery Progress Header (Always Visible) */}
           <div
             style={{
               background: "var(--card)",
-              border: "0.6px solid var(--border)",
               borderRadius: "var(--border-radius-2)",
-              padding: "16px",
+              padding: "12px 16px",
             }}
           >
-            {/* Cycle Header */}
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: "14px",
-                gap: "8px",
+                gap: "12px",
+                flexWrap: "wrap",
               }}
             >
-              <div style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
-                Delivery Overview
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--white)" }}>
+                  <span style={{ color: deliveredCount >= targetReels && targetReels > 0 ? "var(--green)" : "var(--white)" }}>
+                    {deliveredCount}
+                  </span>
+                  <span style={{ color: "var(--muted)", fontWeight: 500 }}>/{targetReels}</span>{" "}
+                  <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>Reels Delivered</span>
+                </div>
+
+                <span
+                  className="badge"
+                  style={{
+                    fontSize: "11px",
+                    background: progressPct >= 100 ? "var(--green-12)" : "var(--gold-10)",
+                    color: progressPct >= 100 ? "var(--green)" : "var(--gold)",
+                    border: `0.6px solid ${progressPct >= 100 ? "var(--green)" : "var(--gold)"}`,
+                  }}
+                >
+                  {progressPct}%
+                </span>
+
+                <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                  · {remainingCount} remaining
+                </span>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -539,298 +530,318 @@ export function ReelTrackerModal({
               </div>
             </div>
 
-            {/* Gauge + Metrics Row */}
+            {/* Slim, clean progress bar */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "170px 1fr",
-                gap: "18px",
-                alignItems: "center",
+                width: "100%",
+                height: "6px",
+                background: "var(--white-05)",
+                borderRadius: "var(--border-radius-99)",
+                overflow: "hidden",
+                marginTop: "10px",
               }}
             >
-              {/* Circular Gauge */}
-              {(() => {
-                const gSize = 150;
-                const sWidth = 16;
-                const rad = (gSize - sWidth) / 2;
-                const circ = 2 * Math.PI * rad;
-                const frac = targetReels > 0 ? Math.min(1, Math.max(0, deliveredCount / targetReels)) : 0;
-                const sOffset = circ * (1 - frac);
-
-                return (
-                  <div
-                    style={{
-                      position: "relative",
-                      width: `${gSize}px`,
-                      height: `${gSize}px`,
-                      margin: "0 auto",
-                    }}
-                  >
-                    <svg
-                      width={gSize}
-                      height={gSize}
-                      viewBox={`0 0 ${gSize} ${gSize}`}
-                      style={{ transform: "rotate(-90deg)" }}
-                    >
-                      <circle
-                        cx={gSize / 2}
-                        cy={gSize / 2}
-                        r={rad}
-                        fill="transparent"
-                        stroke="#222222"
-                        strokeWidth={sWidth}
-                      />
-                      <circle
-                        cx={gSize / 2}
-                        cy={gSize / 2}
-                        r={rad}
-                        fill="transparent"
-                        stroke="#64e70c"
-                        strokeWidth={sWidth}
-                        strokeDasharray={circ}
-                        strokeDashoffset={sOffset}
-                        strokeLinecap="butt"
-                        style={{
-                          transition: "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      />
-                    </svg>
-
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "var(--muted)",
-                          fontWeight: 500,
-                          marginBottom: "2px",
-                        }}
-                      >
-                        Reels Delivered
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "28px",
-                          fontWeight: 800,
-                          lineHeight: 1,
-                        }}
-                      >
-                        <span style={{ color: "#ffffff" }}>{deliveredCount}</span>
-                        <span style={{ color: "#666666", fontWeight: 700 }}>/{targetReels}</span>
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "var(--muted)",
-                          fontWeight: 500,
-                          marginTop: "2px",
-                        }}
-                      >
-                        {shortMonthStr}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Minimalist 2x2 Stat Tiles */}
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "8px",
+                  width: `${progressPct}%`,
+                  height: "100%",
+                  background: progressPct >= 100 ? "var(--green)" : "var(--red)",
+                  borderRadius: "var(--border-radius-99)",
+                  transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
-              >
-                <div
-                  style={{
-                    background: "var(--white-02)",
-                    border: "0.6px solid var(--border)",
-                    borderRadius: "var(--border-radius-2)",
-                    padding: "10px 14px",
-                  }}
-                >
-                  <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "4px" }}>
-                    Contracted
-                  </div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--white)" }}>
-                    {targetReels} <span style={{ fontSize: "11px", fontWeight: 400, color: "var(--muted)" }}>reels</span>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    background: "var(--white-02)",
-                    border: "0.6px solid var(--border)",
-                    borderRadius: "var(--border-radius-2)",
-                    padding: "10px 14px",
-                  }}
-                >
-                  <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "4px" }}>
-                    Delivered
-                  </div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "#64e70c" }}>
-                    {deliveredCount} <span style={{ fontSize: "11px", fontWeight: 400, color: "rgba(100, 231, 12, 0.7)" }}>reels</span>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    background: "var(--white-02)",
-                    border: "0.6px solid var(--border)",
-                    borderRadius: "var(--border-radius-2)",
-                    padding: "10px 14px",
-                  }}
-                >
-                  <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "4px" }}>
-                    Remaining
-                  </div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--gold)" }}>
-                    {remainingCount} <span style={{ fontSize: "11px", fontWeight: 400, color: "rgba(234, 179, 8, 0.7)" }}>reels</span>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    background: "var(--white-02)",
-                    border: "0.6px solid var(--border)",
-                    borderRadius: "var(--border-radius-2)",
-                    padding: "10px 14px",
-                  }}
-                >
-                  <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "4px" }}>
-                    Completion
-                  </div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--white)" }}>
-                    {progressPct}%
-                  </div>
-                </div>
-              </div>
+              />
             </div>
           </div>
 
-          {/* 4. Streamlined Google Drive Folder */}
-          <div
-            style={{
-              background: "var(--card)",
-              border: "0.6px solid var(--border)",
-              borderRadius: "var(--border-radius-2)",
-              padding: "14px 16px",
-            }}
-          >
+          {/* 4. Advance Info (Expandable Details: Circular Donut Gauge + 4 Stat Tiles + Drive Folder Manager) */}
+          {showAdvanced && (
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "10px",
-                gap: "8px",
-                flexWrap: "wrap",
+                flexDirection: "column",
+                gap: "12px",
+                padding: "14px 16px",
+                background: "var(--white-02)",
+                borderRadius: "var(--border-radius-2)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <IconFolder size={16} style={{ color: "var(--gold)" }} />
-                <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
-                  Google Drive Folder
-                </span>
-                <span style={{ fontSize: "11px", color: "var(--muted)" }}>({shortMonthStr})</span>
-              </div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <label
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    cursor: "pointer",
-                    fontSize: "var(--text-xs)",
-                    userSelect: "none",
-                    background: showDriveToClient ? "var(--green-12)" : "transparent",
-                    border: `0.6px solid ${showDriveToClient ? "var(--green)" : "var(--border)"}`,
-                    color: showDriveToClient ? "var(--green)" : "var(--muted)",
-                    padding: "3px 8px",
-                    borderRadius: "var(--border-radius-2)",
-                    transition: "var(--transition-fast)",
-                  }}
-                  title="Toggle client portal visibility"
-                >
-                  <input
-                    type="checkbox"
-                    checked={showDriveToClient}
-                    onChange={(e) => setShowDriveToClient(e.target.checked)}
-                    style={{ display: "none" }}
-                  />
-                  {showDriveToClient ? <IconEye size={12} /> : <IconEyeOff size={12} />}
-                  <span>{showDriveToClient ? "Visible to Client" : "Hidden from Client"}</span>
-                </label>
-
-                {monthlyDriveLink && (
-                  <a
-                    href={monthlyDriveLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-ghost btn-sm"
-                    style={{
-                      height: "26px",
-                      padding: "0 8px",
-                      fontSize: "var(--text-xs)",
-                      textDecoration: "none",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "4px",
-                    }}
-                  >
-                    <span>Open</span>
-                    <IconArrowUpRight size={12} />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <input
-                type="text"
-                className="form-input"
-                value={monthlyDriveLink}
-                onChange={(e) => setMonthlyDriveLink(e.target.value)}
-                placeholder="https://drive.google.com/drive/folders/..."
+              <div
                 style={{
-                  flex: 1,
-                  padding: "7px 12px",
-                  fontSize: "var(--text-xs)",
-                  height: "34px",
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleSaveDriveLink}
-                disabled={isSavingDrive}
-                className="btn btn-primary btn-sm"
-                style={{
-                  height: "34px",
-                  padding: "0 14px",
-                  fontSize: "var(--text-xs)",
-                  whiteSpace: "nowrap",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingBottom: "8px",
+                  borderBottom: "0.6px solid var(--border)",
                 }}
               >
-                {isSavingDrive ? "Saving..." : "Save Drive Link"}
-              </button>
+                <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
+                  Advanced Breakdown & Configuration
+                </span>
+                <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                  Cycle: {selectedMonthLabel}
+                </span>
+              </div>
+
+              {/* Gauge + Metrics Row */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "150px 1fr",
+                  gap: "16px",
+                  alignItems: "center",
+                }}
+              >
+                {/* Circular Gauge */}
+                {(() => {
+                  const gSize = 130;
+                  const sWidth = 14;
+                  const rad = (gSize - sWidth) / 2;
+                  const circ = 2 * Math.PI * rad;
+                  const frac = targetReels > 0 ? Math.min(1, Math.max(0, deliveredCount / targetReels)) : 0;
+                  const sOffset = circ * (1 - frac);
+
+                  return (
+                    <div
+                      style={{
+                        position: "relative",
+                        width: `${gSize}px`,
+                        height: `${gSize}px`,
+                        margin: "0 auto",
+                      }}
+                    >
+                      <svg
+                        width={gSize}
+                        height={gSize}
+                        viewBox={`0 0 ${gSize} ${gSize}`}
+                        style={{ transform: "rotate(-90deg)" }}
+                      >
+                        <circle
+                          cx={gSize / 2}
+                          cy={gSize / 2}
+                          r={rad}
+                          fill="transparent"
+                          stroke="#222222"
+                          strokeWidth={sWidth}
+                        />
+                        <circle
+                          cx={gSize / 2}
+                          cy={gSize / 2}
+                          r={rad}
+                          fill="transparent"
+                          stroke="#64e70c"
+                          strokeWidth={sWidth}
+                          strokeDasharray={circ}
+                          strokeDashoffset={sOffset}
+                          strokeLinecap="butt"
+                          style={{
+                            transition: "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+                          }}
+                        />
+                      </svg>
+
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          pointerEvents: "none",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "var(--muted)",
+                            fontWeight: 500,
+                            marginBottom: "2px",
+                          }}
+                        >
+                          Delivered
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "24px",
+                            fontWeight: 800,
+                            lineHeight: 1,
+                          }}
+                        >
+                          <span style={{ color: "#ffffff" }}>{deliveredCount}</span>
+                          <span style={{ color: "#666666", fontWeight: 700 }}>/{targetReels}</span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "var(--muted)",
+                            fontWeight: 500,
+                            marginTop: "2px",
+                          }}
+                        >
+                          {shortMonthStr}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 2x2 Stat Tiles */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "var(--bg)",
+                      borderRadius: "var(--border-radius-2)",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "2px" }}>
+                      Contracted
+                    </div>
+                    <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--white)" }}>
+                      {targetReels} <span style={{ fontSize: "11px", fontWeight: 400, color: "var(--muted)" }}>reels</span>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: "var(--bg)",
+                      borderRadius: "var(--border-radius-2)",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "2px" }}>
+                      Delivered
+                    </div>
+                    <div style={{ fontSize: "16px", fontWeight: 700, color: "#64e70c" }}>
+                      {deliveredCount} <span style={{ fontSize: "11px", fontWeight: 400, color: "rgba(100, 231, 12, 0.7)" }}>reels</span>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: "var(--bg)",
+                      borderRadius: "var(--border-radius-2)",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "2px" }}>
+                      Remaining
+                    </div>
+                    <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--gold)" }}>
+                      {remainingCount} <span style={{ fontSize: "11px", fontWeight: 400, color: "rgba(234, 179, 8, 0.7)" }}>reels</span>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: "var(--bg)",
+                      borderRadius: "var(--border-radius-2)",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <div style={{ fontSize: "11px", color: "var(--muted)", marginBottom: "2px" }}>
+                      Completion
+                    </div>
+                    <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--white)" }}>
+                      {progressPct}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Google Drive Folder Management */}
+              <div
+                style={{
+                  background: "var(--bg)",
+                  borderRadius: "var(--border-radius-2)",
+                  padding: "12px 14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <IconFolder size={15} style={{ color: "var(--gold)" }} />
+                    <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
+                      Google Drive Folder ({shortMonthStr})
+                    </span>
+                  </div>
+
+                  <label
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      cursor: "pointer",
+                      fontSize: "var(--text-xs)",
+                      userSelect: "none",
+                      background: showDriveToClient ? "var(--green-12)" : "transparent",
+                      border: `0.6px solid ${showDriveToClient ? "var(--green)" : "var(--border)"}`,
+                      color: showDriveToClient ? "var(--green)" : "var(--muted)",
+                      padding: "3px 8px",
+                      borderRadius: "var(--border-radius-2)",
+                      transition: "var(--transition-fast)",
+                    }}
+                    title="Toggle client portal visibility"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={showDriveToClient}
+                      onChange={(e) => setShowDriveToClient(e.target.checked)}
+                      style={{ display: "none" }}
+                    />
+                    {showDriveToClient ? <IconEye size={12} /> : <IconEyeOff size={12} />}
+                    <span>{showDriveToClient ? "Visible to Client" : "Hidden from Client"}</span>
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={monthlyDriveLink}
+                    onChange={(e) => setMonthlyDriveLink(e.target.value)}
+                    placeholder="https://drive.google.com/drive/folders/..."
+                    style={{
+                      flex: 1,
+                      padding: "7px 12px",
+                      fontSize: "var(--text-xs)",
+                      height: "32px",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveDriveLink}
+                    disabled={isSavingDrive}
+                    className="btn-secondary btn-sm"
+                    style={{ height: "32px" }}
+                  >
+                    {isSavingDrive ? "Saving..." : "Save Drive Link"}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 5. Minimalist Log / Edit Form */}
           <div
             style={{
               background: "var(--card)",
-              border: "0.6px solid var(--border)",
               borderRadius: "var(--border-radius-2)",
               padding: "14px 16px",
             }}
@@ -854,7 +865,7 @@ export function ReelTrackerModal({
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="btn btn-ghost btn-sm"
+                  className="btn-secondary btn-sm"
                   style={{ height: "24px", padding: "0 8px", fontSize: "11px" }}
                 >
                   Cancel Edit
@@ -923,7 +934,7 @@ export function ReelTrackerModal({
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="btn btn-primary btn-sm"
+                  className="btn-secondary btn-sm"
                   style={{
                     height: "34px",
                     padding: "0 16px",
@@ -956,7 +967,6 @@ export function ReelTrackerModal({
           <div
             style={{
               background: "var(--card)",
-              border: "0.6px solid var(--border)",
               borderRadius: "var(--border-radius-2)",
               padding: "14px 16px",
             }}
@@ -995,7 +1005,7 @@ export function ReelTrackerModal({
                 </div>
               </div>
             ) : (
-              <div className="table-wrap table-scroll-wrap" style={{ marginTop: 0 }}>
+              <div className="table-wrap table-scroll-wrap" style={{ marginTop: 0, border: "none" }}>
                 <table style={{ width: "100%", fontSize: "var(--text-xs)" }}>
                   <thead>
                     <tr>
@@ -1102,9 +1112,9 @@ export function ReelTrackerModal({
           </div>
           <button
             type="button"
-            className="btn btn-ghost btn-sm"
+            className="btn-secondary btn-sm"
             onClick={onClose}
-            style={{ height: "32px", padding: "0 16px", fontSize: "var(--text-xs)" }}
+            style={{ height: "32px", padding: "0 16px" }}
           >
             Done
           </button>
