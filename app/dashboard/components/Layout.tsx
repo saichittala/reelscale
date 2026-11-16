@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { User, DashboardPage } from "../types";
 import { CustomSelect } from "./CustomSelect";
+import { Button } from "@/components/ui";
 
 interface LayoutProps {
   page: DashboardPage;
@@ -227,13 +228,15 @@ export function Layout({
         {/* Topbar Header */}
         <div className="topbar">
           <div className="mobile-topbar-left">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               className="mobile-menu-btn"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
             >
               <img src="/assets/icons/menu.svg" width="20" alt="Menu" />
-            </button>
+            </Button>
             <div>
               <div className="page-title">{titles[page] || ""}</div>
               <div className="page-sub">{subs[page] || ""}</div>
@@ -267,8 +270,10 @@ export function Layout({
                 createBlogActionsBtn}
 
               {/* Theme Toggle Button - Made consistently visible for premium feel */}
-              <button
-                className="btn-ghost theme-toggle-btn"
+              <Button
+                variant="ghost"
+                size="icon"
+                className="theme-toggle-btn"
                 onClick={toggleTheme}
                 title="Toggle Theme"
               >
@@ -282,7 +287,7 @@ export function Layout({
                   width="20"
                   height="20"
                 />
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -304,7 +309,9 @@ export function Layout({
           <div className="mobile-menu">
             <div className="mobile-menu-header">
               <img src="/assets/logo.svg" height="22" alt="Logo" />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 className="mobile-close-btn"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -314,7 +321,7 @@ export function Layout({
                   width="18"
                   height="18"
                 />
-              </button>
+              </Button>
             </div>
             {nav.map((item) => (
               <button

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import QRCode from "qrcode";
+import { toast } from "@/components/ui";
 import "../../styles.css";
 import "./pay.css";
 
@@ -104,6 +105,7 @@ function PaymentContent() {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
         setCopied(true);
+        toast.success(`Copied to clipboard: ${text}`);
         setTimeout(() => setCopied(false), 2000);
       });
     } else {

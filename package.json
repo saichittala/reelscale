@@ -17,6 +17,8 @@
   "dependencies": {
     "@portabletext/react": "^3.2.1",
     "@sanity/image-url": "^1.1.0",
+    "lucide-react": "^1.73.0",
+    "motion": "^14.14.0",
     "next": "^16.2.9",
     "next-sanity": "^13.4.0",
     "qrcode": "^1.5.4",

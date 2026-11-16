@@ -6,6 +6,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
 import { IconFilm } from "../components/Icons";
+import { Button, Input } from "@/components/ui";
 
 interface ClientsProps {
   clients: Client[];
@@ -1026,44 +1027,41 @@ export function Clients({
     <>
       {/* Controls: Search and Sort */}
       <div className="controls">
-        <div className="search-wrap">
-          <img
-            src="/assets/icons/search.svg"
-            alt="Search"
-            className="search-icon"
-          />
-          <input
+        <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
+          <Input
             id="search-input"
             placeholder="Search clients by name, business, insta..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="form-input search-input-padded"
           />
         </div>
 
         {/* Model Filter Toggle - Segmented control style */}
         <div className="segmented-control-pill">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             className={`segmented-control-item ${activeModelFilter === "all" ? "active" : ""}`}
             onClick={() => setActiveModelFilter("all")}
           >
             All
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             className={`segmented-control-item ${activeModelFilter === "bm" ? "active" : ""}`}
             onClick={() => setActiveModelFilter("bm")}
           >
             SUB
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             className={`segmented-control-item ${activeModelFilter === "rtr" ? "active" : ""}`}
             onClick={() => setActiveModelFilter("rtr")}
           >
             RTR
-          </button>
+          </Button>
         </div>
       </div>
 

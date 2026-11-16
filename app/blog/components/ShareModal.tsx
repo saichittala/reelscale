@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { Button, toast } from "@/components/ui";
 
 export interface ShareModalPost {
   title: string;
@@ -49,6 +50,7 @@ export default function ShareModal({ isOpen, onClose, post }: ShareModalProps) {
     try {
       await navigator.clipboard.writeText(currentUrl);
       setCopiedLink(true);
+      toast.success("Article link copied to clipboard!");
       setTimeout(() => setCopiedLink(false), 2500);
     } catch (err) {
       console.error("Failed to copy link:", err);
@@ -82,7 +84,9 @@ export default function ShareModal({ isOpen, onClose, post }: ShareModalProps) {
         {/* Header */}
         <div className="share-modal-header">
           <h2 className="share-modal-title">Share this article</h2>
-          <button 
+          <Button 
+            variant="ghost"
+            size="icon"
             className="share-modal-close-btn" 
             onClick={onClose}
             aria-label="Close share dialog"
@@ -91,7 +95,7 @@ export default function ShareModal({ isOpen, onClose, post }: ShareModalProps) {
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-          </button>
+          </Button>
         </div>
 
         {/* Article Preview Card */}

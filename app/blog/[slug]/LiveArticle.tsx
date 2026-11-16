@@ -14,6 +14,7 @@ import { blocksToMarkdown } from "../../sanity/blog-sync";
 import FAQSection from "../components/FAQSection";
 import TableOfContents from "../components/TableOfContents";
 import ShareButtons, { HeaderShareButton } from "./ShareButtons";
+import { Button, Input } from "@/components/ui";
 
 interface LiveArticleProps {
   initialPost: BlogPost;
@@ -187,15 +188,15 @@ export default function LiveArticle({ initialPost }: LiveArticleProps) {
             <p className="newsletter-desc">
               Get monthly deep-dives on editing hooks, retention tactics, and social algorithms.
             </p>
-            <div className="newsletter-form">
-              <input
+            <div className="newsletter-form" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Input
                 type="email"
                 placeholder="name@email.com"
                 className="blog-newsletter-input"
               />
-              <button className="btn-primary blog-newsletter-btn">
+              <Button variant="primary" className="blog-newsletter-btn w-full">
                 Join newsletter
-              </button>
+              </Button>
             </div>
           </div>
         </aside>

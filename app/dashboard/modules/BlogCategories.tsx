@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button, Input } from "@/components/ui";
 
 interface BlogCategoriesProps {
   blogCategories: string[];
@@ -42,24 +43,25 @@ export function BlogCategories({
     <div className="blog-categories-wrap">
       <div className="glass-card">
         <div className="glass-card-label">Add New Category</div>
-        <div className="df-g12">
-          <input
-            className="form-input flex-grow-1"
-            id="new-cat-input"
-            placeholder="e.g. Video Editing, Sound Design"
-            value={newCatInput}
-            onChange={(e) => setNewCatInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAdd();
-            }}
-          />
-          <button
-            className="btn btn-primary"
+        <div className="df-g12 al-c">
+          <div style={{ flex: 1 }}>
+            <Input
+              id="new-cat-input"
+              placeholder="e.g. Video Editing, Sound Design"
+              value={newCatInput}
+              onChange={(e) => setNewCatInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAdd();
+              }}
+            />
+          </div>
+          <Button
+            variant="primary"
             id="add-cat-btn"
             onClick={handleAdd}
           >
             Create Category
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -72,8 +74,10 @@ export function BlogCategories({
                 {c}
               </div>
               <div className="df-g12 al-c">
-                <button
-                  className="btn btn-ghost delete-cat-btn delete-category-btn"
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="delete-cat-btn delete-category-btn"
                   onClick={() => {
                     setConfirmModal({
                       title: "Delete Category",
@@ -86,7 +90,7 @@ export function BlogCategories({
                   }}
                 >
                   Delete
-                </button>
+                </Button>
               </div>
             </div>
           ))}

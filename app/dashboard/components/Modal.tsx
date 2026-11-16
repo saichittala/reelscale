@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Client } from "../types";
+import { Button, Input } from "@/components/ui";
 
 interface ModalProps {
   isOpen: boolean;
@@ -95,7 +96,9 @@ export function Modal({
           <div className="modal-title">
             {client ? "Edit Client Details" : "Add New Client"}
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             className="modal-close"
             id="modal-close"
             aria-label="Close"
@@ -106,100 +109,79 @@ export function Modal({
               alt="Close"
               className="modal-close-icon"
             />
-          </button>
+          </Button>
         </div>
 
         {/* Client Image URL (Hidden row as per legacy markup design) */}
         <div className="form-row dn">
-          <div className="form-group">
-            <label className="form-label">Client Image URL</label>
-            <input
-              className="form-input"
-              id="f-image"
-              placeholder="https://..."
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-            />
-          </div>
+          <Input
+            id="f-image"
+            label="Client Image URL"
+            placeholder="https://..."
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+          />
         </div>
 
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">Client Name</label>
-            <input
-              className="form-input"
-              id="f-name"
-              placeholder="Arjun Mehta"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Business Name</label>
-            <input
-              className="form-input"
-              id="f-biz"
-              placeholder="Spice Route Café"
-              value={business}
-              onChange={(e) => setBusiness(e.target.value)}
-            />
-          </div>
+          <Input
+            id="f-name"
+            label="Client Name"
+            placeholder="Arjun Mehta"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            id="f-biz"
+            label="Business Name"
+            placeholder="Spice Route Café"
+            value={business}
+            onChange={(e) => setBusiness(e.target.value)}
+          />
         </div>
 
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">Phone Number</label>
-            <input
-              className="form-input"
-              id="f-phone"
-              placeholder="+91 98765 43210"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Instagram Handle</label>
-            <input
-              className="form-input"
-              id="f-instagram"
-              placeholder="@handle"
-              value={instagram}
-              onChange={(e) => setInstagram(e.target.value)}
-            />
-          </div>
+          <Input
+            id="f-phone"
+            label="Phone Number"
+            placeholder="+91 98765 43210"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <Input
+            id="f-instagram"
+            label="Instagram Handle"
+            placeholder="@handle"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+          />
         </div>
 
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">Reels Count</label>
-            <input
-              className="form-input"
-              id="f-reels"
-              type="number"
-              placeholder="24"
-              value={reels}
-              onChange={(e) =>
-                setReels(
-                  e.target.value === "" ? "" : Number(e.target.value)
-                )
-              }
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Price Per Reel (₹)</label>
-            <input
-              className="form-input"
-              id="f-ppr"
-              type="number"
-              placeholder="3500"
-              value={ppr}
-              onChange={(e) =>
-                setPpr(
-                  e.target.value === "" ? "" : Number(e.target.value)
-                )
-              }
-            />
-          </div>
+          <Input
+            id="f-reels"
+            label="Reels Count"
+            type="number"
+            placeholder="24"
+            value={reels}
+            onChange={(e) =>
+              setReels(
+                e.target.value === "" ? "" : Number(e.target.value)
+              )
+            }
+          />
+          <Input
+            id="f-ppr"
+            label="Price Per Reel (₹)"
+            type="number"
+            placeholder="3500"
+            value={ppr}
+            onChange={(e) =>
+              setPpr(
+                e.target.value === "" ? "" : Number(e.target.value)
+              )
+            }
+          />
         </div>
 
         <div
@@ -232,12 +214,12 @@ export function Modal({
         </div>
 
         <div className="form-footer">
-          <button className="btn btn-ghost" onClick={handleClose}>
+          <Button variant="ghost" onClick={handleClose}>
             Cancel
-          </button>
-          <button className="btn btn-primary" onClick={handleSave}>
+          </Button>
+          <Button variant="primary" onClick={handleSave}>
             {client ? "Save Changes" : "Add Client"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

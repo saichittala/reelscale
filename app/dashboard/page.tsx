@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -36,6 +35,7 @@ import { Blogs } from "./modules/Blogs";
 import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
+import { Button, toast } from "@/components/ui";
 
 export default function DashboardMainPage() {
   const router = useRouter();
@@ -138,18 +138,16 @@ export default function DashboardMainPage() {
     onConfirm: () => void | Promise<void>;
   } | null>(null);
 
-  // Toast message states
-  const [toasts, setToasts] = useState<
-    Array<{ id: string; message: string; type: "success" | "error" | "loading" }>
-  >([]);
-
+  // Centralized Toast system
   const showToast = useCallback(
     (msg: string, type: "success" | "error" | "loading" = "success") => {
-      const id = Math.random().toString(36).substring(2, 9);
-      setToasts((prev) => [...prev, { id, message: msg, type }]);
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, 3000);
+      if (type === "loading") {
+        toast.loading(msg);
+      } else if (type === "error") {
+        toast.error(msg);
+      } else {
+        toast.success(msg);
+      }
     },
     []
   );
@@ -502,8 +500,8 @@ export default function DashboardMainPage() {
   const addClientBtn = (
     <div className="df-g8 al-c">
       {selectedClientIds.length > 0 && (
-        <button
-          className="btn btn-danger"
+        <Button
+          variant="danger"
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Clients",
@@ -533,11 +531,11 @@ export default function DashboardMainPage() {
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
-        </button>
+        </Button>
       )}
 
-      <button
-        className="btn btn-primary"
+      <Button
+        variant="primary"
         onClick={() => {
           setNewClientRow(true);
         }}
@@ -550,25 +548,25 @@ export default function DashboardMainPage() {
           />
         </span>
         <span>Add Client</span>
-      </button>
+      </Button>
     </div>
   );
 
   const addSaleBtn = (
-    <button
-      className="btn btn-primary"
+    <Button
+      variant="primary"
       onClick={() => setNewLeadRow(true)}
     >
       <img src="/assets/icons/add.svg" width="18" alt="" />
       <span>Add Lead</span>
-    </button>
+    </Button>
   );
 
   const salesFiltersBtn = (
     <>
       {selectedLeadIds.length > 0 && (
-        <button
-          className="btn btn-danger"
+        <Button
+          variant="danger"
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Leads",
@@ -598,11 +596,12 @@ export default function DashboardMainPage() {
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedLeadIds.length})</span>
-        </button>
+        </Button>
       )}
 
-      <button
-        className="btn btn-ghost df-g8 al-c"
+      <Button
+        variant="ghost"
+        className="df-g8 al-c"
         onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
       >
         <svg
@@ -635,10 +634,10 @@ export default function DashboardMainPage() {
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
-      </button>
+      </Button>
 
-      <button
-        className="btn btn-ghost"
+      <Button
+        variant="ghost"
         onClick={() => {
           const trigger = document.getElementById(
             "import-sales-btn-trigger"
@@ -648,15 +647,15 @@ export default function DashboardMainPage() {
       >
         <img src="/assets/icons/upload.svg" width="18" alt="" />
         <span>Import XLS</span>
-      </button>
+      </Button>
     </>
   );
 
   const addUserBtn = (
     <div className="df-g8 al-c">
       {selectedUserIds.length > 0 && (
-        <button
-          className="btn btn-danger"
+        <Button
+          variant="danger"
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Users",
@@ -686,24 +685,24 @@ export default function DashboardMainPage() {
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
-        </button>
+        </Button>
       )}
 
-      <button
-        className="btn btn-primary"
+      <Button
+        variant="primary"
         onClick={() => setNewUserRow(true)}
       >
         <img src="/assets/icons/add.svg" width="18" alt="" />
         <span>Add User</span>
-      </button>
+      </Button>
     </div>
   );
 
   const blogActionsBtn = (
     <>
       {selectedBlogIds.length > 0 && (
-        <button
-          className="btn btn-danger"
+        <Button
+          variant="danger"
           onClick={() => {
             setConfirmModal({
               title: "Delete Selected Blog Posts",
@@ -735,11 +734,11 @@ export default function DashboardMainPage() {
             alt=""
           />
           <span><span className="hide-mobile">Delete Selected </span>({selectedBlogIds.length})</span>
-        </button>
+        </Button>
       )}
 
-      <button
-        className="btn btn-ghost"
+      <Button
+        variant="ghost"
         onClick={() => setPage("blog-categories")}
       >
         <img
@@ -749,9 +748,9 @@ export default function DashboardMainPage() {
           alt=""
         />
         <span>Categories</span>
-      </button>
-      <button
-        className="btn btn-primary"
+      </Button>
+      <Button
+        variant="primary"
         onClick={() => {
           setEditingBlog(null);
           setPage("create-blog");
@@ -759,20 +758,20 @@ export default function DashboardMainPage() {
       >
         <img src="/assets/icons/add.svg" width="18" alt="" />
         <span>Create Blog</span>
-      </button>
+      </Button>
     </>
   );
 
   const createBlogActionsBtn = (
-    <button
-      className="btn btn-ghost"
+    <Button
+      variant="ghost"
       onClick={() => {
         setEditingBlog(null);
         setPage("blogs");
       }}
     >
       <span>Back to list</span>
-    </button>
+    </Button>
   );
 
   return (
@@ -790,81 +789,6 @@ export default function DashboardMainPage() {
       selectedMonth={selectedMonth}
       setSelectedMonth={setSelectedMonth}
       availableMonths={availableMonths}
-      toast={
-        mounted && typeof document !== "undefined" && toasts.length > 0
-          ? createPortal(
-              <div className="toasts-container">
-                {[...toasts].reverse().map((t, idx) => (
-                  <div
-                    key={t.id}
-                    className={`toast ${t.type}`}
-                    style={{ "--index": idx } as any}
-                  >
-                    {t.type === "loading" ? (
-                      <div className="toast-loading-spinner" />
-                    ) : (
-                      <div className={`toast-icon-wrap ${t.type}`}>
-                        {t.type === "success" ? (
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="m9 12 2 2 4-4" />
-                          </svg>
-                        ) : (
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="15" y1="9" x2="9" y2="15" />
-                            <line x1="9" y1="9" x2="15" y2="15" />
-                          </svg>
-                        )}
-                      </div>
-                    )}
-                    <span className="toast-message">{t.message}</span>
-                    <button
-                      className="toast-close-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setToasts((prev) => prev.filter((item) => item.id !== t.id));
-                      }}
-                    >
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>,
-              document.body
-            )
-          : null
-      }
     >
       {/* Active page views wrapped in a premium entrance animation container */}
       <div key={page} className="active-view">
@@ -999,15 +923,15 @@ export default function DashboardMainPage() {
               continue using ReelScale.
             </div>
             <div className="form-footer">
-              <button
-                className="btn btn-primary"
+              <Button
+                variant="primary"
                 onClick={() => {
                   setSessionExpired(false);
                   router.push("/dashboard/login/");
                 }}
               >
                 Login Again
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1027,14 +951,16 @@ export default function DashboardMainPage() {
             <div className="delete-title">{confirmModal.title}</div>
             <div className="delete-sub text-left mb-28">{confirmModal.message}</div>
             <div className="delete-actions del-actions-end">
-              <button
-                className="btn btn-ghost btn-auto"
+              <Button
+                variant="ghost"
+                className="btn-auto"
                 onClick={() => setConfirmModal(null)}
               >
                 Cancel
-              </button>
-              <button
-                className="btn btn-danger btn-auto"
+              </Button>
+              <Button
+                variant="danger"
+                className="btn-auto"
                 onClick={async () => {
                   const action = confirmModal.onConfirm;
                   setConfirmModal(null);
@@ -1042,7 +968,7 @@ export default function DashboardMainPage() {
                 }}
               >
                 Delete
-              </button>
+              </Button>
             </div>
           </div>
         </div>

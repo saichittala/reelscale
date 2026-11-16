@@ -241,6 +241,37 @@
     --white-30: oklch(1 0 0 / 0.30);
     --white-35: oklch(1 0 0 / 0.35);
     --white-50: oklch(1 0 0 / 0.50);
+
+    /* ─── ARC UI / CENTRALIZED DESIGN SYSTEM BRIDGE ─── */
+    --control-height-sm: 30px;
+    --control-height-md: var(--input-height, 38px);
+    --control-height-lg: 46px;
+    --radius-control: var(--radius-sm, 8px);
+    --radius-panel: var(--radius-md, 12px);
+
+    --foreground: var(--white);
+    --background: var(--bg);
+    --surface: var(--white-04);
+    --surface-raised: oklch(0.12 0 0);
+    --surface-muted: var(--white-07);
+    --border-strong: oklch(0.92 0.01 95 / 0.22);
+
+    --danger: var(--red);
+    --success: var(--green);
+    --warning: var(--gold);
+    --info: var(--blue);
+    --accent: var(--red);
+
+    --text-secondary: var(--muted);
+    --text-field: var(--text-sm, 14px);
+    --leading-body: 1.5;
+    --tracking-body: normal;
+
+    --shadow-resting: var(--shadow-sm);
+    --shadow-raised: var(--shadow-md);
+    --shadow-floating: var(--shadow-lg);
+
+    --duration-spring: var(--duration-fast, 150ms);
 }
 
 /* ─────────────────────────── LIGHT THEME ─────────────────────────── */
@@ -272,4 +303,13 @@
     --bg-overlay-dark: oklch(0 0 0 / 0.4);
     --bg-overlay-light: oklch(0 0 0 / 0.3);
     --bg-lowend: oklch(98% 0 0 / 0.98);
+
+    --foreground: var(--white);
+    --background: var(--bg);
+    --surface: var(--card);
+    --surface-raised: var(--card);
+    --surface-muted: var(--white-07);
+    --border-strong: oklch(27.685% 0.00003 271.152 / 0.24);
+    --text-secondary: var(--muted);
+    --text-field: var(--text-sm, 14px);
 }

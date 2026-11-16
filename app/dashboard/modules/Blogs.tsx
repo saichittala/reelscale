@@ -3,6 +3,7 @@ import { Blog } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
+import { Button, Input } from "@/components/ui";
 
 interface BlogsProps {
   blogs: Blog[];
@@ -162,19 +163,13 @@ export function Blogs({
     <>
       {/* Controls: Search and Filters */}
       <div className="controls">
-        <div className="search-wrap">
-          <img
-            src="/assets/icons/search.svg"
-            alt="Search"
-            className="search-icon"
-          />
-          <input
+        <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
+          <Input
             id="blog-search-input"
             type="text"
             placeholder="Search blogs by title..."
             value={blogSearch}
             onChange={(e) => setBlogSearch(e.target.value)}
-            className="search-input"
           />
         </div>
 
@@ -356,13 +351,15 @@ export function Blogs({
               Showing {startIndex + 1}-{endIndex} of {totalItems} items
             </div>
             <div className="pagination-controls">
-              <button
-                className="btn btn-ghost pagination-btn"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               >
                 Previous
-              </button>
+              </Button>
               <div className="pagination-numbers">
                 {getPageNumbers().map((pageNum, index) =>
                   pageNum === "..." ? (
@@ -370,25 +367,29 @@ export function Blogs({
                       &hellip;
                     </span>
                   ) : (
-                    <button
+                    <Button
+                      variant={currentPage === pageNum ? "primary" : "ghost"}
+                      size="sm"
                       key={pageNum}
-                      className={`btn btn-ghost pagination-number-btn ${
+                      className={`pagination-number-btn ${
                         currentPage === pageNum ? "active" : ""
                       }`}
                       onClick={() => setCurrentPage(pageNum as number)}
                     >
                       {pageNum}
-                    </button>
+                    </Button>
                   )
                 )}
               </div>
-              <button
-                className="btn btn-ghost pagination-btn"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="pagination-btn"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}

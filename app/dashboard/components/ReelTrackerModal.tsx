@@ -10,6 +10,7 @@ import {
   apiDeleteDelivery,
 } from "../services/api";
 import { CustomSelect } from "./CustomSelect";
+import { Button, Input, toast } from "@/components/ui";
 
 import {
   IconFilm,
@@ -345,28 +346,17 @@ export function ReelTrackerModal({
             </div>
           </div>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             className="modal-close"
             id="modal-close"
             aria-label="Close"
             onClick={onClose}
             title="Close modal"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "32px",
-              height: "32px",
-              borderRadius: "var(--border-radius-2)",
-              border: "0.6px solid var(--border)",
-              background: "transparent",
-              color: "var(--muted)",
-              cursor: "pointer",
-            }}
           >
             <IconClose size={16} />
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable Content */}
@@ -394,71 +384,65 @@ export function ReelTrackerModal({
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={handleCopyLink}
-                className="btn-secondary btn-sm"
                 title="Click to copy live client portal URL"
               >
                 {copiedLink ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconLink size={12} />}
                 <span>{copiedLink ? "Link Copied!" : "Copy Link"}</span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={handleCopyPasscode}
-                className="btn-secondary btn-sm"
                 title={`Passcode: ${passcode} (Click to copy)`}
               >
                 {copiedPasscode ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconKey size={12} />}
                 <span>{copiedPasscode ? "Passcode Copied!" : `Passcode: ${passcode}`}</span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={handleCopyWhatsAppMsg}
-                className="btn-secondary btn-sm"
                 title="Copy client portal WhatsApp message with link and passcode"
               >
                 {copiedMsg ? <IconCheck size={12} style={{ color: "var(--green)" }} /> : <IconWhatsApp size={12} style={{ color: "var(--green)" }} />}
                 <span>{copiedMsg ? "Copied" : "Copy for WhatsApp"}</span>
-              </button>
+              </Button>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               {monthlyDriveLink && (
-                <a
+                <Button
+                  variant="secondary"
+                  size="sm"
                   href={monthlyDriveLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-secondary btn-sm"
                   title="Open monthly Google Drive deliverables folder"
                 >
                   <IconFolder size={12} style={{ color: "var(--gold)" }} />
                   <span>Drive</span>
                   <IconArrowUpRight size={11} />
-                </a>
+                </Button>
               )}
 
-              <a
+              <Button
+                variant="secondary"
+                size="sm"
                 href={portalUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary btn-sm"
                 title="Preview client tracking portal"
               >
                 <span>Preview</span>
                 <IconArrowUpRight size={11} />
-              </a>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="btn-secondary btn-sm"
-                style={{
-                  background: showAdvanced ? "var(--white-10)" : "transparent",
-                  color: showAdvanced ? "var(--white)" : "var(--muted)",
-                }}
                 title={showAdvanced ? "Hide advanced metrics and Drive configuration" : "Show advanced metrics and Drive configuration"}
               >
                 <span>Advance Info</span>
@@ -469,7 +453,7 @@ export function ReelTrackerModal({
                     transition: "transform 0.2s ease",
                   }}
                 />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -811,28 +795,23 @@ export function ReelTrackerModal({
                 </div>
 
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={monthlyDriveLink}
-                    onChange={(e) => setMonthlyDriveLink(e.target.value)}
-                    placeholder="https://drive.google.com/drive/folders/..."
-                    style={{
-                      flex: 1,
-                      padding: "7px 12px",
-                      fontSize: "var(--text-xs)",
-                      height: "32px",
-                    }}
-                  />
-                  <button
-                    type="button"
+                  <div style={{ flex: 1 }}>
+                    <Input
+                      type="text"
+                      value={monthlyDriveLink}
+                      onChange={(e) => setMonthlyDriveLink(e.target.value)}
+                      placeholder="https://drive.google.com/drive/folders/..."
+                    />
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={handleSaveDriveLink}
                     disabled={isSavingDrive}
-                    className="btn-secondary btn-sm"
-                    style={{ height: "32px" }}
+                    loading={isSavingDrive}
                   >
-                    {isSavingDrive ? "Saving..." : "Save Drive Link"}
-                  </button>
+                    Save Drive Link
+                  </Button>
                 </div>
               </div>
             </div>
@@ -862,14 +841,14 @@ export function ReelTrackerModal({
               </div>
 
               {isEditingId && (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={resetForm}
-                  className="btn-secondary btn-sm"
                   style={{ height: "24px", padding: "0 8px", fontSize: "11px" }}
                 >
                   Cancel Edit
-                </button>
+                </Button>
               )}
             </div>
 
@@ -882,29 +861,21 @@ export function ReelTrackerModal({
                 }}
               >
                 <div>
-                  <label className="form-label" style={{ fontSize: "11px", marginBottom: "4px" }}>
-                    Reel Title / Topic *
-                  </label>
-                  <input
+                  <Input
+                    label="Reel Title / Topic *"
                     type="text"
-                    className="form-input"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Reel 04: Box Cricket Trick Shots"
-                    style={{ padding: "7px 10px", fontSize: "var(--text-xs)", height: "34px" }}
                   />
                 </div>
 
                 <div>
-                  <label className="form-label" style={{ fontSize: "11px", marginBottom: "4px" }}>
-                    Delivery Date *
-                  </label>
-                  <input
+                  <Input
+                    label="Delivery Date *"
                     type="date"
-                    className="form-input"
                     value={deliveredDate}
                     onChange={(e) => setDeliveredDate(e.target.value)}
-                    style={{ padding: "7px 10px", fontSize: "var(--text-xs)", height: "34px" }}
                   />
                 </div>
 
@@ -922,32 +893,29 @@ export function ReelTrackerModal({
               </div>
 
               <div style={{ marginTop: "10px", display: "flex", gap: "8px", alignItems: "center" }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Optional notes / caption hook / editor note..."
-                  style={{ flex: 1, padding: "7px 12px", fontSize: "var(--text-xs)", height: "34px" }}
-                />
+                <div style={{ flex: 1 }}>
+                  <Input
+                    type="text"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Optional notes / caption hook / editor note..."
+                  />
+                </div>
 
-                <button
+                <Button
+                  variant="primary"
+                  size="sm"
                   type="submit"
                   disabled={isSaving}
-                  className="btn-secondary btn-sm"
+                  loading={isSaving}
                   style={{
-                    height: "34px",
+                    height: "38px",
                     padding: "0 16px",
                     fontSize: "var(--text-xs)",
                     whiteSpace: "nowrap",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
                   }}
                 >
-                  {isSaving ? (
-                    "Saving..."
-                  ) : isEditingId ? (
+                  {isEditingId ? (
                     <>
                       <IconCheck size={13} />
                       <span>Update Reel</span>
@@ -958,7 +926,7 @@ export function ReelTrackerModal({
                       <span>Add Reel</span>
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -1067,24 +1035,24 @@ export function ReelTrackerModal({
                         </td>
                         <td className="th-actions" style={{ textAlign: "right" }}>
                           <div className="action-btns-row" style={{ justifyContent: "flex-end", gap: "4px" }}>
-                            <button
-                              type="button"
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               className="edit-btn-td"
                               title="Edit Reel"
                               onClick={() => handleStartEdit(del)}
-                              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
                             >
                               <IconEdit size={13} />
-                            </button>
-                            <button
-                              type="button"
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="icon"
                               className="del-btn-td"
                               title="Delete Reel"
                               onClick={() => handleDeleteDelivery(del.id, del.title)}
-                              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
                             >
                               <IconTrash size={13} />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -1110,14 +1078,13 @@ export function ReelTrackerModal({
           <div style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
             Viewing: <strong style={{ color: "var(--white)" }}>{selectedMonthLabel}</strong>
           </div>
-          <button
-            type="button"
-            className="btn-secondary btn-sm"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onClose}
-            style={{ height: "32px", padding: "0 16px" }}
           >
             Done
-          </button>
+          </Button>
         </div>
       </div>
     </div>

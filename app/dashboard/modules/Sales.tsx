@@ -8,6 +8,7 @@ import {
   toDateStr,
 } from "../utils/format";
 import { loadXLSX } from "../utils/loader";
+import { Button, Input } from "@/components/ui";
 
 interface SalesProps {
   leads: Lead[];
@@ -277,16 +278,11 @@ export function Sales({
   return (
     <>
       {/* Controls: Search */}
+      {/* Search Bar */}
       <div className="controls">
-        <div className="search-wrap">
-          <img
-            src="/assets/icons/search.svg"
-            alt="Search"
-            className="search-icon"
-          />
-          <input
+        <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
+          <Input
             type="text"
-            className="search-input"
             placeholder="Search leads..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -297,38 +293,37 @@ export function Sales({
       {/* Date Filter Panel */}
       {salesFilterExpanded && (
         <div className="sales-date-filter-panel">
-          <div className="sales-date-filter">
-            <div className="date-filter-group">
-              <label className="date-filter-label">From</label>
-              <input
+          <div className="sales-date-filter" style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
+            <div className="date-filter-group" style={{ minWidth: "160px" }}>
+              <Input
+                label="From"
                 type="date"
                 id="sales-date-from"
-                className="date-filter-input"
                 value={salesDateFrom}
                 onChange={(e) => setSalesDateFrom(e.target.value)}
               />
             </div>
-            <div className="date-filter-group">
-              <label className="date-filter-label">To</label>
-              <input
+            <div className="date-filter-group" style={{ minWidth: "160px" }}>
+              <Input
+                label="To"
                 type="date"
                 id="sales-date-to"
-                className="date-filter-input"
                 value={salesDateTo}
                 onChange={(e) => setSalesDateTo(e.target.value)}
               />
             </div>
             {(salesDateFrom || salesDateTo) && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 id="clear-sales-date"
-                className="btn btn-ghost btn-sm"
                 onClick={() => {
                   setSalesDateFrom("");
                   setSalesDateTo("");
                 }}
               >
                 Clear
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -620,13 +615,15 @@ export function Sales({
               Showing {startIndex + 1}-{endIndex} of {totalItems} items
             </div>
             <div className="pagination-controls">
-              <button
-                className="btn btn-ghost pagination-btn"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               >
                 Previous
-              </button>
+              </Button>
               <div className="pagination-numbers">
                 {getPageNumbers().map((pageNum, index) =>
                   pageNum === "..." ? (
@@ -634,24 +631,27 @@ export function Sales({
                       &hellip;
                     </span>
                   ) : (
-                    <button
+                    <Button
+                      variant={currentPage === pageNum ? "primary" : "ghost"}
+                      size="sm"
                       key={pageNum}
-                      className={`btn btn-ghost pagination-number-btn ${currentPage === pageNum ? "active" : ""
-                        }`}
+                      className={`pagination-number-btn ${currentPage === pageNum ? "active" : ""}`}
                       onClick={() => setCurrentPage(pageNum as number)}
                     >
                       {pageNum}
-                    </button>
+                    </Button>
                   )
                 )}
               </div>
-              <button
-                className="btn btn-ghost pagination-btn"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="pagination-btn"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}

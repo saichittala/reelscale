@@ -14,6 +14,7 @@ import {
   IconEyeOff,
   IconSearch,
 } from "../../dashboard/components/Icons";
+import { Button, Input } from "@/components/ui";
 
 interface PublicClientData {
   id: string | number;
@@ -230,65 +231,46 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
           )}
 
           <form onSubmit={handleUnlock}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="portal-passcode">
-                Client Passcode
-              </label>
+            <div className="form-group mb-20">
               <div style={{ position: "relative" }}>
-                <input
+                <Input
+                  label="Client Passcode"
                   id="portal-passcode"
                   type={showPassword ? "text" : "password"}
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder="e.g. clientname@123"
-                  className="form-input"
                   autoFocus
-                  style={{
-                    paddingRight: "40px",
-                    borderColor: passcodeError ? "var(--red)" : undefined,
-                  }}
+                  error={passcodeError}
                 />
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    color: "var(--muted)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    right: "6px",
+                    bottom: "4px",
                     padding: 0,
                   }}
                   title={showPassword ? "hide" : "show"}
                 >
                   {showPassword ? <IconEye size={18} /> : <IconEyeOff size={18} />}
-                </button>
+                </Button>
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isVerifying || !passcode}
-              className="btn btn-primary login-submit-btn"
-              style={{
-                cursor: !passcode ? "not-allowed" : "pointer",
-                opacity: !passcode ? 0.6 : 1,
-              }}
+              loading={isVerifying}
+              variant="primary"
+              size="lg"
+              className="w-full login-submit-btn"
             >
-              {isVerifying ? (
-                <>
-                  <span className="btn-loader"></span> Verifying...
-                </>
-              ) : (
-                "View Delivery Tracker ↗"
-              )}
-            </button>
+              View Delivery Tracker ↗
+            </Button>
           </form>
 
           <div

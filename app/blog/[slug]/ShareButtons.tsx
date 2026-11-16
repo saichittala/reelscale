@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import ShareModal, { ShareModalPost } from "../components/ShareModal";
+import { Button, toast } from "@/components/ui";
 
 interface ShareProps {
   title: string;
@@ -14,7 +15,9 @@ export function HeaderShareButton({ post }: { post: ShareModalPost }) {
 
   return (
     <>
-      <button 
+      <Button 
+        variant="ghost"
+        size="sm"
         className="blog-header-share-btn"
         onClick={() => setIsModalOpen(true)}
         aria-label="Share article"
@@ -25,7 +28,7 @@ export function HeaderShareButton({ post }: { post: ShareModalPost }) {
           <line x1="12" y1="2" x2="12" y2="15"></line>
         </svg>
         <span className="blog-header-share-text">Share</span>
-      </button>
+      </Button>
 
       <ShareModal 
         isOpen={isModalOpen} 
@@ -66,7 +69,7 @@ export default function ShareButtons({ title, slug, post }: ShareProps) {
     if (typeof window !== "undefined") {
       try {
         await navigator.clipboard.writeText(window.location.href);
-        alert("Link copied to clipboard!");
+        toast.success("Link copied to clipboard!");
       } catch (err) {
         console.error(err);
       }
@@ -77,16 +80,18 @@ export default function ShareButtons({ title, slug, post }: ShareProps) {
     <>
       <div className="blog-share-panel">
         <span className="blog-share-label">Share Article:</span>
-        <button className="share-btn" onClick={handleTwitter}>
+        <Button variant="ghost" size="sm" className="share-btn" onClick={handleTwitter}>
           Twitter
-        </button>
-        <button className="share-btn" onClick={handleLinkedIn}>
+        </Button>
+        <Button variant="ghost" size="sm" className="share-btn" onClick={handleLinkedIn}>
           LinkedIn
-        </button>
-        <button className="share-btn" onClick={handleCopy}>
+        </Button>
+        <Button variant="ghost" size="sm" className="share-btn" onClick={handleCopy}>
           Copy Link
-        </button>
-        <button 
+        </Button>
+        <Button 
+          variant="primary" 
+          size="sm"
           className="share-btn share-btn-primary" 
           onClick={() => setIsModalOpen(true)}
         >
@@ -96,7 +101,7 @@ export default function ShareButtons({ title, slug, post }: ShareProps) {
             <line x1="12" y1="2" x2="12" y2="15"></line>
           </svg>
           All Share Options
-        </button>
+        </Button>
       </div>
 
       <ShareModal 

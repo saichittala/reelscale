@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IconEye, IconEyeOff } from "../dashboard/components/Icons";
+import { Button, Input } from "@/components/ui";
 
 export default function TrackEntryPage() {
   const router = useRouter();
@@ -86,65 +87,46 @@ export default function TrackEntryPage() {
         )}
 
         <form onSubmit={handleLookup}>
-          <div className="form-group">
-            <label htmlFor="client-passcode" className="form-label">
-              Secret Passcode
-            </label>
+          <div className="form-group mb-20">
             <div style={{ position: "relative" }}>
-              <input
+              <Input
+                label="Secret Passcode"
                 id="client-passcode"
                 type={showPassword ? "text" : "password"}
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="e.g. manish@123"
-                className="form-input"
                 autoFocus
-                style={{
-                  paddingRight: "40px",
-                  borderColor: errorMsg ? "var(--red)" : undefined,
-                }}
+                error={errorMsg}
               />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "var(--muted)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  right: "6px",
+                  bottom: "4px",
                   padding: 0,
                 }}
                 title={showPassword ? "hide" : "show"}
               >
                 {showPassword ? <IconEye size={18} /> : <IconEyeOff size={18} />}
-              </button>
+              </Button>
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isSearching || !passcode}
-            className="btn btn-primary login-submit-btn"
-            style={{
-              cursor: !passcode ? "not-allowed" : "pointer",
-              opacity: !passcode ? 0.6 : 1,
-            }}
+            loading={isSearching}
+            variant="primary"
+            size="lg"
+            className="w-full login-submit-btn"
           >
-            {isSearching ? (
-              <>
-                <span className="btn-loader"></span> Finding Portal...
-              </>
-            ) : (
-              "Open Delivery Tracker ↗"
-            )}
-          </button>
+            Open Delivery Tracker ↗
+          </Button>
         </form>
 
         <div

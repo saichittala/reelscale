@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
+import { Button, Input } from "@/components/ui";
 
 export default function DashboardLoginPage() {
   const router = useRouter();
@@ -75,10 +76,9 @@ export default function DashboardLoginPage() {
           </div>
         )}
 
-        <div className="form-group">
-          <label className="form-label">Email</label>
-          <input
-            className="form-input"
+        <div className="form-group mb-16">
+          <Input
+            label="Email"
             type="email"
             placeholder="Enter your email"
             autoComplete="off"
@@ -89,10 +89,9 @@ export default function DashboardLoginPage() {
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label">Password</label>
-          <input
-            className="form-input"
+        <div className="form-group mb-24">
+          <Input
+            label="Password"
             type="password"
             placeholder="Enter your password"
             autoComplete="off"
@@ -103,19 +102,16 @@ export default function DashboardLoginPage() {
           />
         </div>
 
-        <button
-          className="btn btn-primary login-submit-btn"
+        <Button
+          variant="primary"
+          size="lg"
+          className="login-submit-btn w-full"
           onClick={handleSignIn}
           disabled={isSubmitting}
+          loading={isSubmitting}
         >
-          {isSubmitting ? (
-            <>
-              <span className="btn-loader"></span> Signing In...
-            </>
-          ) : (
-            "Sign In"
-          )}
-        </button>
+          Sign In
+        </Button>
       </div>
     </div>
   );

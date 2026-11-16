@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Client, BusinessDocument, ClientContract, DocumentLineItem } from "../types";
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
+import { Button, Input, Textarea } from "@/components/ui";
 
 interface ResourcesProps {
   clients: Client[];
@@ -710,9 +711,9 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
           {/* Header Bar */}
           <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <button className="btn btn-ghost" style={{ padding: "8px 12px", minWidth: "auto" }} onClick={() => setView("overview")}>
+              <Button variant="ghost" size="sm" onClick={() => setView("overview")}>
                 ← Back
-              </button>
+              </Button>
               <div>
                 <h2 style={{ fontSize: "20px", fontWeight: 600 }}>{activeDoc.type} Generator</h2>
                 <div style={{ fontSize: "13px", color: "var(--muted)" }}>Document No: {activeDoc.number}</div>
@@ -724,22 +725,22 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                 <span className={`save-status-dot ${saveStatus}`}></span>
                 <span style={{ textTransform: "capitalize" }}>{saveStatus === "unsaved" ? "unsaved changes" : saveStatus}</span>
               </div>
-              <button className="btn btn-ghost" onClick={() => {
+              <Button variant="ghost" size="sm" onClick={() => {
                 showToast("Draft saved successfully", "success");
                 setSaveStatus("saved");
               }}>
                 Save Draft
-              </button>
-              <button className="btn btn-primary" onClick={handleGeneratePdf}>
+              </Button>
+              <Button variant="primary" size="sm" onClick={handleGeneratePdf}>
                 Generate PDF
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Mobile responsive tabs switch */}
           <div className="segmented-control dn" style={{ marginBottom: "20px" }} id="mobile-workspace-tabs">
-            <button className={`segmented-btn ${mobileTab === "details" ? "active" : ""}`} onClick={() => setMobileTab("details")}>Edit details</button>
-            <button className={`segmented-btn ${mobileTab === "preview" ? "active" : ""}`} onClick={() => setMobileTab("preview")}>Preview Document</button>
+            <Button variant={mobileTab === "details" ? "primary" : "ghost"} size="sm" onClick={() => setMobileTab("details")}>Edit details</Button>
+            <Button variant={mobileTab === "preview" ? "primary" : "ghost"} size="sm" onClick={() => setMobileTab("preview")}>Preview Document</Button>
           </div>
 
           {/* Desktop Dual Panel Layout */}
@@ -1170,15 +1171,15 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
         <div className="glass-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <button className="btn btn-ghost" style={{ padding: "8px 12px", minWidth: "auto" }} onClick={() => setView("overview")}>
+              <Button variant="ghost" size="sm" onClick={() => setView("overview")}>
                 ← Back
-              </button>
+              </Button>
               <h2 style={{ fontSize: "20px", fontWeight: 600 }}>Document History Tracker</h2>
             </div>
             
             <div style={{ display: "flex", gap: "12px" }}>
-              <button className="btn btn-secondary" onClick={() => startDocumentGenerator("Quotation")}>+ New Quotation</button>
-              <button className="btn btn-primary" onClick={() => startDocumentGenerator("Invoice")}>+ New Invoice</button>
+              <Button variant="secondary" size="sm" onClick={() => startDocumentGenerator("Quotation")}>+ New Quotation</Button>
+              <Button variant="primary" size="sm" onClick={() => startDocumentGenerator("Invoice")}>+ New Invoice</Button>
             </div>
           </div>
 
@@ -1296,13 +1297,13 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
         <div className="glass-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <button className="btn btn-ghost" style={{ padding: "8px 12px", minWidth: "auto" }} onClick={() => setView("overview")}>
+              <Button variant="ghost" size="sm" onClick={() => setView("overview")}>
                 ← Back
-              </button>
+              </Button>
               <h2 style={{ fontSize: "20px", fontWeight: 600 }}>Client Contracts Tracker</h2>
             </div>
             
-            <button className="btn btn-primary" onClick={() => {
+            <Button variant="primary" size="sm" onClick={() => {
               setNewContract({
                 clientId: "custom",
                 clientName: "",
@@ -1317,7 +1318,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
               setIsContractModalOpen(true);
             }}>
               + Create Agreement / Contract
-            </button>
+            </Button>
           </div>
 
           {/* Search filter row */}
@@ -1413,26 +1414,26 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <button className="btn btn-primary" onClick={() => {
+              <Button variant="primary" onClick={() => {
                 setShowSuccessModal(false);
                 triggerBrowserPrint();
               }}>
                 🖨️ Download PDF / Print Document
-              </button>
+              </Button>
               
               <div style={{ display: "flex", gap: "12px" }}>
-                <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => {
+                <Button variant="ghost" style={{ flex: 1 }} onClick={() => {
                   setShowSuccessModal(false);
                   setView("history");
                 }}>
                   View History
-                </button>
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => {
+                </Button>
+                <Button variant="secondary" style={{ flex: 1 }} onClick={() => {
                   setShowSuccessModal(false);
                   startDocumentGenerator(activeDoc.type);
                 }}>
                   Create Another
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -1445,9 +1446,9 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
           <div className="modal modal-sm" style={{ maxWidth: "480px" }}>
             <div className="modal-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <div className="modal-title" style={{ fontSize: "18px", fontWeight: 700 }}>New Service Agreement</div>
-              <button className="mobile-close-btn" style={{ background: "transparent", border: "none", cursor: "pointer" }} onClick={() => setIsContractModalOpen(false)}>
+              <Button variant="ghost" size="icon" className="mobile-close-btn" onClick={() => setIsContractModalOpen(false)}>
                 <img src="/assets/icons/close.svg" alt="Close" width="16" />
-              </button>
+              </Button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }} className="modal-body-text">
@@ -1527,8 +1528,8 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
             </div>
 
             <div className="form-footer" style={{ marginTop: "24px", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-              <button className="btn btn-ghost" onClick={() => setIsContractModalOpen(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleCreateContract}>Create Retainer Agreement</button>
+              <Button variant="ghost" onClick={() => setIsContractModalOpen(false)}>Cancel</Button>
+              <Button variant="primary" onClick={handleCreateContract}>Create Retainer Agreement</Button>
             </div>
           </div>
         </div>

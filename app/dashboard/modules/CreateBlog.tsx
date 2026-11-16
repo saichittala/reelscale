@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Blog, FAQ } from "../types";
 import { CustomSelect } from "../components/CustomSelect";
+import { Button, Input, Textarea } from "@/components/ui";
 
 interface CreateBlogProps {
   editingBlog: Blog | null;
@@ -238,10 +239,9 @@ export function CreateBlog({
             Basic Details
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Article Title</label>
-            <input
-              className="form-input"
+          <div className="form-group mb-16">
+            <Input
+              label="Article Title"
               id="eb-title"
               placeholder="How to Craft a High-Retention Reels Strategy"
               value={title}
@@ -249,18 +249,17 @@ export function CreateBlog({
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">URL Slug</label>
-              <input
-                className="form-input"
+          <div className="form-row mb-16">
+            <div className="form-group flex-1">
+              <Input
+                label="URL Slug"
                 id="eb-slug"
                 placeholder="how-to-craft-high-retention-strategy"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
               />
             </div>
-            <div className="form-group">
+            <div className="form-group flex-1">
               <label className="form-label">Category</label>
               <CustomSelect
                 id="eb-category"
@@ -273,9 +272,8 @@ export function CreateBlog({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Short Description</label>
-            <textarea
-              className="form-input textarea-no-resize"
+            <Textarea
+              label="Short Description"
               id="eb-desc"
               rows={3}
               placeholder="Compose a short excerpt / description for cards..."
@@ -294,43 +292,50 @@ export function CreateBlog({
 
             {/* Quick Helper Formatting Bar */}
             <div className="df-g8 editor-toolbar-helper">
-              <button
-                className="btn btn-ghost toolbar-btn-sm"
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={() => insertAtCursor("## ")}
               >
                 H2
-              </button>
-              <button
-                className="btn btn-ghost toolbar-btn-sm"
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={() => insertAtCursor("### ")}
               >
                 H3
-              </button>
-              <button
-                className="btn btn-ghost toolbar-btn-sm"
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={() => insertAtCursor("**", "**")}
               >
                 B
-              </button>
-              <button
-                className="btn btn-ghost toolbar-btn-sm italic"
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="italic"
                 type="button"
                 onClick={() => insertAtCursor("> ")}
               >
                 Quote
-              </button>
-              <button
-                className="btn btn-ghost toolbar-btn-sm"
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={() => insertAtCursor("- ")}
               >
                 List
-              </button>
-              <button
-                className="btn btn-ghost toolbar-btn-gold"
+              </Button>
+              <Button
+                variant="gold"
+                size="sm"
                 type="button"
                 onClick={() =>
                   insertAtCursor(
@@ -339,7 +344,7 @@ export function CreateBlog({
                 }
               >
                 CTA
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -368,24 +373,26 @@ export function CreateBlog({
                   <div className="faq-item-label">
                     FAQ Item #{idx + 1}
                   </div>
-                  <button
-                    className="btn btn-ghost eb-faq-delete faq-delete-btn"
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="eb-faq-delete faq-delete-btn"
                     type="button"
                     onClick={() => handleRemoveFaq(idx)}
                   >
                     Remove
-                  </button>
+                  </Button>
                 </div>
-                <input
-                  className="form-input faq-q-input"
+                <Input
+                  className="faq-q-input mb-8"
                   placeholder="Question Title"
                   value={f.question}
                   onChange={(e) =>
                     handleFaqChange(idx, "question", e.target.value)
                   }
                 />
-                <textarea
-                  className="form-input faq-a-input textarea-no-resize"
+                <Textarea
+                  className="faq-a-input"
                   rows={2}
                   placeholder="Answer text..."
                   value={f.answer}
@@ -397,12 +404,13 @@ export function CreateBlog({
             ))}
           </div>
 
-          <button
-            className="btn btn-ghost add-faq-btn"
+          <Button
+            variant="ghost"
+            className="add-faq-btn mt-12"
             onClick={handleAddFaq}
           >
             + Add FAQ Item
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -426,24 +434,24 @@ export function CreateBlog({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Publish Date</label>
-            <input
+          <div className="form-group mb-16">
+            <Input
+              label="Publish Date"
               type="date"
-              className="form-input"
               id="eb-pubdate"
               value={publishedDate}
               onChange={(e) => setPublishedDate(e.target.value)}
             />
           </div>
 
-          <button
-            className="btn btn-primary w-full mt-8"
+          <Button
+            variant="primary"
+            className="w-full mt-8"
             id="save-blog-btn"
             onClick={handleSave}
           >
             Save & Apply Updates
-          </button>
+          </Button>
         </div>
 
         {/* Featured Image */}
@@ -469,7 +477,7 @@ export function CreateBlog({
           </div>
 
           {/* Direct File Upload to Sanity */}
-          <div className="form-group" style={{ marginBottom: "12px" }}>
+          <div className="form-group mb-12">
             <input
               type="file"
               ref={fileInputRef}
@@ -477,21 +485,20 @@ export function CreateBlog({
               style={{ display: "none" }}
               onChange={handleFileUpload}
             />
-            <button
-              type="button"
-              className="btn btn-secondary"
-              style={{ width: "100%", padding: "8px 12px", fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+            <Button
+              variant="secondary"
+              className="w-full"
               disabled={isUploading}
+              loading={isUploading}
               onClick={() => fileInputRef.current?.click()}
             >
-              <span>{isUploading ? "⏳ Uploading..." : "📁 Upload from Device"}</span>
-            </button>
+              <span>{isUploading ? "Uploading..." : "📁 Upload from Device"}</span>
+            </Button>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Or Image URL (Unsplash / Pexels / CDN)</label>
-            <input
-              className="form-input"
+          <div className="form-group mb-12">
+            <Input
+              label="Or Image URL (Unsplash / Pexels / CDN)"
               id="eb-img-url"
               placeholder="https://images.unsplash.com/..."
               value={featuredImage}
@@ -507,9 +514,8 @@ export function CreateBlog({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Image Alt Text (SEO)</label>
-            <input
-              className="form-input"
+            <Input
+              label="Image Alt Text (SEO)"
               id="eb-img-alt"
               placeholder="Cinematic reel filming gears setup"
               value={altText}
@@ -531,10 +537,9 @@ export function CreateBlog({
             </span>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Focus Keyword</label>
-            <input
-              className="form-input"
+          <div className="form-group mb-12">
+            <Input
+              label="Focus Keyword"
               id="eb-keyword"
               placeholder="reel growth strategy"
               value={focusKeyword}
@@ -542,10 +547,9 @@ export function CreateBlog({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Meta Title</label>
-            <input
-              className="form-input"
+          <div className="form-group mb-12">
+            <Input
+              label="Meta Title"
               id="eb-meta-title"
               placeholder="Optional meta title tag override..."
               value={metaTitle}
@@ -553,10 +557,9 @@ export function CreateBlog({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Meta Description</label>
-            <textarea
-              className="form-input textarea-no-resize"
+          <div className="form-group mb-12">
+            <Textarea
+              label="Meta Description"
               id="eb-meta-desc"
               rows={2}
               placeholder="Optional meta description override..."
