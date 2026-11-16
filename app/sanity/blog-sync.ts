@@ -90,7 +90,7 @@ export function extractSanityAssetId(url: string): string | null {
  * Uploads an image to Sanity asset lake from URL or Buffer
  */
 export async function uploadImageToSanity(
-  imageSource: string | Buffer,
+  imageSource: any,
   filename = 'featured-image.jpg',
   contentType = 'image/jpeg'
 ): Promise<{ assetId: string; url: string } | null> {
@@ -107,11 +107,10 @@ export async function uploadImageToSanity(
       if (!res.ok) {
         throw new Error(`Failed to fetch image: ${res.statusText}`)
       }
-      const arrayBuffer = await res.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
       const mime = res.headers.get('content-type') || contentType
+      const blob = await res.blob()
 
-      const asset = await writeClient.assets.upload('image', buffer, {
+      const asset = await writeClient.assets.upload('image', blob, {
         filename,
         contentType: mime,
       })

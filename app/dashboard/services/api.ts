@@ -1,4 +1,10 @@
 import { User, Client, Lead, Blog, DeliveredReel } from "../types";
+import { client } from "../../sanity/client";
+import {
+  syncBlogToSanity,
+  deleteBlogFromSanity,
+  sanityDocToBlog,
+} from "../../sanity/blog-sync";
 
 export const GAS_USERS_URL =
   "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
@@ -401,81 +407,130 @@ export async function apiDeleteLead(id: string | number): Promise<void> {
 // BLOG API SERVICES
 // ==============================
 export async function fetchBlogs(): Promise<Blog[]> {
-  let blogsData: Blog[] = [];
+  // 1. Fetch live directly from Sanity (works both on localhost and deployed static hosting)
   try {
-    let urlToFetch = GAS_BLOGS_URL;
-    if (!urlToFetch && useLocalAPI) {
-      urlToFetch = "/api/blogs";
-    }
-    if (!urlToFetch) {
-      throw new Error("No blogs database URL configured.");
-    }
-    const response = await customFetch(urlToFetch);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const sanityQuery = `*[_type == "post"] | order(publishedDate desc, _createdAt desc) {
+      _id,
+      title,
+      slug,
+      description,
+      category,
+      tags,
+      featuredImage,
+      "featuredImageUrl": featuredImage.asset->url,
+      publishedDate,
+      updatedDate,
+      status,
+      author,
+      body,
+      faq,
+      metaTitle,
+      metaDescription,
+      focusKeyword,
+      canonicalUrl,
+      ogImage,
+      "ogImageUrl": ogImage.asset->url
+    }`;
 
-    const text = await response.text();
-    if (!text || !text.trim()) {
-      throw new Error("Empty response received from blogs database.");
+    const sanityPosts = await client.fetch(sanityQuery);
+    if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
+      return sanityPosts.map(sanityDocToBlog);
     }
-    blogsData = JSON.parse(text);
-  } catch (error) {
-    console.warn(
-      "Dynamic API fetch/parse failed, trying static fallback:",
-      error
-    );
-    const response = await fetch("/blogs.json");
-    if (!response.ok) {
-      throw new Error(`Fallback HTTP error! status: ${response.status}`);
-    }
-
-    const text = await response.text();
-    if (!text || !text.trim()) {
-      throw new Error("Fallback blogs.json content is empty.");
-    }
-    blogsData = JSON.parse(text);
+  } catch (sanityError) {
+    console.warn("Direct Sanity query failed, trying local API/fallback:", sanityError);
   }
-  return Array.isArray(blogsData) ? blogsData : [];
+
+  // 2. Try /api/blogs if running with active Next.js server
+  try {
+    const response = await customFetch("/api/blogs");
+    if (response.ok) {
+      const text = await response.text();
+      if (text && text.trim()) {
+        const blogsData = JSON.parse(text);
+        if (Array.isArray(blogsData) && blogsData.length > 0) {
+          return blogsData;
+        }
+      }
+    }
+  } catch {}
+
+  // 3. Fallback to static /blogs.json
+  try {
+    const response = await fetch("/blogs.json");
+    if (response.ok) {
+      const text = await response.text();
+      if (text && text.trim()) {
+        const blogsData = JSON.parse(text);
+        if (Array.isArray(blogsData)) return blogsData;
+      }
+    }
+  } catch {}
+
+  return [];
 }
 
 export async function apiSaveBlog(blog: Blog): Promise<void> {
-  const action = blog.id ? "update" : "add";
-  let urlToFetch = GAS_BLOGS_URL;
-  if (!urlToFetch && useLocalAPI) {
-    urlToFetch = "/api/blogs";
+  // 1. Direct Sanity Sync (instant, works everywhere including GitHub Pages)
+  try {
+    await syncBlogToSanity(blog);
+  } catch (sanityErr: any) {
+    console.error("Direct Sanity save error:", sanityErr);
+    // If direct sanity fails, try API route
+    let savedViaApi = false;
+    try {
+      const res = await customFetch("/api/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: blog.id ? "update" : "add",
+          ...blog,
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) savedViaApi = true;
+      }
+    } catch {}
+
+    if (!savedViaApi) {
+      throw new Error(sanityErr.message || "Failed to save to Sanity");
+    }
+    return;
   }
-  const response = await customFetch(urlToFetch, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action,
-      ...blog,
-    }),
-  });
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Save failed");
-  }
+
+  // 2. Non-blocking sync to local API if server is alive (to keep content/blogs.json updated on disk)
+  try {
+    customFetch("/api/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: blog.id ? "update" : "add",
+        ...blog,
+      }),
+    }).catch(() => {});
+  } catch {}
 }
 
 export async function apiDeleteBlog(id: string | number): Promise<void> {
-  let urlToFetch = GAS_BLOGS_URL;
-  if (!urlToFetch && useLocalAPI) {
-    urlToFetch = "/api/blogs";
+  // 1. Direct Sanity Delete
+  try {
+    await deleteBlogFromSanity(id);
+  } catch (sanityErr: any) {
+    console.error("Direct Sanity delete error:", sanityErr);
+    throw new Error(sanityErr.message || "Failed to delete from Sanity");
   }
-  const response = await customFetch(urlToFetch, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "delete",
-      id,
-    }),
-  });
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Delete failed");
-  }
+
+  // 2. Non-blocking sync to local API
+  try {
+    customFetch("/api/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "delete",
+        id,
+      }),
+    }).catch(() => {});
+  } catch {}
 }
 
 // ==============================
