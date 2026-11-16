@@ -4,7 +4,7 @@ import BlogLayout from "./BlogLayout";
 import BlogGrid from "./components/BlogGrid";
 import CategorySidebar from "./components/CategorySidebar";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "auto";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
