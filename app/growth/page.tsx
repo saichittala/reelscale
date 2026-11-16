@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import GrowthContent from "./GrowthContent";
+import { getPageSeo, getPricingPlans } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Social Growth & Meta Ads Agency in Hyderabad | ReelScale",
-  description: "Supercharge your brand's reach with ReelScale's complete social media management, creative growth systems, and performance-optimized Meta ad campaigns in Hyderabad.",
-  alternates: {
-    canonical: "https://reelscale.in/growth",
-  },
-  openGraph: {
-    title: "Social Growth & Meta Ads Agency in Hyderabad | ReelScale",
-    description: "Supercharge your brand's reach with ReelScale's complete social media management, creative growth systems, and performance-optimized Meta ad campaigns in Hyderabad.",
-    url: "https://reelscale.in/growth",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("growth");
+  const title = seo.metaTitle || "Social Growth & Meta Ads Agency in Hyderabad | ReelScale";
+  const description =
+    seo.metaDescription ||
+    "Supercharge your brand's reach with ReelScale's complete social media management, creative growth systems, and performance-optimized Meta ad campaigns in Hyderabad.";
+  const canonical = seo.canonicalUrl || "https://reelscale.in/growth";
+  const ogImage = seo.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -87,8 +104,9 @@ function getGrowthPageData() {
   return { headerHtml, footerHtml, testimonialsHtml, faqHtml };
 }
 
-export default function GrowthPage() {
-  const { headerHtml, footerHtml, testimonialsHtml, faqHtml } = getGrowthPageData();
+export default async function GrowthPage() {
+  const { headerHtml, footerHtml } = getGrowthPageData();
+  const growthPlans = await getPricingPlans("growth");
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -148,6 +166,7 @@ export default function GrowthPage() {
       <GrowthContent
         headerHtml={headerHtml}
         footerHtml={footerHtml}
+        growthPlans={growthPlans}
       />
     </>
   );

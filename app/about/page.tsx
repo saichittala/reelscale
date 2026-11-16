@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import AboutContent from "./AboutContent";
+import { getPageSeo } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad",
-  description: "Discover the team behind ReelScale, a leading reel shoot and video editing agency in Hyderabad. We write, film, and edit cinematic Instagram Reels and commercial videos that build authority and drive leads organically.",
-  alternates: {
-    canonical: "https://reelscale.in/about",
-  },
-  openGraph: {
-    title: "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad",
-    description: "Discover the team behind ReelScale, a leading reel shoot and video editing agency in Hyderabad. We write, film, and edit cinematic Instagram Reels and commercial videos that build authority and drive leads organically.",
-    url: "https://reelscale.in/about",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("about");
+  const title = seo.metaTitle || "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad";
+  const description =
+    seo.metaDescription ||
+    "Discover the team behind ReelScale, a leading reel shoot and video editing agency in Hyderabad. We write, film, and edit cinematic Instagram Reels and commercial videos that build authority and drive leads organically.";
+  const canonical = seo.canonicalUrl || "https://reelscale.in/about";
+  const ogImage = seo.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;

@@ -3,7 +3,7 @@ import { Blog } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
-import { IconSearch } from "../components/Icons";
+import { IconEye, IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
 
 interface BlogsProps {
@@ -203,150 +203,160 @@ export function Blogs({
       </div>
 
       {/* Blogs Table */}
-      <div className="table-wrap table-scroll-wrap">
+      <div className="table-wrap table-scroll-wrap mt-24">
         <div className="table-inner-scroll">
           <table className="blogs-table">
-          <thead>
-            <tr>
-              <th className="th-checkbox">
-                <input
-                  type="checkbox"
-                  className="custom-checkbox"
-                  checked={areAllFilteredBlogsSelected}
-                  onChange={handleSelectAllBlogs}
-                />
-              </th>
-              <th className="th-featured-image">Featured Image</th>
-              <th
-                onClick={() => handleSort("title")}
-                className="sortable-header th-sortable th-title"
-              >
-                <div className="th-header-inner">
-                  <span>Blog Title</span>
-                  <SortIcon active={blogSortKey === "title"} dir={blogSortDir} />
-                </div>
-              </th>
-              <th className="th-category">Category</th>
-              <th className="th-status">Status</th>
-              <th
-                onClick={() => handleSort("date")}
-                className="sortable-header th-sortable th-date"
-              >
-                <div className="th-header-inner">
-                  <span>Published Date</span>
-                  <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
-                </div>
-              </th>
-              <th className="th-date">Last Updated</th>
-              <th className="th-actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {totalItems === 0 ? (
+            <thead>
               <tr>
-                <td colSpan={8}>
-                  <div className="empty">
-                    <div className="empty-icon">◎</div>
-                    <div className="empty-text">No articles found</div>
+                <th className="th-checkbox">
+                  <input
+                    type="checkbox"
+                    className="custom-checkbox"
+                    checked={areAllFilteredBlogsSelected}
+                    onChange={handleSelectAllBlogs}
+                  />
+                </th>
+                <th className="th-featured-image">Featured Image</th>
+                <th
+                  onClick={() => handleSort("title")}
+                  className="sortable-header th-sortable th-title"
+                >
+                  <div className="th-header-inner">
+                    <span>Blog Title</span>
+                    <SortIcon active={blogSortKey === "title"} dir={blogSortDir} />
                   </div>
-                </td>
+                </th>
+                <th className="th-category">Category</th>
+                <th className="th-status">Status</th>
+                <th
+                  onClick={() => handleSort("date")}
+                  className="sortable-header th-sortable th-date"
+                >
+                  <div className="th-header-inner">
+                    <span>Published Date</span>
+                    <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
+                  </div>
+                </th>
+                <th className="th-date">Last Updated</th>
+                <th className="th-actions">Actions</th>
               </tr>
-            ) : (
-              pagedBlogs.map((b) => (
-                <tr className="blogs-table-row" key={b.id || b.slug}>
-                  <td className="td-checkbox">
-                    <input
-                      type="checkbox"
-                      className="custom-checkbox"
-                      checked={selectedBlogIds.includes(String(b.id || ""))}
-                      onChange={(e) => handleSelectBlogRow(String(b.id || ""), e.target.checked)}
-                    />
-                  </td>
-                  <td className="td-featured-image">
-                    <div className="blog-thumbnail-frame">
-                      {b.featuredImage ? (
-                        <img
-                          src={b.featuredImage}
-                          alt=""
-                          className="blog-thumbnail-img"
-                        />
-                      ) : (
-                        <div className="blog-thumbnail-placeholder">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="td-title">
-                    <div className="blog-title-cell">
-                      <div className="blog-title-text" title={b.title}>
-                        {b.title}
-                      </div>
-                      <div className="blog-description-text">
-                        {b.description
-                          ? `${b.description.substring(0, 85)}...`
-                          : "—"}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="td-category">
-                    <span className="badge badge-gold">{b.category}</span>
-                  </td>
-                  <td className="td-status">
-                    <span
-                      className={`badge ${
-                        b.status === "Published" ? "badge-green" : "badge-red"
-                      }`}
-                    >
-                      {b.status}
-                    </span>
-                  </td>
-                  <td className="td-date">
-                    {b.publishedDate || "—"}
-                  </td>
-                  <td className="td-date">
-                    {b.updatedDate || "—"}
-                  </td>
-                  <td className="th-actions">
-                    <div className="action-btns">
-                      <img
-                        src="/assets/icons/eye.svg"
-                        alt="Preview"
-                        className="preview-blog-btn"
-                        title="Preview Post"
-                        onClick={() => {
-                          if (typeof window !== "undefined") {
-                            window.open(`/blog/${b.slug}`, "_blank");
-                          }
-                        }}
-                      />
-                      <img
-                        src="/assets/icons/edit.svg"
-                        alt="Edit"
-                        className="edit-blog-btn"
-                        title="Edit Post"
-                        onClick={() => onEditBlog(b)}
-                      />
-                      <img
-                        src="/assets/icons/delete.svg"
-                        alt="Delete"
-                        className="delete-blog-btn"
-                        title="Delete Post"
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Delete Blog Post",
-                            message: `Are you sure you want to delete the blog post "${b.title}"? This action cannot be undone.`,
-                            onConfirm: () => onDeleteBlog(b.id!),
-                          });
-                        }}
-                      />
+            </thead>
+            <tbody>
+              {totalItems === 0 ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="empty">
+                      <div className="empty-icon">◎</div>
+                      <div className="empty-text">No articles found</div>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                pagedBlogs.map((b) => (
+                  <tr
+                    className="readonly-client-row blogs-table-row"
+                    key={b.id || b.slug}
+                    onClick={() => onEditBlog(b)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <td className="td-checkbox" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        className="custom-checkbox"
+                        checked={selectedBlogIds.includes(String(b.id || ""))}
+                        onChange={(e) => handleSelectBlogRow(String(b.id || ""), e.target.checked)}
+                      />
+                    </td>
+                    <td className="td-featured-image">
+                      <div className="blog-thumbnail-frame">
+                        {b.featuredImage ? (
+                          <img
+                            src={b.featuredImage}
+                            alt=""
+                            className="blog-thumbnail-img"
+                          />
+                        ) : (
+                          <div className="blog-thumbnail-placeholder">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="td-title">
+                      <div className="blog-title-cell">
+                        <div className="blog-title-text" title={b.title}>
+                          {b.title}
+                        </div>
+                        <div className="blog-description-text">
+                          {b.description
+                            ? `${b.description.substring(0, 85)}...`
+                            : "—"}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="td-category">
+                      <span className="badge badge-gold">{b.category}</span>
+                    </td>
+                    <td className="td-status">
+                      <span
+                        className={`badge ${b.status === "Published" ? "badge-green" : "badge-red"
+                          }`}
+                      >
+                        {b.status}
+                      </span>
+                    </td>
+                    <td className="td-date">
+                      {b.publishedDate || "—"}
+                    </td>
+                    <td className="td-date">
+                      {b.updatedDate || "—"}
+                    </td>
+                    <td className="th-actions" onClick={(e) => e.stopPropagation()}>
+                      <div className="action-btns">
+                        <button
+                          type="button"
+                          className="edit-client tracker-btn preview-blog-btn"
+                          title="Preview Post"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (typeof window !== "undefined") {
+                              window.open(`/blog/${b.slug}`, "_blank");
+                            }
+                          }}
+                        >
+                          <IconEye size={18} />
+                        </button>
+                        <img
+                          src="/assets/icons/edit.svg"
+                          alt="Edit"
+                          className="edit-client edit-blog-btn"
+                          title="Edit Post"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEditBlog(b);
+                          }}
+                        />
+                        <img
+                          src="/assets/icons/delete.svg"
+                          alt="Delete"
+                          className="del-client delete-blog-btn"
+                          title="Delete Post"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmModal({
+                              title: "Delete Blog Post",
+                              message: `Are you sure you want to delete the blog post "${b.title}"? This action cannot be undone.`,
+                              onConfirm: () => onDeleteBlog(b.id!),
+                            });
+                          }}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
         {totalItems > 0 && (
@@ -375,9 +385,8 @@ export function Blogs({
                       variant={currentPage === pageNum ? "primary" : "ghost"}
                       size="sm"
                       key={pageNum}
-                      className={`pagination-number-btn ${
-                        currentPage === pageNum ? "active" : ""
-                      }`}
+                      className={`pagination-number-btn ${currentPage === pageNum ? "active" : ""
+                        }`}
                       onClick={() => setCurrentPage(pageNum as number)}
                     >
                       {pageNum}

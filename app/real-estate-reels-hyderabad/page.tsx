@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
+import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Real Estate Reels & Property Video Production in Hyderabad | ReelScale",
-  description: "Sell properties faster with cinematic real estate reels in Hyderabad. Professional villa walkthroughs, property reels shoots, and broker branding in Gachibowli, Kondapur, and Financial District.",
-  alternates: {
-    canonical: "https://reelscale.in/real-estate-reels-hyderabad",
-  },
-  openGraph: {
-    title: "Real Estate Reels & Property Video Production in Hyderabad | ReelScale",
-    description: "Sell properties faster with cinematic real estate reels in Hyderabad. Professional villa walkthroughs, property reels shoots, and broker branding in Gachibowli, Kondapur, and Financial District.",
-    url: "https://reelscale.in/real-estate-reels-hyderabad",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+const SLUG = "real-estate-reels-hyderabad";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cmsLocation = await getLocationPageBySlug(SLUG);
+  const title = cmsLocation?.seo?.metaTitle || "Real Estate Reels & Property Video Production in Hyderabad | ReelScale";
+  const description = cmsLocation?.seo?.metaDescription || "Sell properties faster with cinematic real estate reels in Hyderabad. Professional villa walkthroughs, property reels shoots, and broker branding in Gachibowli, Kondapur, and Financial District.";
+  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/real-estate-reels-hyderabad";
+  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -55,10 +72,11 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default function SEOPage() {
+export default async function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
+  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const data = {
+  const baseData = {
   "slug": "real-estate-reels-hyderabad",
   "keyword": "real estate reels Hyderabad",
   "title": "Real Estate Reels in Hyderabad | Luxury Property Video Agency",
@@ -152,6 +170,22 @@ export default function SEOPage() {
     }
   ]
 };
+
+  const data = cmsLocation
+    ? {
+        ...baseData,
+        headline: cmsLocation.headline || baseData.headline,
+        subheadline: cmsLocation.subheadline || baseData.subheadline,
+        introText: cmsLocation.introText || baseData.introText,
+        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
+        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
+        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
+        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
+        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
+        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
+        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
+      }
+    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",

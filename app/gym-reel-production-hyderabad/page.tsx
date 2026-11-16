@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
+import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Gym Reel Production in Hyderabad | Fitness Video Agency",
-  description: "Boost gym memberships and capture member action with premium gym reel production in Hyderabad. High-energy fitness video editing for fitness centers in HITEC City, Gachibowli, and Madhapur.",
-  alternates: {
-    canonical: "https://reelscale.in/gym-reel-production-hyderabad",
-  },
-  openGraph: {
-    title: "Gym Reel Production in Hyderabad | Fitness Video Agency",
-    description: "Boost gym memberships and capture member action with premium gym reel production in Hyderabad. High-energy fitness video editing for fitness centers in HITEC City, Gachibowli, and Madhapur.",
-    url: "https://reelscale.in/gym-reel-production-hyderabad",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+const SLUG = "gym-reel-production-hyderabad";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cmsLocation = await getLocationPageBySlug(SLUG);
+  const title = cmsLocation?.seo?.metaTitle || "Gym Reel Production in Hyderabad | Fitness Video Agency";
+  const description = cmsLocation?.seo?.metaDescription || "Boost gym memberships and capture member action with premium gym reel production in Hyderabad. High-energy fitness video editing for fitness centers in HITEC City, Gachibowli, and Madhapur.";
+  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/gym-reel-production-hyderabad";
+  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -55,10 +72,11 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default function SEOPage() {
+export default async function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
+  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const data = {
+  const baseData = {
   "slug": "gym-reel-production-hyderabad",
   "keyword": "gym reel production Hyderabad",
   "title": "Gym Reel Production in Hyderabad | Fitness Video Agency",
@@ -152,6 +170,22 @@ export default function SEOPage() {
     }
   ]
 };
+
+  const data = cmsLocation
+    ? {
+        ...baseData,
+        headline: cmsLocation.headline || baseData.headline,
+        subheadline: cmsLocation.subheadline || baseData.subheadline,
+        introText: cmsLocation.introText || baseData.introText,
+        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
+        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
+        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
+        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
+        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
+        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
+        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
+      }
+    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",

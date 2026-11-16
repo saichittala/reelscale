@@ -11,3 +11,11 @@ export {
   type ToastOptions,
   type ToastType,
 } from "./toast";
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  type TabsListProps,
+} from "./tabs";
+

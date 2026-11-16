@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LandingInteractions from "../../(landing)/components/LandingInteractions";
+import { getServiceBySlug } from "../../lib/cms";
 import "../../../styles.css";
 
 interface Benefit {
@@ -871,31 +872,37 @@ export async function generateMetadata({ params }: { params: Promise<{ industry:
   const data = resolveIndustryData(industry);
   if (!data) return {};
 
+  const cmsService = await getServiceBySlug(industry);
+  const title = cmsService?.seo?.metaTitle || cmsService?.headline || data.metaTitle;
+  const description = cmsService?.seo?.metaDescription || cmsService?.introText || data.metaDesc;
+  const canonical = cmsService?.seo?.canonicalUrl || `https://reelscale.in/services/${data.slug}`;
+  const ogImage = cmsService?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
   return {
-    title: data.metaTitle,
-    description: data.metaDesc,
+    title,
+    description,
     keywords: [data.keyword, "Reel Production Hyderabad", "Reel Making Agency Hyderabad", "Video Production Company Hyderabad"],
     alternates: {
-      canonical: `https://reelscale.in/services/${data.slug}`,
+      canonical,
     },
     openGraph: {
-      title: data.metaTitle,
-      description: data.metaDesc,
-      url: `https://reelscale.in/services/${data.slug}`,
+      title,
+      description,
+      url: canonical,
       type: "website",
       siteName: "ReelScale",
       images: [
         {
-          url: "https://reelscale.in/assets/logo.png",
+          url: ogImage,
           alt: `${data.name} - ReelScale Hyderabad`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: data.metaTitle,
-      description: data.metaDesc,
-      images: ["https://reelscale.in/assets/logo.png"],
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -928,11 +935,28 @@ function getHeaderAndFooter() {
 
 export default async function IndustryServicePage({ params }: { params: Promise<{ industry: string }> }) {
   const { industry } = await params;
-  const data = resolveIndustryData(industry);
+  const rawData = resolveIndustryData(industry);
 
-  if (!data) {
+  if (!rawData) {
     notFound();
   }
+
+  const cmsService = await getServiceBySlug(industry);
+  const data: IndustryData = cmsService
+    ? {
+        ...rawData,
+        headline: cmsService.headline || rawData.headline,
+        subheadline: cmsService.subheadline || rawData.subheadline,
+        introText: cmsService.introText || rawData.introText,
+        benefits: cmsService.benefits && cmsService.benefits.length > 0 ? cmsService.benefits : rawData.benefits,
+        process: cmsService.process && cmsService.process.length > 0 ? cmsService.process : rawData.process,
+        deliverables: cmsService.deliverables && cmsService.deliverables.length > 0 ? cmsService.deliverables : rawData.deliverables,
+        pricingPlan: cmsService.pricingPlan || rawData.pricingPlan,
+        pricingPrice: cmsService.pricingPrice || rawData.pricingPrice,
+        pricingFeatures: cmsService.pricingFeatures && cmsService.pricingFeatures.length > 0 ? cmsService.pricingFeatures : rawData.pricingFeatures,
+        faqs: cmsService.faqs && cmsService.faqs.length > 0 ? cmsService.faqs : rawData.faqs,
+      }
+    : rawData;
 
   const { headerHtml, footerHtml } = getHeaderAndFooter();
 

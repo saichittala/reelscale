@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import PricingContent from "./PricingContent";
+import { getPageSeo, getPricingPlans } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost",
-  description: "Explore transparent pricing packages for professional reels shoots and video editing services in Hyderabad. Scale your brand's social media presence with no hidden costs.",
-  alternates: {
-    canonical: "https://reelscale.in/pricing",
-  },
-  openGraph: {
-    title: "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost",
-    description: "Explore transparent pricing packages for professional reels shoots and video editing services in Hyderabad. Scale your brand's social media presence with no hidden costs.",
-    url: "https://reelscale.in/pricing",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("pricing");
+  const title = seo.metaTitle || "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost";
+  const description =
+    seo.metaDescription ||
+    "Explore transparent pricing packages for professional reels shoots and video editing services in Hyderabad. Scale your brand's social media presence with no hidden costs.";
+  const canonical = seo.canonicalUrl || "https://reelscale.in/pricing";
+  const ogImage = seo.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedPricingHtml: string | null = null;
@@ -68,8 +85,9 @@ function getPricingPageData() {
   return { headerHtml, pricingHtml, footerHtml };
 }
 
-export default function PricingPage() {
+export default async function PricingPage() {
   const { headerHtml, pricingHtml, footerHtml } = getPricingPageData();
+  const growthPlans = await getPricingPlans("growth");
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -108,7 +126,12 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
-      <PricingContent headerHtml={headerHtml} pricingHtml={pricingHtml} footerHtml={footerHtml} />
+      <PricingContent
+        headerHtml={headerHtml}
+        pricingHtml={pricingHtml}
+        footerHtml={footerHtml}
+        growthPlans={growthPlans}
+      />
     </>
   );
 }

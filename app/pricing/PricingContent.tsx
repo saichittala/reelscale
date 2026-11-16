@@ -1,14 +1,16 @@
 "use client";
 
 import LandingInteractions from "../(landing)/components/LandingInteractions";
+import type { PricingPlan } from "../sanity/types";
 
 interface PricingContentProps {
   headerHtml: string;
   pricingHtml: string;
   footerHtml: string;
+  growthPlans?: PricingPlan[];
 }
 
-export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: PricingContentProps) {
+export default function PricingContent({ headerHtml, pricingHtml, footerHtml, growthPlans }: PricingContentProps) {
   return (
     <div className="pricing-page-wrapper">
       <LandingInteractions />
@@ -54,92 +56,138 @@ export default function PricingContent({ headerHtml, pricingHtml, footerHtml }: 
             </div>
 
             <div className="pricing-grid reveal" style={{ gap: "32px" }}>
+              {growthPlans && growthPlans.length > 0 ? (
+                growthPlans.map((plan, idx) => {
+                  const isFeatured = plan.featured || plan.tier === "growth" || plan.title.toLowerCase().includes("growth");
+                  const isLuxe = plan.tier === "scale" || plan.title.toLowerCase().includes("scale");
+                  const cardClass = isFeatured ? "pricing-card featured" : isLuxe ? "pricing-card luxe" : "pricing-card";
+                  const btnClass = isFeatured ? "btn-plan btn-plan-red" : isLuxe ? "btn-plan btn-plan-outline btn-plan-luxe" : "btn-plan btn-plan-outline";
+                  const highlightColor = isFeatured ? "rgba(255,255,255,0.7)" : isLuxe ? "rgba(255,255,255,0.7)" : "var(--muted)";
+                  const highlightText =
+                    idx === 0
+                      ? "For businesses that want to stay consistently visible."
+                      : idx === 1
+                      ? "For businesses ready to turn content into enquiries."
+                      : "For businesses ready to increase content volume and reach.";
 
-              {/* Card 1: Presence */}
-              <div className="pricing-card" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
-                <div>
-                  <div className="plan-name">Presence</div>
-                  <div className="plan-price"><sup>₹</sup>14,999</div>
-                  <div className="plan-cadence">per month</div>
-                  <div className="plan-divider"></div>
-                  <ul className="plan-features">
-                    <li>4 Premium Reels / Month</li>
-                    <li>4 Social Media Posts</li>
-                    <li>1 Content Shoot / Month</li>
-                    <li>Content Planning</li>
-                    <li>Professional Reel Editing</li>
-                    <li>Captions + CTAs</li>
-                    <li>Instagram Posting</li>
-                    <li>Basic Monthly Report</li>
-                    <li className="disabled">Ads Management</li>
-                  </ul>
-                </div>
-                <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Presence%20plan."
-                  target="_blank" className="btn-plan btn-plan-outline" style={{ marginTop: "auto" }}>
-                  Select Presence Plan
-                </a>
-                <div className="plan-page-highlight" style={{ fontSize: "13px", color: "var(--muted)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses that want to stay consistently visible.</div>
-              </div>
+                  return (
+                    <div key={plan._id || idx} className={cardClass} style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
+                      <div>
+                        <div className="plan-name">{plan.title}</div>
+                        <div className="plan-price"><sup>{plan.currency || "₹"}</sup>{plan.price}</div>
+                        <div className="plan-cadence">{plan.cadence || "per month"}</div>
+                        <div className="plan-divider"></div>
+                        <ul className="plan-features">
+                          {plan.features?.map((feat, fIdx) => (
+                            <li key={fIdx} className={feat.toLowerCase().includes("disabled") ? "disabled" : ""}>
+                              {feat.replace(/^disabled:\s*/i, "")}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <a
+                        href={plan.ctaLink || `https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20${encodeURIComponent(plan.title)}%20plan.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={btnClass}
+                        style={{ marginTop: "auto" }}
+                      >
+                        {plan.ctaText || `Select ${plan.title} Plan`}
+                      </a>
+                      <div className="plan-page-highlight" style={{ fontSize: "13px", color: highlightColor, margin: "16px 0 0 0", textAlign: "center" }}>
+                        {highlightText}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  {/* Card 1: Presence */}
+                  <div className="pricing-card" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
+                    <div>
+                      <div className="plan-name">Presence</div>
+                      <div className="plan-price"><sup>₹</sup>14,999</div>
+                      <div className="plan-cadence">per month</div>
+                      <div className="plan-divider"></div>
+                      <ul className="plan-features">
+                        <li>4 Premium Reels / Month</li>
+                        <li>4 Social Media Posts</li>
+                        <li>1 Content Shoot / Month</li>
+                        <li>Content Planning</li>
+                        <li>Professional Reel Editing</li>
+                        <li>Captions + CTAs</li>
+                        <li>Instagram Posting</li>
+                        <li>Basic Monthly Report</li>
+                        <li className="disabled">Ads Management</li>
+                      </ul>
+                    </div>
+                    <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Presence%20plan."
+                      target="_blank" className="btn-plan btn-plan-outline" style={{ marginTop: "auto" }}>
+                      Select Presence Plan
+                    </a>
+                    <div className="plan-page-highlight" style={{ fontSize: "13px", color: "var(--muted)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses that want to stay consistently visible.</div>
+                  </div>
 
-              {/* Card 2: Growth (Featured) */}
-              <div className="pricing-card featured" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
-                <div>
-                  <div className="plan-name">Growth</div>
-                  <div className="plan-price"><sup>₹</sup>24,999</div>
-                  <div className="plan-cadence">per month</div>
-                  <div className="plan-divider"></div>
-                  <ul className="plan-features">
-                    <li>6 Premium Reels / Month</li>
-                    <li>6 Social Media Posts</li>
-                    <li>1 Content Shoot / Month</li>
-                    <li>Content Strategy</li>
-                    <li>Professional Reel Editing</li>
-                    <li>Hooks + Captions + CTAs</li>
-                    <li>Instagram Page Management</li>
-                    <li>Posting & Scheduling</li>
-                    <li>Profile Optimization</li>
-                    <li>Meta Ads Management</li>
-                    <li>Campaign Optimization</li>
-                    <li>Monthly Performance Report</li>
-                  </ul>
-                </div>
-                <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Growth%20plan."
-                  target="_blank" className="btn-plan btn-plan-red" style={{ marginTop: "auto" }}>
-                  Select Growth Plan
-                </a>
-                <div className="plan-page-highlight" style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses ready to turn content into enquiries.</div>
-              </div>
+                  {/* Card 2: Growth (Featured) */}
+                  <div className="pricing-card featured" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
+                    <div>
+                      <div className="plan-name">Growth</div>
+                      <div className="plan-price"><sup>₹</sup>24,999</div>
+                      <div className="plan-cadence">per month</div>
+                      <div className="plan-divider"></div>
+                      <ul className="plan-features">
+                        <li>6 Premium Reels / Month</li>
+                        <li>6 Social Media Posts</li>
+                        <li>1 Content Shoot / Month</li>
+                        <li>Content Strategy</li>
+                        <li>Professional Reel Editing</li>
+                        <li>Hooks + Captions + CTAs</li>
+                        <li>Instagram Page Management</li>
+                        <li>Posting & Scheduling</li>
+                        <li>Profile Optimization</li>
+                        <li>Meta Ads Management</li>
+                        <li>Campaign Optimization</li>
+                        <li>Monthly Performance Report</li>
+                      </ul>
+                    </div>
+                    <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Growth%20plan."
+                      target="_blank" className="btn-plan btn-plan-red" style={{ marginTop: "auto" }}>
+                      Select Growth Plan
+                    </a>
+                    <div className="plan-page-highlight" style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses ready to turn content into enquiries.</div>
+                  </div>
 
-              {/* Card 3: Scale */}
-              <div className="pricing-card luxe" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
-                <div>
-                  <div className="plan-name">Scale</div>
-                  <div className="plan-price"><sup>₹</sup>34,999</div>
-                  <div className="plan-cadence">per month</div>
-                  <div className="plan-divider"></div>
-                  <ul className="plan-features">
-                    <li>10 Premium Reels / Month</li>
-                    <li>8 Social Media Posts</li>
-                    <li>2 Content Shoots / Month</li>
-                    <li>Advanced Content Strategy</li>
-                    <li>Professional Editing</li>
-                    <li>Hooks + Captions + CTAs</li>
-                    <li>Complete Instagram Management</li>
-                    <li>Content Calendar</li>
-                    <li>Meta Ads Management</li>
-                    <li>Multiple Campaign Management</li>
-                    <li>Creative Testing</li>
-                    <li>Monthly Growth Report</li>
-                    <li>Priority Support</li>
-                  </ul>
-                </div>
-                <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Scale%20plan."
-                  target="_blank" className="btn-plan btn-plan-outline btn-plan-luxe" style={{ marginTop: "auto" }}>
-                  Select Scale Plan
-                </a>
-                <div className="plan-page-highlight" style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses ready to increase content volume and reach.</div>
-              </div>
-
+                  {/* Card 3: Scale */}
+                  <div className="pricing-card luxe" style={{ display: "flex", flexDirection: "column", padding: "48px 36px" }}>
+                    <div>
+                      <div className="plan-name">Scale</div>
+                      <div className="plan-price"><sup>₹</sup>34,999</div>
+                      <div className="plan-cadence">per month</div>
+                      <div className="plan-divider"></div>
+                      <ul className="plan-features">
+                        <li>10 Premium Reels / Month</li>
+                        <li>8 Social Media Posts</li>
+                        <li>2 Content Shoots / Month</li>
+                        <li>Advanced Content Strategy</li>
+                        <li>Professional Editing</li>
+                        <li>Hooks + Captions + CTAs</li>
+                        <li>Complete Instagram Management</li>
+                        <li>Content Calendar</li>
+                        <li>Meta Ads Management</li>
+                        <li>Multiple Campaign Management</li>
+                        <li>Creative Testing</li>
+                        <li>Monthly Growth Report</li>
+                        <li>Priority Support</li>
+                      </ul>
+                    </div>
+                    <a href="https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Scale%20plan."
+                      target="_blank" className="btn-plan btn-plan-outline btn-plan-luxe" style={{ marginTop: "auto" }}>
+                      Select Scale Plan
+                    </a>
+                    <div className="plan-page-highlight" style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", margin: "16px 0 0 0", textAlign: "center" }}>For businesses ready to increase content volume and reach.</div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div style={{

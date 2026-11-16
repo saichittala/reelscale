@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
+import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Interior Reels & Architect Video Production in Hyderabad | ReelScale",
-  description: "Showcase architecture and homes with high-end interior reels in Hyderabad. Professional home tour walkthroughs, styling video shoots, and interior editing in Gachibowli, Manikonda, and Hitech City.",
-  alternates: {
-    canonical: "https://reelscale.in/interior-reels-hyderabad",
-  },
-  openGraph: {
-    title: "Interior Reels & Architect Video Production in Hyderabad | ReelScale",
-    description: "Showcase architecture and homes with high-end interior reels in Hyderabad. Professional home tour walkthroughs, styling video shoots, and interior editing in Gachibowli, Manikonda, and Hitech City.",
-    url: "https://reelscale.in/interior-reels-hyderabad",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+const SLUG = "interior-reels-hyderabad";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cmsLocation = await getLocationPageBySlug(SLUG);
+  const title = cmsLocation?.seo?.metaTitle || "Interior Reels & Architect Video Production in Hyderabad | ReelScale";
+  const description = cmsLocation?.seo?.metaDescription || "Showcase architecture and homes with high-end interior reels in Hyderabad. Professional home tour walkthroughs, styling video shoots, and interior editing in Gachibowli, Manikonda, and Hitech City.";
+  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/interior-reels-hyderabad";
+  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -55,10 +72,11 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default function SEOPage() {
+export default async function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
+  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const data = {
+  const baseData = {
   "slug": "interior-reels-hyderabad",
   "keyword": "interior reels Hyderabad",
   "title": "Interior Design Reels in Hyderabad | Luxury Home Walkthroughs",
@@ -152,6 +170,22 @@ export default function SEOPage() {
     }
   ]
 };
+
+  const data = cmsLocation
+    ? {
+        ...baseData,
+        headline: cmsLocation.headline || baseData.headline,
+        subheadline: cmsLocation.subheadline || baseData.subheadline,
+        introText: cmsLocation.introText || baseData.introText,
+        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
+        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
+        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
+        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
+        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
+        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
+        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
+      }
+    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",

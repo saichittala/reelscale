@@ -1,0 +1,204 @@
+.root {
+  position: relative;
+}
+
+.listShell {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  isolation: isolate;
+  padding: 4px;
+  border: 1px solid var(--white-10, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--bg-lowend, #09090b);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.viewport {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: inherit;
+  scrollbar-width: none;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.listShell[data-left="true"] .viewport {
+  mask-image: linear-gradient(to right, transparent, black 35px, black);
+}
+
+.listShell[data-right="true"] .viewport {
+  mask-image: linear-gradient(to right, black, black calc(100% - 35px), transparent);
+}
+
+.listShell[data-left="true"][data-right="true"] .viewport {
+  mask-image: linear-gradient(to right, transparent, black 35px, black calc(100% - 35px), transparent);
+}
+
+/* The list owns the stacking context so the gliding highlight passes under every label, not over earlier ones. */
+.list {
+  isolation: isolate;
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+.scrollButton {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  width: 30px;
+  place-items: center;
+  border: 0;
+  background: var(--bg-lowend, #09090b);
+  color: var(--white, #ffffff);
+  cursor: pointer;
+}
+
+.scrollLeft {
+  left: 0;
+  border-radius: var(--radius-pill, 9999px) 0 0 var(--radius-pill, 9999px);
+}
+
+.scrollRight {
+  right: 0;
+  border-radius: 0 var(--radius-pill, 9999px) var(--radius-pill, 9999px) 0;
+}
+
+.scrollButton:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scrollButton:focus-visible {
+  --focus-outline-offset: -3px;
+}
+
+.trigger {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 16px;
+  background: var(--white-04, rgba(255, 255, 255, 0.04));
+  color: var(--white, #ededed);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--duration-fast, 150ms) var(--ease-standard, ease),
+              background var(--duration-fast, 150ms) var(--ease-standard, ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover:not([data-state="active"]):not(:disabled) {
+    background: var(--white-07, rgba(255, 255, 255, 0.07));
+    color: #ffffff;
+  }
+}
+
+.trigger:active:not(:disabled) {
+  opacity: 0.92;
+}
+
+.trigger[data-state="active"] {
+  background: transparent;
+  color: #ffffff;
+}
+
+.selection {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border: 1px solid var(--white-15, rgba(255, 255, 255, 0.14));
+  border-radius: inherit;
+  background: var(--surface-raised, #1f1f23);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  will-change: transform;
+}
+
+.triggerLabel {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.content {
+  margin-top: var(--space-4, 16px);
+  color: var(--text-secondary, var(--muted, rgba(255, 255, 255, 0.75)));
+  font-size: var(--text-sm, 14px);
+  line-height: var(--leading-body, 1.5);
+}
+
+/* The outgoing panel is lifted out of flow by the presence animation; drop its margin so it stays in place and ignore stray clicks. */
+.content[data-motion-pop-id] {
+  margin-top: 0;
+}
+
+.content[data-state="inactive"] {
+  pointer-events: none;
+}
+
+.content:focus-visible {
+  outline: 2px solid var(--accent, var(--red));
+  outline-offset: 3px;
+  border-radius: var(--radius-control, 8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger {
+    transition: none;
+  }
+}
+
+/* Light mode adjustments */
+[data-theme="light"] .listShell {
+  background: #f4f4f5;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .trigger {
+  background: rgba(0, 0, 0, 0.04);
+  color: #52525b;
+}
+
+[data-theme="light"] .trigger:hover:not([data-state="active"]):not(:disabled) {
+  background: rgba(0, 0, 0, 0.07);
+  color: #18181b;
+}
+
+[data-theme="light"] .trigger[data-state="active"] {
+  background: transparent;
+  color: #09090b;
+}
+
+[data-theme="light"] .selection {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+}

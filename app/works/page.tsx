@@ -2,23 +2,40 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import WorksContent from "./WorksContent";
+import { getPageSeo } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Our Portfolio & Reels Case Studies | ReelScale Hyderabad",
-  description: "Watch premium cinematic Instagram Reels, brand videos, and commercial campaigns created by ReelScale in Hyderabad. View our high-retention video production portfolio.",
-  alternates: {
-    canonical: "https://reelscale.in/works",
-  },
-  openGraph: {
-    title: "Our Portfolio & Reels Case Studies | ReelScale Hyderabad",
-    description: "Watch premium cinematic Instagram Reels, brand videos, and commercial campaigns created by ReelScale in Hyderabad. View our high-retention video production portfolio.",
-    url: "https://reelscale.in/works",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("works");
+  const title = seo.metaTitle || "Our Portfolio & Reels Case Studies | ReelScale Hyderabad";
+  const description =
+    seo.metaDescription ||
+    "Watch premium cinematic Instagram Reels, brand videos, and commercial campaigns created by ReelScale in Hyderabad. View our high-retention video production portfolio.";
+  const canonical = seo.canonicalUrl || "https://reelscale.in/works";
+  const ogImage = seo.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedWorksHtml: string | null = null;

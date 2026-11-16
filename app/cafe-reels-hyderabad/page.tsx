@@ -2,23 +2,42 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
+import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-export const metadata: Metadata = {
-  title: "Cafe Reels & Restaurant Video Production in Hyderabad | ReelScale",
-  description: "Drive restaurant walk-ins with cinematic cafe reels in Hyderabad. Professional food shoots, cafe promos, and mouthwatering food reels production in Banjara Hills, Jubilee Hills, and Hitech City.",
-  alternates: {
-    canonical: "https://reelscale.in/cafe-reels-hyderabad",
-  },
-  openGraph: {
-    title: "Cafe Reels & Restaurant Video Production in Hyderabad | ReelScale",
-    description: "Drive restaurant walk-ins with cinematic cafe reels in Hyderabad. Professional food shoots, cafe promos, and mouthwatering food reels production in Banjara Hills, Jubilee Hills, and Hitech City.",
-    url: "https://reelscale.in/cafe-reels-hyderabad",
-    siteName: "ReelScale",
-    images: ["https://reelscale.in/assets/logo.png"],
-    type: "website",
-  },
-};
+const SLUG = "cafe-reels-hyderabad";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cmsLocation = await getLocationPageBySlug(SLUG);
+  const title = cmsLocation?.seo?.metaTitle || "Cafe Reels & Restaurant Video Production in Hyderabad | ReelScale";
+  const description =
+    cmsLocation?.seo?.metaDescription ||
+    "Drive restaurant walk-ins with cinematic cafe reels in Hyderabad. Professional food shoots, cafe promos, and mouthwatering food reels production in Banjara Hills, Jubilee Hills, and Hitech City.";
+  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/cafe-reels-hyderabad";
+  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [ogImage],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -55,10 +74,11 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default function SEOPage() {
+export default async function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
+  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const data = {
+  const baseData = {
   "slug": "cafe-reels-hyderabad",
   "keyword": "cafe reels Hyderabad",
   "title": "Cafe Reels Production in Hyderabad | Cafe Video Marketing",
@@ -152,6 +172,22 @@ export default function SEOPage() {
     }
   ]
 };
+
+  const data = cmsLocation
+    ? {
+        ...baseData,
+        headline: cmsLocation.headline || baseData.headline,
+        subheadline: cmsLocation.subheadline || baseData.subheadline,
+        introText: cmsLocation.introText || baseData.introText,
+        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
+        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
+        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
+        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
+        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
+        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
+        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
+      }
+    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",

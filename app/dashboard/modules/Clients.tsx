@@ -6,7 +6,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
 import { IconFilm, IconSearch } from "../components/Icons";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 
 interface ClientsProps {
   clients: Client[];
@@ -1038,33 +1038,17 @@ export function Clients({
           />
         </div>
 
-        {/* Model Filter Toggle - Segmented control style */}
-        <div className="segmented-control-pill">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`segmented-control-item ${activeModelFilter === "all" ? "active" : ""}`}
-            onClick={() => setActiveModelFilter("all")}
-          >
-            All
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`segmented-control-item ${activeModelFilter === "bm" ? "active" : ""}`}
-            onClick={() => setActiveModelFilter("bm")}
-          >
-            SUB
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`segmented-control-item ${activeModelFilter === "rtr" ? "active" : ""}`}
-            onClick={() => setActiveModelFilter("rtr")}
-          >
-            RTR
-          </Button>
-        </div>
+        {/* Model Filter Toggle - UI Arc Tabs */}
+        <Tabs
+          value={activeModelFilter}
+          onValueChange={(val) => setActiveModelFilter(val as "all" | "bm" | "rtr")}
+        >
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="bm">SUB</TabsTrigger>
+            <TabsTrigger value="rtr">RTR</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* ─── ALL (COMBINED) CLIENTS TABLE ─── */}

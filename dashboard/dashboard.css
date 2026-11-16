@@ -1617,7 +1617,10 @@ tr:hover td {
 .call-sale,
 .whatsapp-sale,
 .create-user-btn,
-.cancel-user-btn {
+.cancel-user-btn,
+.preview-blog-btn,
+.edit-blog-btn,
+.delete-blog-btn {
     width: var(--action-btn-size) !important;
     height: var(--action-btn-size) !important;
     opacity: var(--opacity-muted);
@@ -1639,7 +1642,10 @@ tr:hover td {
 .call-sale:hover,
 .whatsapp-sale:hover,
 .create-user-btn:hover,
-.cancel-user-btn:hover {
+.cancel-user-btn:hover,
+.preview-blog-btn:hover,
+.edit-blog-btn:hover,
+.delete-blog-btn:hover {
     opacity: 1;
     background: var(--white-05);
 }
@@ -4014,7 +4020,7 @@ td:has(.cs-root[data-open="true"]) {
 }
 
 .blogs-table tr:hover td:nth-child(2) {
-    background: inherit !important;
+    background: var(--white-05) !important;
 }
 
 .blogs-table-row {

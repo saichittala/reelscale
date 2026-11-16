@@ -216,34 +216,38 @@
   position: relative;
   min-width: 0;
   flex: 1;
-  font-size: var(--text-sm);
+  font-size: 13px;
+  font-weight: 400;
   letter-spacing: var(--tracking-body);
   line-height: 20px;
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
 .title {
   position: relative;
   display: block;
-  font-weight: 500;
-  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
   width: 100%;
 }
 
 .line {
   display: block;
-  text-align: center;
+  text-align: left;
 }
 
 .description {
   display: block;
   margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
   color: var(--text-secondary);
-  text-align: center;
+  text-align: left;
   width: 100%;
 }
 
@@ -285,16 +289,21 @@
 }
 
 .close {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 26px;
   height: 26px;
   margin: 0;
-  place-items: center;
   align-self: center;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
   flex-shrink: 0;
+}
+
+.close svg {
+  display: block;
 }
 
 @media (hover: hover) and (pointer: fine) {

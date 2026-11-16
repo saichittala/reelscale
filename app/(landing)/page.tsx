@@ -4,57 +4,69 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
+import { getPageSeo } from "../lib/cms";
 
-export const metadata: Metadata = {
-  title: "Reel Production Company & Video Editing Services in Hyderabad | ReelScale",
-  description: "ReelScale is the leading agency for professional reel production and video editing services in Hyderabad. We produce high-retention corporate reels, gym promos, cafe videos, and brand ads in Madhapur, Hitech City, Gachibowli, and Banjara Hills.",
-  keywords: [
-    "reel production company Hyderabad",
-    "reel production Hyderabad",
-    "reel production services Hyderabad",
-    "reel shoot Hyderabad",
-    "reels shoot Hyderabad",
-    "Instagram reel production Hyderabad",
-    "Instagram reels production company Hyderabad",
-    "video production company Hyderabad",
-    "video production services Hyderabad",
-    "video editing company Hyderabad",
-    "video editing services Hyderabad",
-    "social media video production Hyderabad",
-    "short form video production Hyderabad",
-    "short form content agency Hyderabad",
-    "content creation agency Hyderabad",
-    "social media content production Hyderabad",
-    "professional reel production Hyderabad",
-    "professional reel editing Hyderabad",
-    "commercial video production Hyderabad"
-  ],
-  alternates: {
-    canonical: "https://reelscale.in",
-  },
-  openGraph: {
-    title: "Reel Production Company & Video Editing Services in Hyderabad | ReelScale",
-    description: "ReelScale is the leading agency for professional reel production and video editing services in Hyderabad. We produce high-retention corporate reels, gym promos, cafe videos, and brand ads in Madhapur, Hitech City, Gachibowli, and Banjara Hills.",
-    url: "https://reelscale.in",
-    siteName: "ReelScale",
-    images: [
-      {
-        url: "https://reelscale.in/assets/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "ReelScale Branding - Reel Production Company & Video Editing Services Hyderabad",
-      },
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("home");
+
+  const title = seo.metaTitle || "Reel Production Company & Video Editing Services in Hyderabad | ReelScale";
+  const description =
+    seo.metaDescription ||
+    "ReelScale is the leading agency for professional reel production and video editing services in Hyderabad. We produce high-retention corporate reels, gym promos, cafe videos, and brand ads in Madhapur, Hitech City, Gachibowli, and Banjara Hills.";
+  const canonical = seo.canonicalUrl || "https://reelscale.in";
+  const ogImage = seo.ogImageUrl || "https://reelscale.in/assets/logo.png";
+
+  return {
+    title,
+    description,
+    keywords: [
+      "reel production company Hyderabad",
+      "reel production Hyderabad",
+      "reel production services Hyderabad",
+      "reel shoot Hyderabad",
+      "reels shoot Hyderabad",
+      "Instagram reel production Hyderabad",
+      "Instagram reels production company Hyderabad",
+      "video production company Hyderabad",
+      "video production services Hyderabad",
+      "video editing company Hyderabad",
+      "video editing services Hyderabad",
+      "social media video production Hyderabad",
+      "short form video production Hyderabad",
+      "short form content agency Hyderabad",
+      "content creation agency Hyderabad",
+      "social media content production Hyderabad",
+      "professional reel production Hyderabad",
+      "professional reel editing Hyderabad",
+      "commercial video production Hyderabad",
     ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Reel Production Company & Video Editing Services in Hyderabad | ReelScale",
-    description: "ReelScale is the leading agency for professional reel production and video editing services in Hyderabad. We produce high-retention corporate reels, gym promos, cafe videos, and brand ads in Madhapur, Hitech City, Gachibowli, and Banjara Hills.",
-    images: ["https://reelscale.in/assets/logo.png"],
-  },
-};
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      url: canonical,
+      siteName: "ReelScale",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: "ReelScale Branding - Reel Production Company & Video Editing Services Hyderabad",
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle || title,
+      description: seo.ogDescription || description,
+      images: [ogImage],
+    },
+  };
+}
 
 let cachedHeaderHtml: string | null = null;
 let cachedMainHtml: string | null = null;
