@@ -26,7 +26,12 @@ function safeRename(src, dest, retries = 5, delayMs = 400) {
   }
 }
 
-console.log('==> Step 1: Generating sitemap...');
+console.log('==> Step 1: Generating sitemap & syncing public blogs database...');
+const contentBlogsPath = path.join(rootDir, 'content', 'blogs.json');
+const publicBlogsPath = path.join(rootDir, 'public', 'blogs.json');
+if (fs.existsSync(contentBlogsPath)) {
+  fs.copyFileSync(contentBlogsPath, publicBlogsPath);
+}
 execSync('node scripts/generate-sitemap.js', { stdio: 'inherit', cwd: rootDir });
 
 let moveMode = null; // 'folder' | 'contents'

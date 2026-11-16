@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BlogPost, getReadingTime } from "../../lib/blog";
+import type { BlogPost } from "../../lib/blog-types";
+import { getReadingTime } from "../../lib/blog-utils";
 
 interface BlogCardProps {
   post: BlogPost;

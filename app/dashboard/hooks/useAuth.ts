@@ -83,7 +83,7 @@ export function useAuth() {
     return false;
   };
 
-  const role = user?.role?.toLowerCase() || null;
+  const role = user?.role?.toLowerCase()?.trim() || null;
 
   return {
     isLoggedIn,

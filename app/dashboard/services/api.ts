@@ -456,7 +456,12 @@ export async function fetchBlogs(): Promise<Blog[]> {
 
   // 3. Fallback to static /blogs.json
   try {
-    const response = await fetch("/blogs.json");
+    const basePath =
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/reelscale")
+        ? "/reelscale"
+        : "";
+    const response = await fetch(`${basePath}/blogs.json`);
     if (response.ok) {
       const text = await response.text();
       if (text && text.trim()) {

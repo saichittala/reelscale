@@ -264,14 +264,15 @@ export default function DashboardMainPage() {
       }
     };
 
-    if (role === "admin") {
+    const cleanRole = (role || "").toLowerCase().trim();
+    if (cleanRole === "admin" || !role) {
       loadClientsData();
       loadUsersData();
       loadSalesData();
       loadBlogsData();
-    } else if (role === "sales") {
+    } else if (cleanRole === "sales") {
       loadSalesData();
-    } else if (role === "blogger") {
+    } else if (cleanRole === "blogger") {
       loadBlogsData();
     }
   }, [role]);
