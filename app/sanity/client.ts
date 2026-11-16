@@ -16,6 +16,7 @@ export const client = createClient({
   apiVersion,
   useCdn: false,
   token: writeToken,
+  perspective: 'drafts',
 })
 
 export const writeClient = createClient({

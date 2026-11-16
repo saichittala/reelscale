@@ -470,45 +470,45 @@ export async function fetchBlogs(): Promise<Blog[]> {
 }
 
 export async function apiSaveBlog(blog: Blog): Promise<void> {
+  let sanitySuccess = false;
+  let lastError: any = null;
+
   // 1. Direct Sanity Sync (instant, works everywhere including GitHub Pages)
   try {
     await syncBlogToSanity(blog);
+    sanitySuccess = true;
   } catch (sanityErr: any) {
     console.error("Direct Sanity save error:", sanityErr);
-    // If direct sanity fails, try API route
-    let savedViaApi = false;
-    try {
-      const res = await customFetch("/api/blogs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: blog.id ? "update" : "add",
-          ...blog,
-        }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success) savedViaApi = true;
-      }
-    } catch {}
-
-    if (!savedViaApi) {
-      throw new Error(sanityErr.message || "Failed to save to Sanity");
-    }
-    return;
+    lastError = sanityErr;
   }
 
-  // 2. Non-blocking sync to local API if server is alive (to keep content/blogs.json updated on disk)
+  // 2. Also sync to /api/blogs if running with server or as fallback
   try {
-    customFetch("/api/blogs", {
+    const res = await customFetch("/api/blogs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: blog.id ? "update" : "add",
         ...blog,
       }),
-    }).catch(() => {});
-  } catch {}
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success) return;
+    } else if (!sanitySuccess) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.message || `API server returned ${res.status}`);
+    }
+  } catch (apiErr: any) {
+    if (!sanitySuccess) {
+      console.error("API route save error:", apiErr);
+      throw new Error(apiErr.message || lastError?.message || "Failed to save blog to Sanity");
+    }
+  }
+
+  if (!sanitySuccess && lastError) {
+    throw new Error(lastError.message || "Failed to save blog to Sanity");
+  }
 }
 
 export async function apiDeleteBlog(id: string | number): Promise<void> {
