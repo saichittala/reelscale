@@ -4,13 +4,16 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
-import { getPageSeo, getPricingPlans } from "../lib/cms";
+import {
+  getLandingPageData,
+  renderTestimonialsSectionHtml,
+} from "../lib/cms";
 
 export const dynamic = "auto";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await getPageSeo("home");
+  const { seo } = await getLandingPageData();
 
   const title = seo.metaTitle || "Reel Production Company & Video Editing Services in Hyderabad | ReelScale";
   const description =
@@ -115,7 +118,7 @@ function getParsedLandingPage() {
 }
 
 export default async function Home() {
-  const productionPlans = await getPricingPlans("reel-production");
+  const { pricingPlans: productionPlans, testimonials, latestPosts } = await getLandingPageData();
   let { headerHtml, mainHtml, footerHtml } = getParsedLandingPage();
 
   if (productionPlans && productionPlans.length > 0) {
@@ -163,6 +166,11 @@ export default async function Home() {
     `;
 
     mainHtml = mainHtml.replace(/<section id="pricing"[\s\S]*?<\/section>/i, dynamicPricing);
+  }
+
+  if (testimonials && testimonials.length > 0) {
+    const dynamicTestimonials = renderTestimonialsSectionHtml(testimonials);
+    mainHtml = mainHtml.replace(/<section id="testimonials"[\s\S]*?<\/section>/i, dynamicTestimonials);
   }
 
   const mainParts = mainHtml.split('<section id="latest-blogs-section"></section>');
@@ -340,7 +348,7 @@ export default async function Home() {
         {mainParts.length === 2 ? (
           <>
             <div dangerouslySetInnerHTML={{ __html: mainParts[0] }} />
-            <LatestBlogs />
+            <LatestBlogs posts={latestPosts} />
             <div dangerouslySetInnerHTML={{ __html: mainParts[1] }} />
           </>
         ) : (

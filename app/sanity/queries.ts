@@ -51,6 +51,58 @@ export const TESTIMONIALS_QUERY = defineQuery(`
   }
 `)
 
+export const LANDING_PAGE_QUERY = defineQuery(`{
+  "seo": *[_type == "pageSeo" && pageId == "home"][0] {
+    _id,
+    pageId,
+    title,
+    metaTitle,
+    metaDescription,
+    focusKeyword,
+    keywords,
+    canonicalUrl,
+    "ogImageUrl": ogImage.asset->url
+  },
+  "pricingPlans": *[_type == "pricingPlan" && category == "reel-production"] | order(order asc) {
+    _id,
+    title,
+    tier,
+    price,
+    currency,
+    cadence,
+    featured,
+    features,
+    ctaText,
+    ctaLink,
+    order
+  },
+  "testimonials": *[_type == "testimonial"] | order(order asc) {
+    _id,
+    name,
+    role,
+    company,
+    quote,
+    stars,
+    result,
+    resultLabel,
+    avatarInitials,
+    "avatarImageUrl": avatarImage.asset->url,
+    order
+  },
+  "latestPosts": *[_type == "post"] | order(publishedDate desc)[0...3] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    category,
+    tags,
+    "featuredImage": featuredImage.asset->url,
+    publishedDate,
+    updatedDate,
+    status
+  }
+}`)
+
 export const PAGE_SEO_QUERY = defineQuery(`
   *[_type == "pageSeo" && pageId == $pageId][0] {
     _id,

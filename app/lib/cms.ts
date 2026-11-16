@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { client } from '../sanity/client';
 import {
   SITE_SETTINGS_QUERY,
@@ -11,6 +12,7 @@ import {
   POSTS_QUERY,
   POST_BY_SLUG_QUERY,
   REELS_QUERY,
+  LANDING_PAGE_QUERY,
 } from '../sanity/queries';
 import type {
   SiteSettings,
@@ -142,39 +144,42 @@ export const DEFAULT_PRICING_PLANS: PricingPlan[] = [
 // Fallback testimonials
 export const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
-    _id: 'test-1',
-    name: 'Ravinder',
-    role: 'Founder',
-    company: 'Monty Interiors',
-    quote: 'ReelScale completely revolutionized our interior design lead flow. Their cinematic reels hit 100k+ organic views and brought qualified villa inquiries within weeks.',
+    _id: 'testi-jak',
+    name: 'Jak',
+    role: 'CEO, Jak Interiors',
+    company: 'Jak Interiors',
+    quote:
+      "Working with ReelScale CO has completely changed how we present our villa projects online. Their team captured every detail beautifully and delivered premium-quality reels that truly reflect our craftsmanship. We've received significantly more inquiries and stronger engagement since partnering with them.",
     stars: 5,
     result: '4.2x',
-    resultLabel: 'Inquiry Growth',
-    avatarInitials: 'RI',
+    resultLabel: 'Engagement Lift',
+    avatarInitials: 'JI',
     order: 1,
   },
   {
-    _id: 'test-2',
-    name: 'Manish Harwani',
-    role: 'Managing Partner',
-    company: 'Nex Arena',
-    quote: 'The production quality, quick shoot turnarounds, and creative pacing set ReelScale apart from any traditional video agency in Hyderabad.',
+    _id: 'testi-parthu',
+    name: 'Parthu',
+    role: 'CEO, Parthu Interiors',
+    company: 'Parthu Interiors',
+    quote:
+      'We wanted our 3BHK interior projects to stand out, and ReelScale exceeded our expectations. The storytelling, camera work, and editing are on another level. Every reel feels premium, and our clients constantly mention the quality of our social media presence.',
     stars: 5,
-    result: '120k+',
+    result: '1.2M',
     resultLabel: 'Organic Reach',
-    avatarInitials: 'MH',
+    avatarInitials: 'PI',
     order: 2,
   },
   {
-    _id: 'test-3',
-    name: 'Parthu',
-    role: 'Creative Director',
-    company: 'Parthu Interiors Design',
-    quote: 'Professional, reliable, and obsessed with viewer retention. You do not just get videos; you get real brand authority and customer engagement.',
+    _id: 'testi-avinash',
+    name: 'Avinash',
+    role: 'Founder, Avinash Hair & Beauty Lounge',
+    company: 'Avinash Hair & Beauty Lounge',
+    quote:
+      "ReelScale perfectly captured the experience of our salon. The videos looked cinematic, the turnaround was fast, and the content helped us reach many new customers organically. They're now our go-to team for content creation.",
     stars: 5,
-    result: '85k+',
-    resultLabel: 'Profile Visits',
-    avatarInitials: 'PI',
+    result: '2x',
+    resultLabel: 'Leads in 24hrs',
+    avatarInitials: 'AS',
     order: 3,
   },
 ];
@@ -320,11 +325,168 @@ export async function getPricingPlans(category?: 'reel-production' | 'growth'): 
 }
 
 /**
+ * Escape HTML special characters for safe string interpolation
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Renders the HTML cards for testimonials
+ */
+export function renderTestimonialCardsHtml(testimonials: Testimonial[]): string {
+  return testimonials
+    .map((t) => {
+      const starCount = Math.min(5, Math.max(1, t.stars || 5));
+      const starsHtml = Array.from({ length: starCount })
+        .map(
+          () =>
+            `<img src="/assets/icons/star-f.svg" alt="Star Rating Icon" width="16" height="16" loading="lazy" />`
+        )
+        .join('\n          ');
+
+      const cleanQuote = escapeHtml(
+        (t.quote || '').trim().replace(/^["'“”]+|["'“”]+$/g, '')
+      );
+      const name = escapeHtml(t.name || '');
+      const role = escapeHtml(t.role || t.company || '');
+      const resultHtml = t.result
+        ? `<div class="testi-result">${escapeHtml(t.result)}</div>`
+        : '';
+      const resultLabelHtml = t.resultLabel
+        ? `<div class="testi-result-label">${escapeHtml(t.resultLabel)}</div>`
+        : '';
+
+      let avatarHtml = '';
+      if (t.avatarImageUrl) {
+        avatarHtml = `<div class="testi-avatar" style="overflow:hidden; padding:0;"><img src="${escapeHtml(
+          t.avatarImageUrl
+        )}" alt="${name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" loading="lazy" /></div>`;
+      } else {
+        const initials = escapeHtml(
+          t.avatarInitials ||
+            name
+              .split(' ')
+              .filter(Boolean)
+              .map((w) => w[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase() ||
+            'RS'
+        );
+        avatarHtml = `<div class="testi-avatar">${initials}</div>`;
+      }
+
+      return `
+      <div class="testi-card">
+        <div class="testi-stars">
+          ${starsHtml}
+        </div>
+        <p class="testi-quote">"${cleanQuote}"</p>
+        ${resultHtml}
+        ${resultLabelHtml}
+        <div class="testi-divider"></div>
+        <div class="testi-author">
+          ${avatarHtml}
+          <div>
+            <div class="testi-name">${name}</div>
+            <div class="testi-role">${role}</div>
+          </div>
+        </div>
+      </div>`;
+    })
+    .join('');
+}
+
+/**
+ * Renders the full #testimonials section HTML
+ */
+export function renderTestimonialsSectionHtml(testimonials: Testimonial[]): string {
+  const cardsHtml = renderTestimonialCardsHtml(testimonials);
+  const signature = escapeHtml(
+    JSON.stringify(
+      testimonials.map((t) => [
+        t._id,
+        t.quote,
+        t.name,
+        t.role,
+        t.stars,
+        t.result,
+        t.avatarImageUrl,
+        t.avatarInitials,
+      ])
+    )
+  );
+  return `
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div style="text-align:center" class="reveal">
+      <div class="section-eyebrow">Client Results</div>
+      <h2 class="section-title">Real brands.<br>Real growth.</h2>
+    </div>
+    <div class="testi-grid reveal" data-sanity-synced="${signature}">
+      ${cardsHtml}
+    </div>
+  </section>`;
+}
+
+export interface LandingPageData {
+  seo: PageSeo;
+  pricingPlans: PricingPlan[];
+  testimonials: Testimonial[];
+  latestPosts: any[];
+}
+
+/**
+ * Fetch ALL landing page data in a SINGLE GROQ query (SEO, pricing plans, testimonials, latest posts).
+ * Wrapped in React cache() so generateMetadata and Page execution deduplicate into exactly ONE request.
+ */
+export const getLandingPageData = cache(async (): Promise<LandingPageData> => {
+  try {
+    const data = await client.fetch(
+      LANDING_PAGE_QUERY,
+      {},
+      { next: { revalidate: 60, tags: ['landing', 'testimonials', 'pricing', 'posts'] } }
+    );
+
+    return {
+      seo: data?.seo?.metaTitle ? data.seo : DEFAULT_PAGE_SEO.home,
+      pricingPlans:
+        Array.isArray(data?.pricingPlans) && data.pricingPlans.length > 0
+          ? data.pricingPlans
+          : DEFAULT_PRICING_PLANS.filter((p) => p.category === 'reel-production'),
+      testimonials:
+        Array.isArray(data?.testimonials) && data.testimonials.length > 0
+          ? data.testimonials
+          : DEFAULT_TESTIMONIALS,
+      latestPosts: Array.isArray(data?.latestPosts) ? data.latestPosts : [],
+    };
+  } catch (error) {
+    console.warn('[CMS] Failed to fetch landing page data from Sanity, using fallback:', error);
+    return {
+      seo: DEFAULT_PAGE_SEO.home,
+      pricingPlans: DEFAULT_PRICING_PLANS.filter((p) => p.category === 'reel-production'),
+      testimonials: DEFAULT_TESTIMONIALS,
+      latestPosts: [],
+    };
+  }
+});
+
+/**
  * Fetch testimonials
  */
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
-    const list: Testimonial[] = await client.fetch(TESTIMONIALS_QUERY, {}, { next: { revalidate: 60 } });
+    const list: Testimonial[] = await client.fetch(
+      TESTIMONIALS_QUERY,
+      {},
+      { next: { revalidate: 60, tags: ['testimonials'] } }
+    );
     if (Array.isArray(list) && list.length > 0) return list;
   } catch (error) {
     console.warn('[CMS] Failed to fetch testimonials from Sanity, using fallback:', error);

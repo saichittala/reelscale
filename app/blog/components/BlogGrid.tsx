@@ -12,6 +12,7 @@ interface BlogGridProps {
   readText?: string;
   category?: string;
   limit?: number;
+  skipLiveSync?: boolean;
 }
 
 export default function BlogGrid({
@@ -19,12 +20,14 @@ export default function BlogGrid({
   readText,
   category,
   limit,
+  skipLiveSync,
 }: BlogGridProps) {
   const [posts, setPosts] = useState<BlogPost[]>(() => {
     return limit ? initialPosts.slice(0, limit) : initialPosts;
   });
 
   useEffect(() => {
+    if (skipLiveSync) return;
     let isMounted = true;
 
     async function revalidateFromSanity() {

@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { getPublishedBlogsAsync } from "../../lib/blog";
+import { getPublishedBlogs } from "../../lib/blog";
 import BlogGrid from "../../blog/components/BlogGrid";
 
-export default async function LatestBlogs() {
-  const published = await getPublishedBlogsAsync();
-  const latestBlogs = published.slice(0, 3);
+export default function LatestBlogs({ posts }: { posts?: any[] }) {
+  const latestBlogs =
+    Array.isArray(posts) && posts.length > 0
+      ? posts.slice(0, 3)
+      : getPublishedBlogs().slice(0, 3);
 
   if (latestBlogs.length === 0) {
     return null;
@@ -24,9 +26,9 @@ export default async function LatestBlogs() {
           </h2>
         </div>
 
-        {/* Live Blog Grid with Real-time Sanity Sync */}
+        {/* Blog Grid using single-query data with no redundant client API calls */}
         <div className="reveal">
-          <BlogGrid posts={latestBlogs} limit={3} />
+          <BlogGrid posts={latestBlogs} limit={3} skipLiveSync={true} />
         </div>
 
         {/* View All Button */}
