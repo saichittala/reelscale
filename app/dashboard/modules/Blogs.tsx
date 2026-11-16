@@ -205,7 +205,7 @@ export function Blogs({
       {/* Blogs Table */}
       <div className="table-wrap table-scroll-wrap">
         <div className="table-inner-scroll">
-          <table>
+          <table className="blogs-table">
           <thead>
             <tr>
               <th className="th-checkbox">
@@ -216,28 +216,28 @@ export function Blogs({
                   onChange={handleSelectAllBlogs}
                 />
               </th>
-              <th>Featured Image</th>
+              <th className="th-featured-image">Featured Image</th>
               <th
                 onClick={() => handleSort("title")}
-                className="sortable-header th-sortable"
+                className="sortable-header th-sortable th-title"
               >
                 <div className="th-header-inner">
                   <span>Blog Title</span>
                   <SortIcon active={blogSortKey === "title"} dir={blogSortDir} />
                 </div>
               </th>
-              <th>Category</th>
-              <th>Status</th>
+              <th className="th-category">Category</th>
+              <th className="th-status">Status</th>
               <th
                 onClick={() => handleSort("date")}
-                className="sortable-header th-sortable"
+                className="sortable-header th-sortable th-date"
               >
                 <div className="th-header-inner">
                   <span>Published Date</span>
                   <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
                 </div>
               </th>
-              <th>Last Updated</th>
+              <th className="th-date">Last Updated</th>
               <th className="th-actions">Actions</th>
             </tr>
           </thead>
@@ -277,20 +277,22 @@ export function Blogs({
                       )}
                     </div>
                   </td>
-                  <td>
-                    <div className="td-input-name">
-                      {b.title}
-                    </div>
-                    <div className="td-muted-small">
-                      {b.description
-                        ? `${b.description.substring(0, 75)}...`
-                        : "—"}
+                  <td className="td-title">
+                    <div className="blog-title-cell">
+                      <div className="blog-title-text" title={b.title}>
+                        {b.title}
+                      </div>
+                      <div className="blog-description-text">
+                        {b.description
+                          ? `${b.description.substring(0, 85)}...`
+                          : "—"}
+                      </div>
                     </div>
                   </td>
-                  <td>
+                  <td className="td-category">
                     <span className="badge badge-gold">{b.category}</span>
                   </td>
-                  <td>
+                  <td className="td-status">
                     <span
                       className={`badge ${
                         b.status === "Published" ? "badge-green" : "badge-red"
