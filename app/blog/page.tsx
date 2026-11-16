@@ -4,6 +4,9 @@ import BlogLayout from "./BlogLayout";
 import BlogGrid from "./components/BlogGrid";
 import CategorySidebar from "./components/CategorySidebar";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Insights & Articles | ReelScale",
   description: "Learn how premium short-form cinematic video production can explode your brand and scale conversion rate.",

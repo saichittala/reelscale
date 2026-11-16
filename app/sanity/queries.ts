@@ -14,6 +14,7 @@ export const POSTS_QUERY = defineQuery(`
     updatedDate,
     status,
     author,
+    body,
     metaTitle,
     metaDescription,
     focusKeyword,

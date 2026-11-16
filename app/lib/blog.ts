@@ -55,6 +55,7 @@ export async function getPublishedBlogsAsync(): Promise<BlogPost[]> {
   try {
     const { client } = await import("../sanity/client");
     const { POSTS_QUERY } = await import("../sanity/queries");
+    const { blocksToMarkdown } = await import("../sanity/blog-sync");
     const sanityPosts = await client.fetch(POSTS_QUERY);
     if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
       const localBlogs = getBlogsFromDB();
@@ -62,6 +63,8 @@ export async function getPublishedBlogsAsync(): Promise<BlogPost[]> {
 
       return sanityPosts.map((sp: any) => {
         const local = localMap.get(sp.slug);
+        const sanityContent = Array.isArray(sp.body) ? blocksToMarkdown(sp.body) : (typeof sp.body === "string" ? sp.body : "");
+
         return {
           id: sp._id,
           title: sp.title || local?.title || "",
@@ -73,7 +76,7 @@ export async function getPublishedBlogsAsync(): Promise<BlogPost[]> {
           publishedDate: sp.publishedDate || local?.publishedDate || "",
           updatedDate: sp.updatedDate || sp.publishedDate || local?.updatedDate || "",
           status: sp.status || "Published",
-          content: typeof sp.body === "string" ? sp.body : (local?.content || ""),
+          content: sanityContent || local?.content || "",
           author: sp.author || local?.author || "ReelScale Team",
           metaTitle: sp.metaTitle || local?.metaTitle || sp.title,
           metaDescription: sp.metaDescription || local?.metaDescription || sp.description || "",

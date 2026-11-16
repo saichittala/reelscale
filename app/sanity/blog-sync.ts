@@ -174,7 +174,28 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
     .replace(/^-+/, '')
     .replace(/-+$/, '')
 
-  const docId = blog.id ? (String(blog.id).startsWith('post-') ? String(blog.id) : `post-${blog.id}`) : `post-${cleanSlug}`
+  // Find exact existing document in Sanity by _id or slug
+  let docId = `post-${cleanSlug}`
+  if (blog.id) {
+    const rawId = String(blog.id).replace(/^drafts\./, '')
+    if (rawId.startsWith('post-')) {
+      docId = rawId
+    } else {
+      try {
+        const existing = await writeClient.fetch(
+          `*[_type == "post" && (_id in [$id1, $id2] || slug.current == $slug)][0]{ _id }`,
+          {
+            id1: `post-${rawId}`,
+            id2: `post-${cleanSlug}`,
+            slug: cleanSlug,
+          }
+        )
+        if (existing?._id) {
+          docId = existing._id.replace(/^drafts\./, '')
+        }
+      } catch {}
+    }
+  }
 
   // Handle Image Upload if provided
   let imageAsset: { assetId: string; url: string } | null = null
@@ -234,6 +255,11 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
   }
 
   const saved = await writeClient.createOrReplace(sanityDoc)
+  // Clear any existing draft so Sanity Studio immediately reflects the published document
+  try {
+    await writeClient.delete(`drafts.${docId}`).catch(() => {})
+  } catch {}
+
   console.log(`[Sanity Sync] Successfully synchronized document: ${saved._id}`)
 
   return {
@@ -250,21 +276,28 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
  */
 export async function deleteBlogFromSanity(idOrSlug: string | number): Promise<boolean> {
   const strId = String(idOrSlug)
-  const docId = strId.startsWith('post-') ? strId : `post-${strId}`
+  const baseId = strId.replace(/^drafts\./, '').replace(/^post-/, '')
+  const docId = `post-${baseId}`
+  const draftId = `drafts.post-${baseId}`
 
   try {
-    await writeClient.delete(docId)
+    const tx = writeClient.transaction()
+    tx.delete(docId)
+    tx.delete(draftId)
+    await tx.commit()
     console.log(`[Sanity Sync] Deleted document: ${docId}`)
     return true
   } catch (err: any) {
     // If not found by docId, try finding by slug
     try {
-      const match = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{ _id }`, {
-        slug: strId,
+      const matches = await writeClient.fetch(`*[_type == "post" && slug.current == $slug]{ _id }`, {
+        slug: baseId,
       })
-      if (match?._id) {
-        await writeClient.delete(match._id)
-        console.log(`[Sanity Sync] Deleted document by slug: ${match._id}`)
+      if (Array.isArray(matches) && matches.length > 0) {
+        const tx = writeClient.transaction()
+        matches.forEach((m: any) => tx.delete(m._id))
+        await tx.commit()
+        console.log(`[Sanity Sync] Deleted documents by slug: ${baseId}`)
         return true
       }
     } catch (e) {

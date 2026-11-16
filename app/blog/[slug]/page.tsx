@@ -22,6 +22,8 @@ interface Props {
   }>;
 }
 
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   const published = getPublishedBlogs();
   return published.map((post) => ({
@@ -31,7 +33,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPublishedBlogs().find((p) => p.slug === slug);
+  const published = await getPublishedBlogsAsync();
+  const post = published.find((p) => p.slug === slug);
   if (!post) return {};
 
   return {

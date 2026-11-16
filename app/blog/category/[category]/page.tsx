@@ -5,6 +5,8 @@ import BlogLayout from "../../BlogLayout";
 import BlogGrid from "../../components/BlogGrid";
 import CategorySidebar from "../../components/CategorySidebar";
 
+export const revalidate = 0;
+
 interface Props {
   params: Promise<{
     category: string;
