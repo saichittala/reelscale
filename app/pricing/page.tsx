@@ -5,6 +5,9 @@ import PricingContent from "./PricingContent";
 import { getPageSeo, getPricingPlans } from "../lib/cms";
 import "../../styles.css";
 
+export const dynamic = "auto";
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("pricing");
   const title = seo.metaTitle || "Pricing Plans | ReelScale — Simple & Scalable Video Production Cost";
@@ -88,6 +91,7 @@ function getPricingPageData() {
 
 export default async function PricingPage() {
   const { headerHtml, pricingHtml, footerHtml } = getPricingPageData();
+  const productionPlans = await getPricingPlans("reel-production");
   const growthPlans = await getPricingPlans("growth");
 
   const schemaData = {
@@ -131,6 +135,7 @@ export default async function PricingPage() {
         headerHtml={headerHtml}
         pricingHtml={pricingHtml}
         footerHtml={footerHtml}
+        productionPlans={productionPlans}
         growthPlans={growthPlans}
       />
     </>

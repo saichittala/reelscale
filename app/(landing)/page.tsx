@@ -4,7 +4,10 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import LandingInteractions from "./components/LandingInteractions";
 import LatestBlogs from "./components/LatestBlogs";
-import { getPageSeo } from "../lib/cms";
+import { getPageSeo, getPricingPlans } from "../lib/cms";
+
+export const dynamic = "auto";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("home");
@@ -111,9 +114,60 @@ function getParsedLandingPage() {
   return { headerHtml, mainHtml, footerHtml };
 }
 
-export default function Home() {
+export default async function Home() {
+  const productionPlans = await getPricingPlans("reel-production");
+  let { headerHtml, mainHtml, footerHtml } = getParsedLandingPage();
+
+  if (productionPlans && productionPlans.length > 0) {
+    const cardsHtml = productionPlans
+      .map((plan) => {
+        const isFeatured = plan.featured || plan.tier === "growth" || plan.title.toLowerCase() === "pro";
+        const isLuxe = plan.tier === "scale" || plan.title.toLowerCase() === "luxe";
+        const cardClass = isFeatured ? "pricing-card featured" : isLuxe ? "pricing-card luxe" : "pricing-card";
+        const btnClass = isFeatured ? "btn-plan btn-plan-red" : isLuxe ? "btn-plan btn-plan-outline btn-plan-luxe" : "btn-plan btn-plan-outline";
+        const featuresHtml = plan.features?.map((f) => `<li>${f}</li>`).join("") || "";
+        const ctaLink =
+          plan.ctaLink ||
+          `https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot%20for%20${encodeURIComponent(plan.title)}%20plan.`;
+        const ctaText = plan.ctaText || "Start Your Reel";
+
+        return `
+          <div class="${cardClass}">
+            <div class="plan-name">${plan.title}</div>
+            <div class="plan-price"><sup>${plan.currency || "₹"}</sup>${plan.price}</div>
+            <div class="plan-cadence">${plan.cadence || "per month"}</div>
+            <div class="plan-divider"></div>
+            <ul class="plan-features">
+              ${featuresHtml}
+            </ul>
+            <a href="${ctaLink}" target="_blank" class="${btnClass}">
+              ${ctaText}
+            </a>
+          </div>
+        `;
+      })
+      .join("");
+
+    const dynamicPricing = `
+      <section id="pricing">
+        <div class="pricing-inner">
+          <div class="reveal">
+            <div class="section-eyebrow">Pricing</div>
+            <h2 class="section-title">Simple. Scalable.<br>No surprises.</h2>
+          </div>
+          <div class="pricing-grid reveal">
+            ${cardsHtml}
+          </div>
+        </div>
+      </section>
+    `;
+
+    mainHtml = mainHtml.replace(/<section id="pricing"[\s\S]*?<\/section>/i, dynamicPricing);
+  }
+
+  const mainParts = mainHtml.split('<section id="latest-blogs-section"></section>');
+
   const schemaData = {
-    "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
@@ -271,9 +325,6 @@ export default function Home() {
       }
     ]
   };
-
-  const { headerHtml, mainHtml, footerHtml } = getParsedLandingPage();
-  const mainParts = mainHtml.split('<section id="latest-blogs-section"></section>');
 
   return (
     <>

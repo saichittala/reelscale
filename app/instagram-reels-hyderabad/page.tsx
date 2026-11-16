@@ -2,40 +2,23 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
-import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-const SLUG = "instagram-reels-hyderabad";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const cmsLocation = await getLocationPageBySlug(SLUG);
-  const title = cmsLocation?.seo?.metaTitle || "Instagram Reels Production Services in Hyderabad | ReelScale";
-  const description = cmsLocation?.seo?.metaDescription || "Collaborate with the leading Instagram reels production company in Hyderabad. High-retention reels editing, scripting, and professional filming shoots in Madhapur, Hitech City, and Banjara Hills.";
-  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/instagram-reels-hyderabad";
-  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      siteName: "ReelScale",
-      images: [ogImage],
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: "Instagram Reels Production Services in Hyderabad | ReelScale",
+  description: "Collaborate with the leading Instagram reels production company in Hyderabad. High-retention reels editing, scripting, and professional filming shoots in Madhapur, Hitech City, and Banjara Hills.",
+  alternates: {
+    canonical: "https://reelscale.in/instagram-reels-hyderabad",
+  },
+  openGraph: {
+    title: "Instagram Reels Production Services in Hyderabad | ReelScale",
+    description: "Collaborate with the leading Instagram reels production company in Hyderabad. High-retention reels editing, scripting, and professional filming shoots in Madhapur, Hitech City, and Banjara Hills.",
+    url: "https://reelscale.in/instagram-reels-hyderabad",
+    siteName: "ReelScale",
+    images: ["https://reelscale.in/assets/logo.png"],
+    type: "website",
+  },
+};
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -72,11 +55,10 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default async function SEOPage() {
+export default function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
-  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const baseData = {
+  const data = {
   "slug": "instagram-reels-hyderabad",
   "keyword": "Instagram reels Hyderabad",
   "title": "Instagram Reels Production in Hyderabad | Professional Creators",
@@ -170,22 +152,6 @@ export default async function SEOPage() {
     }
   ]
 };
-
-  const data = cmsLocation
-    ? {
-        ...baseData,
-        headline: cmsLocation.headline || baseData.headline,
-        subheadline: cmsLocation.subheadline || baseData.subheadline,
-        introText: cmsLocation.introText || baseData.introText,
-        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
-        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
-        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
-        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
-        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
-        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
-        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
-      }
-    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",

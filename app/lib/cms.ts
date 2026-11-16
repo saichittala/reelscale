@@ -137,90 +137,6 @@ export const DEFAULT_PRICING_PLANS: PricingPlan[] = [
     ctaText: 'Start Your Reel',
     ctaLink: 'https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot%20for%20Luxe%20plan.',
   },
-  {
-    _id: 'plan-growth-starter',
-    title: 'Presence',
-    slug: { current: 'growth-starter' },
-    category: 'growth',
-    price: '14,999',
-    numericPrice: 14999,
-    currency: '₹',
-    cadence: 'per month',
-    tier: 'starter',
-    featured: false,
-    order: 4,
-    features: [
-      '4 Premium Reels / Month',
-      '4 Social Media Posts',
-      '1 Content Shoot / Month',
-      'Content Planning',
-      'Professional Reel Editing',
-      'Captions + CTAs',
-      'Instagram Posting',
-      'Basic Monthly Report',
-    ],
-    ctaText: 'Select Presence Plan',
-    ctaLink: "https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Presence%20plan.",
-  },
-  {
-    _id: 'plan-growth-scale',
-    title: 'Growth',
-    slug: { current: 'growth-scale' },
-    category: 'growth',
-    price: '24,999',
-    numericPrice: 24999,
-    currency: '₹',
-    cadence: 'per month',
-    tier: 'growth',
-    featured: true,
-    order: 5,
-    features: [
-      '6 Premium Reels / Month',
-      '6 Social Media Posts',
-      '1 Content Shoot / Month',
-      'Content Strategy',
-      'Professional Reel Editing',
-      'Hooks + Captions + CTAs',
-      'Instagram Page Management',
-      'Posting & Scheduling',
-      'Profile Optimization',
-      'Meta Ads Management',
-      'Campaign Optimization',
-      'Monthly Performance Report',
-    ],
-    ctaText: 'Select Growth Plan',
-    ctaLink: "https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Growth%20plan.",
-  },
-  {
-    _id: 'plan-market-leader',
-    title: 'Scale',
-    slug: { current: 'market-leader' },
-    category: 'growth',
-    price: '34,999',
-    numericPrice: 34999,
-    currency: '₹',
-    cadence: 'per month',
-    tier: 'scale',
-    featured: false,
-    order: 6,
-    features: [
-      '10 Premium Reels / Month',
-      '8 Social Media Posts',
-      '2 Content Shoots / Month',
-      'Advanced Content Strategy',
-      'Professional Editing',
-      'Hooks + Captions + CTAs',
-      'Complete Instagram Management',
-      'Content Calendar',
-      'Meta Ads Management',
-      'Multiple Campaign Management',
-      'Creative Testing',
-      'Monthly Growth Report',
-      'Priority Support',
-    ],
-    ctaText: 'Select Scale Plan',
-    ctaLink: "https://wa.me/919966239433?text=Hello%20ReelScale%20Growth%2C%20I%27d%20like%20to%20get%20started%20with%20the%20Scale%20plan.",
-  },
 ];
 
 // Fallback testimonials
@@ -374,7 +290,7 @@ export const DEFAULT_PAGE_SEO: Record<string, PageSeo> = {
  */
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const data = await client.fetch(SITE_SETTINGS_QUERY);
+    const data = await client.fetch(SITE_SETTINGS_QUERY, {}, { next: { revalidate: 60 } });
     if (data && data._id) return data;
   } catch (error) {
     console.warn('[CMS] Failed to fetch siteSettings from Sanity, using fallback:', error);
@@ -387,7 +303,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
  */
 export async function getPricingPlans(category?: 'reel-production' | 'growth'): Promise<PricingPlan[]> {
   try {
-    const plans: PricingPlan[] = await client.fetch(PRICING_PLANS_QUERY);
+    const plans: PricingPlan[] = await client.fetch(PRICING_PLANS_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(plans) && plans.length > 0) {
       if (category) {
         return plans.filter((p) => p.category === category);
@@ -408,7 +324,7 @@ export async function getPricingPlans(category?: 'reel-production' | 'growth'): 
  */
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
-    const list: Testimonial[] = await client.fetch(TESTIMONIALS_QUERY);
+    const list: Testimonial[] = await client.fetch(TESTIMONIALS_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(list) && list.length > 0) return list;
   } catch (error) {
     console.warn('[CMS] Failed to fetch testimonials from Sanity, using fallback:', error);
@@ -421,7 +337,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
  */
 export async function getPageSeo(pageId: string): Promise<PageSeo> {
   try {
-    const seo: PageSeo = await client.fetch(PAGE_SEO_QUERY, { pageId });
+    const seo: PageSeo = await client.fetch(PAGE_SEO_QUERY, { pageId }, { next: { revalidate: 60 } });
     if (seo && seo.metaTitle) return seo;
   } catch (error) {
     console.warn(`[CMS] Failed to fetch pageSeo for ${pageId} from Sanity, using fallback:`, error);
@@ -442,7 +358,7 @@ export async function getPageSeo(pageId: string): Promise<PageSeo> {
  */
 export async function getServices(): Promise<ServiceItem[]> {
   try {
-    const list: ServiceItem[] = await client.fetch(SERVICES_QUERY);
+    const list: ServiceItem[] = await client.fetch(SERVICES_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(list) && list.length > 0) return list;
   } catch (error) {
     console.warn('[CMS] Failed to fetch services from Sanity:', error);
@@ -455,7 +371,7 @@ export async function getServices(): Promise<ServiceItem[]> {
  */
 export async function getServiceBySlug(slug: string): Promise<ServiceItem | null> {
   try {
-    const service: ServiceItem = await client.fetch(SERVICE_BY_SLUG_QUERY, { slug });
+    const service: ServiceItem = await client.fetch(SERVICE_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
     if (service && service._id) return service;
   } catch (error) {
     console.warn(`[CMS] Failed to fetch service ${slug} from Sanity:`, error);
@@ -468,7 +384,7 @@ export async function getServiceBySlug(slug: string): Promise<ServiceItem | null
  */
 export async function getLocationPages(): Promise<LocationPageItem[]> {
   try {
-    const list: LocationPageItem[] = await client.fetch(LOCATION_PAGES_QUERY);
+    const list: LocationPageItem[] = await client.fetch(LOCATION_PAGES_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(list) && list.length > 0) return list;
   } catch (error) {
     console.warn('[CMS] Failed to fetch locationPages from Sanity:', error);
@@ -481,7 +397,7 @@ export async function getLocationPages(): Promise<LocationPageItem[]> {
  */
 export async function getLocationPageBySlug(slug: string): Promise<LocationPageItem | null> {
   try {
-    const page: LocationPageItem = await client.fetch(LOCATION_PAGE_BY_SLUG_QUERY, { slug });
+    const page: LocationPageItem = await client.fetch(LOCATION_PAGE_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
     if (page && page._id) return page;
   } catch (error) {
     console.warn(`[CMS] Failed to fetch locationPage ${slug} from Sanity:`, error);
@@ -494,7 +410,7 @@ export async function getLocationPageBySlug(slug: string): Promise<LocationPageI
  */
 export async function getReels(): Promise<ReelItem[]> {
   try {
-    const reels: ReelItem[] = await client.fetch(REELS_QUERY);
+    const reels: ReelItem[] = await client.fetch(REELS_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(reels) && reels.length > 0) return reels;
   } catch (error) {
     console.warn('[CMS] Failed to fetch reels from Sanity:', error);
@@ -507,7 +423,7 @@ export async function getReels(): Promise<ReelItem[]> {
  */
 export async function getPosts(): Promise<any[]> {
   try {
-    const posts = await client.fetch(POSTS_QUERY);
+    const posts = await client.fetch(POSTS_QUERY, {}, { next: { revalidate: 60 } });
     if (Array.isArray(posts) && posts.length > 0) return posts;
   } catch (error) {
     console.warn('[CMS] Failed to fetch posts from Sanity:', error);
@@ -520,7 +436,7 @@ export async function getPosts(): Promise<any[]> {
  */
 export async function getPostBySlug(slug: string): Promise<any | null> {
   try {
-    const post = await client.fetch(POST_BY_SLUG_QUERY, { slug });
+    const post = await client.fetch(POST_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
     if (post && post._id) return post;
   } catch (error) {
     console.warn(`[CMS] Failed to fetch post ${slug} from Sanity:`, error);

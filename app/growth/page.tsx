@@ -5,6 +5,9 @@ import GrowthContent from "./GrowthContent";
 import { getPageSeo, getPricingPlans } from "../lib/cms";
 import "../../styles.css";
 
+export const dynamic = "auto";
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("growth");
   const title = seo.metaTitle || "Social Growth & Meta Ads Agency in Hyderabad | ReelScale";

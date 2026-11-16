@@ -5,6 +5,9 @@ import AboutContent from "./AboutContent";
 import { getPageSeo } from "../lib/cms";
 import "../../styles.css";
 
+export const dynamic = "auto";
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("about");
   const title = seo.metaTitle || "About Us | ReelScale — Short-Form Video Production Agency in Hyderabad";

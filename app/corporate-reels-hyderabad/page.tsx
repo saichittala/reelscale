@@ -2,40 +2,23 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import ServicePageTemplate from "../services/ServicePageTemplate";
-import { getLocationPageBySlug } from "../lib/cms";
 import "../../styles.css";
 
-const SLUG = "corporate-reels-hyderabad";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const cmsLocation = await getLocationPageBySlug(SLUG);
-  const title = cmsLocation?.seo?.metaTitle || "Corporate Reels & Business Video Production in Hyderabad | ReelScale";
-  const description = cmsLocation?.seo?.metaDescription || "Build company trust with high-impact corporate reels in Hyderabad. Premium brand films, employee spotlights, and business promos in Financial District, Hitech City, and Madhapur.";
-  const canonical = cmsLocation?.seo?.canonicalUrl || "https://reelscale.in/corporate-reels-hyderabad";
-  const ogImage = cmsLocation?.seo?.ogImageUrl || "https://reelscale.in/assets/logo.png";
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      siteName: "ReelScale",
-      images: [ogImage],
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: "Corporate Reels & Business Video Production in Hyderabad | ReelScale",
+  description: "Build company trust with high-impact corporate reels in Hyderabad. Premium brand films, employee spotlights, and business promos in Financial District, Hitech City, and Madhapur.",
+  alternates: {
+    canonical: "https://reelscale.in/corporate-reels-hyderabad",
+  },
+  openGraph: {
+    title: "Corporate Reels & Business Video Production in Hyderabad | ReelScale",
+    description: "Build company trust with high-impact corporate reels in Hyderabad. Premium brand films, employee spotlights, and business promos in Financial District, Hitech City, and Madhapur.",
+    url: "https://reelscale.in/corporate-reels-hyderabad",
+    siteName: "ReelScale",
+    images: ["https://reelscale.in/assets/logo.png"],
+    type: "website",
+  },
+};
 
 let cachedHeaderHtml: string | null = null;
 let cachedFooterHtml: string | null = null;
@@ -72,11 +55,10 @@ function getHeaderAndFooter() {
   return { headerHtml, footerHtml };
 }
 
-export default async function SEOPage() {
+export default function SEOPage() {
   const { headerHtml, footerHtml } = getHeaderAndFooter();
-  const cmsLocation = await getLocationPageBySlug(SLUG);
 
-  const baseData = {
+  const data = {
   "slug": "corporate-reels-hyderabad",
   "keyword": "corporate reels Hyderabad",
   "title": "Corporate Reels Shoot in Hyderabad | Business Video Production",
@@ -170,22 +152,6 @@ export default async function SEOPage() {
     }
   ]
 };
-
-  const data = cmsLocation
-    ? {
-        ...baseData,
-        headline: cmsLocation.headline || baseData.headline,
-        subheadline: cmsLocation.subheadline || baseData.subheadline,
-        introText: cmsLocation.introText || baseData.introText,
-        benefits: cmsLocation.benefits && cmsLocation.benefits.length > 0 ? cmsLocation.benefits : baseData.benefits,
-        process: cmsLocation.process && cmsLocation.process.length > 0 ? cmsLocation.process : baseData.process,
-        deliverables: cmsLocation.deliverables && cmsLocation.deliverables.length > 0 ? cmsLocation.deliverables : baseData.deliverables,
-        pricingPlan: cmsLocation.pricingPlan || baseData.pricingPlan,
-        pricingPrice: cmsLocation.pricingPrice || baseData.pricingPrice,
-        pricingFeatures: cmsLocation.pricingFeatures && cmsLocation.pricingFeatures.length > 0 ? cmsLocation.pricingFeatures : baseData.pricingFeatures,
-        faqs: cmsLocation.faqs && cmsLocation.faqs.length > 0 ? cmsLocation.faqs : baseData.faqs,
-      }
-    : baseData;
 
   const schemaData = {
     "@context": "https://schema.org",
