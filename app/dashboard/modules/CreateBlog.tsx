@@ -31,6 +31,51 @@ export function CreateBlog({
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [faq, setFaq] = useState<FAQ[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    showToast("Uploading image to Sanity...");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const userStr = typeof window !== "undefined" ? localStorage.getItem("reelscale_user") : null;
+      const headers: Record<string, string> = {};
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user?.role) headers["x-user-role"] = user.role;
+          if (user?.email) headers["x-user-email"] = user.email;
+        } catch {}
+      }
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success && data.url) {
+        setFeaturedImage(data.url);
+        if (!altText) setAltText(file.name.replace(/\.[^/.]+$/, ""));
+        showToast("Image uploaded to Sanity successfully!", "success");
+      } else {
+        showToast(data.message || "Failed to upload image", "error");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Image upload failed", "error");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   // Sync initial state if editing
   useEffect(() => {
@@ -403,7 +448,10 @@ export function CreateBlog({
 
         {/* Featured Image */}
         <div className="glass-card sidebar-card-body">
-          <div className="glass-card-label">Featured Image</div>
+          <div className="glass-card-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Featured Image</span>
+            <span style={{ fontSize: "11px", color: "var(--color-primary, #6366f1)" }}>Sanity Synced</span>
+          </div>
 
           <div className="editor-image-frame">
             {featuredImage ? (
@@ -420,8 +468,28 @@ export function CreateBlog({
             )}
           </div>
 
+          {/* Direct File Upload to Sanity */}
+          <div className="form-group" style={{ marginBottom: "12px" }}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileUpload}
+            />
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{ width: "100%", padding: "8px 12px", fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+              disabled={isUploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <span>{isUploading ? "⏳ Uploading..." : "📁 Upload from Device"}</span>
+            </button>
+          </div>
+
           <div className="form-group">
-            <label className="form-label">Image URL</label>
+            <label className="form-label">Or Image URL (Unsplash / Pexels / CDN)</label>
             <input
               className="form-input"
               id="eb-img-url"

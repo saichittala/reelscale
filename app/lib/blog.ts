@@ -51,6 +51,45 @@ export function getPublishedBlogs(): BlogPost[] {
   return getBlogsFromDB().filter((b) => b.status === "Published");
 }
 
+export async function getPublishedBlogsAsync(): Promise<BlogPost[]> {
+  try {
+    const { client } = await import("../sanity/client");
+    const { POSTS_QUERY } = await import("../sanity/queries");
+    const sanityPosts = await client.fetch(POSTS_QUERY);
+    if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
+      const localBlogs = getBlogsFromDB();
+      const localMap = new Map(localBlogs.map((b) => [b.slug, b]));
+
+      return sanityPosts.map((sp: any) => {
+        const local = localMap.get(sp.slug);
+        return {
+          id: sp._id,
+          title: sp.title || local?.title || "",
+          slug: sp.slug,
+          description: sp.description || local?.description || "",
+          category: sp.category || local?.category || "Marketing",
+          tags: sp.tags || local?.tags || [],
+          featuredImage: sp.featuredImageUrl || sp.featuredImage?.asset?.url || (typeof sp.featuredImage === "string" ? sp.featuredImage : "") || local?.featuredImage || "",
+          publishedDate: sp.publishedDate || local?.publishedDate || "",
+          updatedDate: sp.updatedDate || sp.publishedDate || local?.updatedDate || "",
+          status: sp.status || "Published",
+          content: typeof sp.body === "string" ? sp.body : (local?.content || ""),
+          author: sp.author || local?.author || "ReelScale Team",
+          metaTitle: sp.metaTitle || local?.metaTitle || sp.title,
+          metaDescription: sp.metaDescription || local?.metaDescription || sp.description || "",
+          focusKeyword: sp.focusKeyword || local?.focusKeyword || "",
+          canonicalUrl: sp.canonicalUrl || local?.canonicalUrl || "",
+          ogImage: sp.ogImageUrl || sp.ogImage?.asset?.url || (typeof sp.ogImage === "string" ? sp.ogImage : "") || local?.ogImage || "",
+          faq: Array.isArray(sp.faq) && sp.faq.length > 0 ? sp.faq : (local?.faq || []),
+        };
+      });
+    }
+  } catch {
+    // Fallback smoothly to local database if Sanity dataset is empty or offline
+  }
+  return getPublishedBlogs();
+}
+
 export function getReadingTime(text: string): string {
   const wordsPerMinute = 200;
   const noOfWords = text.split(/\s+/).length;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { 
   getPublishedBlogs, 
+  getPublishedBlogsAsync,
   getReadingTime, 
   getRelatedPosts, 
   generateTableOfContents, 
@@ -66,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const published = getPublishedBlogs();
+  const published = await getPublishedBlogsAsync();
   const post = published.find((p) => p.slug === slug);
 
   if (!post) {

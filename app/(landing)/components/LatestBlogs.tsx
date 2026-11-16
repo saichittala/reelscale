@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { getPublishedBlogs } from "../../lib/blog";
+import { getPublishedBlogsAsync } from "../../lib/blog";
 import BlogCard from "../../blog/components/BlogCard";
 
-export default function LatestBlogs() {
-  const latestBlogs = getPublishedBlogs().slice(0, 3);
+export default async function LatestBlogs() {
+  const published = await getPublishedBlogsAsync();
+  const latestBlogs = published.slice(0, 3);
 
   if (latestBlogs.length === 0) {
     return null;

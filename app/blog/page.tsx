@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPublishedBlogs } from "../lib/blog";
+import { getPublishedBlogsAsync } from "../lib/blog";
 import BlogLayout from "./BlogLayout";
 import BlogGrid from "./components/BlogGrid";
 import CategorySidebar from "./components/CategorySidebar";
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogIndexPage() {
-  const publishedBlogs = getPublishedBlogs();
+export default async function BlogIndexPage() {
+  const publishedBlogs = await getPublishedBlogsAsync();
   const categories = Array.from(new Set(publishedBlogs.map((b) => b.category)));
 
   return (

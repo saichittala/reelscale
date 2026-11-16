@@ -1,11 +1,14 @@
-// Hardware resource & low-memory detection (targeting <= 2GB devices & low-spec GPUs)
+// Hardware resource & low-memory detection (targeting low-end devices, mobile, low-spec GPUs)
 const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+const isMobileWidth = window.innerWidth <= 900 || window.matchMedia('(max-width: 900px)').matches;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const nav = navigator;
 const isLowMemoryHardware = Boolean(
-  (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
-  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
+  (nav.deviceMemory && nav.deviceMemory <= 4) ||
+  (nav.hardwareConcurrency && nav.hardwareConcurrency <= 4)
 );
-const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware;
+const isDataSaver = Boolean(nav.connection && (nav.connection.saveData || nav.connection.effectiveType === '2g' || nav.connection.effectiveType === '3g'));
+const isLowEndDevice = prefersReducedMotion || isLowMemoryHardware || isMobileWidth || isTouchDevice || isDataSaver;
 
 if (isLowEndDevice) {
   document.documentElement.classList.add('low-end-device');
@@ -14,8 +17,9 @@ if (isLowEndDevice) {
 // Custom cursor (paused when idle or on low-end/touch devices to save RAM/CPU)
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
+const isCursorVisible = Boolean(cursor && ring && window.getComputedStyle(cursor).display !== 'none');
 
-if (cursor && ring && !isTouchDevice && !isLowEndDevice) {
+if (isCursorVisible && !isTouchDevice && !isLowEndDevice) {
   let mx = -100, my = -100, rx = -100, ry = -100;
   let cursorAnimating = false;
 

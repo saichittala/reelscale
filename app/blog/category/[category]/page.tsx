@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedBlogs } from "../../../lib/blog";
+import { getPublishedBlogs, getPublishedBlogsAsync } from "../../../lib/blog";
 import BlogLayout from "../../BlogLayout";
 import BlogGrid from "../../components/BlogGrid";
 import CategorySidebar from "../../components/CategorySidebar";
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
   const decodedCategory = decodeURIComponent(category);
-  const publishedBlogs = getPublishedBlogs();
+  const publishedBlogs = await getPublishedBlogsAsync();
   
   // Filter by category
   const filteredBlogs = publishedBlogs.filter(

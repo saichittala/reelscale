@@ -11,7 +11,10 @@
     "deploy": "node scripts/deploy.js"
   },
   "dependencies": {
+    "@portabletext/react": "^3.2.1",
+    "@sanity/image-url": "^1.1.0",
     "next": "^16.2.9",
+    "next-sanity": "^13.4.0",
     "qrcode": "^1.5.4",
     "react": "19.0.0",
     "react-dom": "19.0.0"

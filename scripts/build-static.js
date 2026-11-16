@@ -29,7 +29,7 @@ function safeRename(src, dest, retries = 5, delayMs = 400) {
 console.log('==> Step 1: Generating sitemap...');
 execSync('node scripts/generate-sitemap.js', { stdio: 'inherit', cwd: rootDir });
 
-let apiMoved = false;
+let moveMode = null; // 'folder' | 'contents'
 
 try {
   // If a previous run left _api_bak and app/api doesn't exist, restore it first
@@ -39,8 +39,18 @@ try {
 
   if (fs.existsSync(apiDir)) {
     console.log('==> Step 2: Temporarily moving app/api for static export...');
-    safeRename(apiDir, apiBakDir);
-    apiMoved = true;
+    try {
+      safeRename(apiDir, apiBakDir);
+      moveMode = 'folder';
+    } catch (err) {
+      // Fallback: move items inside app/api without renaming app/api directory handle
+      if (!fs.existsSync(apiBakDir)) fs.mkdirSync(apiBakDir, { recursive: true });
+      const items = fs.readdirSync(apiDir);
+      for (const item of items) {
+        safeRename(path.join(apiDir, item), path.join(apiBakDir, item));
+      }
+      moveMode = 'contents';
+    }
   }
 
   const dotNextDir = path.join(rootDir, '.next');
@@ -61,22 +71,24 @@ try {
 
   console.log('==> Static build completed successfully!');
 } catch (err) {
-  if (err.code === 'EPERM' || (err.message && err.message.includes('EPERM'))) {
-    console.error('\n[ERROR] EPERM: Permission denied while moving app/api.');
-    console.error('This occurs on Windows if `next dev` is running in another terminal window and locking directory handles.');
-    console.error('Please stop `npm run dev` (Ctrl+C) before running `npm run deploy`.\n');
-  } else {
-    console.error('==> Build failed:', err.message);
-  }
+  console.error('==> Build failed:', err.message);
   process.exitCode = 1;
 } finally {
-  if (apiMoved && fs.existsSync(apiBakDir)) {
+  if (moveMode && fs.existsSync(apiBakDir)) {
     console.log('==> Step 4: Restoring app/api directory...');
     try {
-      if (fs.existsSync(apiDir)) {
-        fs.rmSync(apiDir, { recursive: true, force: true });
+      if (moveMode === 'folder') {
+        if (fs.existsSync(apiDir)) {
+          fs.rmSync(apiDir, { recursive: true, force: true });
+        }
+        safeRename(apiBakDir, apiDir);
+      } else {
+        const items = fs.readdirSync(apiBakDir);
+        for (const item of items) {
+          safeRename(path.join(apiBakDir, item), path.join(apiDir, item));
+        }
+        fs.rmSync(apiBakDir, { recursive: true, force: true });
       }
-      safeRename(apiBakDir, apiDir);
       console.log('==> app/api successfully restored.');
     } catch (restoreErr) {
       console.error('==> Warning: Failed to restore app/api:', restoreErr.message);
