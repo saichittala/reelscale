@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useId, useRef, useState } from "react";
+import { forwardRef, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { InputHTMLAttributes } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { motionTokens } from "../lib/motion-tokens";
@@ -10,7 +10,28 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   description?: string;
   error?: string;
+  startIcon?: ReactNode;
+  leftIcon?: ReactNode;
+  icon?: ReactNode;
+  endIcon?: ReactNode;
+  rightIcon?: ReactNode;
 }
+
+const defaultSearchIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
 
 /* Digits roll up when a number grows and down when it shrinks; `custom` hands the latest direction to digits already leaving. */
 const digit = {
@@ -67,19 +88,69 @@ function MessageRow({ id, text, className, alert }: { id?: string; text: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, description, error, id, className, ...props }, ref,
+  {
+    label,
+    description,
+    error,
+    id,
+    className,
+    startIcon,
+    leftIcon,
+    icon,
+    endIcon,
+    rightIcon,
+    type,
+    ...props
+  },
+  ref,
 ) {
   const generatedId = useId();
   const controlId = id ?? generatedId;
   const hintId = description ? `${controlId}-description` : undefined;
   const errorId = error ? `${controlId}-error` : undefined;
   const describedBy = [props["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined;
-  return <div className={styles.field}>
-    {label ? <label className={styles.label} htmlFor={controlId}>{label}</label> : null}
-    <input {...props} id={controlId} ref={ref} className={[styles.input, className].filter(Boolean).join(" ")} aria-invalid={error ? true : props["aria-invalid"]} aria-describedby={describedBy} />
-    <FieldMessage id={hintId} text={description} className={styles.description} />
-    <FieldMessage id={errorId} text={error} className={styles.error} alert />
-  </div>;
+
+  const resolvedStartIcon =
+    startIcon ??
+    leftIcon ??
+    icon ??
+    (type === "search" ? defaultSearchIcon : null);
+
+  const resolvedEndIcon = endIcon ?? rightIcon;
+
+  return (
+    <div className={styles.field}>
+      {label ? <label className={styles.label} htmlFor={controlId}>{label}</label> : null}
+      <div className={styles.inputWrapper}>
+        {resolvedStartIcon ? (
+          <span className={`${styles.startIcon} search-icon`} aria-hidden="true">
+            {resolvedStartIcon}
+          </span>
+        ) : null}
+        <input
+          {...props}
+          type={type}
+          id={controlId}
+          ref={ref}
+          className={[
+            styles.input,
+            resolvedStartIcon ? styles.hasStartIcon : "",
+            resolvedEndIcon ? styles.hasEndIcon : "",
+            className,
+          ].filter(Boolean).join(" ")}
+          aria-invalid={error ? true : props["aria-invalid"]}
+          aria-describedby={describedBy}
+        />
+        {resolvedEndIcon ? (
+          <span className={styles.endIcon} aria-hidden="true">
+            {resolvedEndIcon}
+          </span>
+        ) : null}
+      </div>
+      <FieldMessage id={hintId} text={description} className={styles.description} />
+      <FieldMessage id={errorId} text={error} className={styles.error} alert />
+    </div>
+  );
 });
 
 Input.displayName = "Input";

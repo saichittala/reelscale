@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Client, BusinessDocument, ClientContract, DocumentLineItem } from "../types";
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
+import { IconSearch } from "../components/Icons";
 import { Button, Input, Textarea } from "@/components/ui";
 
 interface ResourcesProps {
@@ -1186,8 +1187,14 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
           {/* Filter Row controls */}
           <div className="filter-row">
             <div className="filter-group-left">
-              <div className="search-input-wrap">
-                <input type="text" className="filter-input-search" placeholder="Search number, client, project..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <div style={{ width: "240px" }}>
+                <Input
+                  type="search"
+                  startIcon={<IconSearch size={16} />}
+                  placeholder="Search number, client, project..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               
               <CustomSelect
@@ -1324,8 +1331,14 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
           {/* Search filter row */}
           <div className="filter-row">
             <div className="filter-group-left">
-              <div className="search-input-wrap">
-                <input type="text" className="filter-input-search" placeholder="Search number, client, type..." value={searchContract} onChange={(e) => setSearchContract(e.target.value)} />
+              <div style={{ width: "240px" }}>
+                <Input
+                  type="search"
+                  startIcon={<IconSearch size={16} />}
+                  placeholder="Search number, client, type..."
+                  value={searchContract}
+                  onChange={(e) => setSearchContract(e.target.value)}
+                />
               </div>
               <CustomSelect
                 value={statusContract}

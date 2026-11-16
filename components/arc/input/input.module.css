@@ -1,5 +1,13 @@
 .field { display: grid; min-width: 0; }
 .label { margin-bottom: var(--space-2); color: var(--foreground); font-size: var(--text-sm); font-weight: 500; line-height: var(--leading-body); }
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 /* Focus answers with brand border and subtle focus shadow; the field itself never changes size. */
 .input { width: 100%; min-height: var(--control-height-md); padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); color: var(--foreground); font: inherit; font-size: var(--text-field); line-height: var(--leading-body); letter-spacing: var(--tracking-body); outline: none; transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
 .input::placeholder { color: var(--text-muted); }
@@ -7,6 +15,57 @@
 .input:focus-visible { border-color: var(--red); box-shadow: var(--shadow-focus-red); }
 .input[aria-invalid="true"] { border-color: var(--danger); box-shadow: var(--shadow-focus-red); }
 .input:disabled { cursor: not-allowed; opacity: .5; background: var(--surface-muted); }
+
+.startIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, var(--text-muted, #8e8e93));
+  pointer-events: none;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+}
+
+.startIcon svg,
+.startIcon img {
+  width: 16px;
+  height: 16px;
+}
+
+.endIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, var(--text-muted, #8e8e93));
+  pointer-events: none;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+}
+
+.endIcon svg,
+.endIcon img {
+  width: 16px;
+  height: 16px;
+}
+
+.hasStartIcon {
+  padding-left: 36px !important;
+}
+
+.hasEndIcon {
+  padding-right: 36px !important;
+}
+
 /* The row's space is padding inside the clipped slot, so the height animates from a true zero. */
 .messageSlot { display: block; overflow: hidden; }
 .description, .error { display: block; padding-top: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-body); }

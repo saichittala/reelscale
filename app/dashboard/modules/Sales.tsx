@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Lead } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { SortIcon } from "../components/SortIcon";
+import { IconSearch } from "../components/Icons";
 import {
   formatDisplayDate,
   createWhatsAppLink,
@@ -282,7 +283,8 @@ export function Sales({
       <div className="controls">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
-            type="text"
+            type="search"
+            startIcon={<IconSearch size={16} />}
             placeholder="Search leads..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

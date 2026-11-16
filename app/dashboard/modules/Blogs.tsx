@@ -3,6 +3,7 @@ import { Blog } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
+import { IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
 
 interface BlogsProps {
@@ -166,7 +167,8 @@ export function Blogs({
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             id="blog-search-input"
-            type="text"
+            type="search"
+            startIcon={<IconSearch size={16} />}
             placeholder="Search blogs by title..."
             value={blogSearch}
             onChange={(e) => setBlogSearch(e.target.value)}

@@ -3,6 +3,7 @@ import { User } from "../types";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
+import { IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
 
 const ROLE_OPTIONS = [
@@ -200,7 +201,8 @@ export function Users({
       <div className="controls">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
-            type="text"
+            type="search"
+            startIcon={<IconSearch size={16} />}
             placeholder="Search users..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

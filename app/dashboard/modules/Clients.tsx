@@ -5,7 +5,7 @@ import { SortIcon } from "../components/SortIcon";
 import { CustomSelect } from "../components/CustomSelect";
 import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
-import { IconFilm } from "../components/Icons";
+import { IconFilm, IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
 
 interface ClientsProps {
@@ -1030,6 +1030,8 @@ export function Clients({
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             id="search-input"
+            type="search"
+            startIcon={<IconSearch size={16} />}
             placeholder="Search clients by name, business, insta..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
