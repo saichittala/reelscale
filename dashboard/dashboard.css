@@ -2483,7 +2483,7 @@ input:autofill:focus,
 }
 
 .mobile-menu-btn {
-    display: none;
+    display: none !important;
 }
 
 @media (max-width:768px) {
@@ -2493,7 +2493,7 @@ input:autofill:focus,
     }
 
     .mobile-menu-btn {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         width: 40px;

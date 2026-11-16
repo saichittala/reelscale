@@ -74,21 +74,21 @@ export function Layout({
   const nav =
     role === "sales"
       ? [
-          {
-            id: "sales" as DashboardPage,
-            icon: "/assets/icons/nav-sales.svg",
-            label: "Sales",
-          },
-        ]
+        {
+          id: "sales" as DashboardPage,
+          icon: "/assets/icons/nav-sales.svg",
+          label: "Sales",
+        },
+      ]
       : role === "blogger"
-      ? [
+        ? [
           {
             id: "blogs" as DashboardPage,
             icon: "/assets/icons/blog.svg",
             label: "Blogs",
           },
         ]
-      : [
+        : [
           {
             id: "dashboard" as DashboardPage,
             icon: "/assets/icons/nav-dashboard.svg",
@@ -228,15 +228,14 @@ export function Layout({
         {/* Topbar Header */}
         <div className="topbar">
           <div className="mobile-topbar-left">
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
+              type="button"
               className="mobile-menu-btn"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
             >
               <img src="/assets/icons/menu.svg" width="20" alt="Menu" />
-            </Button>
+            </button>
             <div>
               <div className="page-title">{titles[page] || ""}</div>
               <div className="page-sub">{subs[page] || ""}</div>
@@ -246,20 +245,20 @@ export function Layout({
           <div className="topbar-actions">
             <div className="df-g8">
               {/* Month Filter Selector */}
-              {selectedMonth !== undefined && setSelectedMonth && availableMonths.length > 0 && 
-               (page === "dashboard" || page === "clients" || page === "analytics") && (
-                <div className="month-filter-wrap">
-                  <CustomSelect
-                    value={selectedMonth}
-                    onChange={setSelectedMonth}
-                    options={[
-                      { value: "all", label: "All Months" },
-                      ...availableMonths.map((m) => ({ value: m.key, label: m.label })),
-                    ]}
-                    align="right"
-                  />
-                </div>
-              )}
+              {selectedMonth !== undefined && setSelectedMonth && availableMonths.length > 0 &&
+                (page === "dashboard" || page === "clients" || page === "analytics") && (
+                  <div className="month-filter-wrap">
+                    <CustomSelect
+                      value={selectedMonth}
+                      onChange={setSelectedMonth}
+                      options={[
+                        { value: "all", label: "All Months" },
+                        ...availableMonths.map((m) => ({ value: m.key, label: m.label })),
+                      ]}
+                      align="right"
+                    />
+                  </div>
+                )}
 
               {page === "clients" && addClientBtn}
               {page === "sales" && salesFiltersBtn}
