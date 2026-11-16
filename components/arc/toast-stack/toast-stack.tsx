@@ -52,7 +52,7 @@ export interface ToastStackProviderProps {
 export interface ToastStackProps {
   /** Accessible name of the notification region. */
   label?: string;
-  position?: "bottom-right" | "bottom-center" | "bottom-left";
+  position?: "top-center" | "top-right" | "top-left" | "bottom-right" | "bottom-center" | "bottom-left";
   /** Pins the stack inside the nearest positioned ancestor instead of the window, for panels and previews. */
   contained?: boolean;
   /** How many toasts show at once. Older ones wait behind and return as the front ones close. */
@@ -108,15 +108,16 @@ const focusVisible = (element: Element) => { try { return element.matches(":focu
  * Closed, tucked toasts take the front toast's height so their edges line up; open, each takes its own and they stack with a gap.
  * The list is the hover target and is sized to cover the gaps, so moving between open toasts never collapses the stack.
  */
-function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, expanded: boolean, visibleToasts: number) {
+function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, expanded: boolean, visibleToasts: number, isTop = false) {
   const front = toasts.length ? heights[toasts[0]!.id] ?? 0 : 0;
   const tops = toasts.reduce<number[]>((sum, item, index) => [...sum, sum[index]! + (index < visibleToasts ? (heights[item.id] ?? 0) + GAP : 0)], [0]);
+  const sign = isTop ? 1 : -1;
   const targets = toasts.map((item, index): Target => {
     const visible = index < visibleToasts;
     const depth = Math.min(index, visibleToasts);
     return expanded
-      ? { y: -tops[index]!, scale: 1, height: heights[item.id] ?? 0, opacity: visible ? 1 : 0, content: 1 }
-      : { y: -PEEK * depth, scale: 1 - STEP * depth, height: index === 0 ? heights[item.id] ?? 0 : front, opacity: visible ? 1 : 0, content: index === 0 ? 1 : 0 };
+      ? { y: sign * tops[index]!, scale: 1, height: heights[item.id] ?? 0, opacity: visible ? 1 : 0, content: 1 }
+      : { y: sign * PEEK * depth, scale: 1 - STEP * depth, height: index === 0 ? heights[item.id] ?? 0 : front, opacity: visible ? 1 : 0, content: index === 0 ? 1 : 0 };
   });
   const listHeight = !toasts.length ? 0 : expanded ? tops[toasts.length]! - GAP : front + PEEK * (Math.min(toasts.length, visibleToasts) - 1);
   return { targets, listHeight };
@@ -201,9 +202,10 @@ interface ToastItemProps {
   onDragChange: (dragging: boolean) => void;
   onTap: () => void;
   onHandOff: (leaving: HTMLElement, keyboard: boolean) => void;
+  isTop?: boolean;
 }
 
-function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, store, onMeasure, onDragChange, onTap, onHandOff }: ToastItemProps) {
+function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, store, onMeasure, onDragChange, onTap, onHandOff, isTop = false }: ToastItemProps) {
   const { id } = toast;
   const [isPresent, safeToRemove] = usePresence();
   const itemRef = useRef<HTMLLIElement>(null);
@@ -250,7 +252,7 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
       animate(contentOpacity, target.content, reducedFade);
       return;
     }
-    if (entering) { y.jump(target.y + target.height); scale.jump(target.scale); height.jump(target.height); contentOpacity.jump(target.content); opacity.jump(0); }
+    if (entering) { y.jump(target.y + (isTop ? -target.height : target.height)); scale.jump(target.scale); height.jump(target.height); contentOpacity.jump(target.content); opacity.jump(0); }
     const spring = morph ? motionTokens.spring.morph : motionTokens.spring.smooth;
     animate(y, target.y, spring);
     animate(scale, target.scale, spring);
@@ -280,7 +282,7 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
     const done = () => safeToRemove?.();
     if (reduce) { animate(opacity, 0, reducedFade).then(done); return; }
     if (!swiped.current) {
-      animate(y, y.get() + 10, motionTokens.spring.smooth);
+      animate(y, y.get() + (isTop ? -10 : 10), motionTokens.spring.smooth);
       animate(scale, scale.get() * .96, motionTokens.spring.smooth);
     }
     animate(opacity, 0, { duration: swiped.current ? .22 : motionTokens.duration.exit, ease: standard }).then(done);
@@ -391,7 +393,8 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
   </motion.li>;
 }
 
-export function ToastStack({ label = "Notifications", position = "bottom-right", contained = false, visibleToasts = 3, hotkey = true, className }: ToastStackProps) {
+export function ToastStack({ label = "Notifications", position = "top-center", contained = false, visibleToasts = 3, hotkey = true, className }: ToastStackProps) {
+  const isTop = position.startsWith("top");
   const store = useStore();
   const toasts = useSyncExternalStore(store.subscribe, store.getSnapshot, getServerSnapshot);
   const reduce = !!useReducedMotion();
@@ -446,7 +449,7 @@ export function ToastStack({ label = "Notifications", position = "bottom-right",
     return () => document.removeEventListener("pointerdown", onDown);
   }, [tapped]);
 
-  const { targets, listHeight } = layoutStack(toasts, heights, expanded, visibleToasts);
+  const { targets, listHeight } = layoutStack(toasts, heights, expanded, visibleToasts, isTop);
 
   function onFocus(event: FocusEvent<HTMLElement>) {
     const from = event.relatedTarget;
@@ -462,7 +465,7 @@ export function ToastStack({ label = "Notifications", position = "bottom-right",
   return <section ref={regionRef} className={[styles.viewport, styles[position], contained && styles.contained, className].filter(Boolean).join(" ")} aria-label={hotkey ? `${label} (Alt+T)` : label} aria-live="polite" aria-relevant="additions text" aria-atomic="false" onFocus={onFocus} onBlur={onBlur}>
     <ol ref={listRef} className={styles.list} style={{ height: listHeight }} data-expanded={expanded} onPointerEnter={event => { if (event.pointerType === "mouse") setHovered(true); }} onPointerMove={event => { if (event.pointerType === "mouse" && !hovered) setHovered(true); }} onPointerLeave={event => { if (event.pointerType === "mouse") setHovered(false); }}>
       <AnimatePresence onExitComplete={prune}>
-        {toasts.map((item, index) => <ToastItem key={item.id} toast={item} target={targets[index]!} expanded={expanded} front={index === 0} hidden={index >= visibleToasts} paused={paused} reduce={reduce} store={store} onMeasure={measure} onDragChange={setDragging} onTap={toggleTap} onHandOff={handOff} />)}
+        {toasts.map((item, index) => <ToastItem key={item.id} toast={item} target={targets[index]!} expanded={expanded} front={index === 0} hidden={index >= visibleToasts} paused={paused} reduce={reduce} store={store} onMeasure={measure} onDragChange={setDragging} onTap={toggleTap} onHandOff={handOff} isTop={isTop} />)}
       </AnimatePresence>
     </ol>
   </section>;

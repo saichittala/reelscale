@@ -70,7 +70,7 @@ function ToastBridge() {
     };
   }, [triggerToast, dismiss]);
 
-  return <ToastStack position="bottom-right" hotkey />;
+  return <ToastStack position="top-center" hotkey />;
 }
 
 export interface ToastProviderProps {

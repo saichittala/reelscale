@@ -1,20 +1,49 @@
 .viewport {
   position: fixed;
   z-index: var(--z-toast, 10000);
-  bottom: var(--space-6);
   width: min(24rem, calc(100% - var(--space-8)));
   pointer-events: none;
 }
 
-.bottom-right {
+.top-center {
+  top: 18px;
+  bottom: auto;
+  right: 0;
+  left: 0;
+  margin-inline: auto;
+}
+
+.top-right {
+  top: 18px;
+  bottom: auto;
   right: var(--space-6);
+  left: auto;
+}
+
+.top-left {
+  top: 18px;
+  bottom: auto;
+  left: var(--space-6);
+  right: auto;
+}
+
+.bottom-right {
+  bottom: var(--space-6);
+  top: auto;
+  right: var(--space-6);
+  left: auto;
 }
 
 .bottom-left {
+  bottom: var(--space-6);
+  top: auto;
   left: var(--space-6);
+  right: auto;
 }
 
 .bottom-center {
+  bottom: var(--space-6);
+  top: auto;
   right: 0;
   left: 0;
   margin-inline: auto;
@@ -23,27 +52,50 @@
 .contained {
   position: absolute;
   z-index: var(--z-toast, 10000);
-  bottom: var(--space-4);
+}
+
+.contained.top-center {
+  top: 18px;
+  bottom: auto;
+  right: 0;
+  left: 0;
+  margin-inline: auto;
 }
 
 .contained.bottom-right {
+  bottom: var(--space-4);
   right: var(--space-4);
 }
 
 .contained.bottom-left {
+  bottom: var(--space-4);
   left: var(--space-4);
 }
 
 @media (max-width: 30rem) {
   .viewport:not(.contained) {
     right: 0;
-    bottom: var(--space-4);
     left: 0;
     margin-inline: auto;
+    width: calc(100% - 32px);
+  }
+
+  .top-center,
+  .top-right,
+  .top-left {
+    top: 18px;
+    bottom: auto;
+  }
+
+  .bottom-right,
+  .bottom-left,
+  .bottom-center {
+    bottom: var(--space-4);
+    top: auto;
   }
 }
 
-/* Toasts hang from the bottom of the list. Its height covers the gaps between open toasts, so hover survives the space between them. */
+/* Toasts hang from the edge of the list. Its height covers the gaps between open toasts, so hover survives the space between them. */
 .list {
   position: relative;
   margin: 0;
@@ -52,12 +104,20 @@
   pointer-events: auto;
 }
 
-/* Tucked toasts scale from their top edge, so exactly the peek shows above the toast in front. */
+/* Tucked toasts scale from their edge */
 .item {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
+  transform-origin: 50% 0;
+}
+
+.top-center .item,
+.top-right .item,
+.top-left .item {
+  top: 0;
+  bottom: auto;
   transform-origin: 50% 0;
 }
 
@@ -95,18 +155,22 @@
 
 .content {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  padding: 10px 14px 10px 16px;
+  min-height: 46px;
+  box-sizing: border-box;
 }
 
 .icon {
   position: relative;
   display: grid;
   width: 18px;
-  height: 20px;
+  height: 18px;
   flex: none;
   place-items: center;
+  align-self: center;
   color: var(--text-muted);
   transition: color var(--duration-fast) var(--ease-standard);
 }
@@ -155,30 +219,42 @@
   font-size: var(--text-sm);
   letter-spacing: var(--tracking-body);
   line-height: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .title {
   position: relative;
   display: block;
   font-weight: 500;
+  text-align: center;
+  width: 100%;
 }
 
 .line {
   display: block;
+  text-align: center;
 }
 
 .description {
   display: block;
   margin-top: 2px;
   color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
 }
 
 /* Clips only while its width folds, so the focus ring stays whole at rest. */
 .actionSlot {
   display: flex;
   flex: none;
-  justify-content: flex-end;
-  margin-top: -4px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 0;
 }
 
 .actionSlot[data-moving="true"] {
@@ -205,17 +281,20 @@
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
+  align-self: center;
 }
 
 .close {
   display: grid;
-  width: 28px;
-  height: 28px;
-  margin: -4px -2px 0 0;
+  width: 26px;
+  height: 26px;
+  margin: 0;
   place-items: center;
+  align-self: center;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 @media (hover: hover) and (pointer: fine) {
