@@ -154,9 +154,9 @@ export function sanityDocToBlog(doc: any): Blog {
     ogImage: doc.ogImageUrl || doc.ogImage?.asset?.url || imageUrl,
     faq: Array.isArray(doc.faq)
       ? doc.faq.map((f: any) => ({
-          question: f.question || '',
-          answer: f.answer || '',
-        }))
+        question: f.question || '',
+        answer: f.answer || '',
+      }))
       : [],
   }
 }
@@ -193,7 +193,7 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
         if (existing?._id) {
           docId = existing._id.replace(/^drafts\./, '')
         }
-      } catch {}
+      } catch { }
     }
   }
 
@@ -224,11 +224,11 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
     body: bodyBlocks,
     faq: Array.isArray(blog.faq)
       ? blog.faq.map((f, i) => ({
-          _key: `faq_${i}_${Date.now()}`,
-          _type: 'faq',
-          question: f.question,
-          answer: f.answer,
-        }))
+        _key: `faq_${i}_${Date.now()}`,
+        _type: 'faq',
+        question: f.question,
+        answer: f.answer,
+      }))
       : [],
     metaTitle: blog.metaTitle || blog.title || '',
     metaDescription: blog.metaDescription || blog.description || '',
@@ -257,8 +257,8 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
   const saved = await writeClient.createOrReplace(sanityDoc)
   // Clear any existing draft so Sanity Studio immediately reflects the published document
   try {
-    await writeClient.delete(`drafts.${docId}`).catch(() => {})
-  } catch {}
+    await writeClient.delete(`drafts.${docId}`).catch(() => { })
+  } catch { }
 
   console.log(`[Sanity Sync] Successfully synchronized document: ${saved._id}`)
 
