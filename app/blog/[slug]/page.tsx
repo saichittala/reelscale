@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { 
-  getPublishedBlogs, 
+import {
+  getPublishedBlogs,
   getPublishedBlogsAsync,
-  getReadingTime, 
-  getRelatedPosts, 
-  generateTableOfContents, 
-  parseMarkdown 
+  getRelatedPosts,
 } from "../../lib/blog";
 import BlogLayout from "../BlogLayout";
 import ReadingProgressBar from "../components/ReadingProgressBar";
-import TableOfContents from "../components/TableOfContents";
-import FAQSection from "../components/FAQSection";
 import BlogGrid from "../components/BlogGrid";
-import ShareButtons, { HeaderShareButton } from "./ShareButtons";
+import LiveArticle from "./LiveArticle";
 
 interface Props {
   params: Promise<{
@@ -77,20 +71,7 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  const htmlContent = parseMarkdown(post.content);
-  const headings = generateTableOfContents(post.content);
-  const readTime = getReadingTime(post.content);
   const related = getRelatedPosts(post, 3);
-
-  const sharePostData = {
-    title: post.title,
-    slug: post.slug,
-    description: post.description,
-    featuredImage: post.featuredImage,
-    category: post.category,
-    author: post.author || "John Doe",
-    readTime,
-  };
 
   // Schema generation
   const schemaData = {
@@ -171,124 +152,8 @@ export default async function BlogPostPage({ params }: Props) {
       />
 
       <article className="blog-container">
-        
-        {/* Breadcrumbs */}
-        <div className="blog-breadcrumbs">
-          <Link href="/">Home</Link>
-          <span>/</span>
-          <Link href="/blog">Blog</Link>
-          <span>/</span>
-          <Link href={`/blog/category/${post.category.toLowerCase()}`}>{post.category}</Link>
-          <span>/</span>
-          <span className="blog-breadcrumb-active-item">
-            {post.title}
-          </span>
-        </div>
-
-        {/* Title and Hero info */}
-        <div className="blog-post-header">
-          <h1>{post.title}</h1>
-          <div className="blog-post-meta">
-            <div className="blog-post-author-img">
-              {(post.author || 'John Doe')[0]}
-            </div>
-            <div>
-              <div className="blog-post-author-name">{post.author || 'John Doe'}</div>
-              <div className="blog-post-publish-date">
-                Published on {post.publishedDate} · {readTime}
-              </div>
-            </div>
-            <div className="blog-post-meta-actions">
-              <span className="blog-category-btn active blog-post-category-badge">
-                {post.category}
-              </span>
-              <HeaderShareButton post={sharePostData} />
-            </div>
-          </div>
-        </div>
-
-        {/* Featured Image */}
-        {post.featuredImage && (
-          <img 
-            src={post.featuredImage} 
-            alt={post.title} 
-            className="blog-post-featured-img"
-          />
-        )}
-
-        {/* Main layout split */}
-        <div className="blog-detail-layout">
-          
-          {/* Main content Area */}
-          <div className="blog-detail-main">
-            
-            {/* Parsed body content */}
-            <div 
-              className="blog-body" 
-              dangerouslySetInnerHTML={{ __html: htmlContent }} 
-            />
-
-            {/* Accordion FAQs */}
-            <FAQSection faq={post.faq} />
-
-            {/* Social Share Buttons */}
-            <ShareButtons title={post.title} slug={post.slug} post={sharePostData} />
-
-            {/* Conversion CTA Box */}
-            <div className="blog-cta-box">
-              <h3 className="blog-cta-title">Need scroll-stopping cinematic reels?</h3>
-              <p className="blog-cta-desc">
-                Partner with ReelScale Co. to build a premium, high-retention video pipeline that turns viewers into clients organically.
-              </p>
-              <div className="blog-cta-buttons">
-                <a 
-                  href="https://wa.me/919966239433?text=Hey%2C%20I%20saw%20your%20blog%20post%20and%20I%27m%20interested%20in%20scaling%20our%20reel%20production." 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="btn-primary blog-cta-btn-link"
-                >
-                  WhatsApp enquiry
-                </a>
-                <Link 
-                  href="/pricing" 
-                  className="btn-secondary blog-cta-btn-link"
-                >
-                  View packages
-                </Link>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Sticky Sidebar */}
-          <aside className="blog-sidebar-sticky">
-            
-            {/* Table of Contents */}
-            <TableOfContents headings={headings} />
-
-            {/* Newsletter form */}
-            <div className="newsletter-card">
-              <div className="newsletter-title">Subscribe to scale</div>
-              <p className="newsletter-desc">
-                Get monthly deep-dives on editing hooks, retention tactics, and social algorithms.
-              </p>
-              <div className="newsletter-form">
-                <input 
-                  type="email" 
-                  placeholder="name@email.com" 
-                  className="blog-newsletter-input"
-                />
-                <button 
-                  className="btn-primary blog-newsletter-btn"
-                >
-                  Join newsletter
-                </button>
-              </div>
-            </div>
-
-          </aside>
-
-        </div>
+        {/* Live Revalidating Article */}
+        <LiveArticle initialPost={post} />
 
         {/* Related Articles Footer section */}
         {related.length > 0 && (
@@ -297,7 +162,6 @@ export default async function BlogPostPage({ params }: Props) {
             <BlogGrid posts={related} readText="Read article" />
           </div>
         )}
-
       </article>
     </BlogLayout>
   );

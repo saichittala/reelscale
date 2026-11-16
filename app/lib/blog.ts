@@ -35,7 +35,7 @@ export async function getPublishedBlogsAsync(): Promise<BlogPost[]> {
     const { client } = await import("../sanity/client");
     const { POSTS_QUERY } = await import("../sanity/queries");
     const { blocksToMarkdown } = await import("../sanity/blog-sync");
-    const sanityPosts = await client.fetch(POSTS_QUERY);
+    const sanityPosts = await client.fetch(POSTS_QUERY, {}, { cache: "no-store" });
     if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
       const localBlogs = getBlogsFromDB();
       const localMap = new Map(localBlogs.map((b) => [b.slug, b]));

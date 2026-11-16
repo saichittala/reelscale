@@ -74,7 +74,7 @@ export default async function CategoryPage({ params }: Props) {
                 </Link>
               </div>
             ) : (
-              <BlogGrid posts={filteredBlogs} />
+              <BlogGrid posts={filteredBlogs} category={decodedCategory} />
             )}
           </main>
         </div>

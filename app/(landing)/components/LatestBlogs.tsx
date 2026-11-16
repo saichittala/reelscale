@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getPublishedBlogsAsync } from "../../lib/blog";
-import BlogCard from "../../blog/components/BlogCard";
+import BlogGrid from "../../blog/components/BlogGrid";
 
 export default async function LatestBlogs() {
   const published = await getPublishedBlogsAsync();
@@ -24,11 +24,9 @@ export default async function LatestBlogs() {
           </h2>
         </div>
 
-        {/* Blog Grid */}
-        <div className="blog-grid reveal">
-          {latestBlogs.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
+        {/* Live Blog Grid with Real-time Sanity Sync */}
+        <div className="reveal">
+          <BlogGrid posts={latestBlogs} limit={3} />
         </div>
 
         {/* View All Button */}

@@ -11,21 +11,30 @@ interface BlogGridProps {
   posts: BlogPost[];
   readText?: string;
   category?: string;
+  limit?: number;
 }
 
 export default function BlogGrid({
   posts: initialPosts,
   readText,
   category,
+  limit,
 }: BlogGridProps) {
-  const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
+  const [posts, setPosts] = useState<BlogPost[]>(() => {
+    return limit ? initialPosts.slice(0, limit) : initialPosts;
+  });
 
   useEffect(() => {
     let isMounted = true;
 
     async function revalidateFromSanity() {
       try {
-        const sanityPosts = await client.fetch(POSTS_QUERY);
+        const sanityPosts = await client.fetch(
+          POSTS_QUERY,
+          {},
+          { cache: "no-store" }
+        );
+
         if (Array.isArray(sanityPosts) && sanityPosts.length > 0 && isMounted) {
           const mapped: BlogPost[] = sanityPosts.map((sp: any) => ({
             id: sp._id,
@@ -67,8 +76,10 @@ export default function BlogGrid({
                 )
               : mapped;
 
-          if (filtered.length > 0) {
-            setPosts(filtered);
+          const finalList = limit ? filtered.slice(0, limit) : filtered;
+
+          if (finalList.length > 0 && isMounted) {
+            setPosts(finalList);
           }
         }
       } catch (err) {
@@ -81,7 +92,7 @@ export default function BlogGrid({
     return () => {
       isMounted = false;
     };
-  }, [category]);
+  }, [category, limit]);
 
   return (
     <div className="blog-grid">

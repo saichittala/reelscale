@@ -1,7 +1,7 @@
 import { defineQuery } from 'next-sanity'
 
 export const POSTS_QUERY = defineQuery(`
-  *[_type == "post" && status == "Published"] | order(publishedDate desc) {
+  *[_type == "post" && (!defined(status) || status == "Published" || status == "published")] | order(publishedDate desc, _updatedAt desc) {
     _id,
     title,
     "slug": slug.current,
