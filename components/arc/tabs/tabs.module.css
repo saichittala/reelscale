@@ -92,10 +92,10 @@
   min-height: 32px;
   height: 32px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--border-radius-99, 99px);
   padding: 0 16px;
-  background: var(--white-04, rgba(255, 255, 255, 0.04));
-  color: var(--white, #ededed);
+  background: transparent;
+  color: var(--muted, rgba(255, 255, 255, 0.7));
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -108,8 +108,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .trigger:hover:not([data-state="active"]):not(:disabled) {
-    background: var(--white-07, rgba(255, 255, 255, 0.07));
-    color: #ffffff;
+    background: var(--white-07, rgba(255, 255, 255, 0.08));
+    color: var(--white, #ffffff);
   }
 }
 
@@ -119,17 +119,17 @@
 
 .trigger[data-state="active"] {
   background: transparent;
-  color: #ffffff;
+  color: var(--white, #ffffff);
 }
 
 .selection {
   position: absolute;
   z-index: 1;
   inset: 0;
-  border: 1px solid var(--white-15, rgba(255, 255, 255, 0.14));
+  border: 0;
   border-radius: inherit;
-  background: var(--surface-raised, #1f1f23);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--red-10, rgba(239, 68, 68, 0.1));
+  box-shadow: none;
   will-change: transform;
 }
 
@@ -183,12 +183,12 @@
 }
 
 [data-theme="light"] .trigger {
-  background: rgba(0, 0, 0, 0.04);
-  color: #52525b;
+  background: transparent;
+  color: #71717a;
 }
 
 [data-theme="light"] .trigger:hover:not([data-state="active"]):not(:disabled) {
-  background: rgba(0, 0, 0, 0.07);
+  background: rgba(0, 0, 0, 0.06);
   color: #18181b;
 }
 
@@ -198,7 +198,7 @@
 }
 
 [data-theme="light"] .selection {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: var(--red-10, rgba(239, 68, 68, 0.1));
+  border: 0;
+  box-shadow: none;
 }

@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    keywords: [
+    keywords: seo.keywords && seo.keywords.length > 0 ? seo.keywords : [
       "reel production company Hyderabad",
       "reel production Hyderabad",
       "reel production services Hyderabad",

@@ -58,6 +58,8 @@ export const PAGE_SEO_QUERY = defineQuery(`
     title,
     metaTitle,
     metaDescription,
+    focusKeyword,
+    keywords,
     canonicalUrl,
     ogTitle,
     ogDescription,

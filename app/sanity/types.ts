@@ -82,6 +82,8 @@ export interface PageSeo {
   title: string;
   metaTitle?: string;
   metaDescription?: string;
+  focusKeyword?: string;
+  keywords?: string[];
   canonicalUrl?: string;
   ogTitle?: string;
   ogDescription?: string;
