@@ -671,11 +671,15 @@ body {
     font-size: var(--text-sm);
     padding: 8px;
     border-radius: var(--border-radius-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: var(--transition-fast);
 }
 
 .logout-btn:hover {
     background: var(--white-07);
+    color: var(--white);
 }
 
 /* =========================

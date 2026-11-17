@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { User, DashboardPage } from "../types";
 import { CustomSelect } from "./CustomSelect";
 import { Button } from "@/components/ui";
+import { IconLogOut } from "./Icons";
 
 interface LayoutProps {
   page: DashboardPage;
@@ -205,14 +206,16 @@ export function Layout({
             <span
               className="logout-btn-wrap"
               data-tooltip={sidebarCollapsed ? "Logout" : undefined}
-              onClick={logout}
             >
-              <img
-                src="/assets/icons/log-out.svg"
-                alt="Logout"
+              <button
+                type="button"
                 className="logout-btn"
+                onClick={logout}
                 title="Logout"
-              />
+                aria-label="Logout"
+              >
+                <IconLogOut size={18} />
+              </button>
             </span>
           </div>
         </div>
