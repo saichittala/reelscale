@@ -9,10 +9,11 @@
 }
 
 /* Focus answers with brand border and subtle focus shadow; the field itself never changes size. */
-.input { width: 100%; min-height: var(--control-height-md); padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); color: var(--foreground); font: inherit; font-size: var(--text-field); line-height: var(--leading-body); letter-spacing: var(--tracking-body); outline: none; transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+.input { width: 100%; min-height: var(--control-height-md); padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-input, 14px); background: var(--surface); color: var(--foreground); font: inherit; font-size: var(--text-field); line-height: var(--leading-body); letter-spacing: var(--tracking-body); outline: none; transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
 .input::placeholder { color: var(--text-muted); }
-@media (hover: hover) and (pointer: fine) { .input:hover:not(:disabled, [aria-invalid="true"]) { border-color: var(--white-35); } }
-.input:focus-visible { border-color: var(--red); box-shadow: var(--shadow-focus-red); }
+@media (hover: hover) and (pointer: fine) { .input:hover:not(:disabled, :focus, :focus-visible, [aria-invalid="true"]) { border-color: var(--white-35); } }
+.input:focus,
+.input:focus-visible { border-color: var(--red-40); box-shadow: var(--shadow-focus-red); }
 .input[aria-invalid="true"] { border-color: var(--danger); box-shadow: var(--shadow-focus-red); }
 .input:disabled { cursor: not-allowed; opacity: .5; background: var(--surface-muted); }
 

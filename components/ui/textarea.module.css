@@ -17,7 +17,7 @@
   min-height: 80px;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-input, 14px);
   background: var(--surface);
   color: var(--foreground);
   font: inherit;
@@ -37,13 +37,14 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .textarea:hover:not(:disabled, [aria-invalid="true"]) {
+  .textarea:hover:not(:disabled, :focus, :focus-visible, [aria-invalid="true"]) {
     border-color: var(--white-35);
   }
 }
 
+.textarea:focus,
 .textarea:focus-visible {
-  border-color: var(--red);
+  border-color: var(--red-40);
   box-shadow: var(--shadow-focus-red);
 }
 

@@ -1138,6 +1138,13 @@ body {
   font-size: var(--text-sm);
   width: 100%;
   box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.blog-newsletter-input:focus,
+.blog-newsletter-input:focus-visible {
+  border-color: var(--red-40);
 }
 
 .blog-newsletter-btn {
@@ -1372,7 +1379,7 @@ select:-webkit-autofill:focus,
 
 input:-webkit-autofill:focus,
 .form-input:-webkit-autofill:focus {
-  border-color: var(--red) !important;
+  border-color: var(--red-40) !important;
   -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
   box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
 }
@@ -1389,6 +1396,16 @@ select:autofill,
 input:autofill:focus,
 .form-input:autofill:focus {
   background-color: var(--red-10) !important;
-  border-color: var(--red) !important;
+  border-color: var(--red-40) !important;
   box-shadow: 0 0 0 3px var(--red-10) !important;
+}
+
+/* Global brand focus border for all form inputs across the app */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):focus,
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  border-color: var(--red-40);
 }

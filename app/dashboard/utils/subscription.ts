@@ -1,7 +1,41 @@
 import { Client } from "../types";
 
+export function normalizeDate(val?: string): string {
+  if (!val) return "";
+  const trimmed = val.trim();
+  // Match DD-MM-YYYY or DD/MM/YYYY or DD.MM.YYYY
+  const dmyMatch = trimmed.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+  if (dmyMatch) {
+    const day = dmyMatch[1].padStart(2, "0");
+    const month = dmyMatch[2].padStart(2, "0");
+    const year = dmyMatch[3];
+    return `${year}-${month}-${day}`;
+  }
+  // Match YYYY-MM-DD or YYYY/MM/DD
+  const ymdMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (ymdMatch) {
+    const year = ymdMatch[1];
+    const month = ymdMatch[2].padStart(2, "0");
+    const day = ymdMatch[3].padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  const d = new Date(trimmed);
+  if (!isNaN(d.getTime())) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  return trimmed;
+}
+
 export function getMonthYearKey(dateStr?: string): string {
   if (!dateStr) return "";
+  const normalized = normalizeDate(dateStr);
+  const parts = normalized.split("-");
+  if (parts.length >= 2 && parts[0].length === 4) {
+    return `${parts[0]}-${parts[1].padStart(2, "0")}`;
+  }
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return "";
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -35,23 +69,17 @@ export function isClientActiveInMonth(c: Client, monthKey: string): boolean {
   if (!monthKey || monthKey === "all") return true;
   if (!c.date) return false;
 
-  const clientStartMonth = c.date.slice(0, 7); // e.g. "2026-06"
-  const isSub = (c.billingModel || "").toLowerCase().includes("sub");
+  const clientStartMonth = normalizeDate(c.date).slice(0, 7); // e.g. "2026-06"
 
-  if (isSub) {
-    // If subscription was onboarded AFTER this month, they are not active in this month yet
-    if (clientStartMonth > monthKey) return false;
+  // If client was onboarded AFTER this month, they are not active in this month yet
+  if (clientStartMonth && clientStartMonth > monthKey) return false;
 
-    // If client churned and ended prior to this month, they are not active
-    if (c.status === "Churned" && c.endDate) {
-      const endMonth = c.endDate.slice(0, 7);
-      if (endMonth < monthKey) return false;
-    }
-    return true;
+  // If client churned and ended prior to this month, they are not active
+  if (c.status === "Churned" && c.endDate) {
+    const endMonth = normalizeDate(c.endDate).slice(0, 7);
+    if (endMonth && endMonth < monthKey) return false;
   }
-
-  // One-off (Reel-to-Reel) clients are only active during their booking/event month
-  return clientStartMonth === monthKey;
+  return true;
 }
 
 export function generateAvailableMonths(clients: Client[]): { key: string; label: string }[] {
@@ -70,7 +98,8 @@ export function generateAvailableMonths(clients: Client[]): { key: string; label
 
   clients.forEach((c) => {
     if (c.date) {
-      const parts = c.date.split("-");
+      const normalized = normalizeDate(c.date);
+      const parts = normalized.split("-");
       if (parts.length >= 2) {
         const y = parseInt(parts[0], 10);
         const m = parseInt(parts[1], 10);

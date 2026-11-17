@@ -7,6 +7,7 @@ import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
 import { IconFilm, IconSearch } from "../components/Icons";
 import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { normalizeDate } from "../utils/subscription";
 
 interface ClientsProps {
   clients: Client[];
@@ -43,11 +44,6 @@ const STANDARD_PLANS: Record<string, { price: number; reels: number }> = {
 };
 
 // Dropdown options constants
-const billingTypeOptions = [
-  { value: "reel-to-reel", label: "RTR" },
-  { value: "subscription", label: "SUB" },
-];
-
 const statusOptions = [
   { value: "Active", label: "Active" },
   { value: "Paused", label: "Paused" },
@@ -87,7 +83,6 @@ export function Clients({
   const [newClientInstagram, setNewClientInstagram] = useState("");
   const [newClientReels, setNewClientReels] = useState("");
   const [newClientPpr, setNewClientPpr] = useState(""); // Rate / fee
-  const [newBillingType, setNewBillingType] = useState<"reel-to-reel" | "subscription">("subscription");
   const [newClientStatus, setNewClientStatus] = useState<string>("Active");
   const [newSubscriptionPlan, setNewSubscriptionPlan] = useState<string>("Custom");
   const [newBasePpr, setNewBasePpr] = useState<string>("");
@@ -95,7 +90,6 @@ export function Clients({
   const [isSaving, setIsSaving] = useState(false);
   const [editingClientId, setEditingClientId] = useState<string | number | null>(null);
   const [editClientData, setEditClientData] = useState<Client | null>(null);
-  const [activeModelFilter, setActiveModelFilter] = useState<"all" | "bm" | "rtr">("all");
   // Reel delivery tracking modal states
   const [trackerClient, setTrackerClient] = useState<Client | null>(null);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
@@ -184,47 +178,7 @@ export function Clients({
     return (av - bv) * sortDir;
   });
 
-  // Separate clients into two groups
-  const subscriptionClients = sortedClients.filter((c) => String(c.billingModel).toLowerCase() === "subscription");
-  const reeltoreelClients = sortedClients.filter((c) => String(c.billingModel).toLowerCase() !== "subscription");
-
-  // Selection states for Subscription table
-  const subFilteredIds = subscriptionClients.map((c) => String(c.id)).filter(Boolean);
-  const areAllSubSelected = subFilteredIds.length > 0 && subFilteredIds.every((id) => selectedClientIds.includes(id));
-
-  const handleSelectAllSub = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedClientIds((prev) => {
-        const next = [...prev];
-        subFilteredIds.forEach((id) => {
-          if (!next.includes(id)) next.push(id);
-        });
-        return next;
-      });
-    } else {
-      setSelectedClientIds((prev) => prev.filter((id) => !subFilteredIds.includes(id)));
-    }
-  };
-
-  // Selection states for Reel-to-Reel table
-  const r2rFilteredIds = reeltoreelClients.map((c) => String(c.id)).filter(Boolean);
-  const areAllR2RSelected = r2rFilteredIds.length > 0 && r2rFilteredIds.every((id) => selectedClientIds.includes(id));
-
-  const handleSelectAllR2R = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedClientIds((prev) => {
-        const next = [...prev];
-        r2rFilteredIds.forEach((id) => {
-          if (!next.includes(id)) next.push(id);
-        });
-        return next;
-      });
-    } else {
-      setSelectedClientIds((prev) => prev.filter((id) => !r2rFilteredIds.includes(id)));
-    }
-  };
-
-  // Selection states for All (Combined) table
+  // Selection states for Clients table
   const sortedFilteredIds = sortedClients.map((c) => String(c.id)).filter(Boolean);
   const areAllSelected = sortedFilteredIds.length > 0 && sortedFilteredIds.every((id) => selectedClientIds.includes(id));
 
@@ -256,44 +210,45 @@ export function Clients({
       showToast("Business name is required", "error");
       return;
     }
-    setIsSaving(true);
+    const reelsVal = Number(newClientReels || 0);
+    const rateVal = Number(newClientPpr || 0);
+    const baseRateVal = Number(newBasePpr || newClientPpr || 0);
+    const discountPct = baseRateVal > rateVal ? Math.round(((baseRateVal - rateVal) / baseRateVal) * 100) : 0;
+    
+    const clientPayload = {
+      name: newClientName,
+      business: newClientBusiness,
+      phone: newClientPhone,
+      instagram: newClientInstagram,
+      reels: reelsVal,
+      ppr: reelsVal > 0 ? rateVal / reelsVal : rateVal,
+      image: "",
+      billingModel: "Subscription",
+      plan: newSubscriptionPlan || "Custom",
+      baseRate: baseRateVal,
+      bargain: discountPct,
+      date: normalizeDate(newClientDate) || "2026-08-14",
+      status: newClientStatus || "Active",
+    };
+    
+    // Close row and reset inputs immediately for instant UI response
+    setNewClientName("");
+    setNewClientBusiness("");
+    setNewClientPhone("");
+    setNewClientInstagram("");
+    setNewClientReels("");
+    setNewClientPpr("");
+    setNewBasePpr("");
+    setNewClientDate("2026-08-14");
+    setNewSubscriptionPlan("Custom");
+    setNewClientStatus("Active");
+    setNewClientRow(false);
+
     try {
-      const reelsVal = Number(newClientReels || 0);
-      const rateVal = Number(newClientPpr || 0);
-      const baseRateVal = Number(newBasePpr || newClientPpr || 0);
-      const discountPct = baseRateVal > rateVal ? Math.round(((baseRateVal - rateVal) / baseRateVal) * 100) : 0;
-      
-      await onAddClient({
-        name: newClientName,
-        business: newClientBusiness,
-        phone: newClientPhone,
-        instagram: newClientInstagram,
-        reels: reelsVal,
-        ppr: rateVal / (reelsVal || 1),
-        image: "",
-        billingModel: newBillingType === "subscription" ? "Subscription" : "Reel-to-Reel",
-        plan: newBillingType === "subscription" ? newSubscriptionPlan : "",
-        baseRate: baseRateVal,
-        bargain: discountPct,
-        date: newClientDate || "2026-08-14",
-        status: newClientStatus || "Active",
-      });
-      
-      setNewClientName("");
-      setNewClientBusiness("");
-      setNewClientPhone("");
-      setNewClientInstagram("");
-      setNewClientReels("");
-      setNewClientPpr("");
-      setNewBasePpr("");
-      setNewClientDate("2026-08-14");
-      setNewBillingType("reel-to-reel");
-      setNewSubscriptionPlan("Custom");
-      setNewClientRow(false);
+      await onAddClient(clientPayload);
+      showToast("Client added successfully", "success");
     } catch (e: any) {
       showToast(e.message || "Failed to create client", "error");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -311,44 +266,15 @@ export function Clients({
       reels: c.reels || 0,
       ppr: c.ppr || 0,
       image: c.image || "",
-      billingModel: c.billingModel || "Reel-to-Reel",
-      plan: c.plan || "",
+      billingModel: "Subscription",
+      plan: c.plan || "Custom",
       baseRate: Number(c.baseRate || 0),
       bargain: Number(c.bargain || 0),
       date: c.date || "",
+      status: c.status || "Active",
       [field]: field === "reels" || field === "ppr" || field === "baseRate" || field === "bargain" ? Number(value || 0) : value,
     };
     if (c[field] === updatedClient[field]) return;
-    await onUpdateClient(c.id, updatedClient);
-  };
-
-  const handleUpdateBillingModel = async (c: Client, type: "reel-to-reel" | "subscription") => {
-    const modelStr = String(c.billingModel || "").toLowerCase();
-    if ((modelStr === "subscription" && type === "subscription") ||
-        (modelStr !== "subscription" && type === "reel-to-reel")) {
-      return;
-    }
-    
-    const isSub = type === "subscription";
-    const reels = c.reels || 0;
-    const actualRate = isSub ? (reels * c.ppr) || 14999 : c.ppr;
-    const baseRate = isSub ? c.baseRate || actualRate : c.baseRate || c.ppr;
-    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
-    
-    const updatedClient = {
-      name: c.name || "",
-      business: c.business || "",
-      phone: c.phone || "",
-      instagram: c.instagram || "",
-      reels: reels,
-      ppr: isSub ? (actualRate / (reels || 1)) : c.ppr,
-      image: c.image || "",
-      billingModel: isSub ? "Subscription" : "Reel-to-Reel",
-      plan: isSub ? "Custom" : "",
-      baseRate: baseRate,
-      bargain: discountPct,
-    };
-    
     await onUpdateClient(c.id, updatedClient);
   };
 
@@ -356,7 +282,7 @@ export function Clients({
     if (c.plan === plan) return;
     
     let reels = c.reels;
-    let actualRate = c.reels * c.ppr;
+    let actualRate = (c.reels || 0) * (c.ppr || 0);
     let baseRate = c.baseRate || actualRate;
     
     if (plan !== "Custom") {
@@ -391,7 +317,6 @@ export function Clients({
   };
 
   const handleUpdateRate = async (c: Client, rateValue: number) => {
-    const isSub = String(c.billingModel || "").toLowerCase() === "subscription";
     const reels = c.reels || 0;
     const actualRate = rateValue;
     const baseRate = c.baseRate || actualRate;
@@ -403,10 +328,10 @@ export function Clients({
       phone: c.phone || "",
       instagram: c.instagram || "",
       reels: reels,
-      ppr: isSub ? (actualRate / (reels || 1)) : actualRate,
+      ppr: actualRate / (reels || 1),
       image: c.image || "",
-      billingModel: c.billingModel || "Reel-to-Reel",
-      plan: c.plan || "",
+      billingModel: "Subscription",
+      plan: c.plan || "Custom",
       baseRate: baseRate,
       bargain: discountPct,
     };
@@ -414,9 +339,8 @@ export function Clients({
   };
 
   const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
-    const isSub = String(c.billingModel || "").toLowerCase() === "subscription";
     const reels = c.reels || 0;
-    const actualRate = isSub ? (reels * c.ppr) : c.ppr;
+    const actualRate = Math.round(reels * (c.ppr || 0));
     const discountPct = baseRateValue > actualRate ? Math.round(((baseRateValue - actualRate) / baseRateValue) * 100) : 0;
     
     const updatedClient = {
@@ -427,8 +351,8 @@ export function Clients({
       reels: reels,
       ppr: c.ppr,
       image: c.image || "",
-      billingModel: c.billingModel || "Reel-to-Reel",
-      plan: c.plan || "",
+      billingModel: "Subscription",
+      plan: c.plan || "Custom",
       baseRate: baseRateValue,
       bargain: discountPct,
     };
@@ -452,21 +376,28 @@ export function Clients({
 
   const handleStartEdit = (c: Client) => {
     setEditingClientId(c.id);
-    setEditClientData({ ...c });
+    setEditClientData({
+      ...c,
+      date: normalizeDate(c.date) || c.date || "",
+    });
   };
 
   const handleSaveEdit = async () => {
     if (!editClientData) return;
-    setIsSaving(true);
+    const clientToSave: Client = {
+      ...editClientData,
+      date: normalizeDate(editClientData.date) || editClientData.date || "",
+    };
+
+    // Close edit row immediately so changes apply instantly in the UI
+    setEditingClientId(null);
+    setEditClientData(null);
+
     try {
-      await onUpdateClient(editClientData.id, editClientData);
-      setEditingClientId(null);
-      setEditClientData(null);
+      await onUpdateClient(clientToSave.id, clientToSave);
       showToast("Client updated successfully", "success");
     } catch (e: any) {
       showToast(e.message || "Failed to update client", "error");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -493,12 +424,20 @@ export function Clients({
                 placeholder="Client Name"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveNewClient();
+                  if (e.key === "Escape") setNewClientRow(false);
+                }}
               />
               <input
                 className="phone-input td-input td-input-phone"
                 placeholder="Phone Number"
                 value={newClientPhone}
                 onChange={(e) => setNewClientPhone(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveNewClient();
+                  if (e.key === "Escape") setNewClientRow(false);
+                }}
               />
             </div>
           </div>
@@ -509,6 +448,10 @@ export function Clients({
             placeholder="Business Name"
             value={newClientBusiness}
             onChange={(e) => setNewClientBusiness(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveNewClient();
+              if (e.key === "Escape") setNewClientRow(false);
+            }}
           />
         </td>
         <td>
@@ -517,66 +460,68 @@ export function Clients({
             placeholder="Instagram Handle"
             value={newClientInstagram}
             onChange={(e) => setNewClientInstagram(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveNewClient();
+              if (e.key === "Escape") setNewClientRow(false);
+            }}
           />
         </td>
         <td>
-          <input
-            type="date"
-            className="company-input td-input td-input-lg"
-            value={newClientDate}
-            onChange={(e) => setNewClientDate(e.target.value)}
-          />
-        </td>
-        <td>
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <CustomSelect
-              size="sm"
-              value={newBillingType}
-              onChange={(val) => {
-                const type = val as "reel-to-reel" | "subscription";
-                setNewBillingType(type);
-                if (type === "subscription") {
-                  setNewSubscriptionPlan("Custom");
-                } else {
-                  setNewSubscriptionPlan("");
+          <div className="date-input-wrapper">
+            <input
+              type="text"
+              className="company-input td-input td-input-date"
+              placeholder="YYYY-MM-DD"
+              value={newClientDate}
+              onChange={(e) => setNewClientDate(e.target.value)}
+              onBlur={() => setNewClientDate(normalizeDate(newClientDate))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveNewClient();
+                if (e.key === "Escape") setNewClientRow(false);
+              }}
+            />
+            <input
+              type="date"
+              tabIndex={-1}
+              aria-label="Pick date"
+              className="date-picker-icon-btn"
+              value={normalizeDate(newClientDate) || ""}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setNewClientDate(e.target.value);
                 }
               }}
-              options={billingTypeOptions}
             />
-            {newBillingType === "subscription" && (
-              <CustomSelect
-                size="sm"
-                value={newClientStatus}
-                onChange={(val) => setNewClientStatus(val)}
-                options={statusOptions}
-              />
-            )}
           </div>
         </td>
-        {(activeModelFilter === "all" || newBillingType === "subscription") && (
-          <td>
-            {newBillingType === "subscription" ? (
-              <CustomSelect
-                size="sm"
-                value={newSubscriptionPlan}
-                onChange={(plan) => {
-                  setNewSubscriptionPlan(plan);
-                  if (plan !== "Custom") {
-                    const planInfo = STANDARD_PLANS[plan];
-                    if (planInfo) {
-                      setNewClientReels(String(planInfo.reels));
-                      setNewClientPpr(String(planInfo.price));
-                      setNewBasePpr(String(planInfo.price));
-                    }
-                  }
-                }}
-                options={planOptions}
-              />
-            ) : (
-              <span className="td-muted">—</span>
-            )}
-          </td>
-        )}
+        <td>
+          <CustomSelect
+            size="sm"
+            value={newClientStatus}
+            onChange={(val) => setNewClientStatus(val)}
+            options={statusOptions}
+            fullWidth={true}
+          />
+        </td>
+        <td>
+          <CustomSelect
+            size="sm"
+            value={newSubscriptionPlan}
+            onChange={(plan) => {
+              setNewSubscriptionPlan(plan);
+              if (plan !== "Custom") {
+                const planInfo = STANDARD_PLANS[plan];
+                if (planInfo) {
+                  setNewClientReels(String(planInfo.reels));
+                  setNewClientPpr(String(planInfo.price));
+                  setNewBasePpr(String(planInfo.price));
+                }
+              }
+            }}
+            options={planOptions}
+            fullWidth={true}
+          />
+        </td>
         <td>
           <input
             type="number"
@@ -584,15 +529,23 @@ export function Clients({
             placeholder="Reels/Mo"
             value={newClientReels}
             onChange={(e) => setNewClientReels(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveNewClient();
+              if (e.key === "Escape") setNewClientRow(false);
+            }}
           />
         </td>
         <td>
           <input
             type="number"
             className="company-input td-input td-input-md"
-            placeholder={newBillingType === "subscription" ? "Base Monthly Fee" : "Base Price/Reel"}
+            placeholder="Base Monthly Fee"
             value={newBasePpr}
             onChange={(e) => setNewBasePpr(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveNewClient();
+              if (e.key === "Escape") setNewClientRow(false);
+            }}
           />
         </td>
         <td>
@@ -613,6 +566,10 @@ export function Clients({
             placeholder="Revenue"
             value={newClientPpr}
             onChange={(e) => setNewClientPpr(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveNewClient();
+              if (e.key === "Escape") setNewClientRow(false);
+            }}
           />
         </td>
         <td className="th-actions" onClick={(e) => e.stopPropagation()}>
@@ -643,11 +600,11 @@ export function Clients({
     );
   };
 
-  const renderClientRow = (c: Client, isSub: boolean) => {
+  const renderClientRow = (c: Client) => {
     const isEditing = editingClientId !== null && String(editingClientId) === String(c.id);
 
     if (isEditing) {
-      const editActualRate = editClientData ? (editClientData.billingModel?.toLowerCase() === "subscription" ? Math.round(editClientData.reels * editClientData.ppr) : editClientData.ppr) : 0;
+      const editActualRate = editClientData ? Math.round((editClientData.reels || 0) * (editClientData.ppr || 0)) : 0;
       const editBaseRate = editClientData?.baseRate || editActualRate;
       const editDiscountPct = editBaseRate > editActualRate ? Math.round(((editBaseRate - editActualRate) / editBaseRate) * 100) : 0;
       const editRev = editClientData ? getClientRevenue(editClientData) : 0;
@@ -671,6 +628,10 @@ export function Clients({
                   className="company-input td-input td-input-name"
                   value={editClientData?.name || ""}
                   onChange={(e) => setEditClientData(prev => prev ? { ...prev, name: e.target.value } : null)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveEdit();
+                    if (e.key === "Escape") handleCancelEdit();
+                  }}
                   placeholder="Name"
                 />
                 <input
@@ -678,6 +639,10 @@ export function Clients({
                   className="phone-input td-input td-input-phone"
                   value={editClientData?.phone || ""}
                   onChange={(e) => setEditClientData(prev => prev ? { ...prev, phone: e.target.value } : null)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveEdit();
+                    if (e.key === "Escape") handleCancelEdit();
+                  }}
                   placeholder="Phone"
                 />
               </div>
@@ -689,6 +654,10 @@ export function Clients({
               className="company-input td-input td-input-2xl"
               value={editClientData?.business || ""}
               onChange={(e) => setEditClientData(prev => prev ? { ...prev, business: e.target.value } : null)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit();
+                if (e.key === "Escape") handleCancelEdit();
+              }}
               placeholder="Business"
             />
           </td>
@@ -698,81 +667,80 @@ export function Clients({
               className="company-input td-input td-input-lg"
               value={editClientData?.instagram || ""}
               onChange={(e) => setEditClientData(prev => prev ? { ...prev, instagram: e.target.value } : null)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit();
+                if (e.key === "Escape") handleCancelEdit();
+              }}
               placeholder="Instagram"
             />
           </td>
           <td>
-            <input
-              type="date"
-              className="company-input td-input td-input-lg"
-              value={editClientData?.date || ""}
-              onChange={(e) => setEditClientData(prev => prev ? { ...prev, date: e.target.value } : null)}
-            />
-          </td>
-          <td>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <CustomSelect
-                size="sm"
-                value={editClientData?.billingModel?.toLowerCase() === "subscription" ? "subscription" : "reel-to-reel"}
-                onChange={(val) => {
-                  const type = val as "reel-to-reel" | "subscription";
-                  const isNewSub = type === "subscription";
-                  setEditClientData(prev => {
-                    if (!prev) return null;
-                    const reelsVal = prev.reels || 0;
-                    const actualRate = isNewSub ? Math.round(reelsVal * prev.ppr) : prev.ppr;
-                    return {
-                      ...prev,
-                      billingModel: isNewSub ? "Subscription" : "Reel-to-Reel",
-                      plan: isNewSub ? "Custom" : "",
-                      ppr: isNewSub ? (actualRate / (reelsVal || 1)) : actualRate,
-                    };
-                  });
+            <div className="date-input-wrapper">
+              <input
+                type="text"
+                className="company-input td-input td-input-date"
+                value={editClientData?.date || ""}
+                placeholder="YYYY-MM-DD"
+                onChange={(e) => setEditClientData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                onBlur={() => {
+                  setEditClientData(prev => prev ? { ...prev, date: normalizeDate(prev.date) } : null);
                 }}
-                options={billingTypeOptions}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveEdit();
+                  if (e.key === "Escape") handleCancelEdit();
+                }}
               />
-              <CustomSelect
-                size="sm"
-                value={editClientData?.status || "Active"}
-                onChange={(val) => {
-                  setEditClientData(prev => prev ? { ...prev, status: val } : null);
+              <input
+                type="date"
+                tabIndex={-1}
+                aria-label="Pick date"
+                className="date-picker-icon-btn"
+                value={normalizeDate(editClientData?.date) || ""}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setEditClientData(prev => prev ? { ...prev, date: e.target.value } : null);
+                  }
                 }}
-                options={statusOptions}
               />
             </div>
           </td>
-          {(activeModelFilter === "all" || isSub) && (
-            <td>
-              {isSub ? (
-                <CustomSelect
-                  size="sm"
-                  value={editClientData?.plan || "Custom"}
-                  onChange={(plan) => {
-                    setEditClientData(prev => {
-                      if (!prev) return null;
-                      if (plan !== "Custom") {
-                        const planInfo = STANDARD_PLANS[plan];
-                        if (planInfo) {
-                          return {
-                            ...prev,
-                            plan,
-                            reels: planInfo.reels,
-                            ppr: planInfo.price / (planInfo.reels || 1),
-                            baseRate: planInfo.price,
-                            bargain: 0,
-                          };
-                        }
-                      }
-                      return { ...prev, plan };
-                    });
-                  }}
-                  options={planOptions}
-                />
-              ) : (
-                <span className="td-muted">—</span>
-              )}
-            </td>
-          )}
+          <td>
+            <CustomSelect
+              size="sm"
+              value={editClientData?.status || "Active"}
+              onChange={(val) => {
+                setEditClientData(prev => prev ? { ...prev, status: val } : null);
+              }}
+              options={statusOptions}
+              fullWidth={true}
+            />
+          </td>
+          <td>
+            <CustomSelect
+              size="sm"
+              value={editClientData?.plan || "Custom"}
+              onChange={(plan) => {
+                setEditClientData(prev => {
+                  if (!prev) return null;
+                  if (plan !== "Custom") {
+                    const planInfo = STANDARD_PLANS[plan];
+                    if (planInfo) {
+                      return {
+                        ...prev,
+                        plan,
+                        reels: planInfo.reels,
+                        ppr: planInfo.price / (planInfo.reels || 1),
+                        baseRate: planInfo.price,
+                        bargain: 0,
+                      };
+                    }
+                  }
+                  return { ...prev, plan };
+                });
+              }}
+              options={planOptions}
+            />
+          </td>
           <td>
             <input
               type="number"
@@ -782,14 +750,17 @@ export function Clients({
                 const reelsVal = Number(e.target.value || 0);
                 setEditClientData(prev => {
                   if (!prev) return null;
-                  const isSubActive = String(prev.billingModel || "").toLowerCase() === "subscription";
-                  const actualRate = isSubActive ? Math.round((prev.reels || 0) * prev.ppr) : prev.ppr;
+                  const actualRate = Math.round((prev.reels || 0) * prev.ppr);
                   return {
                     ...prev,
                     reels: reelsVal,
-                    ppr: isSubActive ? (actualRate / (reelsVal || 1)) : prev.ppr,
+                    ppr: actualRate / (reelsVal || 1),
                   };
                 });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit();
+                if (e.key === "Escape") handleCancelEdit();
               }}
               placeholder="Reels/Mo"
             />
@@ -804,8 +775,7 @@ export function Clients({
                 const baseRateVal = Number(e.target.value || 0);
                 setEditClientData(prev => {
                   if (!prev) return null;
-                  const isSubActive = String(prev.billingModel || "").toLowerCase() === "subscription";
-                  const actualRate = isSubActive ? Math.round(prev.reels * prev.ppr) : prev.ppr;
+                  const actualRate = Math.round((prev.reels || 0) * prev.ppr);
                   const discountPct = baseRateVal > actualRate ? Math.round(((baseRateVal - actualRate) / baseRateVal) * 100) : 0;
                   return {
                     ...prev,
@@ -814,7 +784,11 @@ export function Clients({
                   };
                 });
               }}
-              placeholder={isSub ? "Base Monthly Fee" : "Base Price/Reel"}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit();
+                if (e.key === "Escape") handleCancelEdit();
+              }}
+              placeholder="Base Monthly Fee"
             />
           </td>
           <td>
@@ -847,6 +821,10 @@ export function Clients({
                     bargain: discountPct,
                   };
                 });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit();
+                if (e.key === "Escape") handleCancelEdit();
               }}
               placeholder="Revenue"
             />
@@ -886,7 +864,7 @@ export function Clients({
     const displayName = nameStr || businessStr || "Unnamed Client";
     const avatarChar = (nameStr ? nameStr[0] : businessStr ? businessStr[0] : "?").toUpperCase();
 
-    const actualRate = isSub ? Math.round(c.reels * c.ppr) : c.ppr;
+    const actualRate = Math.round((c.reels || 0) * (c.ppr || 0));
     const baseRate = c.baseRate || actualRate;
     const discountPct = c.bargain || (baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0);
 
@@ -958,109 +936,83 @@ export function Clients({
           <span className="client-date-text">{c.date || "—"}</span>
         </td>
         <td>
-          {isSub ? (
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  padding: "2px 8px",
-                  borderRadius: "99px",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  background:
-                    c.status === "Paused"
-                      ? "rgba(234, 179, 8, 0.15)"
-                      : c.status === "Churned"
-                      ? "rgba(239, 68, 68, 0.15)"
-                      : "rgba(34, 197, 94, 0.15)",
-                  color:
-                    c.status === "Paused"
-                      ? "#eab308"
-                      : c.status === "Churned"
-                      ? "#ef4444"
-                      : "var(--green)",
-                  border: `1px solid ${
-                    c.status === "Paused"
-                      ? "rgba(234, 179, 8, 0.3)"
-                      : c.status === "Churned"
-                      ? "rgba(239, 68, 68, 0.3)"
-                      : "rgba(34, 197, 94, 0.3)"
-                  }`,
-                }}
-              >
-                <span
-                  style={{
-                    width: "5px",
-                    height: "5px",
-                    borderRadius: "50%",
-                    background: "currentColor",
-                  }}
-                />
-                SUB{c.status && c.status !== "Active" ? ` (${c.status})` : ""}
-              </span>
-            </div>
-          ) : (
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
+                gap: "4px",
                 padding: "2px 8px",
                 borderRadius: "99px",
                 fontSize: "11px",
                 fontWeight: 600,
-                background: "rgba(59, 130, 246, 0.12)",
-                color: "#60a5fa",
-                border: "1px solid rgba(59, 130, 246, 0.25)",
+                background:
+                  c.status === "Paused"
+                    ? "rgba(234, 179, 8, 0.15)"
+                    : c.status === "Churned"
+                    ? "rgba(239, 68, 68, 0.15)"
+                    : "rgba(34, 197, 94, 0.15)",
+                color:
+                  c.status === "Paused"
+                    ? "#eab308"
+                    : c.status === "Churned"
+                    ? "#ef4444"
+                    : "var(--green)",
+                border: `1px solid ${
+                  c.status === "Paused"
+                    ? "rgba(234, 179, 8, 0.3)"
+                    : c.status === "Churned"
+                    ? "rgba(239, 68, 68, 0.3)"
+                    : "rgba(34, 197, 94, 0.3)"
+                }`,
               }}
             >
-              RTR
+              <span
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  borderRadius: "99px",
+                  background: "currentColor",
+                }}
+              />
+              {c.status || "Active"}
             </span>
-          )}
+          </div>
         </td>
-        {(activeModelFilter === "all" || isSub) && (
-          <td>
-            {isSub ? (
-              <span className="plan-badge" style={{ background: "rgba(255,255,255,0.05)", padding: "4px 8px", borderRadius: "4px", fontSize: "11px" }}>
-                {c.plan || "Custom"}
-              </span>
-            ) : (
-              <span className="td-muted">—</span>
-            )}
-          </td>
-        )}
+        <td>
+          <span className="plan-badge" style={{ background: "rgba(255,255,255,0.05)", padding: "4px 8px", borderRadius: "18px", fontSize: "11px" }}>
+            {c.plan || "Custom"}
+          </span>
+        </td>
         <td>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span className="client-reels-text" style={{ fontWeight: 500 }}>{c.reels}</span>
-            {isSub && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setTrackerClient(c);
-                  setIsTrackerOpen(true);
-                }}
-                title="Click to view/manage this month's delivered reels & share link"
-                style={{
-                  background: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green-12)" : "var(--red-10)",
-                  border: `0.6px solid ${(deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red-op)"}`,
-                  color: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red)",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  padding: "2px 8px",
-                  borderRadius: "var(--border-radius-99)",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  transition: "var(--transition-fast)",
-                }}
-              >
-                <IconFilm size={12} />
-                <span>{deliveryCounts[String(c.id)] || 0}/{c.reels} Del.</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setTrackerClient(c);
+                setIsTrackerOpen(true);
+              }}
+              title="Click to view/manage this month's delivered reels & share link"
+              style={{
+                background: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green-12)" : "var(--red-10)",
+                border: `0.6px solid ${(deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red-op)"}`,
+                color: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red)",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "2px 8px",
+                borderRadius: "var(--border-radius-99)",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                transition: "var(--transition-fast)",
+              }}
+            >
+              <IconFilm size={12} />
+              <span>{deliveryCounts[String(c.id)] || 0}/{c.reels} Del.</span>
+            </button>
           </div>
         </td>
 
@@ -1087,15 +1039,15 @@ export function Clients({
           <div className="action-btns">
             <button
               type="button"
-              className={`edit-client tracker-btn ${isSub ? "is-sub" : ""}`}
+              className="edit-client tracker-btn is-sub"
               onClick={(e) => {
                 e.stopPropagation();
                 setTrackerClient(c);
                 setIsTrackerOpen(true);
               }}
-              title={isSub ? "Track Monthly Deliveries & Copy Client Link" : "View / Add Delivery Log"}
+              title="Track Monthly Deliveries & Copy Client Link"
             >
-              <IconFilm size={18} />
+              <IconFilm size={20} strokeWidth={1.8} />
             </button>
             <img
               src="/assets/icons/edit.svg"
@@ -1136,7 +1088,7 @@ export function Clients({
             gap: "12px",
             background: "rgba(255, 255, 255, 0.03)",
             border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "10px",
+            borderRadius: "18px",
             padding: "10px 16px",
             marginBottom: "16px",
           }}
@@ -1157,16 +1109,9 @@ export function Clients({
             <span style={{ color: "rgba(255,255,255,0.2)" }}>|</span>
             <span style={{ fontSize: "12px", color: "var(--muted)" }}>
               <strong style={{ color: "var(--white)" }}>
-                {clients.filter((c) => String(c.billingModel).toLowerCase() === "subscription").length}
+                {clients.length}
               </strong>{" "}
-              Subscriptions
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
-            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
-              <strong style={{ color: "var(--white)" }}>
-                {clients.filter((c) => String(c.billingModel).toLowerCase() !== "subscription").length}
-              </strong>{" "}
-              One-off (RTR)
+              Clients
             </span>
             <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
             <span style={{ fontSize: "12px", color: "var(--muted)" }}>
@@ -1210,212 +1155,70 @@ export function Clients({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
-        {/* Model Filter Toggle - UI Arc Tabs */}
-        <Tabs
-          value={activeModelFilter}
-          onValueChange={(val) => setActiveModelFilter(val as "all" | "bm" | "rtr")}
-        >
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="bm">SUB</TabsTrigger>
-            <TabsTrigger value="rtr">RTR</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
-      {/* ─── ALL (COMBINED) CLIENTS TABLE ─── */}
-      {activeModelFilter === "all" && (
-        <div className="table-wrap table-scroll-wrap mt-24">
-          <div className="table-inner-scroll">
-            <table>
-              <thead>
+      {/* ─── CLIENTS TABLE ─── */}
+      <div className="table-wrap table-scroll-wrap mt-24">
+        <div className="table-inner-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th className="th-checkbox">
+                  <input
+                    type="checkbox"
+                    className="custom-checkbox"
+                    checked={areAllSelected}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th onClick={() => handleSort("name")} className="sortable-header th-sortable">
+                  <div className="th-header-inner">
+                    <span>Client Name</span>
+                    <SortIcon active={sortKey === "name"} dir={sortDir} />
+                  </div>
+                </th>
+                <th>Business</th>
+                <th>Insta ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Plan</th>
+                <th onClick={() => handleSort("reels")} className="sortable-header th-sortable">
+                  <div className="th-header-inner">
+                    <span>Reels / Mo</span>
+                    <SortIcon active={sortKey === "reels"} dir={sortDir} />
+                  </div>
+                </th>
+
+                <th>Rate</th>
+                <th>Bargain</th>
+                <th onClick={() => handleSort("revenue")} className="sortable-header th-sortable">
+                  <div className="th-header-inner">
+                    <span>Monthly Revenue</span>
+                    <SortIcon active={sortKey === "revenue"} dir={sortDir} />
+                  </div>
+                </th>
+                <th className="th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {newClientRow && renderNewClientRow()}
+
+              {sortedClients.length === 0 && !newClientRow ? (
                 <tr>
-                  <th className="th-checkbox">
-                    <input
-                      type="checkbox"
-                      className="custom-checkbox"
-                      checked={areAllSelected}
-                      onChange={handleSelectAll}
-                    />
-                  </th>
-                  <th onClick={() => handleSort("name")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Client Name</span>
-                      <SortIcon active={sortKey === "name"} dir={sortDir} />
+                  <td colSpan={12}>
+                    <div className="empty">
+                      <div className="empty-icon">◎</div>
+                      <div className="empty-text">No clients found</div>
                     </div>
-                  </th>
-                  <th>Business</th>
-                  <th>Insta ID</th>
-                  <th>Date</th>
-                  <th>BM</th>
-                  <th>Plan</th>
-                  <th onClick={() => handleSort("reels")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Reels / Mo</span>
-                      <SortIcon active={sortKey === "reels"} dir={sortDir} />
-                    </div>
-                  </th>
-
-                  <th>Rate</th>
-                  <th>Bargain</th>
-                  <th onClick={() => handleSort("revenue")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Monthly Revenue</span>
-                      <SortIcon active={sortKey === "revenue"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th className="th-actions">Actions</th>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {newClientRow && renderNewClientRow()}
-
-                {sortedClients.length === 0 && !newClientRow ? (
-                  <tr>
-                    <td colSpan={13}>
-                      <div className="empty">
-                        <div className="empty-icon">◎</div>
-                        <div className="empty-text">No clients found</div>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  sortedClients.map((c) => renderClientRow(c, String(c.billingModel).toLowerCase() === "subscription"))
-                )}
-              </tbody>
-            </table>
-          </div>
+              ) : (
+                sortedClients.map((c) => renderClientRow(c))
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
-
-      {/* ─── SUBSCRIPTION CLIENTS TABLE (BM) ─── */}
-      {activeModelFilter === "bm" && (
-        <div className="table-wrap table-scroll-wrap mt-24">
-          <div className="table-inner-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th className="th-checkbox">
-                    <input
-                      type="checkbox"
-                      className="custom-checkbox"
-                      checked={areAllSubSelected}
-                      onChange={handleSelectAllSub}
-                    />
-                  </th>
-                  <th onClick={() => handleSort("name")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Client Name</span>
-                      <SortIcon active={sortKey === "name"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th>Business</th>
-                  <th>Insta ID</th>
-                  <th>Date</th>
-                  <th>BM</th>
-                  <th>Plan</th>
-                  <th onClick={() => handleSort("reels")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Reels / Mo</span>
-                      <SortIcon active={sortKey === "reels"} dir={sortDir} />
-                    </div>
-                  </th>
-
-                  <th>Rate</th>
-                  <th>Bargain</th>
-                  <th onClick={() => handleSort("revenue")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Monthly Revenue</span>
-                      <SortIcon active={sortKey === "revenue"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th className="th-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {newClientRow && newBillingType === "subscription" && renderNewClientRow()}
-
-                {subscriptionClients.length === 0 && !(newClientRow && newBillingType === "subscription") ? (
-                  <tr>
-                    <td colSpan={13}>
-                      <div className="empty">
-                        <div className="empty-icon">◎</div>
-                        <div className="empty-text">No subscription clients found</div>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  subscriptionClients.map((c) => renderClientRow(c, true))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* ─── REEL-TO-REEL CLIENTS TABLE (RTR) ─── */}
-      {activeModelFilter === "rtr" && (
-        <div className="table-wrap table-scroll-wrap mt-24">
-          <div className="table-inner-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th className="th-checkbox">
-                    <input
-                      type="checkbox"
-                      className="custom-checkbox"
-                      checked={areAllR2RSelected}
-                      onChange={handleSelectAllR2R}
-                    />
-                  </th>
-                  <th onClick={() => handleSort("name")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Client Name</span>
-                      <SortIcon active={sortKey === "name"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th>Business</th>
-                  <th>Insta ID</th>
-                  <th>Date</th>
-                  <th>BM</th>
-                  <th onClick={() => handleSort("reels")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Reels / Mo</span>
-                      <SortIcon active={sortKey === "reels"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th>Rate</th>
-                  <th>Bargain</th>
-                  <th onClick={() => handleSort("revenue")} className="sortable-header th-sortable">
-                    <div className="th-header-inner">
-                      <span>Monthly Revenue</span>
-                      <SortIcon active={sortKey === "revenue"} dir={sortDir} />
-                    </div>
-                  </th>
-                  <th className="th-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {newClientRow && newBillingType === "reel-to-reel" && renderNewClientRow()}
-
-                {reeltoreelClients.length === 0 && !(newClientRow && newBillingType === "reel-to-reel") ? (
-                  <tr>
-                    <td colSpan={12}>
-                      <div className="empty">
-                        <div className="empty-icon">◎</div>
-                        <div className="empty-text">No reel-to-reel clients found</div>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  reeltoreelClients.map((c) => renderClientRow(c, false))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      </div>
       {/* ─── REEL TRACKER MODAL ─── */}
       <ReelTrackerModal
         isOpen={isTrackerOpen}

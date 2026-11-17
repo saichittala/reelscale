@@ -2863,7 +2863,7 @@ nav a:focus-visible {
 }
 
 .ed-newsletter-input:focus {
-    border-color: var(--red);
+    border-color: var(--red-40);
 }
 
 /* RESPONSIVE BREAKPOINTS */
@@ -3458,6 +3458,8 @@ body.mobile-menu-open {
     --red-op: var(--green-brand-op) !important;
     --red-10: var(--green-brand-10) !important;
     --red-20: var(--green-brand-20) !important;
+    --red-40: var(--green-brand-40) !important;
+    --border-focus: var(--green-brand-40) !important;
     --red-hover-bg: rgba(199, 255, 159, 0.25) !important;
     --red-active-bg: var(--green-brand-active) !important;
 
@@ -3743,7 +3745,7 @@ select:-webkit-autofill:focus,
 
 input:-webkit-autofill:focus,
 .form-input:-webkit-autofill:focus {
-    border-color: var(--red) !important;
+    border-color: var(--red-40) !important;
     -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
     box-shadow: 0 0 0 1000px color-mix(in srgb, var(--red) 10%, #171717) inset, 0 0 0 3px var(--red-10) !important;
 }
@@ -3760,6 +3762,6 @@ select:autofill,
 input:autofill:focus,
 .form-input:autofill:focus {
     background-color: var(--red-10) !important;
-    border-color: var(--red) !important;
+    border-color: var(--red-40) !important;
     box-shadow: 0 0 0 3px var(--red-10) !important;
 }

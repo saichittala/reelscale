@@ -267,6 +267,7 @@ export function CreateBlog({
                 onChange={(v) => setCategory(v)}
                 options={blogCategories.map((c) => ({ value: c, label: c }))}
                 size="md"
+                fullWidth={true}
               />
             </div>
           </div>

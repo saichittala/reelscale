@@ -18,4 +18,11 @@ export {
   TabsContent,
   type TabsListProps,
 } from "./tabs";
-
+export {
+  DropdownMenu,
+  Select,
+  type DropdownMenuProps,
+  type DropdownItem,
+  type SelectProps,
+  type SelectOption,
+} from "./dropdown-menu";

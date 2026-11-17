@@ -896,6 +896,7 @@ export function ReelTrackerModal({
                     onChange={(val) => setStatus(val as any)}
                     options={statusOptions}
                     size="sm"
+                    fullWidth={true}
                   />
                 </div>
               </div>

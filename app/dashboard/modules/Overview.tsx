@@ -116,7 +116,7 @@ export function Overview({
                   : "oklch(62.944% 0.25583 25.982)"
               ),
               borderWidth: 1.5,
-              borderRadius: 6,
+              borderRadius: 18,
             },
           ],
         },
@@ -178,7 +178,7 @@ export function Overview({
             gap: "12px",
             background: "rgba(255, 255, 255, 0.03)",
             border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "10px",
+            borderRadius: "18px",
             padding: "10px 16px",
             marginBottom: "20px",
             fontSize: "13px",
@@ -232,7 +232,7 @@ export function Overview({
         </div>
 
         <div className="stat-card green">
-          <div className="stat-label">Annual Recurring Revenue (ARR)</div>
+          <div className="stat-label" title="Annual Recurring Revenue">ARR</div>
           <div className="stat-value green">{fmtFull(annualRevenue)}</div>
           <div className="stat-sub dn">{fmt(annualRevenue)}</div>
           <div className="stat-icon">

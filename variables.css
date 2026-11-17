@@ -106,29 +106,29 @@
         transform var(--duration-fast) var(--ease-bounce),
         box-shadow var(--duration-fast) ease;
 
-    /* ── BORDER RADII — Semantic ── */
-    --radius-lg: 16px;
+    /* ── BORDER RADII — Semantic (Strict Dashboard Tokens: 18px, 24px, 36px, 99px) ── */
+    --radius-lg: 36px;
     /* Cards, large containers */
-    --radius-md: 12px;
+    --radius-md: 24px;
     /* Medium cards, modals */
-    --radius-sm: 8px;
+    --radius-sm: 18px;
     /* Buttons, inputs, small elements */
-    --radius-base: 10px;
+    --radius-base: 18px;
     /* Base interactive elements */
-    --radius-pill: 999px;
+    --radius-pill: 99px;
     /* Full pill / badge */
-    --radius-full: 50%;
+    --radius-full: 99px;
     /* Circular avatars */
-    --radius-xs: 4px;
+    --radius-xs: 18px;
     /* Tags, tiny chips */
 
     /* ── BORDER RADII — Backward-compat numeric aliases ── */
-    /* Do not use in new code — use semantic names above */
+    /* Strict tokens: 18px, 24px, 36px, 99px */
     --border-radius-1: var(--radius-lg);
     --border-radius-2: var(--radius-md);
     --border-radius-3: var(--radius-sm);
     --border-radius-4: var(--radius-base);
-    --border-radius-5: 7px;
+    --border-radius-5: 18px;
     --border-radius-99: var(--radius-pill);
 
     /* ── SHADOWS ── */
@@ -191,6 +191,7 @@
     --red-op: oklch(52% 0.22 25 / 0.31);
     --red-10: oklch(62.944% 0.25583 25.982 / 0.10);
     --red-20: oklch(62.944% 0.25583 25.982 / 0.20);
+    --red-40: oklch(62.944% 0.25583 25.982 / 0.40);
     --red-hover-bg: oklch(0.4 0.2 25 / 0.2);
     --red-active-bg: oklch(0.45 0.22 25);
 
@@ -199,6 +200,7 @@
     --green-brand-10: rgba(199, 255, 159, 0.10);
     --green-brand-20: rgba(199, 255, 159, 0.20);
     --green-brand-30: rgba(199, 255, 159, 0.30);
+    --green-brand-40: rgba(199, 255, 159, 0.40);
     --green-brand-op: rgba(199, 255, 159, 0.31);
     --green-brand-hover: #bcf794;
     --green-brand-active: #a1eb75;
@@ -246,8 +248,9 @@
     --control-height-sm: 30px;
     --control-height-md: var(--input-height, 38px);
     --control-height-lg: 46px;
-    --radius-control: var(--radius-sm, 8px);
-    --radius-panel: var(--radius-md, 12px);
+    --radius-control: var(--radius-sm, 18px);
+    --radius-input: 14px;
+    --radius-panel: var(--radius-md, 24px);
 
     --foreground: var(--white);
     --background: var(--bg);
@@ -255,6 +258,7 @@
     --surface-raised: oklch(0.12 0 0);
     --surface-muted: var(--white-07);
     --border-strong: oklch(0.92 0.01 95 / 0.22);
+    --border-focus: var(--red-40);
 
     --danger: var(--red);
     --success: var(--green);
@@ -310,6 +314,7 @@
     --surface-raised: var(--card);
     --surface-muted: var(--white-07);
     --border-strong: oklch(27.685% 0.00003 271.152 / 0.24);
+    --border-focus: var(--red-40);
     --text-secondary: var(--muted);
     --text-field: var(--text-sm, 14px);
 }

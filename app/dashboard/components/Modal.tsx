@@ -187,7 +187,7 @@ export function Modal({
         <div
           style={{
             background: "var(--white-03)",
-            borderRadius: "10px",
+            borderRadius: "18px",
             padding: "12px 14px",
             marginTop: "4px",
           }}

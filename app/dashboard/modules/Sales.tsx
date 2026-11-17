@@ -472,6 +472,8 @@ export function Sales({
                     field: keyof Omit<Lead, "id" | "createdDate">,
                     value: any
                   ) => {
+                    const currentVal = item[field] ?? "";
+                    if (currentVal === value) return;
                     const updatedLead = {
                       category: item.category || "",
                       companyName: item.companyName || "",
@@ -481,7 +483,6 @@ export function Sales({
                       contacted: item.contacted || "No",
                       [field]: value,
                     };
-                    if (item[field] === value) return;
                     await onUpdateLead(leadId, updatedLead);
                   };
 
@@ -514,6 +515,11 @@ export function Sales({
                           className="company-input"
                           defaultValue={item.companyName || ""}
                           placeholder="Company Name"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
                           onBlur={(e) =>
                             updateLeadField("companyName", e.target.value)
                           }
@@ -527,6 +533,11 @@ export function Sales({
                           className="phone-input"
                           defaultValue={item.phoneNumber || ""}
                           placeholder="Phone Number"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
                           onBlur={(e) =>
                             updateLeadField("phoneNumber", e.target.value)
                           }
@@ -540,6 +551,11 @@ export function Sales({
                           defaultValue={item.notes || ""}
                           placeholder="Add note..."
                           title={item.notes || "No notes added"}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
                           onBlur={(e) => updateLeadField("notes", e.target.value)}
                         />
                       </td>

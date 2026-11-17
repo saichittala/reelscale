@@ -135,7 +135,7 @@ export async function fetchUsers(): Promise<User[]> {
   }
 }
 
-export async function apiAddUser(user: Omit<User, "id">): Promise<void> {
+export async function apiAddUser(user: Omit<User, "id">): Promise<any> {
   const response = await customFetch(GAS_USERS_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -150,6 +150,7 @@ export async function apiAddUser(user: Omit<User, "id">): Promise<void> {
   if (!result.success) {
     throw new Error(result.message || "Add failed");
   }
+  return result;
 }
 
 export async function apiUpdateUser(
@@ -231,7 +232,7 @@ export async function fetchClients(): Promise<Client[]> {
         reels: Number(row.reels || 0),
         ppr: Number(row.pricePerReel || row.ppr || 0),
         image: row.image || "",
-        billingModel: row.billingModel || "Reel-to-Reel",
+        billingModel: row.billingModel || "Subscription",
         plan: row.plan || "",
         baseRate: Number(row.baseRate || 0),
         bargain: Number(row.bargain || 0),
@@ -261,7 +262,7 @@ export async function apiAddClient(
       reels: Number(client.reels),
       pricePerReel: Number(client.ppr),
       image: client.image || "",
-      billingModel: client.billingModel || "Reel-to-Reel",
+      billingModel: client.billingModel || "Subscription",
       plan: client.plan || "",
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
@@ -332,7 +333,7 @@ export async function apiUpdateClient(
       reels: Number(client.reels),
       pricePerReel: Number(client.ppr),
       image: client.image || "",
-      billingModel: client.billingModel || "Reel-to-Reel",
+      billingModel: client.billingModel || "Subscription",
       plan: client.plan || "",
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
@@ -371,7 +372,7 @@ export async function fetchLeads(): Promise<Lead[]> {
 
 export async function apiAddLead(
   lead: Omit<Lead, "id" | "createdDate">
-): Promise<void> {
+): Promise<any> {
   const response = await customFetch(GAS_SALES_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -388,6 +389,7 @@ export async function apiAddLead(
   if (!result.success) {
     throw new Error(result.message || "Add lead failed");
   }
+  return result;
 }
 
 export async function apiUpdateLead(

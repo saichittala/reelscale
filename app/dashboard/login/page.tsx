@@ -104,7 +104,6 @@ export default function DashboardLoginPage() {
 
         <Button
           variant="primary"
-          size="lg"
           className="login-submit-btn w-full"
           onClick={handleSignIn}
           disabled={isSubmitting}

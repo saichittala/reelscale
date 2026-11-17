@@ -133,13 +133,18 @@ export default function DashboardMainPage() {
         loadingToastRef.current = toast.loading(msg);
       } else {
         if (loadingToastRef.current) {
-          toast.dismiss(loadingToastRef.current);
+          toast.update(loadingToastRef.current, {
+            title: msg,
+            type: type === "error" ? "error" : "success",
+            duration: 4000,
+          });
           loadingToastRef.current = null;
-        }
-        if (type === "error") {
-          toast.error(msg);
         } else {
-          toast.success(msg);
+          if (type === "error") {
+            toast.error(msg);
+          } else {
+            toast.success(msg);
+          }
         }
       }
     },
@@ -271,6 +276,14 @@ export default function DashboardMainPage() {
 
   // Clients modifications
   const handleAddClient = async (clientData: Omit<Client, "id">) => {
+    const tempId = `temp_${Date.now()}`;
+    const tempClient: Client = {
+      id: tempId,
+      ...clientData,
+    };
+    // Immediate optimistic update
+    setClients((prev) => [tempClient, ...prev]);
+
     try {
       await apiAddClient(clientData);
       showToast("Client added successfully");
@@ -298,6 +311,7 @@ export default function DashboardMainPage() {
       setClients(data);
       localStorage.setItem("clients_cache", JSON.stringify(data));
     } catch (err: any) {
+      setClients((prev) => prev.filter((c) => c.id !== tempId));
       showToast(err.message || "Failed to add client", "error");
     }
   };
@@ -306,99 +320,217 @@ export default function DashboardMainPage() {
     id: string | number,
     clientData: Omit<Client, "id">
   ) => {
-    showToast("Updating...", "loading");
-    const backup = [...clients];
-    setClients((prev) =>
-      prev.map((c) => (String(c.id) === String(id) ? { ...c, ...clientData } : c))
-    );
+    let prevClient: Client | undefined;
+
+    setClients((prev) => {
+      prevClient = prev.find((c) => String(c.id) === String(id));
+      const next = prev.map((c) =>
+        String(c.id) === String(id) ? { ...c, ...clientData } : c
+      );
+      try {
+        localStorage.setItem("clients_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiUpdateClient(id, clientData);
       showToast("Client updated successfully");
-      const data = await fetchClients();
-      setClients(data);
-      localStorage.setItem("clients_cache", JSON.stringify(data));
     } catch (err: any) {
-      setClients(backup);
+      if (prevClient) {
+        setClients((prev) => {
+          const reverted = prev.map((c) =>
+            String(c.id) === String(id) ? prevClient! : c
+          );
+          try {
+            localStorage.setItem("clients_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to update client", "error");
     }
   };
 
   const handleDeleteClient = async (id: string | number) => {
+    let deletedClient: Client | undefined;
+    setClients((prev) => {
+      deletedClient = prev.find((c) => String(c.id) === String(id));
+      const next = prev.filter((c) => String(c.id) !== String(id));
+      try {
+        localStorage.setItem("clients_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiDeleteClient(id);
       showToast("Client deleted successfully");
-      const data = await fetchClients();
-      setClients(data);
-      localStorage.setItem("clients_cache", JSON.stringify(data));
     } catch (err: any) {
+      if (deletedClient) {
+        setClients((prev) => {
+          const reverted = [...prev, deletedClient!];
+          try {
+            localStorage.setItem("clients_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to delete client", "error");
     }
   };
 
   // User database updates
   const handleAddUser = async (userData: Omit<User, "id">) => {
-    await apiAddUser(userData);
-    showToast("User added successfully");
-    const data = await fetchUsers();
-    setUsers(data);
-    localStorage.setItem("users_cache", JSON.stringify(data));
+    const tempId = Date.now();
+    const tempUser: User = {
+      id: tempId,
+      ...userData,
+    };
+    setUsers((prev) => {
+      const next = [...prev, tempUser];
+      try {
+        localStorage.setItem("users_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
+    try {
+      const res = await apiAddUser(userData);
+      showToast("User added successfully");
+      const realId = res?.id || res?.user?.id;
+      if (realId) {
+        setUsers((prev) => {
+          const next = prev.map((u) =>
+            u.id === tempId ? { ...u, id: realId, ...(res.user || {}) } : u
+          );
+          try {
+            localStorage.setItem("users_cache", JSON.stringify(next));
+          } catch (e) {}
+          return next;
+        });
+      } else {
+        const data = await fetchUsers();
+        setUsers(data);
+        localStorage.setItem("users_cache", JSON.stringify(data));
+      }
+    } catch (err: any) {
+      setUsers((prev) => {
+        const next = prev.filter((u) => u.id !== tempId);
+        try {
+          localStorage.setItem("users_cache", JSON.stringify(next));
+        } catch (e) {}
+        return next;
+      });
+      showToast(err.message || "Failed to add user", "error");
+    }
   };
 
   const handleUpdateUser = async (id: string | number, userData: User) => {
     showToast("Updating...", "loading");
-    // Optimistic UI updates
-    setUsers((prev) =>
-      prev.map((u) => (String(u.id) === String(id) ? { ...u, ...userData } : u))
-    );
+    let prevUser: User | undefined;
+
+    setUsers((prev) => {
+      prevUser = prev.find((u) => String(u.id) === String(id));
+      const next = prev.map((u) =>
+        String(u.id) === String(id) ? { ...u, ...userData } : u
+      );
+      try {
+        localStorage.setItem("users_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiUpdateUser(id, userData);
       showToast("User updated successfully");
-      const data = await fetchUsers();
-      setUsers(data);
-      localStorage.setItem("users_cache", JSON.stringify(data));
     } catch (err: any) {
+      if (prevUser) {
+        setUsers((prev) => {
+          const reverted = prev.map((u) =>
+            String(u.id) === String(id) ? prevUser! : u
+          );
+          try {
+            localStorage.setItem("users_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to update user", "error");
-      // Revert from backend database
-      const cached = localStorage.getItem("users_cache");
-      if (cached) setUsers(JSON.parse(cached));
     }
   };
 
   const handleDeleteUser = async (id: string | number) => {
-    // Optimistic UI updates
-    const backup = [...users];
-    setUsers((prev) => prev.filter((u) => String(u.id) !== String(id)));
+    let deletedUser: User | undefined;
+    setUsers((prev) => {
+      deletedUser = prev.find((u) => String(u.id) === String(id));
+      const next = prev.filter((u) => String(u.id) !== String(id));
+      try {
+        localStorage.setItem("users_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiDeleteUser(id);
       showToast("User deleted successfully");
-      const data = await fetchUsers();
-      setUsers(data);
-      localStorage.setItem("users_cache", JSON.stringify(data));
     } catch (err: any) {
+      if (deletedUser) {
+        setUsers((prev) => {
+          const reverted = [...prev, deletedUser!];
+          try {
+            localStorage.setItem("users_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to delete user", "error");
-      setUsers(backup);
     }
   };
 
   // Lead additions
   const handleAddLead = async (leadData: Omit<Lead, "id" | "createdDate">) => {
-    // Optimistic UI update
+    const tempId = Date.now();
     const tempLead: Lead = {
-      id: Date.now(),
+      id: tempId,
       createdDate: new Date().toISOString().split("T")[0],
       ...leadData,
     };
-    setLeads((prev) => [tempLead, ...prev]);
+    setLeads((prev) => {
+      const next = [tempLead, ...prev];
+      try {
+        localStorage.setItem("sales_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
 
     try {
-      await apiAddLead(leadData);
+      const res = await apiAddLead(leadData);
       showToast("Lead added successfully");
-      const data = await fetchLeads();
-      setLeads(data);
-      localStorage.setItem("sales_cache", JSON.stringify(data));
+      const realId = res?.id || res?.lead?.id;
+      if (realId) {
+        setLeads((prev) => {
+          const next = prev.map((l) =>
+            l.id === tempId ? { ...l, id: realId, ...(res.lead || {}) } : l
+          );
+          try {
+            localStorage.setItem("sales_cache", JSON.stringify(next));
+          } catch (e) {}
+          return next;
+        });
+      } else {
+        const data = await fetchLeads();
+        setLeads(data);
+        localStorage.setItem("sales_cache", JSON.stringify(data));
+      }
     } catch (err: any) {
-      // Revert on error
-      setLeads((prev) => prev.filter((l) => l.id !== tempLead.id));
+      setLeads((prev) => {
+        const next = prev.filter((l) => l.id !== tempId);
+        try {
+          localStorage.setItem("sales_cache", JSON.stringify(next));
+        } catch (e) {}
+        return next;
+      });
       showToast(err.message || "Failed to add lead", "error");
     }
   };
@@ -408,33 +540,62 @@ export default function DashboardMainPage() {
     leadData: Omit<Lead, "id" | "createdDate">
   ) => {
     showToast("Updating...", "loading");
-    const backup = [...leads];
-    setLeads((prev) =>
-      prev.map((l) => (String(l.id) === String(id) ? { ...l, ...leadData } : l))
-    );
+    let prevLead: Lead | undefined;
+
+    setLeads((prev) => {
+      prevLead = prev.find((l) => String(l.id) === String(id));
+      const next = prev.map((l) =>
+        String(l.id) === String(id) ? { ...l, ...leadData } : l
+      );
+      try {
+        localStorage.setItem("sales_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiUpdateLead(id, leadData);
       showToast("Lead updated successfully");
-      const data = await fetchLeads();
-      setLeads(data);
-      localStorage.setItem("sales_cache", JSON.stringify(data));
     } catch (err: any) {
-      setLeads(backup);
+      if (prevLead) {
+        setLeads((prev) => {
+          const reverted = prev.map((l) =>
+            String(l.id) === String(id) ? prevLead! : l
+          );
+          try {
+            localStorage.setItem("sales_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to save lead updates", "error");
     }
   };
 
   const handleDeleteLead = async (id: string | number) => {
-    const backup = [...leads];
-    setLeads((prev) => prev.filter((l) => String(l.id) !== String(id)));
+    let deletedLead: Lead | undefined;
+    setLeads((prev) => {
+      deletedLead = prev.find((l) => String(l.id) === String(id));
+      const next = prev.filter((l) => String(l.id) !== String(id));
+      try {
+        localStorage.setItem("sales_cache", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     try {
       await apiDeleteLead(id);
       showToast("Lead deleted successfully");
-      const data = await fetchLeads();
-      setLeads(data);
-      localStorage.setItem("sales_cache", JSON.stringify(data));
     } catch (err: any) {
-      setLeads(backup);
+      if (deletedLead) {
+        setLeads((prev) => {
+          const reverted = [...prev, deletedLead!];
+          try {
+            localStorage.setItem("sales_cache", JSON.stringify(reverted));
+          } catch (e) {}
+          return reverted;
+        });
+      }
       showToast(err.message || "Failed to delete lead", "error");
     }
   };
@@ -451,10 +612,17 @@ export default function DashboardMainPage() {
       );
       setEditingBlog(null);
       setPage("blogs");
-      // Reload blog data
-      setBlogsLoading(true);
-      const data = await fetchBlogs();
-      setBlogs(data);
+      if (blogData.id) {
+        setBlogs((prev) =>
+          prev.map((b) =>
+            String(b.id) === String(blogData.id) ? { ...b, ...blogData } : b
+          )
+        );
+      } else {
+        setBlogsLoading(true);
+        const data = await fetchBlogs();
+        setBlogs(data);
+      }
     } catch (err: any) {
       showToast(err.message || "Failed to save blog", "error");
     } finally {
@@ -463,16 +631,20 @@ export default function DashboardMainPage() {
   };
 
   const handleDeleteBlog = async (id: string | number) => {
+    let deletedBlog: Blog | undefined;
+    setBlogs((prev) => {
+      deletedBlog = prev.find((b) => String(b.id) === String(id));
+      return prev.filter((b) => String(b.id) !== String(id));
+    });
+
     try {
       await apiDeleteBlog(id);
       showToast("Blog deleted successfully");
-      setBlogsLoading(true);
-      const data = await fetchBlogs();
-      setBlogs(data);
     } catch (err: any) {
+      if (deletedBlog) {
+        setBlogs((prev) => [...prev, deletedBlog!]);
+      }
       showToast(err.message || "Failed to delete blog", "error");
-    } finally {
-      setBlogsLoading(false);
     }
   };
 
@@ -534,13 +706,12 @@ export default function DashboardMainPage() {
           setNewClientRow(true);
         }}
       >
-        <span>
-          <img
-            src="/assets/icons/add.svg"
-            alt="Add"
-            width="20"
-          />
-        </span>
+        <img
+          src="/assets/icons/add.svg"
+          alt="Add"
+          width="18"
+          height="18"
+        />
         <span>Add Client</span>
       </Button>
     </div>

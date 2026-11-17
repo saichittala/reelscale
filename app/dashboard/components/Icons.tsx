@@ -21,13 +21,13 @@ export function IconFilm({ size = 20, strokeWidth = 2, className = "", ...props 
       className={className}
       {...props}
     >
-      <rect x="2" y="4" width="20" height="16" rx="3" />
-      <line x1="2" y1="8" x2="22" y2="8" />
-      <line x1="2" y1="16" x2="22" y2="16" />
-      <line x1="7" y1="4" x2="7" y2="8" />
-      <line x1="17" y1="4" x2="17" y2="8" />
-      <line x1="7" y1="16" x2="7" y2="20" />
-      <line x1="17" y1="16" x2="17" y2="20" />
+      <rect x="2" y="2" width="20" height="20" rx="3" />
+      <line x1="2" y1="7" x2="22" y2="7" />
+      <line x1="2" y1="17" x2="22" y2="17" />
+      <line x1="7" y1="2" x2="7" y2="7" />
+      <line x1="17" y1="2" x2="17" y2="7" />
+      <line x1="7" y1="17" x2="7" y2="22" />
+      <line x1="17" y1="17" x2="17" y2="22" />
     </svg>
   );
 }

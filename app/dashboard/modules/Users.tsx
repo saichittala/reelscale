@@ -298,6 +298,7 @@ export function Users({
                   onChange={(v) => setNewUserRole(v)}
                   options={ROLE_OPTIONS}
                   size="sm"
+                  fullWidth={true}
                 />
               </td>
               <td>
@@ -349,8 +350,13 @@ export function Users({
                     type="text"
                     className="user-name-input"
                     defaultValue={user.name}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        (e.target as HTMLInputElement).blur();
+                      }
+                    }}
                     onBlur={async (e) => {
-                      if (e.target.value === user.name) return;
+                      if ((user.name ?? "") === e.target.value) return;
                       await onUpdateUser(userId, {
                         ...user,
                         name: e.target.value,
@@ -364,8 +370,13 @@ export function Users({
                     type="email"
                     className="user-email-input"
                     defaultValue={user.email}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        (e.target as HTMLInputElement).blur();
+                      }
+                    }}
                     onBlur={async (e) => {
-                      if (e.target.value === user.email) return;
+                      if ((user.email ?? "") === e.target.value) return;
                       await onUpdateUser(userId, {
                         ...user,
                         email: e.target.value,
@@ -381,8 +392,13 @@ export function Users({
                       className="user-password-input"
                       id={`pass-${userId}`}
                       defaultValue={user.password}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          (e.target as HTMLInputElement).blur();
+                        }
+                      }}
                       onBlur={async (e) => {
-                        if (e.target.value === user.password) return;
+                        if ((user.password ?? "") === e.target.value) return;
                         await onUpdateUser(userId, {
                           ...user,
                           password: e.target.value,
@@ -405,10 +421,12 @@ export function Users({
                   <CustomSelect
                     value={user.role ?? ""}
                     onChange={async (v) => {
+                      if (user.role === v) return;
                       await onUpdateUser(userId, { ...user, role: v });
                     }}
                     options={ROLE_OPTIONS}
                     size="sm"
+                    fullWidth={true}
                   />
                 </td>
                 <td>
