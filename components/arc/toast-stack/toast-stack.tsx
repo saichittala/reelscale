@@ -64,7 +64,33 @@ export interface ToastStackProps {
 
 type ToastRecord = { id: string; type: ToastType; title: string; description?: string; action?: ToastAction; duration: number; seq: number; version: number };
 type ToastStore = ToastStackApi & { subscribe: (listener: () => void) => () => void; getSnapshot: () => ToastRecord[]; runAction: (id: string) => void };
-type Target = { y: number; scale: number; height: number; opacity: number; content: number };
+type Target = { y: number; scale: number; height: number; width: number; opacity: number; content: number };
+
+let measureCanvas: HTMLCanvasElement | null = null;
+function getIntrinsicToastWidth(title: string, description?: string, actionLabel?: string): number {
+  if (typeof document === "undefined") return 220;
+  if (!measureCanvas) {
+    measureCanvas = document.createElement("canvas");
+  }
+  const ctx = measureCanvas.getContext("2d");
+  if (!ctx) return 220;
+
+  ctx.font = '400 13px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  const titleW = ctx.measureText(title).width;
+  const descW = description ? ctx.measureText(description).width : 0;
+  const textW = Math.max(titleW, descW);
+
+  let actionW = 0;
+  if (actionLabel) {
+    ctx.font = '500 13px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    actionW = ctx.measureText(actionLabel).width + 24;
+  }
+
+  // icon(18) + gap(8) + text + gap(8) + action + gap(8) + close(26) + padding(26) + border(2)
+  const chrome = 18 + 8 + 8 + 26 + 26 + 2 + (actionW > 0 ? actionW + 8 : 0);
+  const natural = Math.ceil(textW + chrome);
+  return Math.min(300, Math.max(120, natural));
+}
 
 /** Each tucked toast shows this many pixels above the one in front of it. */
 const PEEK = 14;
@@ -106,18 +132,25 @@ const focusVisible = (element: Element) => { try { return element.matches(":focu
 
 /**
  * Closed, tucked toasts take the front toast's height so their edges line up; open, each takes its own and they stack with a gap.
+ * When there are 2 or more toasts in the stack, they adapt their size based on the stack's max required width.
  * The list is the hover target and is sized to cover the gaps, so moving between open toasts never collapses the stack.
  */
-function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, expanded: boolean, visibleToasts: number, isTop = false) {
+function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, widths: Record<string, number>, expanded: boolean, visibleToasts: number, isTop = false) {
   const front = toasts.length ? heights[toasts[0]!.id] ?? 0 : 0;
+  const frontWidth = toasts.length ? widths[toasts[0]!.id] ?? 0 : 0;
+  const visibleItems = toasts.slice(0, visibleToasts);
+  const maxStackWidth = visibleItems.reduce((max, item) => Math.max(max, widths[item.id] ?? 0), 0);
+  const stackWidth = toasts.length > 1 ? maxStackWidth : frontWidth;
+
   const tops = toasts.reduce<number[]>((sum, item, index) => [...sum, sum[index]! + (index < visibleToasts ? (heights[item.id] ?? 0) + GAP : 0)], [0]);
   const sign = isTop ? 1 : -1;
   const targets = toasts.map((item, index): Target => {
     const visible = index < visibleToasts;
     const depth = Math.min(index, visibleToasts);
+    const itemWidth = stackWidth > 0 ? stackWidth : (widths[item.id] ?? 0);
     return expanded
-      ? { y: sign * tops[index]!, scale: 1, height: heights[item.id] ?? 0, opacity: visible ? 1 : 0, content: 1 }
-      : { y: sign * PEEK * depth, scale: 1 - STEP * depth, height: index === 0 ? heights[item.id] ?? 0 : front, opacity: visible ? 1 : 0, content: index === 0 ? 1 : 0 };
+      ? { y: sign * tops[index]!, scale: 1, height: heights[item.id] ?? 0, width: itemWidth, opacity: visible ? 1 : 0, content: 1 }
+      : { y: sign * PEEK * depth, scale: 1 - STEP * depth, height: index === 0 ? heights[item.id] ?? 0 : front, width: itemWidth, opacity: visible ? 1 : 0, content: index === 0 ? 1 : 0 };
   });
   const listHeight = !toasts.length ? 0 : expanded ? tops[toasts.length]! - GAP : front + PEEK * (Math.min(toasts.length, visibleToasts) - 1);
   return { targets, listHeight };
@@ -198,7 +231,7 @@ interface ToastItemProps {
   paused: boolean;
   reduce: boolean;
   store: ToastStore;
-  onMeasure: (id: string, height: number) => void;
+  onMeasure: (id: string, height: number, width: number) => void;
   onDragChange: (dragging: boolean) => void;
   onTap: () => void;
   onHandOff: (leaving: HTMLElement, keyboard: boolean) => void;
@@ -217,6 +250,7 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
   const height = useMotionValue(0);
+  const width = useMotionValue(target.width || 0);
   const opacity = useMotionValue(0);
   const contentOpacity = useMotionValue(1);
   const x = useMotionValue(0);
@@ -233,12 +267,13 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
   useLayoutEffect(() => {
     const node = contentRef.current;
     if (!node) return;
-    onMeasure(id, node.offsetHeight + BORDER);
+    const w = getIntrinsicToastWidth(toast.title, toast.description, toast.action?.label);
+    onMeasure(id, node.offsetHeight + BORDER, w);
     if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => onMeasure(id, node.offsetHeight + BORDER));
+    const observer = new ResizeObserver(() => onMeasure(id, node.offsetHeight + BORDER, w));
     observer.observe(node);
     return () => observer.disconnect();
-  }, [id, onMeasure]);
+  }, [id, onMeasure, toast.action?.label, toast.description, toast.title]);
 
   // Every stack change retargets the running springs from wherever they are, so rapid toasts and hover changes never queue.
   useLayoutEffect(() => {
@@ -248,18 +283,29 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
     applied.current = expanded;
     if (reduce) {
       y.jump(target.y); scale.jump(target.scale); height.jump(target.height);
+      if (target.width > 0) width.jump(target.width);
       animate(opacity, target.opacity, reducedFade);
       animate(contentOpacity, target.content, reducedFade);
       return;
     }
-    if (entering) { y.jump(target.y + (isTop ? -target.height : target.height)); scale.jump(target.scale); height.jump(target.height); contentOpacity.jump(target.content); opacity.jump(0); }
+    if (entering) {
+      y.jump(target.y + (isTop ? -target.height : target.height));
+      scale.jump(target.scale);
+      height.jump(target.height);
+      if (target.width > 0) width.jump(target.width);
+      contentOpacity.jump(target.content);
+      opacity.jump(0);
+    }
     const spring = morph ? motionTokens.spring.morph : motionTokens.spring.smooth;
     animate(y, target.y, spring);
     animate(scale, target.scale, spring);
-    if (!entering) animate(height, target.height, spring);
+    if (!entering) {
+      animate(height, target.height, spring);
+      if (target.width > 0) animate(width, target.width, spring);
+    }
     animate(opacity, target.opacity, entering ? enterFade : fade);
     animate(contentOpacity, target.content, fade);
-  }, [contentOpacity, expanded, height, isPresent, opacity, reduce, scale, target.content, target.height, target.opacity, target.scale, target.y, y]);
+  }, [contentOpacity, expanded, height, isPresent, opacity, reduce, scale, target.content, target.height, target.opacity, target.scale, target.width, target.y, width, y]);
 
   // An update restarts the clock; pausing keeps whatever time is left.
   useEffect(() => { remaining.current = toast.duration; }, [toast.version, toast.duration]);
@@ -366,7 +412,7 @@ function ToastItem({ toast, target, expanded, front, hidden, paused, reduce, sto
   const swap = reduce ? fadeOnly : textSwap;
 
   return <motion.li ref={itemRef} className={styles.item} style={{ y, scale, height, opacity, zIndex: toast.seq }} data-front={front} data-expanded={expanded} inert={hidden} onKeyDown={onKeyDown}>
-    <motion.div ref={cardRef} className={styles.card} style={{ x, opacity: swipeFade }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={event => onPointerEnd(event, false)} onPointerCancel={event => onPointerEnd(event, true)} onClick={onCardClick}>
+    <motion.div ref={cardRef} className={styles.card} style={{ x, width: target.width > 0 ? width : undefined, opacity: swipeFade }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={event => onPointerEnd(event, false)} onPointerCancel={event => onPointerEnd(event, true)} onClick={onCardClick}>
       <motion.div ref={contentRef} className={styles.content} style={{ opacity: contentOpacity }}>
         {/* A new type morphs its icon in place: the old glyph shrinks into a blur while the new one grows out of it. */}
         <span className={styles.icon} data-type={toast.type} aria-hidden="true">
@@ -404,6 +450,7 @@ export function ToastStack({ label = "Notifications", position = "top-center", c
   const [tapped, setTapped] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [heights, setHeights] = useState<Record<string, number>>({});
+  const [widths, setWidths] = useState<Record<string, number>>({});
   const regionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -411,8 +458,15 @@ export function ToastStack({ label = "Notifications", position = "top-center", c
   const expanded = toasts.length > 0 && (hovered || focused || tapped);
   const paused = expanded || dragging || pageHidden;
 
-  const measure = useCallback((id: string, height: number) => setHeights(current => current[id] === height ? current : { ...current, [id]: height }), []);
-  const prune = useCallback(() => setHeights(current => Object.fromEntries(store.getSnapshot().filter(item => item.id in current).map(item => [item.id, current[item.id]!]))), [store]);
+  const measure = useCallback((id: string, height: number, width: number) => {
+    setHeights(current => current[id] === height ? current : { ...current, [id]: height });
+    setWidths(current => current[id] === width ? current : { ...current, [id]: width });
+  }, []);
+  const prune = useCallback(() => {
+    const valid = new Set(store.getSnapshot().map(item => item.id));
+    setHeights(current => Object.fromEntries(Object.entries(current).filter(([id]) => valid.has(id))));
+    setWidths(current => Object.fromEntries(Object.entries(current).filter(([id]) => valid.has(id))));
+  }, [store]);
   const toggleTap = useCallback(() => setTapped(open => !open), []);
 
   /** Keyboard users land on the next toast; with none left they return to where they were before entering the stack. */
@@ -449,7 +503,7 @@ export function ToastStack({ label = "Notifications", position = "top-center", c
     return () => document.removeEventListener("pointerdown", onDown);
   }, [tapped]);
 
-  const { targets, listHeight } = layoutStack(toasts, heights, expanded, visibleToasts, isTop);
+  const { targets, listHeight } = layoutStack(toasts, heights, widths, expanded, visibleToasts, isTop);
 
   function onFocus(event: FocusEvent<HTMLElement>) {
     const from = event.relatedTarget;

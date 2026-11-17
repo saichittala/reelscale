@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -28,7 +28,6 @@ import {
 // Sub-modules
 import { Overview } from "./modules/Overview";
 import { Clients } from "./modules/Clients";
-import { Analytics } from "./modules/Analytics";
 import { Users } from "./modules/Users";
 import { Sales } from "./modules/Sales";
 import { Blogs } from "./modules/Blogs";
@@ -49,6 +48,13 @@ export default function DashboardMainPage() {
 
   // Selected tab route state (synced with localStorage)
   const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
+
+  // Automatically migrate legacy "analytics" tab to unified "dashboard"
+  useEffect(() => {
+    if (page === "analytics") {
+      setPage("dashboard");
+    }
+  }, [page, setPage]);
 
   // Core Data States
   const [clients, setClients] = useState<Client[]>([]);
@@ -139,14 +145,22 @@ export default function DashboardMainPage() {
   } | null>(null);
 
   // Centralized Toast system
+  const loadingToastRef = useRef<string | null>(null);
   const showToast = useCallback(
     (msg: string, type: "success" | "error" | "loading" = "success") => {
       if (type === "loading") {
-        toast.loading(msg);
-      } else if (type === "error") {
-        toast.error(msg);
+        if (loadingToastRef.current) toast.dismiss(loadingToastRef.current);
+        loadingToastRef.current = toast.loading(msg);
       } else {
-        toast.success(msg);
+        if (loadingToastRef.current) {
+          toast.dismiss(loadingToastRef.current);
+          loadingToastRef.current = null;
+        }
+        if (type === "error") {
+          toast.error(msg);
+        } else {
+          toast.success(msg);
+        }
       }
     },
     []
@@ -792,7 +806,7 @@ export default function DashboardMainPage() {
     >
       {/* Active page views wrapped in a premium entrance animation container */}
       <div key={page} className="active-view">
-        {page === "dashboard" && (
+        {(page === "dashboard" || page === "analytics") && (
           <Overview clients={filteredClientsByMonth} isLoading={clientsLoading} />
         )}
 
@@ -810,10 +824,6 @@ export default function DashboardMainPage() {
             showToast={showToast}
             setConfirmModal={setConfirmModal}
           />
-        )}
-
-        {page === "analytics" && (
-          <Analytics clients={filteredClientsByMonth} isLoading={clientsLoading} />
         )}
 
         {page === "users" && (

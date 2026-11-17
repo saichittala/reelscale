@@ -202,7 +202,7 @@
   padding: 11px 12px 11px 14px;
   min-height: 42px;
   box-sizing: border-box;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
 }
 
