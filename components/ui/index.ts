@@ -26,3 +26,4 @@ export {
   type SelectProps,
   type SelectOption,
 } from "./dropdown-menu";
+export { MorphingText } from "./morphing-text";
