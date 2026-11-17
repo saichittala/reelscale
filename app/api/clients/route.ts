@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole } from "../rbac";
-import { getDb } from "../../lib/db";
 
 export const dynamic = "force-dynamic";
+
+const GOOGLE_SCRIPT_CLIENTS_URL = process.env.GOOGLE_SCRIPT_CLIENTS_URL || "https://script.google.com/macros/s/AKfycbwjmC5mDKejUEDSuXsf_7IlhEznHR7vA9pvu1O16DOS8J2Nn6bXNEv_w3xaOuRFAXZS/exec";
+
+async function proxyToGoogleScript(body: Record<string, unknown>) {
+  const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  return response.json();
+}
 
 export async function GET(request: Request) {
   const rbac = await checkRole(request, ["admin"]);
@@ -13,53 +26,10 @@ export async function GET(request: Request) {
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
     return NextResponse.json({ success: true, clients: [] });
   }
-
   try {
-    const sql = getDb();
-    const rows = await sql`
-      SELECT 
-        id, 
-        name, 
-        business, 
-        phone, 
-        instagram, 
-        reels, 
-        ppr, 
-        image, 
-        billing_model, 
-        plan, 
-        base_rate, 
-        bargain, 
-        revenue, 
-        date
-      FROM clients
-      ORDER BY id ASC;
-    `;
-
-    const clients = rows.map((r: any) => ({
-      id: r.id,
-      name: r.name,
-      clientName: r.name,
-      business: r.business || "",
-      phone: r.phone || "",
-      instagram: r.instagram || "",
-      reels: Number(r.reels || 0),
-      pricePerReel: Number(r.ppr || 0),
-      ppr: Number(r.ppr || 0),
-      image: r.image || "",
-      billingModel: r.billing_model || "Reel-to-Reel",
-      plan: r.plan || "",
-      baseRate: Number(r.base_rate || 0),
-      bargain: Number(r.bargain || 0),
-      revenue: Number(r.revenue || 0),
-      date: r.date || "",
-    }));
-
-    // Return both format: root array or object with clients field
-    return NextResponse.json({
-      success: true,
-      clients,
-    });
+    const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL);
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Clients GET error:", error);
     return NextResponse.json(
@@ -78,85 +48,62 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { action, ...data } = body;
-    const sql = getDb();
 
     switch (action) {
       case "add": {
-        const clientName = data.clientName || data.name;
-        const reels = Number(data.reels || 0);
-        const ppr = Number(data.pricePerReel || data.ppr || 0);
-        const revenue = reels * ppr;
-
-        const rows = await sql`
-          INSERT INTO clients (
-            name, business, phone, instagram, reels, ppr, image, billing_model, plan, base_rate, bargain, revenue, date
-          ) VALUES (
-            ${clientName},
-            ${data.business || ''},
-            ${String(data.phone || '')},
-            ${data.instagram || ''},
-            ${reels},
-            ${ppr},
-            ${data.image || ''},
-            ${data.billingModel || 'Reel-to-Reel'},
-            ${data.plan || ''},
-            ${Number(data.baseRate || 0)},
-            ${Number(data.bargain || 0)},
-            ${revenue},
-            ${data.date || new Date().toISOString().slice(0, 10)}
-          )
-          RETURNING *;
-        `;
-        return NextResponse.json({ success: true, client: rows[0] });
+        const result = await proxyToGoogleScript({
+          action: "add",
+          clientName: data.clientName || data.name,
+          business: data.business,
+          phone: data.phone,
+          instagram: data.instagram,
+          reels: Number(data.reels),
+          pricePerReel: Number(data.pricePerReel),
+          image: data.image || "",
+          billingModel: data.billingModel || "Reel-to-Reel",
+          plan: data.plan || "",
+          baseRate: Number(data.baseRate || 0),
+          bargain: Number(data.bargain || 0),
+          date: data.date || "",
+        });
+        return NextResponse.json(result);
       }
-
       case "update": {
-        const clientName = data.clientName || data.name;
-        const reels = Number(data.reels || 0);
-        const ppr = Number(data.pricePerReel || data.ppr || 0);
-        const revenue = reels * ppr;
-
-        const rows = await sql`
-          UPDATE clients
-          SET
-            name = ${clientName},
-            business = ${data.business || ''},
-            phone = ${String(data.phone || '')},
-            instagram = ${data.instagram || ''},
-            reels = ${reels},
-            ppr = ${ppr},
-            image = ${data.image || ''},
-            billing_model = ${data.billingModel || 'Reel-to-Reel'},
-            plan = ${data.plan || ''},
-            base_rate = ${Number(data.baseRate || 0)},
-            bargain = ${Number(data.bargain || 0)},
-            revenue = ${revenue},
-            date = ${data.date || ''},
-            updated_at = NOW()
-          WHERE id = ${Number(data.id)}
-          RETURNING *;
-        `;
-        return NextResponse.json({ success: true, client: rows[0] });
+        const result = await proxyToGoogleScript({
+          action: "update",
+          id: data.id,
+          clientName: data.clientName || data.name,
+          business: data.business,
+          phone: data.phone,
+          instagram: data.instagram,
+          reels: Number(data.reels),
+          pricePerReel: Number(data.pricePerReel),
+          image: data.image || "",
+          billingModel: data.billingModel || "Reel-to-Reel",
+          plan: data.plan || "",
+          baseRate: Number(data.baseRate || 0),
+          bargain: Number(data.bargain || 0),
+          date: data.date || "",
+        });
+        return NextResponse.json(result);
       }
-
       case "delete": {
-        await sql`
-          DELETE FROM clients
-          WHERE id = ${Number(data.id)};
-        `;
-        return NextResponse.json({ success: true, message: "Client deleted" });
+        const result = await proxyToGoogleScript({
+          action: "delete",
+          id: data.id,
+        });
+        return NextResponse.json(result);
       }
-
       default:
         return NextResponse.json(
           { success: false, message: "Invalid action" },
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Clients API error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Internal server error" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }

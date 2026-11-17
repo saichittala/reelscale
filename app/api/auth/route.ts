@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "../../lib/db";
 
-export const dynamic = "force-dynamic";
+const GOOGLE_SCRIPT_USERS_URL = process.env.GOOGLE_SCRIPT_USERS_URL || "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,42 +13,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const sql = getDb();
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = String(password).trim();
+    // Fetch users from Google Apps Script
+    const response = await fetch(GOOGLE_SCRIPT_USERS_URL);
+    const data = await response.json();
 
-    // Query user by email from Neon Postgres
-    const rows = await sql`
-      SELECT id, name, email, password, role
-      FROM users
-      WHERE LOWER(TRIM(email)) = ${cleanEmail}
-      LIMIT 1;
-    `;
+    const users = data.users || data || [];
 
-    if (!rows || rows.length === 0) {
+    // Find matching user (case-insensitive email)
+    const user = users.find(
+      (u: { email: string; password: string }) =>
+        u.email.trim().toLowerCase() === email.trim().toLowerCase() &&
+        u.password === password
+    );
+
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    const user = rows[0];
-
-    // Check password
-    if (String(user.password).trim() !== cleanPassword) {
-      return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
+    // Return user data (without password)
+    const { password: _pwd, ...userWithoutPassword } = user;
 
     return NextResponse.json({
       success: true,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        id: userWithoutPassword.id,
+        name: userWithoutPassword.name,
+        email: userWithoutPassword.email,
+        role: userWithoutPassword.role,
       },
     });
   } catch (error) {

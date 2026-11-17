@@ -4,21 +4,26 @@ const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
 const apiDir = path.join(rootDir, 'app', 'api');
+const apiBakDir = path.join(rootDir, '_api_bak');
 
-function getRouteFiles(dir) {
-  let results = [];
-  if (!fs.existsSync(dir)) return results;
-  const list = fs.readdirSync(dir);
-  for (const file of list) {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-    if (stat.isDirectory()) {
-      results = results.concat(getRouteFiles(fullPath));
-    } else if (file === 'route.ts' || file === 'route.js') {
-      results.push(fullPath);
+function sleepSync(ms) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {}
+}
+
+function safeRename(src, dest, retries = 5, delayMs = 400) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      fs.renameSync(src, dest);
+      return;
+    } catch (err) {
+      if ((err.code === 'EPERM' || err.code === 'EBUSY') && i < retries - 1) {
+        sleepSync(delayMs);
+      } else {
+        throw err;
+      }
     }
   }
-  return results;
 }
 
 console.log('==> Step 1: Generating sitemap & syncing public blogs database...');
@@ -29,15 +34,28 @@ if (fs.existsSync(contentBlogsPath)) {
 }
 execSync('node scripts/generate-sitemap.js', { stdio: 'inherit', cwd: rootDir });
 
-let renamedFiles = [];
+let moveMode = null; // 'folder' | 'contents'
 
 try {
-  console.log('==> Step 2: Temporarily stashing app/api route handlers for static export...');
-  const routeFiles = getRouteFiles(apiDir);
-  for (const rf of routeFiles) {
-    const bak = rf + '.bak';
-    fs.renameSync(rf, bak);
-    renamedFiles.push({ original: rf, bak });
+  // If a previous run left _api_bak and app/api doesn't exist, restore it first
+  if (!fs.existsSync(apiDir) && fs.existsSync(apiBakDir)) {
+    safeRename(apiBakDir, apiDir);
+  }
+
+  if (fs.existsSync(apiDir)) {
+    console.log('==> Step 2: Temporarily moving app/api for static export...');
+    try {
+      safeRename(apiDir, apiBakDir);
+      moveMode = 'folder';
+    } catch (err) {
+      // Fallback: move items inside app/api without renaming app/api directory handle
+      if (!fs.existsSync(apiBakDir)) fs.mkdirSync(apiBakDir, { recursive: true });
+      const items = fs.readdirSync(apiDir);
+      for (const item of items) {
+        safeRename(path.join(apiDir, item), path.join(apiBakDir, item));
+      }
+      moveMode = 'contents';
+    }
   }
 
   const dotNextDir = path.join(rootDir, '.next');
@@ -61,13 +79,24 @@ try {
   console.error('==> Build failed:', err.message);
   process.exitCode = 1;
 } finally {
-  if (renamedFiles.length > 0) {
-    console.log('==> Step 4: Restoring app/api route handlers...');
-    for (const { original, bak } of renamedFiles) {
-      if (fs.existsSync(bak)) {
-        fs.renameSync(bak, original);
+  if (moveMode && fs.existsSync(apiBakDir)) {
+    console.log('==> Step 4: Restoring app/api directory...');
+    try {
+      if (moveMode === 'folder') {
+        if (fs.existsSync(apiDir)) {
+          fs.rmSync(apiDir, { recursive: true, force: true });
+        }
+        safeRename(apiBakDir, apiDir);
+      } else {
+        const items = fs.readdirSync(apiBakDir);
+        for (const item of items) {
+          safeRename(path.join(apiBakDir, item), path.join(apiDir, item));
+        }
+        fs.rmSync(apiBakDir, { recursive: true, force: true });
       }
+      console.log('==> app/api successfully restored.');
+    } catch (restoreErr) {
+      console.error('==> Warning: Failed to restore app/api:', restoreErr.message);
     }
-    console.log(`==> Restored ${renamedFiles.length} route handlers.`);
   }
 }

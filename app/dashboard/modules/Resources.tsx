@@ -4,7 +4,6 @@ import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
 import { IconSearch } from "../components/Icons";
 import { Button, Input, Textarea } from "@/components/ui";
-import { fetchInvoices, apiSaveInvoice, apiDeleteInvoice } from "../services/api";
 
 interface ResourcesProps {
   clients: Client[];
@@ -177,10 +176,9 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
   // Refs
   const autosaveTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Load documents and contracts on mount
+  // Load cache on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // First load local cache for instant UI rendering
       const cachedDocs = localStorage.getItem("reelscale_documents");
       if (cachedDocs) {
         try {
@@ -190,19 +188,8 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
         }
       } else {
         setDocuments(INITIAL_DOCUMENTS);
+        localStorage.setItem("reelscale_documents", JSON.stringify(INITIAL_DOCUMENTS));
       }
-
-      // Then fetch fresh documents from Neon Postgres
-      fetchInvoices()
-        .then((remoteDocs) => {
-          if (remoteDocs && remoteDocs.length > 0) {
-            setDocuments(remoteDocs);
-            localStorage.setItem("reelscale_documents", JSON.stringify(remoteDocs));
-          }
-        })
-        .catch((err) => {
-          console.warn("Could not fetch invoices from Neon, using local cache:", err);
-        });
 
       const cachedContracts = localStorage.getItem("reelscale_contracts");
       if (cachedContracts) {
@@ -232,17 +219,14 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
     autosaveTimer.current = setTimeout(() => {
       setSaveStatus("saving");
       
-      // Update list of documents and save to localStorage & Neon
-      const docToSave = { ...activeDoc, updatedAt: new Date().toISOString() };
-      apiSaveInvoice(docToSave).catch((e) => console.warn("Failed to sync invoice to Neon:", e));
-
+      // Update list of documents and save to localStorage
       setDocuments((prev) => {
         const index = prev.findIndex((d) => d.id === activeDoc.id);
         let updated = [...prev];
         if (index > -1) {
-          updated[index] = docToSave;
+          updated[index] = { ...activeDoc, updatedAt: new Date().toISOString() };
         } else {
-          updated.push(docToSave);
+          updated.push({ ...activeDoc, updatedAt: new Date().toISOString() });
         }
         localStorage.setItem("reelscale_documents", JSON.stringify(updated));
         return updated;
@@ -531,7 +515,6 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    apiSaveInvoice(duplicated).catch((e) => console.warn("Failed to sync duplicate to Neon:", e));
     setDocuments((prev) => {
       const updated = [...prev, duplicated];
       localStorage.setItem("reelscale_documents", JSON.stringify(updated));
@@ -545,12 +528,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
     setConfirmModal({
       title: `Delete Document ${docNum}`,
       message: `Are you sure you want to permanently delete this document from history? This action cannot be undone.`,
-      onConfirm: async () => {
-        try {
-          await apiDeleteInvoice(docId);
-        } catch (e) {
-          console.warn("Failed to delete from Neon:", e);
-        }
+      onConfirm: () => {
         setDocuments((prev) => {
           const updated = prev.filter((d) => d.id !== docId);
           localStorage.setItem("reelscale_documents", JSON.stringify(updated));

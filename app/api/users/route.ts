@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole, clearUserCache } from "../rbac";
-import { getDb } from "../../lib/db";
 
 export const dynamic = "force-dynamic";
+
+const GOOGLE_SCRIPT_USERS_URL = process.env.GOOGLE_SCRIPT_USERS_URL || "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+
+async function proxyToGoogleScript(body: Record<string, unknown>) {
+  const response = await fetch(GOOGLE_SCRIPT_USERS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  return response.json();
+}
 
 export async function GET(request: Request) {
   const rbac = await checkRole(request, ["admin"]);
@@ -13,25 +26,10 @@ export async function GET(request: Request) {
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
     return NextResponse.json({ success: true, users: [] });
   }
-
   try {
-    const sql = getDb();
-    const rows = await sql`
-      SELECT id, name, email, password, role
-      FROM users
-      ORDER BY id ASC;
-    `;
-
-    return NextResponse.json({
-      success: true,
-      users: rows.map((u: any) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        password: u.password,
-        role: u.role,
-      })),
-    });
+    const response = await fetch(GOOGLE_SCRIPT_USERS_URL);
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Users GET error:", error);
     return NextResponse.json(
@@ -53,57 +51,48 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const sql = getDb();
-    clearUserCache();
-
     switch (action) {
       case "add": {
-        const rows = await sql`
-          INSERT INTO users (name, email, password, role)
-          VALUES (
-            ${data.name},
-            ${String(data.email).trim().toLowerCase()},
-            ${String(data.password)},
-            ${data.role || 'sales'}
-          )
-          RETURNING id, name, email, password, role;
-        `;
-        return NextResponse.json({ success: true, user: rows[0] });
+        clearUserCache();
+        const result = await proxyToGoogleScript({
+          action: "add",
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        });
+        return NextResponse.json(result);
       }
-
       case "update": {
-        const rows = await sql`
-          UPDATE users
-          SET
-            name = ${data.name},
-            email = ${String(data.email).trim().toLowerCase()},
-            password = ${String(data.password)},
-            role = ${data.role},
-            updated_at = NOW()
-          WHERE id = ${Number(data.id)}
-          RETURNING id, name, email, password, role;
-        `;
-        return NextResponse.json({ success: true, user: rows[0] });
+        clearUserCache();
+        const result = await proxyToGoogleScript({
+          action: "update",
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        });
+        return NextResponse.json(result);
       }
-
       case "delete": {
-        await sql`
-          DELETE FROM users
-          WHERE id = ${Number(data.id)};
-        `;
-        return NextResponse.json({ success: true, message: "User deleted" });
+        clearUserCache();
+        const result = await proxyToGoogleScript({
+          action: "delete",
+          id: data.id,
+        });
+        return NextResponse.json(result);
       }
-
       default:
         return NextResponse.json(
           { success: false, message: "Invalid action" },
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Users API error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Internal server error" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }

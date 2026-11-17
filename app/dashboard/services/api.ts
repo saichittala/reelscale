@@ -1,4 +1,4 @@
-import { User, Client, Lead, Blog, DeliveredReel, BusinessDocument } from "../types";
+import { User, Client, Lead, Blog, DeliveredReel } from "../types";
 import { client } from "../../sanity/client";
 import {
   syncBlogToSanity,
@@ -651,69 +651,5 @@ export async function apiDeleteDelivery(id: string): Promise<void> {
     throw new Error(result.message || "Failed to delete delivery");
   }
 }
-
-// ==============================
-// INVOICE & QUOTATION API SERVICES (NEON)
-// ==============================
-export async function fetchInvoices(): Promise<BusinessDocument[]> {
-  const user = getCurrentUser();
-  const headers: Record<string, string> = {};
-  if (user) {
-    headers["x-user-role"] = user.role;
-    headers["x-user-email"] = user.email;
-  }
-
-  const response = await fetch("/api/invoices", { headers });
-  const data = await response.json();
-  if (data.success && Array.isArray(data.documents)) {
-    return data.documents;
-  }
-  return [];
-}
-
-export async function apiSaveInvoice(doc: BusinessDocument): Promise<void> {
-  const user = getCurrentUser();
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (user) {
-    headers["x-user-role"] = user.role;
-    headers["x-user-email"] = user.email;
-  }
-
-  const response = await fetch("/api/invoices", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      action: "save",
-      ...doc,
-    }),
-  });
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Failed to save invoice");
-  }
-}
-
-export async function apiDeleteInvoice(id: string): Promise<void> {
-  const user = getCurrentUser();
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (user) {
-    headers["x-user-role"] = user.role;
-    headers["x-user-email"] = user.email;
-  }
-
-  const response = await fetch("/api/invoices", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      action: "delete",
-      id,
-    }),
-  });
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Failed to delete invoice");
-  }
-}
-
 
 
