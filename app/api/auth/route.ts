@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getDb } from "../../lib/db";
 
-const GOOGLE_SCRIPT_USERS_URL = process.env.GOOGLE_SCRIPT_USERS_URL || "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,36 +14,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch users from Google Apps Script
-    const response = await fetch(GOOGLE_SCRIPT_USERS_URL);
-    const data = await response.json();
+    const sql = getDb();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = String(password).trim();
 
-    const users = data.users || data || [];
+    // Query user by email from Neon Postgres
+    const rows = await sql`
+      SELECT id, name, email, password, role
+      FROM users
+      WHERE LOWER(TRIM(email)) = ${cleanEmail}
+      LIMIT 1;
+    `;
 
-    // Find matching user (case-insensitive email)
-    const user = users.find(
-      (u: { email: string; password: string }) =>
-        u.email.trim().toLowerCase() === email.trim().toLowerCase() &&
-        u.password === password
-    );
-
-    if (!user) {
+    if (!rows || rows.length === 0) {
       return NextResponse.json(
         { success: false, message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Return user data (without password)
-    const { password: _pwd, ...userWithoutPassword } = user;
+    const user = rows[0];
+
+    // Check password
+    if (String(user.password).trim() !== cleanPassword) {
+      return NextResponse.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
       user: {
-        id: userWithoutPassword.id,
-        name: userWithoutPassword.name,
-        email: userWithoutPassword.email,
-        role: userWithoutPassword.role,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {

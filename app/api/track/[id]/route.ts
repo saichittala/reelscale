@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../../dashboard/types";
+import { getDb } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -51,19 +52,33 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const month = searchParams.get("month");
 
-    // Fetch clients to find this client
-    let clients: any[] = [];
+    // Fetch client from Neon Postgres (with fallback to Google Apps Script)
+    let client: any = null;
     try {
-      const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL, {
-        next: { revalidate: 30 },
-      });
-      const data = await response.json();
-      clients = data.clients || data || [];
+      const sql = getDb();
+      const numId = Number(id);
+      const rows = !isNaN(numId)
+        ? await sql`SELECT id, name, business FROM clients WHERE id = ${numId} LIMIT 1`
+        : await sql`SELECT id, name, business FROM clients WHERE CAST(id AS TEXT) = ${id} LIMIT 1`;
+      if (rows && rows.length > 0) {
+        client = rows[0];
+      }
     } catch (e) {
-      console.warn("Could not fetch remote clients:", e);
+      console.warn("Could not fetch client from Neon:", e);
     }
 
-    const client = clients.find((c: any) => String(c.id) === String(id));
+    if (!client) {
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL, {
+          next: { revalidate: 30 },
+        });
+        const data = await response.json();
+        const clients = data.clients || data || [];
+        client = clients.find((c: any) => String(c.id) === String(id));
+      } catch (e) {
+        console.warn("Could not fetch remote clients fallback:", e);
+      }
+    }
 
     if (!client) {
       return NextResponse.json(

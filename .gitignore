@@ -34,3 +34,4 @@ yarn-error.log*
 # typescript/editor config
 .vscode/
 .idea/
+.neon

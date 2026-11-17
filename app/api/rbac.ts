@@ -1,11 +1,10 @@
 import { NextRequest } from "next/server";
-
-const GOOGLE_SCRIPT_USERS_URL = process.env.GOOGLE_SCRIPT_USERS_URL || "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
+import { getDb } from "../lib/db";
 
 // In-memory cache for user validation
 let cachedUsers: any[] | null = null;
 let lastCacheTime = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 export function clearUserCache() {
   cachedUsers = null;
@@ -14,29 +13,31 @@ export function clearUserCache() {
 
 export async function validateUser(email: string | null, role: string | null): Promise<boolean> {
   if (!email || !role) return false;
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanRole = role.trim().toLowerCase();
+
   try {
     const now = Date.now();
     if (!cachedUsers || (now - lastCacheTime > CACHE_DURATION)) {
-      const response = await fetch(GOOGLE_SCRIPT_USERS_URL);
-      const data = await response.json();
-      cachedUsers = data.users || data || [];
+      const sql = getDb();
+      cachedUsers = await sql`SELECT id, name, email, role FROM users`;
       lastCacheTime = now;
     }
 
     if (Array.isArray(cachedUsers)) {
       const user = cachedUsers.find((u: any) => 
-        u.email.trim().toLowerCase() === email.trim().toLowerCase()
+        String(u.email).trim().toLowerCase() === cleanEmail
       );
-      return !!(user && user.role.toLowerCase() === role.toLowerCase());
+      return !!(user && String(user.role).trim().toLowerCase() === cleanRole);
     }
   } catch (error) {
     console.error("RBAC user validation error:", error);
-    // Fallback to cached version on network failure if available
+    // Fallback to cached version on error if available
     if (Array.isArray(cachedUsers)) {
       const user = cachedUsers.find((u: any) => 
-        u.email.trim().toLowerCase() === email.trim().toLowerCase()
+        String(u.email).trim().toLowerCase() === cleanEmail
       );
-      return !!(user && user.role.toLowerCase() === role.toLowerCase());
+      return !!(user && String(user.role).trim().toLowerCase() === cleanRole);
     }
   }
   return false;
