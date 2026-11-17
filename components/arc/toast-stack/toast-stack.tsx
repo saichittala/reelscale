@@ -86,10 +86,10 @@ function getIntrinsicToastWidth(title: string, description?: string, actionLabel
     actionW = ctx.measureText(actionLabel).width + 24;
   }
 
-  // icon(18) + gap(8) + text + gap(8) + action + gap(8) + close(26) + padding(26) + border(2)
-  const chrome = 18 + 8 + 8 + 26 + 26 + 2 + (actionW > 0 ? actionW + 8 : 0);
+  // icon(18) + gap(8) + text + padding(36 left + 36 right) + border(2)
+  const chrome = 18 + 8 + 36 + 36 + 2 + (actionW > 0 ? actionW + 8 : 0);
   const natural = Math.ceil(textW + chrome);
-  return Math.min(300, Math.max(120, natural));
+  return Math.min(300, Math.max(130, natural));
 }
 
 /** Each tucked toast shows this many pixels above the one in front of it. */

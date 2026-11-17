@@ -195,11 +195,12 @@
 }
 
 .content {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: var(--space-3);
-  padding: 10px 12px 10px 14px;
+  padding: 10px 36px 10px 36px;
   min-height: 42px;
   box-sizing: border-box;
   width: 100%;
@@ -259,15 +260,15 @@
 .copy {
   position: relative;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: var(--tracking-body);
   line-height: 20px;
-  text-align: left;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -278,7 +279,7 @@
   display: block;
   font-size: 13px;
   font-weight: 400;
-  text-align: left;
+  text-align: center;
   width: 100%;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -286,7 +287,7 @@
 
 .line {
   display: block;
-  text-align: left;
+  text-align: center;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -297,7 +298,7 @@
   font-size: 13px;
   font-weight: 400;
   color: var(--text-secondary);
-  text-align: left;
+  text-align: center;
   width: 100%;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -341,17 +342,21 @@
 }
 
 .close {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+  margin-block: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  margin: 0;
-  align-self: center;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
   flex-shrink: 0;
+  z-index: 2;
 }
 
 .close svg {
