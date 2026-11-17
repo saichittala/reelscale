@@ -196,10 +196,10 @@
 
 .content {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-start;
   gap: var(--space-3);
-  padding: 11px 12px 11px 14px;
+  padding: 10px 12px 10px 14px;
   min-height: 42px;
   box-sizing: border-box;
   width: 100%;
@@ -213,8 +213,8 @@
   height: 18px;
   flex: none;
   place-items: center;
-  align-self: flex-start;
-  margin-top: 1px;
+  align-self: center;
+  margin: 0;
   color: var(--text-muted);
   transition: color var(--duration-fast) var(--ease-standard);
 }
@@ -309,8 +309,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
-  margin: -4px 0 0 0;
+  align-self: center;
+  margin: 0;
 }
 
 .actionSlot[data-moving="true"] {
@@ -337,6 +337,7 @@
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
+  align-self: center;
 }
 
 .close {
@@ -345,8 +346,8 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  margin: -3px -2px 0 0;
-  align-self: flex-start;
+  margin: 0;
+  align-self: center;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
