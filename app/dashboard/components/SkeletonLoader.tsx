@@ -5,11 +5,11 @@ interface SkeletonLoaderProps {
 }
 
 export function SkeletonLoader({ type }: SkeletonLoaderProps) {
-  if (type === "dashboard") {
+  if (type === "dashboard" || type === "analytics") {
     return (
       <>
         <div className="skeleton-stat-grid">
-          {Array(4)
+          {Array(6)
             .fill(0)
             .map((_, i) => (
               <div className="skeleton-stat-card" key={i}>
@@ -24,11 +24,29 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
         <div className="skeleton-grid-2">
           <div className="skeleton-glass-card">
             <div className="skeleton-line skeleton"></div>
+            <div className="skeleton-chart-area skeleton"></div>
+          </div>
+          <div className="skeleton-glass-card">
+            <div className="skeleton-line skeleton"></div>
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  className="skeleton-block skeleton skeleton-h-var mt-12"
+                  style={{ "--h": "40px" } as any}
+                  key={i}
+                ></div>
+              ))}
+          </div>
+        </div>
+        <div className="skeleton-grid-2">
+          <div className="skeleton-glass-card">
+            <div className="skeleton-line skeleton"></div>
             {Array(5)
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="skeleton-block skeleton skeleton-h-var"
+                  className="skeleton-block skeleton skeleton-h-var mt-12"
                   style={{ "--h": "40px" } as any}
                   key={i}
                 ></div>
@@ -40,7 +58,7 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="skeleton-block skeleton skeleton-h-var"
+                  className="skeleton-block skeleton skeleton-h-var mt-12"
                   style={{ "--h": "40px" } as any}
                   key={i}
                 ></div>
@@ -113,44 +131,6 @@ export function SkeletonLoader({ type }: SkeletonLoaderProps) {
                 ></div>
               </div>
             ))}
-        </div>
-      </>
-    );
-  }
-
-  if (type === "analytics") {
-    return (
-      <>
-        <div className="skeleton-stat-grid">
-          {Array(5)
-            .fill(0)
-            .map((_, i) => (
-              <div className="skeleton-stat-card" key={i}>
-                <div className="skeleton-line skeleton"></div>
-                <div
-                  className="skeleton-line skeleton skeleton-w-var"
-                  style={{ "--w": "40%" } as any}
-                ></div>
-              </div>
-            ))}
-        </div>
-        <div className="skeleton-grid-2">
-          <div className="skeleton-glass-card">
-            <div className="skeleton-line skeleton"></div>
-            <div className="skeleton-chart-area skeleton"></div>
-          </div>
-          <div className="skeleton-glass-card">
-            <div className="skeleton-line skeleton"></div>
-            {Array(4)
-              .fill(0)
-              .map((_, i) => (
-                <div
-                  className="skeleton-block skeleton skeleton-h-var mt-12"
-                  style={{ "--h": "40px" } as any}
-                  key={i}
-                ></div>
-              ))}
-          </div>
         </div>
       </>
     );

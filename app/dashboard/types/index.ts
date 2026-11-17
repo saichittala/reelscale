@@ -21,6 +21,9 @@ export interface Client {
   bargain?: number;
   revenue?: number;
   date?: string;
+  status?: "Active" | "Paused" | "Churned" | string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface Lead {

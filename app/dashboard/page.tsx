@@ -28,6 +28,11 @@ import {
 // Sub-modules
 import { Overview } from "./modules/Overview";
 import { Clients } from "./modules/Clients";
+import {
+  generateAvailableMonths,
+  isClientActiveInMonth,
+  getMonthYearLabel,
+} from "./utils/subscription";
 import { Users } from "./modules/Users";
 import { Sales } from "./modules/Sales";
 import { Blogs } from "./modules/Blogs";
@@ -97,36 +102,11 @@ export default function DashboardMainPage() {
   // Month filter state
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
 
-  const getMonthYearKey = (dateStr?: string) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "";
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  };
+  const availableMonths = generateAvailableMonths(clients);
 
-  const getMonthYearLabel = (dateStr?: string) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "";
-    return d.toLocaleString("en-US", { month: "long", year: "numeric" });
-  };
-
-  const availableMonths = clients
-    .reduce((acc: { key: string; label: string }[], c) => {
-      const key = getMonthYearKey(c.date);
-      const label = getMonthYearLabel(c.date);
-      if (key && !acc.some((m) => m.key === key)) {
-        acc.push({ key, label });
-      }
-      return acc;
-    }, [])
-    .sort((a, b) => a.key.localeCompare(b.key));
-
-  const filteredClientsByMonth = clients.filter((c) => {
-    if (selectedMonth === "all") return true;
-    if (!c.date) return false;
-    return c.date.startsWith(selectedMonth);
-  });
+  const filteredClientsByMonth = clients.filter((c) =>
+    isClientActiveInMonth(c, selectedMonth)
+  );
 
   useEffect(() => {
     setSelectedLeadIds([]);
@@ -807,12 +787,22 @@ export default function DashboardMainPage() {
       {/* Active page views wrapped in a premium entrance animation container */}
       <div key={page} className="active-view">
         {(page === "dashboard" || page === "analytics") && (
-          <Overview clients={filteredClientsByMonth} isLoading={clientsLoading} />
+          <Overview
+            clients={filteredClientsByMonth}
+            allClients={clients}
+            selectedMonth={selectedMonth}
+            availableMonths={availableMonths}
+            isLoading={clientsLoading}
+          />
         )}
 
         {page === "clients" && (
           <Clients
-            clients={clients}
+            clients={filteredClientsByMonth}
+            allClients={clients}
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
+            availableMonths={availableMonths}
             isLoading={clientsLoading}
             newClientRow={newClientRow}
             setNewClientRow={setNewClientRow}

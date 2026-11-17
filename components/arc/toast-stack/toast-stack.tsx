@@ -86,8 +86,8 @@ function getIntrinsicToastWidth(title: string, description?: string, actionLabel
     actionW = ctx.measureText(actionLabel).width + 24;
   }
 
-  // icon(18) + gap(8) + text + padding(36 left + 36 right) + safety buffer(16px) + border(2)
-  const chrome = 18 + 8 + 36 + 36 + 16 + 2 + (actionW > 0 ? actionW + 8 : 0);
+  // icon(18) + gap(12) + text + padding(14 left + 36 right for close btn) + safety buffer(16px) + border(2)
+  const chrome = 18 + 12 + 14 + 36 + 16 + 2 + (actionW > 0 ? actionW + 8 : 0);
   const natural = Math.ceil(textW + chrome);
   return Math.min(300, Math.max(130, natural));
 }

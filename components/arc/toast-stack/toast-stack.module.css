@@ -198,10 +198,9 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-3);
-  padding: 10px 36px 10px 36px;
-  min-height: 42px;
+  padding: 8px 36px 8px 14px;
+  min-height: 40px;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
@@ -265,10 +264,10 @@
   font-weight: 400;
   letter-spacing: var(--tracking-body);
   line-height: 20px;
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -277,13 +276,13 @@
   display: block;
   font-size: 13px;
   font-weight: 400;
-  text-align: center;
+  text-align: left;
   width: 100%;
 }
 
 .line {
   display: block;
-  text-align: center;
+  text-align: left;
   overflow-wrap: break-word;
 }
 
@@ -293,7 +292,7 @@
   font-size: 13px;
   font-weight: 400;
   color: var(--text-secondary);
-  text-align: center;
+  text-align: left;
   width: 100%;
   overflow-wrap: break-word;
 }

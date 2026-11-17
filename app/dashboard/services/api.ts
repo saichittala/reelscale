@@ -195,14 +195,17 @@ export async function fetchClients(): Promise<Client[]> {
   const data = await response.json();
   const list = data.clients || data || [];
 
-  // Read local dates dictionary
+  // Read local dates and statuses dictionary
   let localDates: Record<string, string> = {};
+  let localStatuses: Record<string, string> = {};
   if (typeof window !== "undefined") {
     try {
       const stored = localStorage.getItem("reelscale_client_dates");
       if (stored) localDates = JSON.parse(stored);
+      const storedStatus = localStorage.getItem("reelscale_client_statuses");
+      if (storedStatus) localStatuses = JSON.parse(storedStatus);
     } catch (e) {
-      console.warn("Error reading local client dates", e);
+      console.warn("Error reading local client cache", e);
     }
   }
 
@@ -234,6 +237,9 @@ export async function fetchClients(): Promise<Client[]> {
         bargain: Number(row.bargain || 0),
         revenue: Number(row.revenue || 0),
         date: row.date || row.createdDate || localDates[rowId] || DEFAULT_CLIENT_DATES[rowId] || "2026-08-14",
+        status: row.status || localStatuses[rowId] || "Active",
+        startDate: row.startDate || row.date || localDates[rowId] || DEFAULT_CLIENT_DATES[rowId] || "2026-08-14",
+        endDate: row.endDate || "",
       };
     });
   }
@@ -260,6 +266,7 @@ export async function apiAddClient(
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
       date: client.date || "",
+      status: client.status || "Active",
     }),
   });
   const result = await response.json();
@@ -268,14 +275,22 @@ export async function apiAddClient(
   }
 
   const newId = result.id || (result.client && result.client.id);
-  if (newId && typeof window !== "undefined" && client.date) {
+  if (newId && typeof window !== "undefined") {
     try {
-      const stored = localStorage.getItem("reelscale_client_dates");
-      const localDates = stored ? JSON.parse(stored) : {};
-      localDates[String(newId)] = client.date;
-      localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+      if (client.date) {
+        const stored = localStorage.getItem("reelscale_client_dates");
+        const localDates = stored ? JSON.parse(stored) : {};
+        localDates[String(newId)] = client.date;
+        localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+      }
+      if (client.status) {
+        const storedS = localStorage.getItem("reelscale_client_statuses");
+        const localStatuses = storedS ? JSON.parse(storedS) : {};
+        localStatuses[String(newId)] = client.status;
+        localStorage.setItem("reelscale_client_statuses", JSON.stringify(localStatuses));
+      }
     } catch (e) {
-      console.warn("Failed to save local date mapping on add", e);
+      console.warn("Failed to save local mapping on add", e);
     }
   }
   return result;
@@ -285,14 +300,22 @@ export async function apiUpdateClient(
   id: string | number,
   client: Omit<Client, "id">
 ): Promise<void> {
-  if (typeof window !== "undefined" && client.date) {
+  if (typeof window !== "undefined") {
     try {
-      const stored = localStorage.getItem("reelscale_client_dates");
-      const localDates = stored ? JSON.parse(stored) : {};
-      localDates[String(id)] = client.date;
-      localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+      if (client.date) {
+        const stored = localStorage.getItem("reelscale_client_dates");
+        const localDates = stored ? JSON.parse(stored) : {};
+        localDates[String(id)] = client.date;
+        localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
+      }
+      if (client.status) {
+        const storedS = localStorage.getItem("reelscale_client_statuses");
+        const localStatuses = storedS ? JSON.parse(storedS) : {};
+        localStatuses[String(id)] = client.status;
+        localStorage.setItem("reelscale_client_statuses", JSON.stringify(localStatuses));
+      }
     } catch (e) {
-      console.warn("Failed to save local date mapping on update", e);
+      console.warn("Failed to save local mapping on update", e);
     }
   }
 
@@ -314,6 +337,7 @@ export async function apiUpdateClient(
       baseRate: Number(client.baseRate || 0),
       bargain: Number(client.bargain || 0),
       date: client.date || "",
+      status: client.status || "Active",
     }),
   });
   const result = await response.json();

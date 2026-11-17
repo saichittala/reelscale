@@ -37,6 +37,7 @@ interface ReelTrackerModalProps {
   client: Client | null;
   showToast: (msg: string, type?: "success" | "error") => void;
   onDeliveriesUpdated?: () => void;
+  initialMonth?: string;
 }
 
 function getMonthOptions() {
@@ -63,9 +64,16 @@ export function ReelTrackerModal({
   client,
   showToast,
   onDeliveriesUpdated,
+  initialMonth,
 }: ReelTrackerModalProps) {
   const currentMonthStr = new Date().toISOString().slice(0, 7); // "YYYY-MM"
-  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthStr);
+  const [selectedMonth, setSelectedMonth] = useState<string>(initialMonth || currentMonthStr);
+
+  useEffect(() => {
+    if (isOpen && initialMonth) {
+      setSelectedMonth(initialMonth);
+    }
+  }, [isOpen, initialMonth]);
   const [deliveries, setDeliveries] = useState<DeliveredReel[]>([]);
   const [monthlyDriveLink, setMonthlyDriveLink] = useState<string>("");
   const [showDriveToClient, setShowDriveToClient] = useState<boolean>(true);

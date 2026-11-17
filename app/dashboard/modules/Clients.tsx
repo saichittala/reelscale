@@ -10,6 +10,10 @@ import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 
 interface ClientsProps {
   clients: Client[];
+  allClients?: Client[];
+  selectedMonth?: string;
+  setSelectedMonth?: (m: string) => void;
+  availableMonths?: { key: string; label: string }[];
   isLoading: boolean;
   newClientRow: boolean;
   setNewClientRow: (show: boolean) => void;
@@ -44,6 +48,12 @@ const billingTypeOptions = [
   { value: "subscription", label: "SUB" },
 ];
 
+const statusOptions = [
+  { value: "Active", label: "Active" },
+  { value: "Paused", label: "Paused" },
+  { value: "Churned", label: "Churned" },
+];
+
 const planOptions = [
   { value: "Custom", label: "Custom Plan" },
   ...Object.keys(STANDARD_PLANS).map((p) => ({ value: p, label: p })),
@@ -51,6 +61,10 @@ const planOptions = [
 
 export function Clients({
   clients,
+  allClients,
+  selectedMonth = "all",
+  setSelectedMonth,
+  availableMonths = [],
   isLoading,
   newClientRow,
   setNewClientRow,
@@ -65,6 +79,7 @@ export function Clients({
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<"revenue" | "reels" | "name">("revenue");
   const [sortDir, setSortDir] = useState<-1 | 1>(-1);
+  const [viewScope, setViewScope] = useState<"month" | "all">("month");
   // New client form states
   const [newClientName, setNewClientName] = useState("");
   const [newClientBusiness, setNewClientBusiness] = useState("");
@@ -72,7 +87,8 @@ export function Clients({
   const [newClientInstagram, setNewClientInstagram] = useState("");
   const [newClientReels, setNewClientReels] = useState("");
   const [newClientPpr, setNewClientPpr] = useState(""); // Rate / fee
-  const [newBillingType, setNewBillingType] = useState<"reel-to-reel" | "subscription">("reel-to-reel");
+  const [newBillingType, setNewBillingType] = useState<"reel-to-reel" | "subscription">("subscription");
+  const [newClientStatus, setNewClientStatus] = useState<string>("Active");
   const [newSubscriptionPlan, setNewSubscriptionPlan] = useState<string>("Custom");
   const [newBasePpr, setNewBasePpr] = useState<string>("");
   const [newClientDate, setNewClientDate] = useState("2026-08-14");
@@ -89,10 +105,12 @@ export function Clients({
     try {
       const res = await fetchDeliveries();
       const list = res.deliveries || [];
-      const currentMonth = new Date().toISOString().slice(0, 7);
+      const targetMonth = selectedMonth && selectedMonth !== "all"
+        ? selectedMonth
+        : new Date().toISOString().slice(0, 7);
       const counts: Record<string, number> = {};
       list.forEach((d) => {
-        if (d.month === currentMonth && d.status === "Delivered") {
+        if (d.month === targetMonth && d.status === "Delivered") {
           const idKey = String(d.clientId);
           counts[idKey] = (counts[idKey] || 0) + 1;
         }
@@ -105,7 +123,7 @@ export function Clients({
 
   useEffect(() => {
     loadDeliveriesSummary();
-  }, [clients]);
+  }, [clients, selectedMonth]);
 
   if (isLoading) {
     return <SkeletonLoader type="clients" />;
@@ -129,8 +147,13 @@ export function Clients({
     return <span style={{ fontWeight: 600, color: "var(--white)" }}>₹{base.toLocaleString("en-IN")}</span>;
   };
 
+  const displaySourceClients =
+    selectedMonth !== "all" && viewScope === "all" && allClients
+      ? allClients
+      : clients;
+
   // Filter clients by search term (name, business, instagram)
-  const filteredClients = clients.filter((x) => {
+  const filteredClients = displaySourceClients.filter((x) => {
     const name = x.name || "";
     const business = x.business || "";
     const instagram = x.instagram || "";
@@ -253,6 +276,7 @@ export function Clients({
         baseRate: baseRateVal,
         bargain: discountPct,
         date: newClientDate || "2026-08-14",
+        status: newClientStatus || "Active",
       });
       
       setNewClientName("");
@@ -504,20 +528,30 @@ export function Clients({
           />
         </td>
         <td>
-          <CustomSelect
-            size="sm"
-            value={newBillingType}
-            onChange={(val) => {
-              const type = val as "reel-to-reel" | "subscription";
-              setNewBillingType(type);
-              if (type === "subscription") {
-                setNewSubscriptionPlan("Custom");
-              } else {
-                setNewSubscriptionPlan("");
-              }
-            }}
-            options={billingTypeOptions}
-          />
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <CustomSelect
+              size="sm"
+              value={newBillingType}
+              onChange={(val) => {
+                const type = val as "reel-to-reel" | "subscription";
+                setNewBillingType(type);
+                if (type === "subscription") {
+                  setNewSubscriptionPlan("Custom");
+                } else {
+                  setNewSubscriptionPlan("");
+                }
+              }}
+              options={billingTypeOptions}
+            />
+            {newBillingType === "subscription" && (
+              <CustomSelect
+                size="sm"
+                value={newClientStatus}
+                onChange={(val) => setNewClientStatus(val)}
+                options={statusOptions}
+              />
+            )}
+          </div>
         </td>
         {(activeModelFilter === "all" || newBillingType === "subscription") && (
           <td>
@@ -676,26 +710,36 @@ export function Clients({
             />
           </td>
           <td>
-            <CustomSelect
-              size="sm"
-              value={editClientData?.billingModel?.toLowerCase() === "subscription" ? "subscription" : "reel-to-reel"}
-              onChange={(val) => {
-                const type = val as "reel-to-reel" | "subscription";
-                const isNewSub = type === "subscription";
-                setEditClientData(prev => {
-                  if (!prev) return null;
-                  const reelsVal = prev.reels || 0;
-                  const actualRate = isNewSub ? Math.round(reelsVal * prev.ppr) : prev.ppr;
-                  return {
-                    ...prev,
-                    billingModel: isNewSub ? "Subscription" : "Reel-to-Reel",
-                    plan: isNewSub ? "Custom" : "",
-                    ppr: isNewSub ? (actualRate / (reelsVal || 1)) : actualRate,
-                  };
-                });
-              }}
-              options={billingTypeOptions}
-            />
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <CustomSelect
+                size="sm"
+                value={editClientData?.billingModel?.toLowerCase() === "subscription" ? "subscription" : "reel-to-reel"}
+                onChange={(val) => {
+                  const type = val as "reel-to-reel" | "subscription";
+                  const isNewSub = type === "subscription";
+                  setEditClientData(prev => {
+                    if (!prev) return null;
+                    const reelsVal = prev.reels || 0;
+                    const actualRate = isNewSub ? Math.round(reelsVal * prev.ppr) : prev.ppr;
+                    return {
+                      ...prev,
+                      billingModel: isNewSub ? "Subscription" : "Reel-to-Reel",
+                      plan: isNewSub ? "Custom" : "",
+                      ppr: isNewSub ? (actualRate / (reelsVal || 1)) : actualRate,
+                    };
+                  });
+                }}
+                options={billingTypeOptions}
+              />
+              <CustomSelect
+                size="sm"
+                value={editClientData?.status || "Active"}
+                onChange={(val) => {
+                  setEditClientData(prev => prev ? { ...prev, status: val } : null);
+                }}
+                options={statusOptions}
+              />
+            </div>
           </td>
           {(activeModelFilter === "all" || isSub) && (
             <td>
@@ -914,9 +958,66 @@ export function Clients({
           <span className="client-date-text">{c.date || "—"}</span>
         </td>
         <td>
-          <span>
-            {isSub ? "SUB" : "RTR"}
-          </span>
+          {isSub ? (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  padding: "2px 8px",
+                  borderRadius: "99px",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  background:
+                    c.status === "Paused"
+                      ? "rgba(234, 179, 8, 0.15)"
+                      : c.status === "Churned"
+                      ? "rgba(239, 68, 68, 0.15)"
+                      : "rgba(34, 197, 94, 0.15)",
+                  color:
+                    c.status === "Paused"
+                      ? "#eab308"
+                      : c.status === "Churned"
+                      ? "#ef4444"
+                      : "var(--green)",
+                  border: `1px solid ${
+                    c.status === "Paused"
+                      ? "rgba(234, 179, 8, 0.3)"
+                      : c.status === "Churned"
+                      ? "rgba(239, 68, 68, 0.3)"
+                      : "rgba(34, 197, 94, 0.3)"
+                  }`,
+                }}
+              >
+                <span
+                  style={{
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: "currentColor",
+                  }}
+                />
+                SUB{c.status && c.status !== "Active" ? ` (${c.status})` : ""}
+              </span>
+            </div>
+          ) : (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "2px 8px",
+                borderRadius: "99px",
+                fontSize: "11px",
+                fontWeight: 600,
+                background: "rgba(59, 130, 246, 0.12)",
+                color: "#60a5fa",
+                border: "1px solid rgba(59, 130, 246, 0.25)",
+              }}
+            >
+              RTR
+            </span>
+          )}
         </td>
         {(activeModelFilter === "all" || isSub) && (
           <td>
@@ -1025,6 +1126,78 @@ export function Clients({
 
   return (
     <>
+      {selectedMonth && selectedMonth !== "all" && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "12px",
+            background: "rgba(255, 255, 255, 0.03)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "10px",
+            padding: "10px 16px",
+            marginBottom: "16px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontWeight: 600,
+                fontSize: "13px",
+                color: "var(--white)",
+              }}
+            >
+              📅 {availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth}
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.2)" }}>|</span>
+            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+              <strong style={{ color: "var(--white)" }}>
+                {clients.filter((c) => String(c.billingModel).toLowerCase() === "subscription").length}
+              </strong>{" "}
+              Subscriptions
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
+            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+              <strong style={{ color: "var(--white)" }}>
+                {clients.filter((c) => String(c.billingModel).toLowerCase() !== "subscription").length}
+              </strong>{" "}
+              One-off (RTR)
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
+            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+              MRR:{" "}
+              <strong style={{ color: "var(--green)" }}>
+                ₹{clients.reduce((sum, c) => sum + getClientRevenue(c), 0).toLocaleString("en-IN")}
+              </strong>
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
+            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+              Reels:{" "}
+              <strong style={{ color: "#facc15" }}>
+                {clients.reduce((sum, c) => sum + (c.reels || 0), 0)}
+              </strong>
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Tabs
+              value={viewScope}
+              onValueChange={(val) => setViewScope(val as "month" | "all")}
+            >
+              <TabsList>
+                <TabsTrigger value="month">Active in Month ({clients.length})</TabsTrigger>
+                <TabsTrigger value="all">All Portfolio ({allClients?.length || clients.length})</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
+      )}
+
       {/* Controls: Search and Sort */}
       <div className="controls">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
@@ -1250,6 +1423,7 @@ export function Clients({
         client={trackerClient}
         showToast={showToast}
         onDeliveriesUpdated={loadDeliveriesSummary}
+        initialMonth={selectedMonth && selectedMonth !== "all" ? selectedMonth : undefined}
       />
     </>
   );

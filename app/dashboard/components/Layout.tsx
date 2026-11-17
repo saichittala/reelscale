@@ -100,11 +100,6 @@ export function Layout({
             label: "Clients",
           },
           {
-            id: "analytics" as DashboardPage,
-            icon: "/assets/icons/nav-analytics.svg",
-            label: "Analytics",
-          },
-          {
             id: "users" as DashboardPage,
             icon: "/assets/icons/nav-users.svg",
             label: "Users",
@@ -129,7 +124,7 @@ export function Layout({
   const titles: Record<string, string> = {
     dashboard: "Dashboard",
     clients: "Clients",
-    analytics: "Revenue Analytics",
+    analytics: "Dashboard",
     users: "Users",
     sales: "Sales",
     blogs: "Blog Management",
@@ -139,9 +134,9 @@ export function Layout({
   };
 
   const subs: Record<string, string> = {
-    dashboard: "Overview of your business metrics",
+    dashboard: "Overview and revenue analytics of your business",
     clients: "Manage all client accounts",
-    analytics: "Detailed revenue insights",
+    analytics: "Overview and revenue analytics of your business",
     users: "Manage system users",
     sales: "Manage sales leads",
     blogs: "Manage your publication and draft posts",
