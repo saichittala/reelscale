@@ -86,8 +86,8 @@ function getIntrinsicToastWidth(title: string, description?: string, actionLabel
     actionW = ctx.measureText(actionLabel).width + 24;
   }
 
-  // icon(18) + gap(8) + text + padding(36 left + 36 right) + border(2)
-  const chrome = 18 + 8 + 36 + 36 + 2 + (actionW > 0 ? actionW + 8 : 0);
+  // icon(18) + gap(8) + text + padding(36 left + 36 right) + safety buffer(16px) + border(2)
+  const chrome = 18 + 8 + 36 + 36 + 16 + 2 + (actionW > 0 ? actionW + 8 : 0);
   const natural = Math.ceil(textW + chrome);
   return Math.min(300, Math.max(130, natural));
 }
@@ -136,10 +136,11 @@ const focusVisible = (element: Element) => { try { return element.matches(":focu
  * The list is the hover target and is sized to cover the gaps, so moving between open toasts never collapses the stack.
  */
 function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, widths: Record<string, number>, expanded: boolean, visibleToasts: number, isTop = false) {
+  const getWidth = (item: ToastRecord) => widths[item.id] || getIntrinsicToastWidth(item.title, item.description, item.action?.label);
   const front = toasts.length ? heights[toasts[0]!.id] ?? 0 : 0;
-  const frontWidth = toasts.length ? widths[toasts[0]!.id] ?? 0 : 0;
+  const frontWidth = toasts.length ? getWidth(toasts[0]!) : 0;
   const visibleItems = toasts.slice(0, visibleToasts);
-  const maxStackWidth = visibleItems.reduce((max, item) => Math.max(max, widths[item.id] ?? 0), 0);
+  const maxStackWidth = visibleItems.reduce((max, item) => Math.max(max, getWidth(item)), 0);
   const stackWidth = toasts.length > 1 ? maxStackWidth : frontWidth;
 
   const tops = toasts.reduce<number[]>((sum, item, index) => [...sum, sum[index]! + (index < visibleToasts ? (heights[item.id] ?? 0) + GAP : 0)], [0]);
@@ -147,7 +148,7 @@ function layoutStack(toasts: ToastRecord[], heights: Record<string, number>, wid
   const targets = toasts.map((item, index): Target => {
     const visible = index < visibleToasts;
     const depth = Math.min(index, visibleToasts);
-    const itemWidth = stackWidth > 0 ? stackWidth : (widths[item.id] ?? 0);
+    const itemWidth = stackWidth > 0 ? stackWidth : getWidth(item);
     return expanded
       ? { y: sign * tops[index]!, scale: 1, height: heights[item.id] ?? 0, width: itemWidth, opacity: visible ? 1 : 0, content: 1 }
       : { y: sign * PEEK * depth, scale: 1 - STEP * depth, height: index === 0 ? heights[item.id] ?? 0 : front, width: itemWidth, opacity: visible ? 1 : 0, content: index === 0 ? 1 : 0 };

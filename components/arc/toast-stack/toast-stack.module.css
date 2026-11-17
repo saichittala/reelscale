@@ -270,8 +270,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  word-break: break-word;
-  overflow-wrap: break-word;
 }
 
 .title {
@@ -281,14 +279,11 @@
   font-weight: 400;
   text-align: center;
   width: 100%;
-  word-break: break-word;
-  overflow-wrap: break-word;
 }
 
 .line {
   display: block;
   text-align: center;
-  word-break: break-word;
   overflow-wrap: break-word;
 }
 
@@ -300,7 +295,6 @@
   color: var(--text-secondary);
   text-align: center;
   width: 100%;
-  word-break: break-word;
   overflow-wrap: break-word;
 }
 
