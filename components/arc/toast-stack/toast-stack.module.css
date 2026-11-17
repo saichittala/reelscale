@@ -1,8 +1,9 @@
 .viewport {
   position: fixed;
   z-index: var(--z-toast, 10000);
-  width: min(24rem, calc(100% - var(--space-8)));
+  width: min(300px, calc(100vw - var(--space-8, 32px)));
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 .top-center {
@@ -110,20 +111,59 @@
   right: 0;
   bottom: 0;
   left: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
   transform-origin: 50% 0;
 }
 
-.top-center .item,
-.top-right .item,
+.top-center .item {
+  top: 0;
+  bottom: auto;
+  justify-content: center;
+  transform-origin: 50% 0;
+}
+
+.top-right .item {
+  top: 0;
+  bottom: auto;
+  justify-content: flex-end;
+  transform-origin: 100% 0;
+}
+
 .top-left .item {
   top: 0;
   bottom: auto;
-  transform-origin: 50% 0;
+  justify-content: flex-start;
+  transform-origin: 0% 0;
+}
+
+.bottom-center .item {
+  bottom: 0;
+  top: auto;
+  justify-content: center;
+  transform-origin: 50% 100%;
+}
+
+.bottom-right .item {
+  bottom: 0;
+  top: auto;
+  justify-content: flex-end;
+  transform-origin: 100% 100%;
+}
+
+.bottom-left .item {
+  bottom: 0;
+  top: auto;
+  justify-content: flex-start;
+  transform-origin: 0% 100%;
 }
 
 .card {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  height: 100%;
+  width: max-content;
+  max-width: 100%;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-panel);
@@ -132,10 +172,11 @@
   box-shadow: var(--shadow-raised);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  container-type: inline-size;
+  pointer-events: auto;
   touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
   transition: background-color var(--duration-standard) var(--ease-standard), border-color var(--duration-standard) var(--ease-standard);
+  box-sizing: border-box;
 }
 
 .item[data-front="true"] .card,
@@ -155,12 +196,14 @@
 
 .content {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: var(--space-3);
-  padding: 10px 14px 10px 16px;
-  min-height: 46px;
+  padding: 11px 12px 11px 14px;
+  min-height: 42px;
   box-sizing: border-box;
+  width: max-content;
+  max-width: 100%;
 }
 
 .icon {
@@ -170,7 +213,8 @@
   height: 18px;
   flex: none;
   place-items: center;
-  align-self: center;
+  align-self: flex-start;
+  margin-top: 1px;
   color: var(--text-muted);
   transition: color var(--duration-fast) var(--ease-standard);
 }
@@ -215,7 +259,7 @@
 .copy {
   position: relative;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: var(--tracking-body);
@@ -225,6 +269,8 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .title {
@@ -234,11 +280,15 @@
   font-weight: 400;
   text-align: left;
   width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .line {
   display: block;
   text-align: left;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .description {
@@ -249,6 +299,8 @@
   color: var(--text-secondary);
   text-align: left;
   width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Clips only while its width folds, so the focus ring stays whole at rest. */
@@ -257,8 +309,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  align-self: center;
-  margin: 0;
+  align-self: flex-start;
+  margin: -4px 0 0 0;
 }
 
 .actionSlot[data-moving="true"] {
@@ -285,7 +337,6 @@
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
-  align-self: center;
 }
 
 .close {
@@ -294,8 +345,8 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  margin: 0;
-  align-self: center;
+  margin: -3px -2px 0 0;
+  align-self: flex-start;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
@@ -326,21 +377,6 @@
   transition-timing-function: var(--ease-standard);
 }
 
-/* A narrow toast keeps its copy wide: the action drops under the copy instead of squeezing it. */
-@container (max-width: 21rem) {
-  .content {
-    flex-wrap: wrap;
-    row-gap: var(--space-2);
-  }
-
-  .actionSlot {
-    order: 1;
-    flex-basis: 100%;
-    justify-content: flex-start;
-    margin-top: 0;
-    padding-left: calc(18px + var(--space-3));
-  }
-}
 
 .srOnly {
   position: absolute;
