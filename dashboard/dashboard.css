@@ -1167,7 +1167,7 @@ button span {
     transform: scale(0.98);
 }
 
-.btn-secondary:disabled {
+.btn-secondary:disabled:not([aria-busy="true"]):not([data-loading="true"]) {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -3382,14 +3382,24 @@ input[type="radio"],
     cursor: pointer;
 }
 
-button:disabled,
+button:disabled:not([aria-busy="true"]):not([data-loading="true"]),
 input:disabled,
 select:disabled,
 textarea:disabled,
-[aria-disabled="true"],
-.btn:disabled {
+[aria-disabled="true"]:not([aria-busy="true"]):not([data-loading="true"]),
+.btn:disabled:not([aria-busy="true"]):not([data-loading="true"]) {
     cursor: not-allowed !important;
     opacity: 0.38 !important;
+}
+
+button[aria-busy="true"],
+button[data-loading="true"],
+.btn[aria-busy="true"],
+.btn[data-loading="true"],
+[aria-busy="true"] {
+    cursor: wait !important;
+    opacity: 0.92 !important;
+    pointer-events: none !important;
 }
 
 /* ─── PRIMARY BUTTON ──────────────────────────────────────── */

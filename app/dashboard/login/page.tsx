@@ -47,12 +47,6 @@ export default function DashboardLoginPage() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSignIn();
-    }
-  };
-
   return (
     <div className="login-wrap">
       <div className="login-card">
@@ -76,41 +70,47 @@ export default function DashboardLoginPage() {
           </div>
         )}
 
-        <div className="form-group mb-16">
-          <Input
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            autoComplete="off"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <div className="form-group mb-24">
-          <Input
-            label="Password"
-            type="password"
-            placeholder="Enter your password"
-            autoComplete="off"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <Button
-          variant="primary"
-          className="login-submit-btn w-full"
-          onClick={handleSignIn}
-          disabled={isSubmitting}
-          loading={isSubmitting}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSignIn();
+          }}
+          className="login-form-wrap"
         >
-          Sign In
-        </Button>
+          <div className="form-group mb-16">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="form-group mb-24">
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            className="login-submit-btn w-full"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
+            Sign In
+          </Button>
+        </form>
       </div>
     </div>
   );

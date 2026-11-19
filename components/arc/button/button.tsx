@@ -104,7 +104,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       tabIndex={props.tabIndex ?? 0}
       className={classes}
       disabled={disabled}
-      aria-busy={loading || undefined}
+      data-loading={loading ? "true" : undefined}
+      aria-busy={loading ? "true" : undefined}
       custom={buttonRef}
       variants={pressVariants}
       whileTap={reduceMotion || anchorsLayer || inert ? undefined : "pressed"}
@@ -112,12 +113,28 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
       // Loading keeps the button focusable (a disabled button would drop keyboard focus mid-action) and swallows presses instead.
       aria-disabled={loading || props["aria-disabled"] || undefined}
-      onClick={loading ? event => event.preventDefault() : onClick}
+      onClick={loading ? event => { event.preventDefault(); event.stopPropagation(); } : onClick}
     >
       <AnimatePresence initial={false}>
-        {loading ? <motion.span key="loader" className={styles.loader} aria-hidden="true" initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }} exit={reduceMotion ? fadeOut : { ...iconOut, scale: .8 }} transition={reduceMotion ? { duration: motionTokens.duration.instant } : iconEnter}><span className={styles.spinner} /></motion.span> : null}
+        {loading ? (
+          <motion.span
+            key="loader"
+            className={styles.loader}
+            aria-hidden="true"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? fadeOut : { ...iconOut, scale: 0.8 }}
+            transition={reduceMotion ? { duration: motionTokens.duration.instant } : iconEnter}
+          >
+            <span className={styles.spinner} />
+          </motion.span>
+        ) : null}
       </AnimatePresence>
-      <motion.span className={[styles.labelSlot, loading ? styles.loadingLabel : ""].filter(Boolean).join(" ")} style={size === "icon" ? undefined : { width }}>
+      <motion.span
+        className={[styles.labelSlot, loading ? styles.loadingLabel : ""].filter(Boolean).join(" ")}
+        style={size === "icon" ? undefined : { width }}
+        aria-hidden={loading ? "true" : undefined}
+      >
         <span ref={contentRef} className={styles.labelContent}>
           <AnimatePresence mode="popLayout" initial={false}>
             <LabelPhase key={key} icon={!/\S/.test(key.replace(/<[^>]*>/g, ""))} reduced={reduceMotion}>{children}</LabelPhase>
