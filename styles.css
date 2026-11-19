@@ -953,7 +953,7 @@ em {
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 99999;
 }
 
 .video-modal.active {
@@ -965,6 +965,8 @@ em {
     inset: 0;
     background: var(--bg-overlay-dark);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    cursor: pointer;
 }
 
 .video-content {
@@ -974,8 +976,21 @@ em {
     border-radius: var(--border-radius-1);
     overflow: hidden;
     background: var(--bg);
-    box-shadow: var(--shadow-overlay);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
     border: 1px solid var(--border);
+    animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .video-wrapper {
@@ -1033,18 +1048,28 @@ em {
 
 .video-close {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 3;
-    background: var(--white-10);
+    top: 14px;
+    right: 14px;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.15);
     color: var(--white);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: var(--border-radius-99);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     backdrop-filter: blur(40px);
-    font-size: var(--text-xl);
+    -webkit-backdrop-filter: blur(40px);
+    font-size: var(--text-lg);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.video-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.08);
 }
 
 /* PROCESS */

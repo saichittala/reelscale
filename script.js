@@ -234,18 +234,19 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("active");
   }
 
-  // Bind click handlers to portfolio items in #work section
-  document.querySelectorAll(".portfolio-item").forEach((item) => {
-    item.addEventListener("click", (e) => {
-      const video = item.getAttribute("data-video");
-      if (video) {
-        e.preventDefault();
-        const client = item.getAttribute("data-client") || "Portfolio";
-        const stat = item.getAttribute("data-stat") || "";
-        openVideo(video, client, stat);
-      }
-    });
-  });
+  // Bind click handlers to portfolio items in #work section (delegated capture)
+  document.addEventListener("click", (e) => {
+    const item = e.target.closest(".portfolio-item");
+    if (!item) return;
+    const video = item.getAttribute("data-video");
+    if (video) {
+      e.preventDefault();
+      e.stopPropagation();
+      const client = item.getAttribute("data-client") || item.querySelector(".portfolio-client")?.textContent?.trim() || "Portfolio";
+      const stat = item.getAttribute("data-stat") || item.querySelector(".portfolio-stat")?.textContent?.trim() || "";
+      openVideo(video, client, stat);
+    }
+  }, true);
 
   closeBtn?.addEventListener("click", closeModal);
 

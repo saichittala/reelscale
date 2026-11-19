@@ -30,6 +30,14 @@ export default function RootLayout({
       </head>
       <body>
         <ToastProvider>{children}</ToastProvider>
+        {/* Global Video Modal Popup */}
+        <div className="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Video Player">
+          <div className="video-backdrop"></div>
+          <div className="video-content">
+            <button className="video-close" id="closeVideo" aria-label="Close video modal">✕</button>
+            <div className="video-wrapper" id="videoWrapper"></div>
+          </div>
+        </div>
         {/* Microsoft Clarity Global Tracking */}
         <Script id="clarity" strategy="afterInteractive">
           {`

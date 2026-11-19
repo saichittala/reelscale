@@ -108,18 +108,40 @@ export default function LandingInteractions() {
     /* ═══════════════════════════════════════════════════
        GENERIC VIDEO MODAL OPENER
        ═══════════════════════════════════════════════════ */
-    const modal = document.getElementById("videoModal");
-    const wrapper = document.getElementById("videoWrapper");
-    const closeBtn = document.getElementById("closeVideo");
-    const videoContent = modal?.querySelector(".video-content") as HTMLElement | null;
+    const getModalElements = () => {
+      let m = document.getElementById("videoModal");
+      if (!m) {
+        m = document.createElement("div");
+        m.className = "video-modal";
+        m.id = "videoModal";
+        m.setAttribute("role", "dialog");
+        m.setAttribute("aria-modal", "true");
+        m.setAttribute("aria-label", "Video Player");
+        m.innerHTML = `
+          <div class="video-backdrop"></div>
+          <div class="video-content">
+            <button class="video-close" id="closeVideo" aria-label="Close video modal">✕</button>
+            <div class="video-wrapper" id="videoWrapper"></div>
+          </div>
+        `;
+        document.body.appendChild(m);
+      }
+      const w = m.querySelector(".video-wrapper") as HTMLElement | null;
+      const c = m.querySelector(".video-close") as HTMLElement | null;
+      const vc = m.querySelector(".video-content") as HTMLElement | null;
+      const b = m.querySelector(".video-backdrop") as HTMLElement | null;
+      return { modal: m, wrapper: w, closeBtn: c, videoContent: vc, backdrop: b };
+    };
 
     const closeModal = () => {
+      const { modal, wrapper, videoContent } = getModalElements();
       modal?.classList.remove("active");
       videoContent?.classList.remove("is-vertical-reel");
       if (wrapper) wrapper.innerHTML = "";
     };
 
     const openVideo = (videoUrl: string, clientName: string, statText: string) => {
+      const { modal, wrapper, videoContent } = getModalElements();
       if (!modal || !wrapper) return;
 
       const isDrive = videoUrl.includes("drive.google.com");
@@ -664,32 +686,37 @@ export default function LandingInteractions() {
       faqHandlers.push([btn, handler]);
     });
 
-    const backdrop = modal?.querySelector(".video-backdrop");
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeModal();
     };
 
-    closeBtn?.addEventListener("click", closeModal);
-    backdrop?.addEventListener("click", closeModal);
+    const onGlobalModalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains("video-backdrop") || target.closest(".video-close") || target.id === "closeVideo") {
+        e.preventDefault();
+        closeModal();
+      }
+    };
+
     document.addEventListener("keydown", onEscape);
+    document.addEventListener("click", onGlobalModalClick);
 
     /* ═══════════════════════════════════════════════════
        5b. PORTFOLIO ITEMS DIRECT IN-PAGE VIDEO PLAYER
        ═══════════════════════════════════════════════════ */
-    const portfolioHandlers: [Element, EventListener][] = [];
-    document.querySelectorAll(".portfolio-item").forEach((item) => {
-      const handler = ((e: MouseEvent) => {
-        const video = item.getAttribute("data-video");
-        if (video) {
-          e.preventDefault();
-          const client = item.getAttribute("data-client") || "Portfolio";
-          const stat = item.getAttribute("data-stat") || "";
-          openVideo(video, client, stat);
-        }
-      }) as EventListener;
-      item.addEventListener("click", handler);
-      portfolioHandlers.push([item, handler]);
-    });
+    const onPortfolioItemClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest(".portfolio-item");
+      if (!target) return;
+      const video = target.getAttribute("data-video");
+      if (video) {
+        e.preventDefault();
+        e.stopPropagation();
+        const client = target.getAttribute("data-client") || target.querySelector(".portfolio-client")?.textContent?.trim() || "Portfolio";
+        const stat = target.getAttribute("data-stat") || target.querySelector(".portfolio-stat")?.textContent?.trim() || "";
+        openVideo(video, client, stat);
+      }
+    };
+    document.addEventListener("click", onPortfolioItemClick, true);
 
     /* ═══════════════════════════════════════════════════
        6. TESTIMONIALS EXPAND/COLLAPSE (Show More/Less)
@@ -819,10 +846,9 @@ export default function LandingInteractions() {
       document.removeEventListener("mousemove", onCursorMove);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("keydown", onEscape);
-      closeBtn?.removeEventListener("click", closeModal);
-      backdrop?.removeEventListener("click", closeModal);
+      document.removeEventListener("click", onGlobalModalClick);
+      document.removeEventListener("click", onPortfolioItemClick, true);
       faqHandlers.forEach(([btn, handler]) => btn.removeEventListener("click", handler));
-      portfolioHandlers.forEach(([item, handler]) => item.removeEventListener("click", handler));
     };
   }, [pathname]);
 
