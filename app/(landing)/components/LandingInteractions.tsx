@@ -111,15 +111,46 @@ export default function LandingInteractions() {
     const modal = document.getElementById("videoModal");
     const wrapper = document.getElementById("videoWrapper");
     const closeBtn = document.getElementById("closeVideo");
+    const videoContent = modal?.querySelector(".video-content") as HTMLElement | null;
 
     const closeModal = () => {
       modal?.classList.remove("active");
+      videoContent?.classList.remove("is-vertical-reel");
       if (wrapper) wrapper.innerHTML = "";
     };
 
     const openVideo = (videoUrl: string, clientName: string, statText: string) => {
       if (!modal || !wrapper) return;
-      if (videoUrl.includes("instagram.com") || videoUrl.includes("instagr.am")) {
+
+      const isDrive = videoUrl.includes("drive.google.com");
+      const isInsta = videoUrl.includes("instagram.com") || videoUrl.includes("instagr.am");
+      const isMp4 = videoUrl.toLowerCase().endsWith(".mp4") || videoUrl.toLowerCase().endsWith(".mov") || videoUrl.includes(".mp4?");
+
+      // Optimize modal geometry for vertical 9:16 reels
+      if (isDrive || isMp4 || isInsta) {
+        videoContent?.classList.add("is-vertical-reel");
+      } else {
+        videoContent?.classList.remove("is-vertical-reel");
+      }
+
+      if (isDrive) {
+        const driveMatch = videoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || videoUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        const driveId = driveMatch ? driveMatch[1] : "";
+        const previewUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+        wrapper.innerHTML = `
+          <div class="video-meta">
+            <div class="video-client">${clientName}</div>
+            <div class="video-stat">${statText}</div>
+          </div>
+          <iframe src="${previewUrl}"
+            title="${clientName} Video"
+            frameborder="0"
+            allow="autoplay; fullscreen"
+            allowfullscreen
+            style="width: 100%; height: 100%; border: none; border-radius: inherit; background: #000;">
+          </iframe>
+        `;
+      } else if (isInsta) {
         wrapper.innerHTML = `
           <div class="video-meta">
             <div class="video-client">${clientName}</div>
@@ -129,13 +160,13 @@ export default function LandingInteractions() {
             style="width:100%; max-width:540px; margin:auto;"></blockquote>
         `;
         window.instgrm?.Embeds?.process?.();
-      } else if (videoUrl.toLowerCase().endsWith(".mp4")) {
+      } else if (isMp4) {
         wrapper.innerHTML = `
           <div class="video-meta">
             <div class="video-client">${clientName}</div>
             <div class="video-stat">${statText}</div>
           </div>
-          <video src="${videoUrl}" autoplay controls loop playsinline style="width:100%; max-height:80vh; border-radius:12px; outline:none; background:#000;"></video>
+          <video src="${videoUrl}" autoplay controls loop playsinline style="width:100%; height:100%; max-height:80vh; border-radius:inherit; outline:none; background:#000; object-fit:contain;"></video>
         `;
       } else {
         wrapper.innerHTML = `
@@ -145,7 +176,7 @@ export default function LandingInteractions() {
           </div>
           <iframe src="${videoUrl}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="Video player"
             frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width:100%; height:100%; border-radius:inherit;"></iframe>
         `;
       }
       modal.classList.add("active");
@@ -643,6 +674,24 @@ export default function LandingInteractions() {
     document.addEventListener("keydown", onEscape);
 
     /* ═══════════════════════════════════════════════════
+       5b. PORTFOLIO ITEMS DIRECT IN-PAGE VIDEO PLAYER
+       ═══════════════════════════════════════════════════ */
+    const portfolioHandlers: [Element, EventListener][] = [];
+    document.querySelectorAll(".portfolio-item").forEach((item) => {
+      const handler = ((e: MouseEvent) => {
+        const video = item.getAttribute("data-video");
+        if (video) {
+          e.preventDefault();
+          const client = item.getAttribute("data-client") || "Portfolio";
+          const stat = item.getAttribute("data-stat") || "";
+          openVideo(video, client, stat);
+        }
+      }) as EventListener;
+      item.addEventListener("click", handler);
+      portfolioHandlers.push([item, handler]);
+    });
+
+    /* ═══════════════════════════════════════════════════
        6. TESTIMONIALS EXPAND/COLLAPSE (Show More/Less)
        ═══════════════════════════════════════════════════ */
     const initTestimonials = () => {
@@ -773,6 +822,7 @@ export default function LandingInteractions() {
       closeBtn?.removeEventListener("click", closeModal);
       backdrop?.removeEventListener("click", closeModal);
       faqHandlers.forEach(([btn, handler]) => btn.removeEventListener("click", handler));
+      portfolioHandlers.forEach(([item, handler]) => item.removeEventListener("click", handler));
     };
   }, [pathname]);
 
