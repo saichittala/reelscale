@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole } from "../rbac";
+import { getDb } from "../../lib/db";
+import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 
-const GOOGLE_SCRIPT_SALES_URL = process.env.GOOGLE_SCRIPT_SALES_URL || "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
-
-async function proxyToGoogleScript(body: Record<string, unknown>) {
-  const response = await fetch(GOOGLE_SCRIPT_SALES_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  return response.json();
-}
+const REDIS_CACHE_KEY = "db:sales";
+const CACHE_TTL_SECONDS = 120; // 2 minutes cache
 
 export async function GET(request: Request) {
   const rbac = await checkRole(request, ["admin", "sales"]);
@@ -26,10 +17,47 @@ export async function GET(request: Request) {
   if (process.env.NEXT_PUBLIC_STATIC_EXPORT === "true") {
     return NextResponse.json({ success: true, sales: [] });
   }
+
   try {
-    const response = await fetch(GOOGLE_SCRIPT_SALES_URL);
-    const data = await response.json();
-    return NextResponse.json(data);
+    const cached = await redisGet<{ success: boolean; sales: any[] }>(REDIS_CACHE_KEY);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
+    const sql = getDb();
+    const rows = await sql`
+      SELECT 
+        id, 
+        category, 
+        company_name, 
+        contact_person, 
+        phone_number, 
+        notes, 
+        contacted, 
+        created_date
+      FROM sales
+      ORDER BY id DESC;
+    `;
+
+    const sales = rows.map((r: any) => ({
+      id: r.id,
+      category: r.category || "",
+      companyName: r.company_name || "",
+      contactPerson: r.contact_person || "",
+      phoneNumber: r.phone_number || "",
+      notes: r.notes || "",
+      contacted: r.contacted || "No",
+      createdDate: r.created_date || "",
+    }));
+
+    const result = {
+      success: true,
+      sales,
+      leads: sales,
+    };
+
+    await redisSet(REDIS_CACHE_KEY, result, CACHE_TTL_SECONDS);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Sales GET error:", error);
     return NextResponse.json(
@@ -48,50 +76,66 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { action, ...data } = body;
+    const sql = getDb();
+
+    // Invalidate Redis cache
+    await redisDel(REDIS_CACHE_KEY);
 
     switch (action) {
       case "add": {
-        const result = await proxyToGoogleScript({
-          action: "add",
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted,
-        });
-        return NextResponse.json(result);
+        const rows = await sql`
+          INSERT INTO sales (
+            category, company_name, contact_person, phone_number, notes, contacted, created_date
+          ) VALUES (
+            ${data.category || ''},
+            ${data.companyName || ''},
+            ${data.contactPerson || ''},
+            ${String(data.phoneNumber || '')},
+            ${data.notes || ''},
+            ${data.contacted || 'No'},
+            ${data.createdDate || new Date().toISOString().slice(0, 10)}
+          )
+          RETURNING *;
+        `;
+        return NextResponse.json({ success: true, lead: rows[0], sale: rows[0] });
       }
+
       case "update": {
-        const result = await proxyToGoogleScript({
-          action: "update",
-          id: data.id,
-          category: data.category,
-          companyName: data.companyName,
-          contactPerson: data.contactPerson,
-          phoneNumber: data.phoneNumber,
-          notes: data.notes,
-          contacted: data.contacted,
-        });
-        return NextResponse.json(result);
+        const rows = await sql`
+          UPDATE sales
+          SET
+            category = ${data.category || ''},
+            company_name = ${data.companyName || ''},
+            contact_person = ${data.contactPerson || ''},
+            phone_number = ${String(data.phoneNumber || '')},
+            notes = ${data.notes || ''},
+            contacted = ${data.contacted || 'No'},
+            created_date = ${data.createdDate || ''},
+            updated_at = NOW()
+          WHERE id = ${Number(data.id)}
+          RETURNING *;
+        `;
+        return NextResponse.json({ success: true, lead: rows[0], sale: rows[0] });
       }
+
       case "delete": {
-        const result = await proxyToGoogleScript({
-          action: "delete",
-          id: data.id,
-        });
-        return NextResponse.json(result);
+        await sql`
+          DELETE FROM sales
+          WHERE id = ${Number(data.id)};
+        `;
+        return NextResponse.json({ success: true, message: "Sale deleted" });
       }
+
       default:
         return NextResponse.json(
           { success: false, message: "Invalid action" },
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Sales API error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: error.message || "Internal server error" },
       { status: 500 }
     );
   }

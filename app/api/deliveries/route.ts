@@ -2,54 +2,51 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../dashboard/types";
+import { getDb } from "../../lib/db";
 
 export const dynamic = "force-dynamic";
 
 const DELIVERIES_FILE = join(process.cwd(), "content", "deliveries.json");
 const MONTHLY_DRIVES_FILE = join(process.cwd(), "content", "monthly_drives.json");
 
-function getDeliveries(): DeliveredReel[] {
+function getFileDeliveries(): DeliveredReel[] {
   try {
-    if (!existsSync(DELIVERIES_FILE)) {
-      return [];
-    }
+    if (!existsSync(DELIVERIES_FILE)) return [];
     const content = readFileSync(DELIVERIES_FILE, "utf-8");
     return JSON.parse(content || "[]");
   } catch (error) {
-    console.error("Error reading deliveries:", error);
+    console.error("Error reading deliveries file:", error);
     return [];
   }
 }
 
-function saveDeliveries(deliveries: DeliveredReel[]): boolean {
+function saveFileDeliveries(deliveries: DeliveredReel[]): boolean {
   try {
     writeFileSync(DELIVERIES_FILE, JSON.stringify(deliveries, null, 2), "utf-8");
     return true;
   } catch (error) {
-    console.error("Error saving deliveries:", error);
+    console.error("Error saving deliveries file:", error);
     return false;
   }
 }
 
-function getDriveLinks(): Record<string, any> {
+function getFileDriveLinks(): Record<string, any> {
   try {
-    if (!existsSync(MONTHLY_DRIVES_FILE)) {
-      return {};
-    }
+    if (!existsSync(MONTHLY_DRIVES_FILE)) return {};
     const content = readFileSync(MONTHLY_DRIVES_FILE, "utf-8");
     return JSON.parse(content || "{}");
   } catch (error) {
-    console.error("Error reading monthly drives:", error);
+    console.error("Error reading monthly drives file:", error);
     return {};
   }
 }
 
-function saveDriveLinks(links: Record<string, any>): boolean {
+function saveFileDriveLinks(links: Record<string, any>): boolean {
   try {
     writeFileSync(MONTHLY_DRIVES_FILE, JSON.stringify(links, null, 2), "utf-8");
     return true;
   } catch (error) {
-    console.error("Error saving monthly drives:", error);
+    console.error("Error saving monthly drives file:", error);
     return false;
   }
 }
@@ -60,35 +57,91 @@ export async function GET(request: NextRequest) {
     const clientId = searchParams.get("clientId");
     const month = searchParams.get("month");
 
-    let deliveries = getDeliveries();
-
-    if (clientId) {
-      deliveries = deliveries.filter(
-        (d) => String(d.clientId) === String(clientId)
-      );
-    }
-
-    if (month && month !== "all") {
-      deliveries = deliveries.filter((d) => d.month === month);
-    }
-
-    // Sort by delivery date descending (most recent first)
-    deliveries.sort((a, b) => (b.deliveredDate || "").localeCompare(a.deliveredDate || ""));
-
-    // Retrieve monthly drive link if requested for specific client and month
-    const driveLinks = getDriveLinks();
-    const driveLinkKey = clientId && month ? `${clientId}_${month}` : "";
+    let deliveries: DeliveredReel[] = [];
     let driveLink = "";
     let showDriveLink = true;
 
-    if (driveLinkKey && driveLinks[driveLinkKey]) {
-      const entry: any = driveLinks[driveLinkKey];
-      if (typeof entry === "string") {
-        driveLink = entry;
-        showDriveLink = true;
-      } else if (entry && typeof entry === "object") {
-        driveLink = entry.link || "";
-        showDriveLink = entry.showDriveLink !== false;
+    // 1. Try Neon Postgres
+    try {
+      const sql = getDb();
+      let rows: any[] = [];
+      if (clientId && month && month !== "all") {
+        rows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          WHERE client_id = ${Number(clientId)} AND month = ${month}
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      } else if (clientId) {
+        rows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          WHERE client_id = ${Number(clientId)}
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      } else if (month && month !== "all") {
+        rows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          WHERE month = ${month}
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      } else {
+        rows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      }
+
+      deliveries = rows.map((r: any) => ({
+        id: r.id,
+        clientId: Number(r.client_id),
+        month: r.month,
+        title: r.title,
+        deliveredDate: r.delivered_date,
+        link: r.link || "",
+        status: r.status || "Delivered",
+        notes: r.notes || "",
+        createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined,
+      }));
+
+      // Query monthly_drives if clientId and month provided
+      if (clientId && month && month !== "all") {
+        const driveRows = await sql`
+          SELECT link, show_drive_link
+          FROM monthly_drives
+          WHERE client_id = ${Number(clientId)} AND month = ${month}
+          LIMIT 1;
+        `;
+        if (driveRows.length > 0) {
+          driveLink = driveRows[0].link || "";
+          showDriveLink = driveRows[0].show_drive_link !== false;
+        }
+      }
+    } catch (dbErr) {
+      console.warn("Neon DB error in deliveries GET, using file backup:", dbErr);
+      deliveries = getFileDeliveries();
+
+      if (clientId) {
+        deliveries = deliveries.filter((d) => String(d.clientId) === String(clientId));
+      }
+      if (month && month !== "all") {
+        deliveries = deliveries.filter((d) => d.month === month);
+      }
+      deliveries.sort((a, b) => (b.deliveredDate || "").localeCompare(a.deliveredDate || ""));
+
+      const driveLinks = getFileDriveLinks();
+      const driveLinkKey = clientId && month ? `${clientId}_${month}` : "";
+      if (driveLinkKey && driveLinks[driveLinkKey]) {
+        const entry: any = driveLinks[driveLinkKey];
+        if (typeof entry === "string") {
+          driveLink = entry;
+          showDriveLink = true;
+        } else if (entry && typeof entry === "object") {
+          driveLink = entry.link || "";
+          showDriveLink = entry.showDriveLink !== false;
+        }
       }
     }
 
@@ -106,8 +159,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, delivery, id, clientId, month, driveLink, showDriveLink } = body;
 
-    const deliveries = getDeliveries();
-
     switch (action) {
       case "setDriveLink": {
         if (!clientId || !month) {
@@ -116,17 +167,32 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        const driveLinks = getDriveLinks();
-        const key = `${clientId}_${month}`;
         const isShow = showDriveLink !== false;
-        driveLinks[key] = {
-          link: (driveLink || "").trim(),
-          showDriveLink: isShow,
-        };
-        saveDriveLinks(driveLinks);
+        const linkVal = (driveLink || "").trim();
+
+        // Save to Neon Postgres
+        try {
+          const sql = getDb();
+          await sql`
+            INSERT INTO monthly_drives (client_id, month, link, show_drive_link, updated_at)
+            VALUES (${Number(clientId)}, ${month}, ${linkVal}, ${isShow}, NOW())
+            ON CONFLICT (client_id, month) DO UPDATE SET
+              link = EXCLUDED.link,
+              show_drive_link = EXCLUDED.show_drive_link,
+              updated_at = NOW();
+          `;
+        } catch (dbErr) {
+          console.warn("Could not save drive link to Neon DB:", dbErr);
+        }
+
+        // File sync backup
+        const driveLinks = getFileDriveLinks();
+        driveLinks[`${clientId}_${month}`] = { link: linkVal, showDriveLink: isShow };
+        saveFileDriveLinks(driveLinks);
+
         return NextResponse.json({
           success: true,
-          driveLink: driveLinks[key].link,
+          driveLink: linkVal,
           showDriveLink: isShow,
         });
       }
@@ -141,7 +207,7 @@ export async function POST(request: NextRequest) {
 
         const newDelivery: DeliveredReel = {
           id: delivery.id || `del-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-          clientId: delivery.clientId,
+          clientId: Number(delivery.clientId),
           month: delivery.month || (delivery.deliveredDate ? delivery.deliveredDate.slice(0, 7) : new Date().toISOString().slice(0, 7)),
           title: delivery.title.trim(),
           deliveredDate: delivery.deliveredDate || new Date().toISOString().slice(0, 10),
@@ -151,8 +217,29 @@ export async function POST(request: NextRequest) {
           createdAt: new Date().toISOString(),
         };
 
-        deliveries.unshift(newDelivery);
-        saveDeliveries(deliveries);
+        // Save to Neon Postgres
+        try {
+          const sql = getDb();
+          await sql`
+            INSERT INTO deliveries (id, client_id, month, title, delivered_date, link, status, notes, created_at, updated_at)
+            VALUES (${newDelivery.id}, ${Number(newDelivery.clientId)}, ${newDelivery.month}, ${newDelivery.title}, ${newDelivery.deliveredDate}, ${newDelivery.link || ""}, ${newDelivery.status || "Delivered"}, ${newDelivery.notes || ""}, NOW(), NOW())
+            ON CONFLICT (id) DO UPDATE SET
+              month = EXCLUDED.month,
+              title = EXCLUDED.title,
+              delivered_date = EXCLUDED.delivered_date,
+              link = EXCLUDED.link,
+              status = EXCLUDED.status,
+              notes = EXCLUDED.notes,
+              updated_at = NOW();
+          `;
+        } catch (dbErr) {
+          console.warn("Could not insert delivery into Neon DB:", dbErr);
+        }
+
+        // File sync backup
+        const fileDeliveries = getFileDeliveries();
+        fileDeliveries.unshift(newDelivery);
+        saveFileDeliveries(fileDeliveries);
 
         return NextResponse.json({ success: true, delivery: newDelivery });
       }
@@ -165,22 +252,41 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const index = deliveries.findIndex((d) => String(d.id) === String(delivery.id));
-        if (index === -1) {
-          return NextResponse.json(
-            { success: false, message: "Delivery not found" },
-            { status: 404 }
-          );
+        const targetMonth = delivery.month || (delivery.deliveredDate ? delivery.deliveredDate.slice(0, 7) : undefined);
+
+        // Update in Neon Postgres
+        try {
+          const sql = getDb();
+          await sql`
+            UPDATE deliveries
+            SET
+              title = COALESCE(${delivery.title ? delivery.title.trim() : null}, title),
+              delivered_date = COALESCE(${delivery.deliveredDate || null}, delivered_date),
+              month = COALESCE(${targetMonth || null}, month),
+              link = COALESCE(${delivery.link !== undefined ? delivery.link : null}, link),
+              status = COALESCE(${delivery.status || null}, status),
+              notes = COALESCE(${delivery.notes !== undefined ? delivery.notes : null}, notes),
+              updated_at = NOW()
+            WHERE id = ${String(delivery.id)};
+          `;
+        } catch (dbErr) {
+          console.warn("Could not update delivery in Neon DB:", dbErr);
         }
 
-        deliveries[index] = {
-          ...deliveries[index],
-          ...delivery,
-          month: delivery.month || (delivery.deliveredDate ? delivery.deliveredDate.slice(0, 7) : deliveries[index].month),
-        };
+        // File sync backup
+        const fileDeliveries = getFileDeliveries();
+        const index = fileDeliveries.findIndex((d) => String(d.id) === String(delivery.id));
+        if (index !== -1) {
+          fileDeliveries[index] = {
+            ...fileDeliveries[index],
+            ...delivery,
+            month: targetMonth || fileDeliveries[index].month,
+          };
+          saveFileDeliveries(fileDeliveries);
+          return NextResponse.json({ success: true, delivery: fileDeliveries[index] });
+        }
 
-        saveDeliveries(deliveries);
-        return NextResponse.json({ success: true, delivery: deliveries[index] });
+        return NextResponse.json({ success: true, delivery });
       }
 
       case "delete": {
@@ -192,8 +298,21 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const filtered = deliveries.filter((d) => String(d.id) !== String(targetId));
-        saveDeliveries(filtered);
+        // Delete from Neon Postgres
+        try {
+          const sql = getDb();
+          await sql`
+            DELETE FROM deliveries
+            WHERE id = ${String(targetId)};
+          `;
+        } catch (dbErr) {
+          console.warn("Could not delete delivery from Neon DB:", dbErr);
+        }
+
+        // File sync backup
+        const fileDeliveries = getFileDeliveries();
+        const filtered = fileDeliveries.filter((d) => String(d.id) !== String(targetId));
+        saveFileDeliveries(filtered);
 
         return NextResponse.json({ success: true, message: "Deleted successfully" });
       }

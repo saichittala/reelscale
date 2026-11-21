@@ -143,6 +143,7 @@ export type DashboardPage =
   | "blogs"
   | "create-blog"
   | "blog-categories"
-  | "resources";
+  | "resources"
+  | "system-status";
 
 

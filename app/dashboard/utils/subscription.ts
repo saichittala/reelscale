@@ -67,7 +67,8 @@ export function getPreviousMonthKey(monthKey: string): string {
 
 export function isClientActiveInMonth(c: Client, monthKey: string): boolean {
   if (!monthKey || monthKey === "all") return true;
-  if (!c.date) return false;
+  // If no date is set, client is active by default unless marked churned
+  if (!c.date) return c.status !== "Churned";
 
   const clientStartMonth = normalizeDate(c.date).slice(0, 7); // e.g. "2026-06"
 

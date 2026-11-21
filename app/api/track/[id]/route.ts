@@ -2,17 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../../dashboard/types";
+import { getDb } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
-
-const GOOGLE_SCRIPT_CLIENTS_URL =
-  process.env.GOOGLE_SCRIPT_CLIENTS_URL ||
-  "https://script.google.com/macros/s/AKfycbwjmC5mDKejUEDSuXsf_7IlhEznHR7vA9pvu1O16DOS8J2Nn6bXNEv_w3xaOuRFAXZS/exec";
 
 const DELIVERIES_FILE = join(process.cwd(), "content", "deliveries.json");
 const MONTHLY_DRIVES_FILE = join(process.cwd(), "content", "monthly_drives.json");
 
-function getDeliveries(): DeliveredReel[] {
+function getFileDeliveries(): DeliveredReel[] {
   try {
     if (!existsSync(DELIVERIES_FILE)) return [];
     const content = readFileSync(DELIVERIES_FILE, "utf-8");
@@ -22,7 +19,7 @@ function getDeliveries(): DeliveredReel[] {
   }
 }
 
-function getMonthlyDriveConfig(clientId: string | number, month?: string | null): { link: string; showDriveLink: boolean } {
+function getFileMonthlyDrive(clientId: string | number, month?: string | null): { link: string; showDriveLink: boolean } {
   try {
     if (!existsSync(MONTHLY_DRIVES_FILE)) return { link: "", showDriveLink: false };
     const content = readFileSync(MONTHLY_DRIVES_FILE, "utf-8");
@@ -51,19 +48,80 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const month = searchParams.get("month");
 
-    // Fetch clients to find this client
-    let clients: any[] = [];
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_CLIENTS_URL, {
-        next: { revalidate: 30 },
-      });
-      const data = await response.json();
-      clients = data.clients || data || [];
-    } catch (e) {
-      console.warn("Could not fetch remote clients:", e);
-    }
+    // Fetch client from Neon Postgres
+    let client: any = null;
+    let deliveries: DeliveredReel[] = [];
+    let driveLink = "";
+    let showDriveLink = true;
 
-    const client = clients.find((c: any) => String(c.id) === String(id));
+    try {
+      const sql = getDb();
+      const rows = await sql`
+        SELECT id, name, business, phone, instagram, reels, billing_model, plan
+        FROM clients
+        WHERE id = ${Number(id)}
+        LIMIT 1;
+      `;
+      if (rows && rows.length > 0) {
+        client = rows[0];
+      }
+
+      // Fetch deliveries from Neon
+      let delRows: any[] = [];
+      if (month && month !== "all") {
+        delRows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          WHERE client_id = ${Number(id)} AND month = ${month}
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      } else {
+        delRows = await sql`
+          SELECT id, client_id, month, title, delivered_date, link, status, notes, created_at
+          FROM deliveries
+          WHERE client_id = ${Number(id)}
+          ORDER BY delivered_date DESC, created_at DESC;
+        `;
+      }
+
+      deliveries = delRows.map((r: any) => ({
+        id: r.id,
+        clientId: Number(r.client_id),
+        month: r.month,
+        title: r.title,
+        deliveredDate: r.delivered_date,
+        link: r.link || "",
+        status: r.status || "Delivered",
+        notes: r.notes || "",
+        createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined,
+      }));
+
+      // Fetch drive link from Neon
+      if (month && month !== "all") {
+        const driveRows = await sql`
+          SELECT link, show_drive_link
+          FROM monthly_drives
+          WHERE client_id = ${Number(id)} AND month = ${month}
+          LIMIT 1;
+        `;
+        if (driveRows.length > 0) {
+          driveLink = driveRows[0].link || "";
+          showDriveLink = driveRows[0].show_drive_link !== false;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not query Neon Postgres for track endpoint:", e);
+      // Fallback to file deliveries
+      deliveries = getFileDeliveries().filter((d) => String(d.clientId) === String(id));
+      if (month && month !== "all") {
+        deliveries = deliveries.filter((d) => d.month === month);
+      }
+      deliveries.sort((a, b) => (b.deliveredDate || "").localeCompare(a.deliveredDate || ""));
+
+      const fileDrive = getFileMonthlyDrive(id, month);
+      driveLink = fileDrive.link;
+      showDriveLink = fileDrive.showDriveLink;
+    }
 
     if (!client) {
       return NextResponse.json(
@@ -73,9 +131,9 @@ export async function GET(
     }
 
     // Sanitize client details for public/portal view (no financial rates)
-    const clientName = client.clientName || client.name || "";
+    const clientName = client.name || "";
     const business = client.business || "";
-    
+
     // Normalized passcodes (e.g. client name + @123)
     const expectedPasscodes = [
       `${clientName.toLowerCase().trim()}@123`,
@@ -84,44 +142,31 @@ export async function GET(
       `${business.toLowerCase().replace(/\s+/g, "")}@123`,
     ].filter(Boolean);
 
-    // Get deliveries for this client
-    let deliveries = getDeliveries().filter(
-      (d) => String(d.clientId) === String(id)
-    );
-
-    if (month && month !== "all") {
-      deliveries = deliveries.filter((d) => d.month === month);
-    }
-
-    deliveries.sort(
-      (a, b) => (b.deliveredDate || "").localeCompare(a.deliveredDate || "")
-    );
-
-    // Monthly Google Drive link for this month
-    const driveConfig = getMonthlyDriveConfig(id, month);
-    const driveLink = driveConfig.showDriveLink ? driveConfig.link : "";
-    const showDriveLink = driveConfig.showDriveLink && Boolean(driveConfig.link);
-
     return NextResponse.json({
       success: true,
       client: {
         id: client.id,
         name: clientName,
         business: business,
+        phone: client.phone || "",
         instagram: client.instagram || "",
         reels: Number(client.reels || 0),
-        plan: client.plan || "Monthly Subscription",
-        billingModel: client.billingModel || "Subscription",
+        billingModel: client.billing_model || "Subscription",
+        plan: client.plan || "",
+        expectedPasscodes,
+        deliveries,
+        driveLink,
+        showDriveLink,
       },
       deliveries,
       driveLink,
       showDriveLink,
-      passcodeHint: `${(clientName || business).toLowerCase().replace(/\s+/g, "")}@123`,
       validPasscodes: expectedPasscodes,
     });
-  } catch (error: any) {
+  } catch (error) {
+    console.error("Tracking API error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Failed to load tracking data" },
+      { success: false, message: "Failed to load tracking data" },
       { status: 500 }
     );
   }

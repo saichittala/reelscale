@@ -141,7 +141,9 @@ export function ReelTrackerModal({
   const resetForm = () => {
     setIsEditingId(null);
     setTitle("");
-    setDeliveredDate(new Date().toISOString().slice(0, 10));
+    const today = new Date().toISOString().slice(0, 10);
+    const defaultDate = today.slice(0, 7) === selectedMonth ? today : `${selectedMonth}-01`;
+    setDeliveredDate(defaultDate);
     setStatus("Delivered");
     setNotes("");
   };
@@ -161,14 +163,19 @@ export function ReelTrackerModal({
       return;
     }
     setIsSaving(true);
+    const effectiveMonth = selectedMonth || (deliveredDate ? deliveredDate.slice(0, 7) : currentMonthStr);
+    const effectiveDeliveredDate = deliveredDate.slice(0, 7) === effectiveMonth
+      ? deliveredDate
+      : `${effectiveMonth}-${deliveredDate.slice(8, 10) || "01"}`;
+
     try {
       if (isEditingId) {
         await apiUpdateDelivery({
           id: isEditingId,
           clientId: client.id,
-          month: deliveredDate ? deliveredDate.slice(0, 7) : selectedMonth,
+          month: effectiveMonth,
           title: title.trim(),
-          deliveredDate,
+          deliveredDate: effectiveDeliveredDate,
           status,
           notes: notes.trim(),
         });
@@ -176,9 +183,9 @@ export function ReelTrackerModal({
       } else {
         await apiAddDelivery({
           clientId: client.id,
-          month: deliveredDate ? deliveredDate.slice(0, 7) : selectedMonth,
+          month: effectiveMonth,
           title: title.trim(),
-          deliveredDate,
+          deliveredDate: effectiveDeliveredDate,
           status,
           notes: notes.trim(),
         });
@@ -504,7 +511,7 @@ export function ReelTrackerModal({
                 </span>
 
                 <span style={{ fontSize: "11px", color: "var(--muted)" }}>
-                  · {remainingCount} remaining
+                  · {remainingCount} remaining {client.billingModel === "Subscription" ? `(${client.reels}/mo sub)` : ""}
                 </span>
               </div>
 
@@ -978,7 +985,9 @@ export function ReelTrackerModal({
                   No reels logged for {selectedMonthLabel}
                 </div>
                 <div style={{ color: "var(--muted)", fontSize: "11px", marginTop: "2px" }}>
-                  Use the form above to log the first reel for this month.
+                  {client.billingModel === "Subscription"
+                    ? `Monthly subscription quota of ${targetReels} reels resets automatically for each cycle. Log reels above as they are completed.`
+                    : "Use the form above to log the first reel for this month."}
                 </div>
               </div>
             ) : (

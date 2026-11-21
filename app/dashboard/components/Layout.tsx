@@ -17,6 +17,7 @@ interface LayoutProps {
   salesFiltersBtn?: React.ReactNode;
   blogActionsBtn?: React.ReactNode;
   createBlogActionsBtn?: React.ReactNode;
+  systemStatusActionsBtn?: React.ReactNode;
   toast?: React.ReactNode;
   selectedMonth?: string;
   setSelectedMonth?: (month: string) => void;
@@ -35,6 +36,7 @@ export function Layout({
   salesFiltersBtn,
   blogActionsBtn,
   createBlogActionsBtn,
+  systemStatusActionsBtn,
   toast,
   selectedMonth,
   setSelectedMonth,
@@ -120,6 +122,11 @@ export function Layout({
             icon: "/assets/icons/nav-resources-v2.svg",
             label: "Resources",
           },
+          {
+            id: "system-status" as DashboardPage,
+            icon: "/assets/icons/nav-status.svg",
+            label: "System Status",
+          },
         ];
 
   const titles: Record<string, string> = {
@@ -132,6 +139,7 @@ export function Layout({
     "create-blog": "Create Blog Post",
     "blog-categories": "Blog Categories",
     resources: "Resources",
+    "system-status": "System Status",
   };
 
   const subs: Record<string, string> = {
@@ -144,6 +152,7 @@ export function Layout({
     "create-blog": "Compose, preview and optimize your article",
     "blog-categories": "Manage blog taxonomies and organization",
     resources: "Create, manage, and download client documents",
+    "system-status": "Live health status of Redis, Sanity CMS, database, and control services",
   };
 
   return (
@@ -176,7 +185,6 @@ export function Layout({
               className={`nav-item ${page === n.id ? "active" : ""}`}
               onClick={() => {
                 setPage(n.id);
-                localStorage.setItem("reelscale_current_page", n.id);
               }}
               data-tooltip={sidebarCollapsed ? n.label : undefined}
             >
@@ -265,6 +273,7 @@ export function Layout({
               {page === "blogs" && blogActionsBtn}
               {(page === "create-blog" || page === "blog-categories") &&
                 createBlogActionsBtn}
+              {page === "system-status" && systemStatusActionsBtn}
 
               {/* Theme Toggle Button - Made consistently visible for premium feel */}
               <Button

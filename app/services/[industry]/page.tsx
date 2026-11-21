@@ -1168,7 +1168,7 @@ export default async function IndustryServicePage({ params }: { params: Promise<
         <section className="service-bottom-cta-section">
           <div className="service-bottom-cta-inner">
             <h2 className="service-bottom-cta-heading">
-              Ready to <em>Scale</em> Your Brand?
+              Ready to <em>Scale</em> your Brand?
             </h2>
             <a href="https://wa.me/919966239433?text=Hello%20ReelScale%2C%20I%27d%20like%20to%20schedule%20a%20content%20shoot.%20Please%20let%20me%20know%20your%20next%20availability." target="_blank" rel="noopener noreferrer" className="btn-primary btn-padded-cta">
               Book a Shoot on WhatsApp

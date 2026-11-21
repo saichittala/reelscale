@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Client } from "../types";
 import { fmt, fmtFull } from "../utils/format";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { loadChartJS } from "../utils/loader";
+import { fetchDeliveries } from "../services/api";
 import {
   getPreviousMonthKey,
   isClientActiveInMonth,
@@ -24,6 +25,35 @@ export function Overview({
   isLoading,
 }: OverviewProps) {
   const chartInstanceRef = useRef<any>(null);
+  const [deliveredCounts, setDeliveredCounts] = useState<Record<string, number>>({});
+  const [totalDeliveredInMonth, setTotalDeliveredInMonth] = useState<number>(0);
+
+  useEffect(() => {
+    async function loadDeliveries() {
+      try {
+        const res = await fetchDeliveries();
+        const list = res.deliveries || [];
+        const targetMonth =
+          selectedMonth && selectedMonth !== "all"
+            ? selectedMonth
+            : new Date().toISOString().slice(0, 7);
+        let monthTotal = 0;
+        const counts: Record<string, number> = {};
+        list.forEach((d) => {
+          if (d.month === targetMonth && d.status === "Delivered") {
+            const idKey = String(d.clientId);
+            counts[idKey] = (counts[idKey] || 0) + 1;
+            monthTotal += 1;
+          }
+        });
+        setDeliveredCounts(counts);
+        setTotalDeliveredInMonth(monthTotal);
+      } catch (e) {
+        console.warn("Could not load deliveries for overview", e);
+      }
+    }
+    loadDeliveries();
+  }, [selectedMonth]);
 
   const getClientRevenue = (c: Client) =>
     c.revenue || (c.reels || 0) * (c.ppr || 0);
@@ -261,9 +291,32 @@ export function Overview({
         </div>
 
         <div className="stat-card gold">
-          <div className="stat-label">Monthly Reels</div>
-          <div className="stat-value gold">{totalReels.toLocaleString()}</div>
-          <div className="stat-sub dn">Reels targeted / month</div>
+          <div className="stat-label">
+            {selectedMonth && selectedMonth !== "all" ? "Monthly Reels Target" : "Monthly Reels Quota"}
+          </div>
+          <div className="stat-value gold" style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+            <span>{totalDeliveredInMonth}</span>
+            <span style={{ fontSize: "16px", color: "var(--muted)", fontWeight: 500 }}>
+              / {totalReels} Del.
+            </span>
+          </div>
+          <div className="stat-sub" style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+            {totalDeliveredInMonth >= totalReels && totalReels > 0 ? (
+              <span style={{ color: "var(--green)", fontWeight: 600 }}>
+                ✓ All {totalReels} delivered (100%)
+              </span>
+            ) : totalDeliveredInMonth > 0 ? (
+              <span style={{ color: "var(--gold)", fontWeight: 600 }}>
+                {totalDeliveredInMonth} delivered · {Math.max(0, totalReels - totalDeliveredInMonth)} pending
+              </span>
+            ) : (
+              <span style={{ color: "var(--muted)", fontWeight: 500 }}>
+                {selectedMonth && selectedMonth !== "all"
+                  ? `Cycle reset for ${availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth} (0/${totalReels})`
+                  : `0/${totalReels} delivered this cycle`}
+              </span>
+            )}
+          </div>
           <div className="stat-icon">
             <img src="/assets/icons/reels.svg" alt="Reels Icon" />
           </div>

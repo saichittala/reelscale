@@ -39,6 +39,7 @@ import { Blogs } from "./modules/Blogs";
 import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
+import { SystemStatus } from "./modules/SystemStatus";
 import { Button, toast } from "@/components/ui";
 
 export default function DashboardMainPage() {
@@ -53,6 +54,70 @@ export default function DashboardMainPage() {
 
   // Selected tab route state (synced with localStorage)
   const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
+
+  // Sync active page with URL query parameter ?tab=... on reload and browser back/forward
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const VALID_PAGES: DashboardPage[] = [
+      "dashboard",
+      "clients",
+      "users",
+      "sales",
+      "blogs",
+      "create-blog",
+      "blog-categories",
+      "resources",
+      "system-status",
+    ];
+
+    const getTargetTab = (): DashboardPage | null => {
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get("tab") as DashboardPage | null;
+      if (urlTab && VALID_PAGES.includes(urlTab)) {
+        return urlTab;
+      }
+      try {
+        const stored = window.localStorage.getItem("reelscale_current_page");
+        if (stored) {
+          let parsed: any = stored;
+          try {
+            parsed = JSON.parse(stored);
+          } catch (e) {}
+          if (VALID_PAGES.includes(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return null;
+    };
+
+    const target = getTargetTab();
+    if (target && target !== page) {
+      setPage(target);
+    }
+
+    const handlePopState = () => {
+      const popTarget = getTargetTab();
+      if (popTarget && popTarget !== page) {
+        setPage(popTarget);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Update browser URL query without reloading whenever tab changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentTab = currentParams.get("tab");
+    const targetTab = page === "dashboard" ? null : page;
+
+    if (currentTab !== targetTab) {
+      const newUrl = targetTab ? `/dashboard?tab=${targetTab}` : "/dashboard";
+      window.history.replaceState({ tab: page }, "", newUrl);
+    }
+  }, [page]);
 
   // Automatically migrate legacy "analytics" tab to unified "dashboard"
   useEffect(() => {
@@ -87,6 +152,10 @@ export default function DashboardMainPage() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [newUserRow, setNewUserRow] = useState(false);
   const [newLeadRow, setNewLeadRow] = useState(false);
+  const [sysRefreshing, setSysRefreshing] = useState(false);
+  const [sysFlushing, setSysFlushing] = useState(false);
+  const [sysTriggerRefresh, setSysTriggerRefresh] = useState(0);
+  const [sysTriggerFlush, setSysTriggerFlush] = useState(0);
   const [salesFilterExpanded, setSalesFilterExpanded] = useState(false);
 
   // Active blog being edited
@@ -288,7 +357,7 @@ export default function DashboardMainPage() {
       await apiAddClient(clientData);
       showToast("Client added successfully");
       const data = await fetchClients();
-      
+
       // Auto-assign local storage date mapping if not returned by server
       if (typeof window !== "undefined" && clientData.date) {
         try {
@@ -329,7 +398,7 @@ export default function DashboardMainPage() {
       );
       try {
         localStorage.setItem("clients_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -344,7 +413,7 @@ export default function DashboardMainPage() {
           );
           try {
             localStorage.setItem("clients_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -359,7 +428,7 @@ export default function DashboardMainPage() {
       const next = prev.filter((c) => String(c.id) !== String(id));
       try {
         localStorage.setItem("clients_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -372,7 +441,7 @@ export default function DashboardMainPage() {
           const reverted = [...prev, deletedClient!];
           try {
             localStorage.setItem("clients_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -391,7 +460,7 @@ export default function DashboardMainPage() {
       const next = [...prev, tempUser];
       try {
         localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -406,7 +475,7 @@ export default function DashboardMainPage() {
           );
           try {
             localStorage.setItem("users_cache", JSON.stringify(next));
-          } catch (e) {}
+          } catch (e) { }
           return next;
         });
       } else {
@@ -419,7 +488,7 @@ export default function DashboardMainPage() {
         const next = prev.filter((u) => u.id !== tempId);
         try {
           localStorage.setItem("users_cache", JSON.stringify(next));
-        } catch (e) {}
+        } catch (e) { }
         return next;
       });
       showToast(err.message || "Failed to add user", "error");
@@ -437,7 +506,7 @@ export default function DashboardMainPage() {
       );
       try {
         localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -452,7 +521,7 @@ export default function DashboardMainPage() {
           );
           try {
             localStorage.setItem("users_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -467,7 +536,7 @@ export default function DashboardMainPage() {
       const next = prev.filter((u) => String(u.id) !== String(id));
       try {
         localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -480,7 +549,7 @@ export default function DashboardMainPage() {
           const reverted = [...prev, deletedUser!];
           try {
             localStorage.setItem("users_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -500,7 +569,7 @@ export default function DashboardMainPage() {
       const next = [tempLead, ...prev];
       try {
         localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -515,7 +584,7 @@ export default function DashboardMainPage() {
           );
           try {
             localStorage.setItem("sales_cache", JSON.stringify(next));
-          } catch (e) {}
+          } catch (e) { }
           return next;
         });
       } else {
@@ -528,7 +597,7 @@ export default function DashboardMainPage() {
         const next = prev.filter((l) => l.id !== tempId);
         try {
           localStorage.setItem("sales_cache", JSON.stringify(next));
-        } catch (e) {}
+        } catch (e) { }
         return next;
       });
       showToast(err.message || "Failed to add lead", "error");
@@ -549,7 +618,7 @@ export default function DashboardMainPage() {
       );
       try {
         localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -564,7 +633,7 @@ export default function DashboardMainPage() {
           );
           try {
             localStorage.setItem("sales_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -579,7 +648,7 @@ export default function DashboardMainPage() {
       const next = prev.filter((l) => String(l.id) !== String(id));
       try {
         localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
 
@@ -592,7 +661,7 @@ export default function DashboardMainPage() {
           const reverted = [...prev, deletedLead!];
           try {
             localStorage.setItem("sales_cache", JSON.stringify(reverted));
-          } catch (e) {}
+          } catch (e) { }
           return reverted;
         });
       }
@@ -939,6 +1008,22 @@ export default function DashboardMainPage() {
     </Button>
   );
 
+  const systemStatusActionsBtn = (
+    <Button
+      variant="primary"
+      disabled={sysRefreshing}
+      onClick={() => setSysTriggerRefresh((c) => c + 1)}
+    >
+      <img
+        src="/assets/icons/nav-status.svg"
+        width="16"
+        alt=""
+        style={{ animation: sysRefreshing ? "spin 1s linear infinite" : "none" }}
+      />
+      <span>{sysRefreshing ? "Checking..." : "Refresh Status"}</span>
+    </Button>
+  );
+
   return (
     <Layout
       page={page}
@@ -951,6 +1036,7 @@ export default function DashboardMainPage() {
       salesFiltersBtn={salesFiltersBtn}
       blogActionsBtn={blogActionsBtn}
       createBlogActionsBtn={createBlogActionsBtn}
+      systemStatusActionsBtn={systemStatusActionsBtn}
       selectedMonth={selectedMonth}
       setSelectedMonth={setSelectedMonth}
       availableMonths={availableMonths}
@@ -1066,6 +1152,18 @@ export default function DashboardMainPage() {
             clients={clients}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
+          />
+        )}
+
+        {page === "system-status" && (
+          <SystemStatus
+            showToast={showToast}
+            refreshTrigger={sysTriggerRefresh}
+            flushTrigger={sysTriggerFlush}
+            onStateChange={({ refreshing, flushing }) => {
+              setSysRefreshing(refreshing);
+              setSysFlushing(flushing);
+            }}
           />
         )}
       </div>

@@ -384,20 +384,22 @@ export function Clients({
 
   const handleSaveEdit = async () => {
     if (!editClientData) return;
+    setIsSaving(true);
     const clientToSave: Client = {
       ...editClientData,
+      revenue: editClientData.revenue !== undefined ? editClientData.revenue : (editClientData.reels || 0) * (editClientData.ppr || 0),
       date: normalizeDate(editClientData.date) || editClientData.date || "",
     };
 
-    // Close edit row immediately so changes apply instantly in the UI
-    setEditingClientId(null);
-    setEditClientData(null);
-
     try {
       await onUpdateClient(clientToSave.id, clientToSave);
+      setEditingClientId(null);
+      setEditClientData(null);
       showToast("Client updated successfully", "success");
     } catch (e: any) {
       showToast(e.message || "Failed to update client", "error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -806,7 +808,7 @@ export function Clients({
             <input
               type="number"
               className="company-input td-input td-input-md"
-              value={editClientData ? Math.round(getClientRevenue(editClientData)) : ""}
+              value={editClientData ? (editClientData.revenue !== undefined ? editClientData.revenue : Math.round(getClientRevenue(editClientData))) : ""}
               onChange={(e) => {
                 const newRevVal = Number(e.target.value || 0);
                 setEditClientData(prev => {
@@ -817,6 +819,7 @@ export function Clients({
                   const discountPct = baseRateVal > newRevVal ? Math.round(((baseRateVal - newRevVal) / baseRateVal) * 100) : 0;
                   return {
                     ...prev,
+                    revenue: newRevVal,
                     ppr: calculatedPpr,
                     bargain: discountPct,
                   };
@@ -980,39 +983,83 @@ export function Clients({
           </div>
         </td>
         <td>
-          <span className="plan-badge" style={{ background: "rgba(255,255,255,0.05)", padding: "4px 8px", borderRadius: "18px", fontSize: "11px" }}>
-            {c.plan || "Custom"}
+          <span className="plan-badge" style={{ background: "rgba(255,255,255,0.05)", padding: "4px 8px", borderRadius: "18px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <span>{c.plan || "Custom"}</span>
+            {c.billingModel === "Subscription" && (
+              <span style={{ fontSize: "9px", background: "var(--green-12)", color: "var(--green)", border: "0.6px solid var(--green)", padding: "1px 5px", borderRadius: "99px", fontWeight: 700 }}>
+                SUB
+              </span>
+            )}
           </span>
         </td>
         <td>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span className="client-reels-text" style={{ fontWeight: 500 }}>{c.reels}</span>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setTrackerClient(c);
-                setIsTrackerOpen(true);
-              }}
-              title="Click to view/manage this month's delivered reels & share link"
-              style={{
-                background: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green-12)" : "var(--red-10)",
-                border: `0.6px solid ${(deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red-op)"}`,
-                color: (deliveryCounts[String(c.id)] || 0) >= (c.reels || 1) ? "var(--green)" : "var(--red)",
-                fontSize: "11px",
-                fontWeight: 600,
-                padding: "2px 8px",
-                borderRadius: "var(--border-radius-99)",
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-                transition: "var(--transition-fast)",
-              }}
-            >
-              <IconFilm size={12} />
-              <span>{deliveryCounts[String(c.id)] || 0}/{c.reels} Del.</span>
-            </button>
+            <span className="client-reels-text" style={{ fontWeight: 600, display: "inline-flex", alignItems: "baseline", gap: "2px" }}>
+              {c.reels}
+              {c.billingModel === "Subscription" && (
+                <span style={{ fontSize: "11px", color: "var(--muted)", fontWeight: 400 }}>
+                  /mo
+                </span>
+              )}
+            </span>
+            {(() => {
+              const count = deliveryCounts[String(c.id)] || 0;
+              const quota = c.reels || 1;
+              const isFull = count >= quota;
+              const isPartial = count > 0 && count < quota;
+              const activeCycle = selectedMonth && selectedMonth !== "all"
+                ? availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth
+                : "Current Cycle";
+              
+              let bg = "rgba(255, 255, 255, 0.05)";
+              let border = "0.6px solid rgba(255, 255, 255, 0.12)";
+              let color = "var(--muted)";
+              
+              if (isFull) {
+                bg = "var(--green-12)";
+                border = "0.6px solid var(--green)";
+                color = "var(--green)";
+              } else if (isPartial) {
+                bg = "rgba(234, 179, 8, 0.12)";
+                border = "0.6px solid rgba(234, 179, 8, 0.4)";
+                color = "var(--gold)";
+              }
+
+              return (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTrackerClient(c);
+                    setIsTrackerOpen(true);
+                  }}
+                  title={
+                    c.billingModel === "Subscription"
+                      ? count === 0
+                        ? `Monthly subscription reset for ${activeCycle}: 0/${c.reels} reels delivered so far`
+                        : `${activeCycle}: ${count}/${c.reels} monthly subscription reels delivered`
+                      : `${count}/${c.reels} reels delivered`
+                  }
+                  style={{
+                    background: bg,
+                    border,
+                    color,
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    padding: "2px 8px",
+                    borderRadius: "var(--border-radius-99)",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    transition: "var(--transition-fast)",
+                  }}
+                >
+                  <IconFilm size={12} />
+                  <span>{count}/{c.reels} Del.</span>
+                </button>
+              );
+            })()}
           </div>
         </td>
 

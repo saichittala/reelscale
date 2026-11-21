@@ -1633,20 +1633,110 @@ tr:hover td {
 }
 
 .badge {
-    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
     border-radius: var(--border-radius-99);
     font-size: var(--text-xs);
-    font-weight: 400;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.badge-green {
+    background: color-mix(in oklch, var(--green) 15%, transparent);
+    color: var(--green);
+    border: 0.6px solid color-mix(in oklch, var(--green) 30%, transparent);
 }
 
 .badge-red {
-    background: var(--white-05);
-    color: var(--white)
+    background: color-mix(in oklch, var(--red) 15%, transparent);
+    color: var(--red);
+    border: 0.6px solid color-mix(in oklch, var(--red) 30%, transparent);
 }
 
 .badge-gold {
-    background: var(--gold-15);
+    background: color-mix(in oklch, var(--gold) 15%, transparent);
     color: var(--gold);
+    border: 0.6px solid color-mix(in oklch, var(--gold) 30%, transparent);
+}
+
+.badge-blue {
+    background: color-mix(in oklch, var(--blue) 15%, transparent);
+    color: var(--blue);
+    border: 0.6px solid color-mix(in oklch, var(--blue) 30%, transparent);
+}
+
+/* ── SYSTEM STATUS TABLE (Horizontal Scroll with Fixed First Column) ── */
+.status-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--border-radius-3);
+    border: 0.6px solid var(--border);
+    background: var(--bg);
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
+}
+
+.status-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--text-sm);
+    background: var(--bg);
+}
+
+.status-table th,
+.status-table td {
+    padding: 14px 18px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 0.6px solid var(--white-07);
+    vertical-align: middle;
+}
+
+.status-table thead th {
+    background: var(--white-03);
+    color: var(--muted);
+    font-weight: 500;
+    user-select: none;
+    font-size: var(--text-sm);
+}
+
+/* First Column: Sticky / Fixed on the Left */
+.status-table th.status-col-fixed,
+.status-table td.status-col-fixed {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 12 !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    background: var(--bg) !important;
+    border-right: 1px solid var(--border) !important;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.45);
+}
+
+.status-table thead th.status-col-fixed {
+    background: #181818 !important;
+    z-index: 14 !important;
+}
+
+[data-theme="light"] .status-table thead th.status-col-fixed {
+    background: #f4f4f5 !important;
+}
+
+.status-table tr:hover td {
+    background: var(--white-03);
+}
+
+.status-table tr:hover td.status-col-fixed {
+    background: #181818 !important;
+}
+
+[data-theme="light"] .status-table tr:hover td.status-col-fixed {
+    background: #ebebeb !important;
 }
 
 
