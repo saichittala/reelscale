@@ -43,7 +43,11 @@ try {
   const dotNextDir = path.join(rootDir, '.next');
   if (fs.existsSync(dotNextDir)) {
     console.log('==> Cleaning .next cache...');
-    fs.rmSync(dotNextDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 });
+    try {
+      execSync('rm -rf .next', { cwd: rootDir });
+    } catch {
+      fs.rmSync(dotNextDir, { recursive: true, force: true });
+    }
   }
 
   console.log('==> Step 3: Running next build with NEXT_PUBLIC_STATIC_EXPORT=true...');
