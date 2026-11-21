@@ -42,7 +42,7 @@ function getHeaderAndFooter() {
 }
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
-  const { headerHtml, footerHtml } = getHeaderAndFooter();
+  const { footerHtml } = getHeaderAndFooter();
 
   return (
     <div className="blog-page-container">

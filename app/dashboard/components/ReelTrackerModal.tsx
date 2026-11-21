@@ -10,14 +10,13 @@ import {
   apiDeleteDelivery,
 } from "../services/api";
 import { CustomSelect } from "./CustomSelect";
-import { Button, Input, toast } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 
 import {
   IconFilm,
   IconFolder,
   IconLink,
   IconKey,
-  IconCopy,
   IconCheck,
   IconArrowUpRight,
   IconCalendar,
@@ -131,7 +130,6 @@ export function ReelTrackerModal({
 
   const targetReels = client.reels || 0;
   const deliveredCount = deliveries.filter((d) => d.status === "Delivered").length;
-  const inReviewCount = deliveries.filter((d) => d.status === "In Review").length;
   const remainingCount = Math.max(0, targetReels - deliveredCount);
   const progressPct =
     targetReels > 0

@@ -101,14 +101,6 @@
   flex: 1 1 auto;
 }
 
-.labelMeasure {
-  position: absolute;
-  top: 0;
-  left: 0;
-  visibility: hidden;
-  white-space: nowrap;
-  pointer-events: none;
-}
 
 .labelText {
   display: inline-block;

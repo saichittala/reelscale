@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
 import { Button, Input } from "@/components/ui";
 
 export default function DashboardLoginPage() {
   const router = useRouter();
-  const { isLoggedIn, login, role } = useAuth();
+  const { isLoggedIn, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

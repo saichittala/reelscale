@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRedisHealth, redis, redisGet, redisSet, redisDel } from "../../lib/redis";
+import { checkRedisHealth, redis, redisGet, redisSet } from "../../lib/redis";
 import { client as sanityClient, projectId, dataset, apiVersion } from "../../sanity/client";
-import { getDb, checkDbHealth } from "../../lib/db";
+import { getDb } from "../../lib/db";
 import { checkRole } from "../rbac";
 import { existsSync, statSync } from "fs";
 import { join } from "path";

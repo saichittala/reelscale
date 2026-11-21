@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Client } from "../types";
 import { fmt, fmtFull } from "../utils/format";
 import { SkeletonLoader } from "../components/SkeletonLoader";
@@ -25,7 +25,6 @@ export function Overview({
   isLoading,
 }: OverviewProps) {
   const chartInstanceRef = useRef<any>(null);
-  const [deliveredCounts, setDeliveredCounts] = useState<Record<string, number>>({});
   const [totalDeliveredInMonth, setTotalDeliveredInMonth] = useState<number>(0);
 
   useEffect(() => {
@@ -38,15 +37,11 @@ export function Overview({
             ? selectedMonth
             : new Date().toISOString().slice(0, 7);
         let monthTotal = 0;
-        const counts: Record<string, number> = {};
         list.forEach((d) => {
           if (d.month === targetMonth && d.status === "Delivered") {
-            const idKey = String(d.clientId);
-            counts[idKey] = (counts[idKey] || 0) + 1;
             monthTotal += 1;
           }
         });
-        setDeliveredCounts(counts);
         setTotalDeliveredInMonth(monthTotal);
       } catch (e) {
         console.warn("Could not load deliveries for overview", e);

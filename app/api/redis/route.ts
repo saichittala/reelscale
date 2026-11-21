@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRedisHealth, redis, redisGet, redisSet } from "../../lib/redis";
+import { checkRedisHealth, redisGet, redisSet } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 

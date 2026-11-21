@@ -58,14 +58,6 @@ function CountUp({ end, duration = 2000, decimals = 0, suffix = "" }: { end: num
 }
 
 export default function GrowthContent({ headerHtml, footerHtml, growthPlans }: GrowthContentProps) {
-  const scrollToPricing = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const element = document.getElementById("pricing");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <div className="growth-page-wrapper">
       <LandingInteractions />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import ShareModal, { ShareModalPost } from "../components/ShareModal";
 import { Button, toast } from "@/components/ui";
 

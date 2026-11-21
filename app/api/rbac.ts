@@ -1,4 +1,3 @@
-import { NextRequest } from "next/server";
 import { getDb } from "../lib/db";
 
 // In-memory cache for user validation

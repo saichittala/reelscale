@@ -1,4 +1,3 @@
-import React from "react";
 import BlogLayout from "./BlogLayout";
 
 export default function BlogLoading() {

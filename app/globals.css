@@ -1316,10 +1316,6 @@ body {
   text-shadow: none !important;
 }
 
-.low-end-device #cursor,
-.low-end-device #cursorRing {
-  display: none !important;
-}
 
 .low-end-device .modal-content,
 .low-end-device .video-modal-container {

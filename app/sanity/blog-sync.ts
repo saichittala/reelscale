@@ -1,5 +1,5 @@
-import { writeClient, client } from './client'
-import { Blog, FAQ } from '../dashboard/types'
+import { writeClient } from './client'
+import { Blog } from '../dashboard/types'
 
 /**
  * Converts Markdown string into Sanity Portable Text blocks

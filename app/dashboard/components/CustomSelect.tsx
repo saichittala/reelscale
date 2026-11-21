@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Select, type SelectOption, type SelectProps } from "@/components/ui/select";
 
 export type { SelectOption };

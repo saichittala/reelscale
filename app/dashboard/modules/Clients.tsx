@@ -6,7 +6,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
 import { IconFilm, IconSearch } from "../components/Icons";
-import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { normalizeDate } from "../utils/subscription";
 
 interface ClientsProps {
@@ -59,7 +59,6 @@ export function Clients({
   clients,
   allClients,
   selectedMonth = "all",
-  setSelectedMonth,
   availableMonths = [],
   isLoading,
   newClientRow,
@@ -252,117 +251,6 @@ export function Clients({
     }
   };
 
-  // Sync edits to the database
-  const updateClientField = async (
-    c: Client,
-    field: keyof Omit<Client, "id">,
-    value: any
-  ) => {
-    const updatedClient = {
-      name: c.name || "",
-      business: c.business || "",
-      phone: c.phone || "",
-      instagram: c.instagram || "",
-      reels: c.reels || 0,
-      ppr: c.ppr || 0,
-      image: c.image || "",
-      billingModel: "Subscription",
-      plan: c.plan || "Custom",
-      baseRate: Number(c.baseRate || 0),
-      bargain: Number(c.bargain || 0),
-      date: c.date || "",
-      status: c.status || "Active",
-      [field]: field === "reels" || field === "ppr" || field === "baseRate" || field === "bargain" ? Number(value || 0) : value,
-    };
-    if (c[field] === updatedClient[field]) return;
-    await onUpdateClient(c.id, updatedClient);
-  };
-
-  const handleUpdatePlan = async (c: Client, plan: string) => {
-    if (c.plan === plan) return;
-    
-    let reels = c.reels;
-    let actualRate = (c.reels || 0) * (c.ppr || 0);
-    let baseRate = c.baseRate || actualRate;
-    
-    if (plan !== "Custom") {
-      const planInfo = STANDARD_PLANS[plan];
-      if (planInfo) {
-        reels = planInfo.reels;
-        actualRate = planInfo.price;
-        baseRate = planInfo.price;
-      }
-    } else {
-      actualRate = actualRate || 14999;
-      baseRate = baseRate || actualRate;
-    }
-    
-    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
-    
-    const updatedClient = {
-      name: c.name || "",
-      business: c.business || "",
-      phone: c.phone || "",
-      instagram: c.instagram || "",
-      reels: reels,
-      ppr: actualRate / (reels || 1),
-      image: c.image || "",
-      billingModel: "Subscription",
-      plan: plan,
-      baseRate: baseRate,
-      bargain: discountPct,
-    };
-    
-    await onUpdateClient(c.id, updatedClient);
-  };
-
-  const handleUpdateRate = async (c: Client, rateValue: number) => {
-    const reels = c.reels || 0;
-    const actualRate = rateValue;
-    const baseRate = c.baseRate || actualRate;
-    const discountPct = baseRate > actualRate ? Math.round(((baseRate - actualRate) / baseRate) * 100) : 0;
-    
-    const updatedClient = {
-      name: c.name || "",
-      business: c.business || "",
-      phone: c.phone || "",
-      instagram: c.instagram || "",
-      reels: reels,
-      ppr: actualRate / (reels || 1),
-      image: c.image || "",
-      billingModel: "Subscription",
-      plan: c.plan || "Custom",
-      baseRate: baseRate,
-      bargain: discountPct,
-    };
-    await onUpdateClient(c.id, updatedClient);
-  };
-
-  const handleUpdateBaseRate = async (c: Client, baseRateValue: number) => {
-    const reels = c.reels || 0;
-    const actualRate = Math.round(reels * (c.ppr || 0));
-    const discountPct = baseRateValue > actualRate ? Math.round(((baseRateValue - actualRate) / baseRateValue) * 100) : 0;
-    
-    const updatedClient = {
-      name: c.name || "",
-      business: c.business || "",
-      phone: c.phone || "",
-      instagram: c.instagram || "",
-      reels: reels,
-      ppr: c.ppr,
-      image: c.image || "",
-      billingModel: "Subscription",
-      plan: c.plan || "Custom",
-      baseRate: baseRateValue,
-      bargain: discountPct,
-    };
-    await onUpdateClient(c.id, updatedClient);
-  };
-
-
-
-  const maxRevenue = Math.max(...clients.map((c) => getClientRevenue(c)), 1);
-
   const handleSort = (key: "revenue" | "reels" | "name") => {
     if (sortKey === key) {
       setSortDir((dir) => (dir === -1 ? 1 : -1));
@@ -412,7 +300,6 @@ export function Clients({
     const previewRate = Number(newClientPpr || 0);
     const previewBase = Number(newBasePpr || newClientPpr || 0);
     const previewDiscount = previewBase > previewRate ? Math.round(((previewBase - previewRate) / previewBase) * 100) : 0;
-    const newRevenuePreview = previewRate;
 
     return (
       <tr className="new-client-row">
@@ -609,7 +496,6 @@ export function Clients({
       const editActualRate = editClientData ? Math.round((editClientData.reels || 0) * (editClientData.ppr || 0)) : 0;
       const editBaseRate = editClientData?.baseRate || editActualRate;
       const editDiscountPct = editBaseRate > editActualRate ? Math.round(((editBaseRate - editActualRate) / editBaseRate) * 100) : 0;
-      const editRev = editClientData ? getClientRevenue(editClientData) : 0;
 
       return (
         <tr key={c.id} className="editing-client-row">

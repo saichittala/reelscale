@@ -33,8 +33,6 @@ export function Blogs({
   setSelectedBlogIds,
   onEditBlog,
   onDeleteBlog,
-  onCreateBlog,
-  onManageCategories,
   setConfirmModal,
 }: BlogsProps) {
   const [blogSearch, setBlogSearch] = useState("");

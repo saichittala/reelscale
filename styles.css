@@ -18,10 +18,7 @@ html {
 
 
 
-#cursor,
-#cursorRing {
-    display: none;
-}
+
 
 /* BODY */
 body {
@@ -120,33 +117,7 @@ header.scrolled {
 
 
 
-/* CUSTOM CURSOR */
-.cursor {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: var(--red);
-    border-radius: var(--border-radius-99);
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.1s ease;
-    mix-blend-mode: difference;
-}
 
-.cursor-ring {
-    position: fixed;
-    width: 36px;
-    height: 36px;
-    border: 0.6px solid var(--red-op);
-    border-radius: var(--border-radius-99);
-    pointer-events: none;
-    z-index: 9998;
-    transition: transform 0.18s ease, width 0.3s, height 0.3s, border-color 0.3s;
-}
-
-body:hover .cursor {
-    transform: translate(-50%, -50%);
-}
 
 /* NOISE OVERLAY */
 body::before {
@@ -2424,46 +2395,6 @@ nav a:focus-visible {
     margin-bottom: 48px;
 }
 
-.ed-story-quote {
-    font-size: clamp(18px, 2.5vw, 24px);
-    font-weight: 500;
-    line-height: 1.5;
-    color: var(--white);
-    margin-bottom: 36px;
-    font-style: italic;
-    border-left: 2px solid var(--border);
-    padding-left: 24px;
-}
-
-.ed-story-body {
-    font-size: var(--text-md);
-    font-weight: 300;
-    line-height: 1.8;
-    color: var(--muted);
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.ed-founder-sig {
-    margin-top: 48px;
-    padding-top: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.ed-founder-name {
-    font-size: var(--text-md);
-    font-weight: 600;
-    color: var(--white);
-}
-
-.ed-founder-role {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    text-transform: uppercase;
-}
 
 /* STANDALONE TRACK RECORD STATS GRID */
 .ed-stats-grid {
@@ -2522,74 +2453,6 @@ nav a:focus-visible {
     text-transform: uppercase;
 }
 
-/* EDITORIAL QUOTE BANNER */
-.ed-quote-banner {
-    padding: 80px 0;
-    text-align: center;
-}
-
-.ed-quote-banner-text {
-    font-size: clamp(22px, 3.2vw, 36px);
-    font-weight: 500;
-    line-height: 1.35;
-    color: var(--white);
-    max-width: 860px;
-    margin: 20px auto 0;
-}
-
-.ed-quote-banner-text em {
-    font-family: var(--font-instrument-serif);
-    font-style: italic;
-    color: var(--white);
-}
-
-/* WHY REELSCALE EXISTS */
-.ed-purpose-section {
-    padding: 80px 0;
-}
-
-.ed-purpose-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 28px;
-    margin-bottom: 80px;
-}
-
-.ed-purpose-card {
-    background: var(--bg2);
-    border-radius: var(--border-radius-1);
-    padding: 32px 28px;
-    border: 0.6px solid var(--border);
-    transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-.ed-purpose-card:hover {
-    background: var(--white-03);
-    border-color: var(--white-15);
-}
-
-.ed-purpose-num {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    font-weight: 600;
-    margin-bottom: 14px;
-    display: block;
-}
-
-.ed-purpose-title {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--white);
-    line-height: 1.35;
-    margin-bottom: 12px;
-}
-
-.ed-purpose-desc {
-    font-size: var(--text-sm);
-    color: var(--muted);
-    line-height: 1.7;
-    font-weight: 300;
-}
 
 /* APPROACH PIPELINE */
 .ed-approach-section {
@@ -2656,115 +2519,7 @@ nav a:focus-visible {
     font-weight: 300;
 }
 
-/* WHAT MAKES US DIFFERENT */
-.ed-diff-section {
-    padding: 80px 0;
-}
-
-.ed-diff-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    margin-top: 48px;
-}
-
-.ed-diff-card {
-    border-left: 2px solid var(--red);
-    padding: 24px 32px;
-    background: var(--white-02);
-    border-radius: 0 var(--border-radius-2) var(--border-radius-2) 0;
-    transition: background var(--transition-fast);
-}
-
-.ed-diff-card:hover {
-    background: var(--white-04);
-}
-
-.ed-diff-text {
-    font-size: var(--text-lg);
-    font-weight: 500;
-    color: var(--white);
-    line-height: 1.45;
-}
-
-/* TEAM GRID */
-.ed-team-section {
-    padding: 80px 0;
-}
-
-.ed-team-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 24px 20px;
-    margin-top: 48px;
-}
-
-.ed-team-role-card {
-    background: var(--white-02);
-    border-radius: var(--border-radius-3);
-    padding: 22px 20px;
-    transition: background var(--transition-fast);
-}
-
-.ed-team-role-card:hover {
-    background: var(--white-04);
-}
-
-.ed-team-role-title {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 4px;
-}
-
-.ed-team-role-dept {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    text-transform: uppercase;
-}
-
-/* TESTIMONIALS & PROOF */
-.ed-proof-section {
-    padding: 80px 0;
-}
-
-.ed-testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-top: 48px;
-}
-
-.ed-testimonial-card {
-    background: var(--white-02);
-    border-radius: var(--border-radius-2);
-    padding: 36px 32px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: background var(--transition-fast);
-}
-
-.ed-testimonial-card:hover {
-    background: var(--white-04);
-}
-
-.ed-testimonial-quote {
-    font-size: var(--text-md);
-    font-weight: 400;
-    line-height: 1.7;
-    color: var(--white);
-    margin-bottom: 24px;
-    font-style: italic;
-}
-
-.ed-testimonial-client {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    text-transform: uppercase;
-}
-
-/* BOTTOM CTA & NEWSLETTER */
+/* BOTTOM CTA */
 .ed-cta-section {
     padding: 100px 0 80px;
     text-align: center;
@@ -2785,41 +2540,6 @@ nav a:focus-visible {
     color: var(--red);
 }
 
-.ed-newsletter-box {
-    max-width: 480px;
-    margin: 80px auto 0;
-    text-align: center;
-}
-
-.ed-newsletter-title {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 8px;
-}
-
-.ed-newsletter-form {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.ed-newsletter-input {
-    flex: 1;
-    background: var(--white-04);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius-3);
-    padding: 14px 20px;
-    color: var(--white);
-    font-size: var(--text-sm);
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.ed-newsletter-input:focus {
-    border-color: var(--red-40);
-}
-
 /* RESPONSIVE BREAKPOINTS */
 @media (max-width: 1024px) {
 
@@ -2833,13 +2553,8 @@ nav a:focus-visible {
         grid-template-columns: repeat(3, 1fr);
     }
 
-    .ed-purpose-grid,
     .ed-approach-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .ed-testimonials-grid {
-        grid-template-columns: 1fr;
     }
 }
 
@@ -2848,9 +2563,7 @@ nav a:focus-visible {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .ed-purpose-grid,
-    .ed-approach-grid,
-    .ed-diff-grid {
+    .ed-approach-grid {
         grid-template-columns: 1fr;
     }
 

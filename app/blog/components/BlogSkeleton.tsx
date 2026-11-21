@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './BlogSkeleton.module.css';
 
 export default function BlogSkeleton() {

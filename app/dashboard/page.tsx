@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { Layout } from "./components/Layout";
-import { Modal } from "./components/Modal";
 import { Client, User, Lead, Blog, DashboardPage } from "./types";
 import {
   fetchClients,
@@ -31,7 +30,6 @@ import { Clients } from "./modules/Clients";
 import {
   generateAvailableMonths,
   isClientActiveInMonth,
-  getMonthYearLabel,
 } from "./utils/subscription";
 import { Users } from "./modules/Users";
 import { Sales } from "./modules/Sales";
@@ -46,11 +44,6 @@ export default function DashboardMainPage() {
   const router = useRouter();
   const auth = useAuth();
   const { isLoggedIn, role, user, logout, sessionExpired, setSessionExpired } = auth;
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Selected tab route state (synced with localStorage)
   const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
@@ -148,14 +141,11 @@ export default function DashboardMainPage() {
   const [blogsLoading, setBlogsLoading] = useState(false);
 
   // Modal / inline UI triggers
-  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [newUserRow, setNewUserRow] = useState(false);
   const [newLeadRow, setNewLeadRow] = useState(false);
   const [sysRefreshing, setSysRefreshing] = useState(false);
-  const [sysFlushing, setSysFlushing] = useState(false);
   const [sysTriggerRefresh, setSysTriggerRefresh] = useState(0);
-  const [sysTriggerFlush, setSysTriggerFlush] = useState(0);
+  const [sysTriggerFlush] = useState(0);
   const [salesFilterExpanded, setSalesFilterExpanded] = useState(false);
 
   // Active blog being edited
@@ -1160,9 +1150,8 @@ export default function DashboardMainPage() {
             showToast={showToast}
             refreshTrigger={sysTriggerRefresh}
             flushTrigger={sysTriggerFlush}
-            onStateChange={({ refreshing, flushing }) => {
+            onStateChange={({ refreshing }) => {
               setSysRefreshing(refreshing);
-              setSysFlushing(flushing);
             }}
           />
         )}

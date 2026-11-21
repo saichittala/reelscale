@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Client, BusinessDocument, ClientContract, DocumentLineItem } from "../types";
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
 import { IconSearch } from "../components/Icons";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 
 interface ResourcesProps {
   clients: Client[];

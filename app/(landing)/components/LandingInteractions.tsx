@@ -93,7 +93,6 @@ export default function LandingInteractions() {
     let isMounted = true;
     document.documentElement.classList.remove("low-end-device");
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     /* ═══════════════════════════════════════════════════
        1. 3D CURVED CAROUSEL ENGINE (GSAP)

@@ -1,4 +1,3 @@
-import React from "react";
 
 interface SkeletonLoaderProps {
   type: "dashboard" | "clients" | "analytics" | "users" | "sales" | "blogs";

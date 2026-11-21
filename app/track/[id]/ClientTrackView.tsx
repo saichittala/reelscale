@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, use } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { DeliveredReel } from "../../dashboard/types";
 import { CustomSelect } from "../../dashboard/components/CustomSelect";
 import {
-  IconFilm,
   IconFolder,
-  IconLock,
   IconArrowUpRight,
   IconWhatsApp,
   IconEye,
@@ -105,11 +103,7 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
     setIsVerifying(false);
   };
 
-  const handleLock = () => {
-    localStorage.removeItem(`reelscale_client_auth_${clientId}`);
-    setIsUnlocked(false);
-    setPasscode("");
-  };
+
 
   // Month selector options
   const monthOptions = useMemo(() => {
@@ -167,16 +161,6 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
 
   const targetReels = client.reels || 0;
   const deliveredCount = deliveries.filter((d) => d.status === "Delivered").length;
-  const inReviewCount = deliveries.filter((d) => d.status === "In Review").length;
-  const remainingCount = Math.max(0, targetReels - deliveredCount);
-  const progressPct =
-    targetReels > 0
-      ? Math.min(100, Math.round((deliveredCount / targetReels) * 100))
-      : 0;
-
-  const selectedMonthLabel =
-    monthOptions.find((m) => m.value === selectedMonth)?.label || selectedMonth;
-
   const shortMonthStr = (() => {
     try {
       const [y, m] = selectedMonth.split("-");
