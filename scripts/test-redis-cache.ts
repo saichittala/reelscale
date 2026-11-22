@@ -12,6 +12,10 @@
  * 8. Circuit breaker fast-fail behavior
  */
 
+try {
+  process.loadEnvFile?.(".env.local");
+} catch {}
+
 import {
   redisGet,
   redisSet,

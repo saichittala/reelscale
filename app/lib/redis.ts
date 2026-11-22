@@ -7,14 +7,18 @@ declare global {
   var redisCircuitBreakerUntil: number | undefined;
 }
 
-// ── Configuration & Credentials ──
-const REDIS_URL = process.env.REDIS_URL?.trim();
-const REDIS_HOST = process.env.REDIS_HOST?.trim() || "127.0.0.1";
-const REDIS_PORT = Number(process.env.REDIS_PORT || 6379);
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD?.trim() || undefined;
+// ── Configuration Helper ──
+export function getRedisConfig() {
+  const url = process.env.REDIS_URL?.trim();
+  const host = process.env.REDIS_HOST?.trim() || "127.0.0.1";
+  const port = Number(process.env.REDIS_PORT || 6379);
+  const password = process.env.REDIS_PASSWORD?.trim() || undefined;
+  const restUrl = process.env.UPSTASH_REDIS_REST_URL?.trim();
+  const restToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  return { url, host, port, password, restUrl, restToken };
+}
 
-// Circuit breaker settings: if connection fails, pause Redis attempts for 30s
-// to prevent blocking database fallbacks and avoid latency spikes in production.
+// Circuit breaker settings: if TCP fails, pause TCP attempts for 30s
 const CIRCUIT_BREAKER_COOLDOWN_MS = 30000;
 
 export function isCircuitBreakerOpen(): boolean {
@@ -39,9 +43,10 @@ export function resetRedisCircuitBreaker(): void {
  * Parses connection info without exposing passwords
  */
 export function getRedisSanitizedHost(): { host: string; port: number; isTls: boolean } {
-  if (REDIS_URL) {
+  const { url, host, port } = getRedisConfig();
+  if (url) {
     try {
-      const parsed = new URL(REDIS_URL);
+      const parsed = new URL(url);
       return {
         host: parsed.hostname,
         port: Number(parsed.port || (parsed.protocol === "rediss:" ? 6379 : 6379)),
@@ -52,20 +57,40 @@ export function getRedisSanitizedHost(): { host: string; port: number; isTls: bo
     }
   }
   return {
-    host: REDIS_HOST,
-    port: REDIS_PORT,
+    host,
+    port,
     isTls: false,
   };
+}
+
+/**
+ * REST API client fallback for Edge / serverless runtimes where TCP is restricted
+ */
+async function executeRestCommand<T = any>(command: (string | number)[]): Promise<T | null> {
+  const { restUrl, restToken } = getRedisConfig();
+  if (!restUrl || !restToken) return null;
+  try {
+    const endpoint = `${restUrl}/${command.map((p) => encodeURIComponent(String(p))).join("/")}`;
+    const res = await fetch(endpoint, {
+      headers: { Authorization: `Bearer ${restToken}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.result as T;
+  } catch {
+    return null;
+  }
 }
 
 /**
  * Builds serverless-resilient RedisOptions with fast fail-safety
  */
 function buildRedisOptions(): { url?: string; options: RedisOptions } {
-  const isTlsUrl = REDIS_URL?.startsWith("rediss://");
+  const { url, host, port, password } = getRedisConfig();
+  const isTlsUrl = url?.startsWith("rediss://");
 
   const baseOptions: RedisOptions = {
-    // Serverless-tuned timeouts: fail fast instead of hanging client requests
     connectTimeout: 3000,
     commandTimeout: 2000,
     maxRetriesPerRequest: 1,
@@ -75,14 +100,13 @@ function buildRedisOptions(): { url?: string; options: RedisOptions } {
     retryStrategy(times) {
       if (times > 2) {
         tripCircuitBreaker(`Max retry attempts reached (${times})`);
-        return null; // Stop retrying immediately
+        return null;
       }
       return Math.min(times * 150, 500);
     },
   };
 
-  if (REDIS_URL) {
-    // When REDIS_URL is provided, DO NOT pass host/port to avoid ioredis option override conflicts
+  if (url) {
     const urlOptions: RedisOptions = {
       ...baseOptions,
     };
@@ -93,15 +117,14 @@ function buildRedisOptions(): { url?: string; options: RedisOptions } {
       };
     }
 
-    return { url: REDIS_URL, options: urlOptions };
+    return { url, options: urlOptions };
   }
 
-  // Discrete host/port configuration
   const discreteOptions: RedisOptions = {
     ...baseOptions,
-    host: REDIS_HOST,
-    port: REDIS_PORT,
-    password: REDIS_PASSWORD,
+    host,
+    port,
+    password,
   };
 
   return { options: discreteOptions };
@@ -119,7 +142,6 @@ function createRedisInstance(): Redis {
   });
 
   client.on("error", (err) => {
-    // Prevent unhandled error crashes
     if (err.message && !err.message.includes("offline queue is disabled")) {
       tripCircuitBreaker(err.message);
     }
@@ -152,7 +174,6 @@ async function ensureConnected(): Promise<boolean> {
   }
 
   if (redis.status === "connecting") {
-    // Wait briefly for in-flight handshake
     return new Promise((resolve) => {
       const timer = setTimeout(() => resolve(redis.status === "ready"), 1500);
       redis.once("ready", () => {
@@ -166,7 +187,6 @@ async function ensureConnected(): Promise<boolean> {
     });
   }
 
-  // Connect if idle, closed, or disconnected
   if (redis.status === "wait" || redis.status === "close" || redis.status === "end") {
     try {
       const connectPromise = redis.connect();
@@ -188,18 +208,31 @@ async function ensureConnected(): Promise<boolean> {
  * Retrieve cached item parsed as JSON or primitive. Returns null on miss or error.
  */
 export async function redisGet<T = unknown>(key: string): Promise<T | null> {
+  if (isCircuitBreakerOpen()) return null;
   try {
     const isConn = await ensureConnected();
-    if (!isConn) return null;
-
-    const data = await redis.get(key);
-    if (!data) return null;
-
-    try {
-      return JSON.parse(data) as T;
-    } catch {
-      return data as unknown as T;
+    if (isConn) {
+      const data = await redis.get(key);
+      if (data) {
+        try {
+          return JSON.parse(data) as T;
+        } catch {
+          return data as unknown as T;
+        }
+      }
+      return null;
     }
+
+    // Fallback to Upstash REST API if TCP socket is unavailable/circuit-broken
+    const restData = await executeRestCommand<string>(["get", key]);
+    if (restData) {
+      try {
+        return JSON.parse(restData) as T;
+      } catch {
+        return restData as unknown as T;
+      }
+    }
+    return null;
   } catch (err: any) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(`[Redis] GET failed for "${key}":`, err?.message);
@@ -216,18 +249,26 @@ export async function redisSet(
   value: unknown,
   ttlSeconds?: number
 ): Promise<boolean> {
+  if (isCircuitBreakerOpen()) return false;
   try {
-    const isConn = await ensureConnected();
-    if (!isConn) return false;
-
     const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+    const isConn = await ensureConnected();
 
-    if (ttlSeconds && ttlSeconds > 0) {
-      await redis.set(key, stringValue, "EX", ttlSeconds);
-    } else {
-      await redis.set(key, stringValue);
+    if (isConn) {
+      if (ttlSeconds && ttlSeconds > 0) {
+        await redis.set(key, stringValue, "EX", ttlSeconds);
+      } else {
+        await redis.set(key, stringValue);
+      }
+      return true;
     }
-    return true;
+
+    // Fallback to Upstash REST API
+    const command = ttlSeconds && ttlSeconds > 0
+      ? ["set", key, stringValue, "EX", ttlSeconds]
+      : ["set", key, stringValue];
+    const restRes = await executeRestCommand(command);
+    return restRes === "OK";
   } catch (err: any) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(`[Redis] SET failed for "${key}":`, err?.message);
@@ -240,15 +281,20 @@ export async function redisSet(
  * Delete key or keys from Redis
  */
 export async function redisDel(key: string | string[]): Promise<boolean> {
+  if (isCircuitBreakerOpen()) return false;
   try {
-    const isConn = await ensureConnected();
-    if (!isConn) return false;
-
     const keys = Array.isArray(key) ? key : [key];
     if (keys.length === 0) return true;
 
-    await redis.del(...keys);
-    return true;
+    const isConn = await ensureConnected();
+    if (isConn) {
+      await redis.del(...keys);
+      return true;
+    }
+
+    // Fallback to Upstash REST API
+    const restRes = await executeRestCommand(["del", ...keys]);
+    return restRes !== null;
   } catch (err: any) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(`[Redis] DEL failed for key(s):`, err?.message);
@@ -261,25 +307,42 @@ export async function redisDel(key: string | string[]): Promise<boolean> {
  * Non-blocking pattern invalidation using SCAN instead of blocking KEYS
  */
 export async function redisInvalidatePattern(pattern: string): Promise<number> {
+  if (isCircuitBreakerOpen()) return 0;
   try {
     const isConn = await ensureConnected();
-    if (!isConn) return 0;
+    if (isConn) {
+      let cursor = "0";
+      let deletedCount = 0;
 
+      do {
+        const [nextCursor, keys] = await redis.scan(
+          cursor,
+          "MATCH",
+          pattern,
+          "COUNT",
+          100
+        );
+        cursor = nextCursor;
+
+        if (keys.length > 0) {
+          await redis.del(...keys);
+          deletedCount += keys.length;
+        }
+      } while (cursor !== "0");
+
+      return deletedCount;
+    }
+
+    // Fallback to Upstash REST API
     let cursor = "0";
     let deletedCount = 0;
-
     do {
-      const [nextCursor, keys] = await redis.scan(
-        cursor,
-        "MATCH",
-        pattern,
-        "COUNT",
-        100
-      );
+      const scanRes = await executeRestCommand<[string, string[]]>(["scan", cursor, "match", pattern, "count", 100]);
+      if (!scanRes || !Array.isArray(scanRes)) break;
+      const [nextCursor, keys] = scanRes;
       cursor = nextCursor;
-
-      if (keys.length > 0) {
-        await redis.del(...keys);
+      if (Array.isArray(keys) && keys.length > 0) {
+        await executeRestCommand(["del", ...keys]);
         deletedCount += keys.length;
       }
     } while (cursor !== "0");
@@ -327,41 +390,52 @@ export async function checkRedisHealth(): Promise<{
   const start = Date.now();
   try {
     const isConn = await ensureConnected();
-    if (!isConn) {
-      return {
-        status: "disconnected",
-        message: isCircuitBreakerOpen()
-          ? "Circuit breaker active (temporary cooldown due to connection failure)"
-          : `Redis connection state: ${redis.status}`,
-      };
-    }
+    if (isConn) {
+      const pong = await redis.ping();
+      const pingMs = Date.now() - start;
 
-    const pong = await redis.ping();
-    const pingMs = Date.now() - start;
+      if (pong === "PONG") {
+        let uptimeSeconds: number | undefined;
+        let connectedClients: number | undefined;
 
-    if (pong === "PONG") {
-      let uptimeSeconds: number | undefined;
-      let connectedClients: number | undefined;
+        try {
+          const info = await redis.info();
+          const uptimeMatch = info.match(/uptime_in_seconds:(\d+)/);
+          if (uptimeMatch) uptimeSeconds = Number(uptimeMatch[1]);
+          const clientMatch = info.match(/connected_clients:(\d+)/);
+          if (clientMatch) connectedClients = Number(clientMatch[1]);
+        } catch {
+          // Safe to ignore info parsing error
+        }
 
-      try {
-        const info = await redis.info();
-        const uptimeMatch = info.match(/uptime_in_seconds:(\d+)/);
-        if (uptimeMatch) uptimeSeconds = Number(uptimeMatch[1]);
-        const clientMatch = info.match(/connected_clients:(\d+)/);
-        if (clientMatch) connectedClients = Number(clientMatch[1]);
-      } catch {
-        // Safe to ignore info parsing error
+        return {
+          status: "connected",
+          pingMs,
+          uptimeSeconds,
+          connectedClients,
+        };
       }
-
-      return {
-        status: "connected",
-        pingMs,
-        uptimeSeconds,
-        connectedClients,
-      };
     }
 
-    return { status: "error", message: `Unexpected response: ${pong}` };
+    // Check Upstash REST health as fallback
+    const { restUrl } = getRedisConfig();
+    if (restUrl) {
+      const restPong = await executeRestCommand<string>(["ping"]);
+      if (restPong === "PONG") {
+        return {
+          status: "connected",
+          pingMs: Date.now() - start,
+          message: "Connected via Upstash REST fallback",
+        };
+      }
+    }
+
+    return {
+      status: "disconnected",
+      message: isCircuitBreakerOpen()
+        ? "Circuit breaker active (temporary cooldown due to connection failure)"
+        : `Redis connection state: ${redis.status}`,
+    };
   } catch (err: any) {
     tripCircuitBreaker(err?.message);
     return {
