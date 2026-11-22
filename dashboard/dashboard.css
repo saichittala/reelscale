@@ -1417,12 +1417,17 @@ button:not([class*="trigger"]) span {
 /* GLASS CARDS */
 .glass-card {
     background: var(--white-03);
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--border-radius-2);
     padding: 20px;
     backdrop-filter: blur(14px);
     position: relative;
     z-index: 1;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.glass-card:hover {
+    border-color: var(--border);
 }
 
 .glass-card:has([aria-expanded="true"]),
@@ -5042,11 +5047,16 @@ input[type="number"] {
 
 .details-panel .glass-card {
     background: var(--white-03);
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--border-radius-2);
     padding: 22px;
     position: relative;
     z-index: 1;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.details-panel .glass-card:hover {
+    border-color: var(--border);
 }
 
 .details-panel .glass-card:has([aria-expanded="true"]),
@@ -5070,9 +5080,14 @@ input[type="number"] {
     overflow-y: auto;
     max-height: calc(100vh - 120px);
     background: var(--white-03);
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--radius-md);
     padding: 28px;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.preview-panel:hover {
+    border-color: var(--border);
 }
 
 /* Form Styling overrides inside details-panel */
@@ -5112,36 +5127,46 @@ input[type="number"] {
     min-height: 38px;
     padding: 0 14px;
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: var(--radius-pill, 99px);
     color: var(--white);
     font-size: var(--text-sm, 14px);
     box-sizing: border-box;
-    transition: var(--transition-fast);
+    transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+}
+
+.details-panel input.form-input:hover {
+    border-color: var(--border);
+    background: var(--white-03);
 }
 
 .details-panel input.form-input:focus {
     outline: none;
     border-color: var(--border-strong);
-    background: transparent;
+    background: var(--white-03);
     box-shadow: 0 0 0 1px var(--border-strong);
 }
 
 .details-panel textarea.form-input {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: var(--radius-input, 14px);
     padding: 10px 14px;
     color: var(--white);
     font-size: var(--text-sm, 14px);
     box-sizing: border-box;
-    transition: var(--transition-fast);
+    transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+}
+
+.details-panel textarea.form-input:hover {
+    border-color: var(--border);
+    background: var(--white-03);
 }
 
 .details-panel textarea.form-input:focus {
     outline: none;
     border-color: var(--border-strong);
-    background: transparent;
+    background: var(--white-03);
     box-shadow: 0 0 0 1px var(--border-strong);
 }
 
@@ -5152,6 +5177,17 @@ input[type="number"] {
     justify-content: space-between !important;
     text-align: left !important;
     width: 100% !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+}
+
+.details-panel [class*="trigger"]:hover,
+.details-panel button[class*="trigger"]:hover,
+.details-panel [class*="trigger"][aria-expanded="true"],
+.details-panel button[class*="trigger"][aria-expanded="true"] {
+    border-color: var(--border) !important;
+    background: var(--white-03) !important;
 }
 
 .details-panel [class*="trigger"] [class*="label"],
