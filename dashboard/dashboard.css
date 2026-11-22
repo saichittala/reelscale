@@ -1421,6 +1421,13 @@ button:not([class*="trigger"]) span {
     border-radius: var(--border-radius-2);
     padding: 20px;
     backdrop-filter: blur(14px);
+    position: relative;
+    z-index: 1;
+}
+
+.glass-card:has([aria-expanded="true"]),
+.glass-card:has([data-state="open"]) {
+    z-index: 50 !important;
 }
 
 .glass-card-label {
@@ -5038,6 +5045,20 @@ input[type="number"] {
     border: 1px solid var(--border);
     border-radius: var(--border-radius-2);
     padding: 22px;
+    position: relative;
+    z-index: 1;
+}
+
+.details-panel .glass-card:has([aria-expanded="true"]),
+.details-panel .glass-card:has([data-state="open"]) {
+    z-index: 50 !important;
+}
+
+.details-panel .form-row-grid > .form-group:has([aria-expanded="true"]),
+.details-panel .form-row-grid > div:has([aria-expanded="true"]),
+.details-panel .form-group:has([aria-expanded="true"]) {
+    position: relative;
+    z-index: 60 !important;
 }
 
 .preview-panel {

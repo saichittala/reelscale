@@ -83,7 +83,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     };
 
     return (
-      <div ref={ref} className={className} style={{ width: "100%" }}>
+      <div
+        ref={ref}
+        className={className}
+        style={{ width: "100%", position: "relative" }}
+      >
         <ArcDatePicker
           label={label}
           value={parsedDate}
