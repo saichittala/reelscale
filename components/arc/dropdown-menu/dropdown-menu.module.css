@@ -47,8 +47,8 @@
 }
 
 .trigger:focus-visible {
-  border-color: var(--border-strong);
-  box-shadow: 0 0 0 2px var(--red-20, rgba(255, 60, 60, 0.2));
+  border-color: var(--red-40);
+  box-shadow: 0 0 0 2px var(--red-10, rgba(255, 60, 60, 0.1));
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -60,13 +60,13 @@
 }
 
 .trigger[data-state="open"] {
-  border-color: var(--border-strong);
+  border-color: var(--red-40);
   background: transparent;
-  box-shadow: none;
+  box-shadow: 0 0 0 2px var(--red-10, rgba(255, 60, 60, 0.1));
 }
 
 .trigger:active {
-  border-color: var(--border-strong);
+  border-color: var(--red-40);
   background: transparent;
   box-shadow: none;
 }

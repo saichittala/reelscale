@@ -1643,7 +1643,8 @@ button:not([class*="trigger"]) span {
 }
 
 .search-wrap input:focus {
-    border: 0.6px solid var(--border);
+    border: 0.6px solid var(--red-40);
+    box-shadow: 0 0 0 2px var(--red-10);
     outline: none;
 }
 
@@ -5224,7 +5225,8 @@ input[type="number"] {
 }
 
 .line-items-editor-table input:focus {
-    border-color: var(--white-40);
+    border-color: var(--red-40);
+    box-shadow: 0 0 0 2px var(--red-10);
     background: var(--white-03);
     outline: none;
 }
@@ -5322,7 +5324,8 @@ input[type="number"] {
 }
 
 .totals-row-item input:focus {
-    border-color: var(--white-40);
+    border-color: var(--red-40);
+    box-shadow: 0 0 0 2px var(--red-10);
     background: var(--white-03);
     outline: none;
 }
@@ -5798,7 +5801,8 @@ table td button[class*="trigger"][data-state="open"],
 .user-input:focus,
 .td-input:focus,
 .line-items-editor-table input:focus {
-    border-color: var(--white-40, var(--border-strong)) !important;
+    border-color: var(--red-40) !important;
+    box-shadow: 0 0 0 2px var(--red-10) !important;
     background: var(--white-03) !important;
     outline: none !important;
 }
@@ -5898,4 +5902,57 @@ tfoot td {
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+}
+
+/* =============================================================
+   UNIFIED FOCUS/CLICK STATE: RED-40 BORDER ACROSS ALL INPUTS, SEARCH & DROPDOWNS
+   On click/focus, border becomes var(--red-40) with red-10 glow
+   ============================================================= */
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible,
+[class*="trigger"]:focus,
+[class*="trigger"]:focus-visible,
+button[class*="trigger"]:focus,
+button[class*="trigger"]:focus-visible,
+[class*="trigger"][data-state="open"],
+button[class*="trigger"][data-state="open"],
+[class*="trigger"]:active,
+button[class*="trigger"]:active,
+.form-input:focus,
+.form-input:focus-visible,
+.search-wrap input:focus,
+.search-wrap input:focus-visible,
+.filter-input-search:focus,
+.filter-input-search:focus-visible,
+.topbar-search-wrap input:focus,
+.topbar-search-wrap input:focus-visible,
+.company-input:focus,
+.company-input:focus-visible,
+.phone-input:focus,
+.phone-input:focus-visible,
+.note-input:focus,
+.note-input:focus-visible,
+.user-name-input:focus,
+.user-name-input:focus-visible,
+.user-email-input:focus,
+.user-email-input:focus-visible,
+.user-password-input:focus,
+.user-password-input:focus-visible,
+.user-role-input:focus,
+.user-role-input:focus-visible,
+.user-input:focus,
+.user-input:focus-visible,
+.td-input:focus,
+.td-input:focus-visible,
+.line-items-editor-table input:focus,
+.line-items-editor-table input:focus-visible,
+.totals-row-item input:focus,
+.totals-row-item input:focus-visible {
+    border-color: var(--red-40) !important;
+    box-shadow: 0 0 0 2px var(--red-10) !important;
+    outline: none !important;
 }
