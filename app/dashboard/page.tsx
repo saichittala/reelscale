@@ -1112,7 +1112,7 @@ export default function DashboardMainPage() {
       />
 
       <Button
-        variant="ghost"
+        variant="secondary"
         onClick={() => setPage("blog-categories")}
       >
         <img
