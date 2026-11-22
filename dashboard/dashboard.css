@@ -5054,8 +5054,8 @@ input[type="number"] {
     z-index: 50 !important;
 }
 
-.details-panel .form-row-grid > .form-group:has([aria-expanded="true"]),
-.details-panel .form-row-grid > div:has([aria-expanded="true"]),
+.details-panel .form-row-grid>.form-group:has([aria-expanded="true"]),
+.details-panel .form-row-grid>div:has([aria-expanded="true"]),
 .details-panel .form-group:has([aria-expanded="true"]) {
     position: relative;
     z-index: 60 !important;
@@ -5736,13 +5736,14 @@ input[type="number"] {
    TABLE EDITABLE CELLS: HOVER-ONLY BORDERS
    Table editable inputs, textareas, selects & dropdown triggers
    No border by default; display border on hover and focus
+   (EXCLUDES checkboxes & radios which must remain visible at all times)
    ============================================================= */
-table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not(.custom-checkbox),
 table td textarea,
 table td select,
 table td [class*="trigger"],
 table td button[class*="trigger"],
-.users-table input,
+.users-table input:not([type="checkbox"]):not([type="radio"]):not(.custom-checkbox),
 .users-table [class*="trigger"],
 .users-table button[class*="trigger"],
 .company-input,
@@ -5758,16 +5759,16 @@ table td button[class*="trigger"],
     border: 1px solid transparent !important;
     background: transparent !important;
     transition: border-color var(--duration-fast, 150ms) var(--ease-standard, ease),
-                background-color var(--duration-fast, 150ms) var(--ease-standard, ease),
-                box-shadow var(--duration-fast, 150ms) var(--ease-standard, ease) !important;
+        background-color var(--duration-fast, 150ms) var(--ease-standard, ease),
+        box-shadow var(--duration-fast, 150ms) var(--ease-standard, ease) !important;
 }
 
-table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):hover,
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not(.custom-checkbox):hover,
 table td textarea:hover,
 table td select:hover,
 table td [class*="trigger"]:hover,
 table td button[class*="trigger"]:hover,
-.users-table input:hover,
+.users-table input:not([type="checkbox"]):not([type="radio"]):not(.custom-checkbox):hover,
 .users-table [class*="trigger"]:hover,
 .users-table button[class*="trigger"]:hover,
 .company-input:hover,
@@ -5784,14 +5785,14 @@ table td button[class*="trigger"]:hover,
     background: var(--white-03) !important;
 }
 
-table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus,
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not(.custom-checkbox):focus,
 table td textarea:focus,
 table td select:focus,
 table td [class*="trigger"]:focus,
 table td button[class*="trigger"]:focus,
 table td [class*="trigger"][data-state="open"],
 table td button[class*="trigger"][data-state="open"],
-.users-table input:focus,
+.users-table input:not([type="checkbox"]):not([type="radio"]):not(.custom-checkbox):focus,
 .users-table [class*="trigger"]:focus,
 .users-table button[class*="trigger"]:focus,
 .users-table [class*="trigger"][data-state="open"],
@@ -5809,4 +5810,32 @@ table td button[class*="trigger"][data-state="open"],
     border-color: var(--white-40, var(--border-strong)) !important;
     background: var(--white-03) !important;
     outline: none !important;
+}
+
+/* Ensure checkboxes in tables are always visible with their distinct border */
+table input[type="checkbox"],
+table .custom-checkbox,
+.users-table input[type="checkbox"],
+.users-table .custom-checkbox {
+    border: 1px solid var(--border) !important;
+    background: var(--white-20) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-flex !important;
+}
+
+table input[type="checkbox"]:hover,
+table .custom-checkbox:hover,
+.users-table input[type="checkbox"]:hover,
+.users-table .custom-checkbox:hover {
+    border-color: var(--white-30) !important;
+    background: var(--white-30) !important;
+}
+
+table input[type="checkbox"]:checked,
+table .custom-checkbox:checked,
+.users-table input[type="checkbox"]:checked,
+.users-table .custom-checkbox:checked {
+    background: var(--red) !important;
+    border-color: var(--red) !important;
 }
