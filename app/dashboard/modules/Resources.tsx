@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Client, BusinessDocument, DocumentLineItem } from "../types";
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
@@ -514,16 +514,29 @@ https://reelscale.in`;
     </div>
   );
 
-  // Keep topbar header synced via props callback instead of raw DOM portals
+  // Keep topbar header synced via props callback safely with ref
+  const onHeaderChangeRef = useRef(onHeaderChange);
   useEffect(() => {
-    onHeaderChange?.(leftHeaderContent, rightHeaderContent);
-  }, [activeDoc, onHeaderChange]);
+    onHeaderChangeRef.current = onHeaderChange;
+  });
+
+  useEffect(() => {
+    onHeaderChangeRef.current?.(leftHeaderContent, rightHeaderContent);
+  }, [
+    activeDoc.type,
+    activeDoc.total,
+    activeDoc.number,
+    activeDoc.clientName,
+    activeDoc.companyName,
+    activeDoc.clientEmail,
+    activeDoc.issueDate,
+  ]);
 
   useEffect(() => {
     return () => {
-      onHeaderChange?.(null, null);
+      onHeaderChangeRef.current?.(null, null);
     };
-  }, [onHeaderChange]);
+  }, []);
 
   return (
     <>

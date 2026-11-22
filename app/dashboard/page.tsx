@@ -61,6 +61,14 @@ export default function DashboardMainPage() {
   const [resourcesHeaderLeft, setResourcesHeaderLeft] = useState<React.ReactNode>(null);
   const [resourcesActionsBtn, setResourcesActionsBtn] = useState<React.ReactNode>(null);
 
+  const handleResourcesHeaderChange = useCallback(
+    (left: React.ReactNode, right: React.ReactNode) => {
+      setResourcesHeaderLeft(left);
+      setResourcesActionsBtn(right);
+    },
+    []
+  );
+
   // Sync active page with URL query parameter ?tab=... on reload and browser back/forward
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1392,10 +1400,7 @@ export default function DashboardMainPage() {
             clients={clients}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
-            onHeaderChange={(left, right) => {
-              setResourcesHeaderLeft(left);
-              setResourcesActionsBtn(right);
-            }}
+            onHeaderChange={handleResourcesHeaderChange}
           />
         )}
 
