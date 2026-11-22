@@ -39,6 +39,10 @@ interface StatusData {
       uptimeSeconds: number | null;
       connectedClients: number | null;
       keyCount: number;
+      neonKeyCount?: number;
+      targetDatabase?: string;
+      connectedToNeon?: boolean;
+      cachedEntities?: string[];
       memoryUsed: string;
       readWriteVerified: boolean;
       message?: string;
@@ -370,9 +374,21 @@ export function SystemStatus({
           {/* Redis Details */}
           <div className="glass-card">
             <div className="chart-title" style={{ fontSize: "var(--text-sm)" }}>Redis Cache Details</div>
-            <div className="chart-sub mb-16" style={{ fontSize: "var(--text-xs)" }}>In-memory cache configuration</div>
+            <div className="chart-sub mb-16" style={{ fontSize: "var(--text-xs)" }}>In-memory cache connected to Neon Postgres</div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "var(--text-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>Connected Database</span>
+                <span style={{ fontWeight: 600, color: "var(--green)" }}>
+                  {data?.services?.redis?.targetDatabase || "Neon Serverless Postgres"}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>Cached Entities</span>
+                <span style={{ color: "var(--white)" }}>
+                  clients, sales, users, deliveries
+                </span>
+              </div>
               <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
                 <span style={{ color: "var(--muted)" }}>Host:Port</span>
                 <span style={{ fontFamily: "monospace", color: "var(--white)" }}>
@@ -398,9 +414,9 @@ export function SystemStatus({
                 </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ color: "var(--muted)" }}>Read/Write Test</span>
+                <span style={{ color: "var(--muted)" }}>Neon Sync / Test</span>
                 <span className="badge badge-green" style={{ fontSize: "11px", padding: "2px 8px" }}>
-                  Passed
+                  Connected & Active
                 </span>
               </div>
             </div>

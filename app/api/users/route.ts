@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole, clearUserCache } from "../rbac";
 import { getDb } from "../../lib/db";
+import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
+
+const REDIS_CACHE_KEY = "neon:users:list";
+const CACHE_TTL_SECONDS = 3600; // 1 hour
 
 export async function GET(request: Request) {
   const rbac = await checkRole(request, ["admin"]);
@@ -15,6 +19,12 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Check Redis cache first for Neon users
+    const cached = await redisGet<{ success: boolean; users: any[] }>(REDIS_CACHE_KEY);
+    if (cached && Array.isArray(cached.users)) {
+      return NextResponse.json(cached);
+    }
+
     const sql = getDb();
     const rows = await sql`
       SELECT id, name, email, password, role
@@ -22,7 +32,7 @@ export async function GET(request: Request) {
       ORDER BY id ASC;
     `;
 
-    return NextResponse.json({
+    const result = {
       success: true,
       users: rows.map((u: any) => ({
         id: u.id,
@@ -31,7 +41,12 @@ export async function GET(request: Request) {
         password: u.password,
         role: u.role,
       })),
-    });
+    };
+
+    // Cache in Redis
+    await redisSet(REDIS_CACHE_KEY, result, CACHE_TTL_SECONDS);
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Users GET error:", error);
     return NextResponse.json(
@@ -55,6 +70,7 @@ export async function POST(request: NextRequest) {
 
     const sql = getDb();
     clearUserCache();
+    await redisDel(REDIS_CACHE_KEY);
 
     switch (action) {
       case "add": {

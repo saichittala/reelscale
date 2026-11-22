@@ -3,8 +3,18 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../dashboard/types";
 import { getDb } from "../../lib/db";
+import { redisGet, redisSet, redisInvalidatePattern } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
+
+const REDIS_DELIVERIES_PREFIX = "neon:deliveries:";
+
+async function invalidateDeliveryCache() {
+  await Promise.all([
+    redisInvalidatePattern("neon:deliveries:*"),
+    redisInvalidatePattern("neon:track:*"),
+  ]);
+}
 
 const DELIVERIES_FILE = join(process.cwd(), "content", "deliveries.json");
 const MONTHLY_DRIVES_FILE = join(process.cwd(), "content", "monthly_drives.json");
@@ -56,6 +66,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const clientId = searchParams.get("clientId");
     const month = searchParams.get("month");
+
+    // Check Redis cache for Neon deliveries
+    const cacheKey = `${REDIS_DELIVERIES_PREFIX}${clientId || "all"}:${month || "all"}`;
+    const cached = await redisGet<{ success: boolean; deliveries: DeliveredReel[]; driveLink: string; showDriveLink: boolean }>(cacheKey);
+    if (cached && Array.isArray(cached.deliveries)) {
+      return NextResponse.json(cached);
+    }
 
     let deliveries: DeliveredReel[] = [];
     let driveLink = "";
@@ -145,7 +162,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, deliveries, driveLink, showDriveLink });
+    const result = { success: true, deliveries, driveLink, showDriveLink };
+    await redisSet(cacheKey, result, 3600);
+    return NextResponse.json(result);
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch deliveries" },
@@ -189,6 +208,8 @@ export async function POST(request: NextRequest) {
         const driveLinks = getFileDriveLinks();
         driveLinks[`${clientId}_${month}`] = { link: linkVal, showDriveLink: isShow };
         saveFileDriveLinks(driveLinks);
+
+        await invalidateDeliveryCache();
 
         return NextResponse.json({
           success: true,
@@ -241,6 +262,8 @@ export async function POST(request: NextRequest) {
         fileDeliveries.unshift(newDelivery);
         saveFileDeliveries(fileDeliveries);
 
+        await invalidateDeliveryCache();
+
         return NextResponse.json({ success: true, delivery: newDelivery });
       }
 
@@ -283,9 +306,11 @@ export async function POST(request: NextRequest) {
             month: targetMonth || fileDeliveries[index].month,
           };
           saveFileDeliveries(fileDeliveries);
+          await invalidateDeliveryCache();
           return NextResponse.json({ success: true, delivery: fileDeliveries[index] });
         }
 
+        await invalidateDeliveryCache();
         return NextResponse.json({ success: true, delivery });
       }
 
@@ -313,6 +338,8 @@ export async function POST(request: NextRequest) {
         const fileDeliveries = getFileDeliveries();
         const filtered = fileDeliveries.filter((d) => String(d.id) !== String(targetId));
         saveFileDeliveries(filtered);
+
+        await invalidateDeliveryCache();
 
         return NextResponse.json({ success: true, message: "Deleted successfully" });
       }

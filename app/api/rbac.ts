@@ -1,4 +1,7 @@
 import { getDb } from "../lib/db";
+import { redisGet, redisSet, redisDel } from "../lib/redis";
+
+const REDIS_USERS_KEY = "neon:users:list";
 
 // In-memory cache for user validation
 let cachedUsers: any[] | null = null;
@@ -8,6 +11,7 @@ const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 export function clearUserCache() {
   cachedUsers = null;
   lastCacheTime = 0;
+  redisDel(REDIS_USERS_KEY).catch(() => {});
 }
 
 export async function validateUser(email: string | null, role: string | null): Promise<boolean> {
@@ -18,9 +22,19 @@ export async function validateUser(email: string | null, role: string | null): P
   try {
     const now = Date.now();
     if (!cachedUsers || (now - lastCacheTime > CACHE_DURATION)) {
-      const sql = getDb();
-      cachedUsers = await sql`SELECT id, name, email, role FROM users`;
-      lastCacheTime = now;
+      // Check Redis cache first
+      const fromRedis = await redisGet<{ success: boolean; users: any[] } | any[]>(REDIS_USERS_KEY);
+      if (fromRedis) {
+        cachedUsers = Array.isArray(fromRedis) ? fromRedis : fromRedis.users;
+        lastCacheTime = now;
+      } else {
+        const sql = getDb();
+        cachedUsers = await sql`SELECT id, name, email, role FROM users`;
+        lastCacheTime = now;
+        if (Array.isArray(cachedUsers)) {
+          redisSet(REDIS_USERS_KEY, cachedUsers, 3600).catch(() => {});
+        }
+      }
     }
 
     if (Array.isArray(cachedUsers)) {

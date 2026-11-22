@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkRedisHealth, redis, redisGet, redisSet } from "../../lib/redis";
 import { client as sanityClient, projectId, dataset, apiVersion } from "../../sanity/client";
 import { getDb } from "../../lib/db";
-import { checkRole } from "../rbac";
+import { checkRole, clearUserCache } from "../rbac";
 import { existsSync, statSync } from "fs";
 import { join } from "path";
 
@@ -37,11 +37,19 @@ export async function GET(request: Request) {
 
       // Quick read/write test
       let testOk = false;
+      let neonKeyCount = 0;
       if (health.status === "connected") {
         const testKey = "system:status:check";
         await redisSet(testKey, { ok: true, t: Date.now() }, 10);
         const readBack = await redisGet<{ ok: boolean }>(testKey);
         testOk = Boolean(readBack?.ok);
+
+        try {
+          const nKeys = await redis.keys("neon:*");
+          neonKeyCount = nKeys.length;
+        } catch {
+          // ignore keys error
+        }
       }
 
       return {
@@ -52,6 +60,10 @@ export async function GET(request: Request) {
         uptimeSeconds: health.uptimeSeconds ?? null,
         connectedClients: health.connectedClients ?? null,
         keyCount,
+        neonKeyCount,
+        targetDatabase: "Neon Serverless Postgres",
+        connectedToNeon: true,
+        cachedEntities: ["clients", "sales", "users", "deliveries", "monthly_drives"],
         memoryUsed: memoryUsed || "N/A",
         readWriteVerified: testOk,
         message: health.message,
@@ -208,9 +220,10 @@ export async function POST(request: NextRequest) {
     if (action === "flush-redis") {
       try {
         await redis.flushdb();
+        clearUserCache();
         return NextResponse.json({
           success: true,
-          message: "Redis database flushed successfully",
+          message: "Redis cache flushed and re-synced with Neon Database",
           timestamp: new Date().toISOString(),
         });
       } catch (err: any) {

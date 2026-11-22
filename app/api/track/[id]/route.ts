@@ -3,8 +3,11 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../../dashboard/types";
 import { getDb } from "../../../lib/db";
+import { redisGet, redisSet } from "../../../lib/redis";
 
 export const dynamic = "force-dynamic";
+
+const REDIS_TRACK_PREFIX = "neon:track:";
 
 const DELIVERIES_FILE = join(process.cwd(), "content", "deliveries.json");
 const MONTHLY_DRIVES_FILE = join(process.cwd(), "content", "monthly_drives.json");
@@ -47,6 +50,13 @@ export async function GET(
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const month = searchParams.get("month");
+
+    // Check Redis cache for Neon tracking portal
+    const trackCacheKey = `${REDIS_TRACK_PREFIX}${id}:${month || "all"}`;
+    const cached = await redisGet<any>(trackCacheKey);
+    if (cached && cached.success) {
+      return NextResponse.json(cached);
+    }
 
     // Fetch client from Neon Postgres
     let client: any = null;
@@ -142,7 +152,7 @@ export async function GET(
       `${business.toLowerCase().replace(/\s+/g, "")}@123`,
     ].filter(Boolean);
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       client: {
         id: client.id,
@@ -162,7 +172,11 @@ export async function GET(
       driveLink,
       showDriveLink,
       validPasscodes: expectedPasscodes,
-    });
+    };
+
+    await redisSet(trackCacheKey, responseData, 300);
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Tracking API error:", error);
     return NextResponse.json(
