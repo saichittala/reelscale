@@ -3552,12 +3552,12 @@ tr.new-user-row {
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: var(--white-03);
+    background: transparent !important;
     border-top: 0.6px solid var(--border);
     border-bottom-left-radius: var(--border-radius-3);
     border-bottom-right-radius: var(--border-radius-3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .pagination-info {
@@ -4889,15 +4889,6 @@ input[type="number"] {
     background: #ebebeb !important;
 }
 
-.table-inner-scroll thead th.th-actions:hover {
-    background: #1c1c1c !important;
-    background: color-mix(in srgb, var(--white) 8%, var(--bg)) !important;
-}
-
-[data-theme="light"] .table-inner-scroll thead th.th-actions:hover {
-    background: #e5e5e5 !important;
-}
-
 /* Date input wrapper with typing support and calendar picker overlay */
 .date-input-wrapper {
     position: relative;
@@ -5838,4 +5829,73 @@ table .custom-checkbox:checked,
 .users-table .custom-checkbox:checked {
     background: var(--red) !important;
     border-color: var(--red) !important;
+}
+
+/* =============================================================
+   UNIFIED TABLE HEADERS & TABLE FOOTER
+   - Table headers share the identical background color
+   - Table footers have no background (transparent)
+   ============================================================= */
+table thead,
+table thead tr,
+table thead th,
+table th,
+.table-inner-scroll thead,
+.table-inner-scroll thead tr,
+.table-inner-scroll thead th,
+.table-inner-scroll thead th.th-actions,
+.status-table thead,
+.status-table thead tr,
+.status-table thead th,
+.status-table thead th.status-col-fixed,
+.users-table thead,
+.users-table thead tr,
+.users-table thead th,
+.blogs-table thead,
+.blogs-table thead tr,
+.blogs-table thead th,
+.sales-table thead,
+.sales-table thead tr,
+.sales-table thead th,
+.line-items-editor-table thead,
+.line-items-editor-table thead tr,
+.line-items-editor-table thead th {
+    background: color-mix(in srgb, var(--white) 3%, var(--bg, #0a0a0a)) !important;
+}
+
+[data-theme="light"] table thead,
+[data-theme="light"] table thead tr,
+[data-theme="light"] table thead th,
+[data-theme="light"] table th,
+[data-theme="light"] .table-inner-scroll thead,
+[data-theme="light"] .table-inner-scroll thead tr,
+[data-theme="light"] .table-inner-scroll thead th,
+[data-theme="light"] .table-inner-scroll thead th.th-actions,
+[data-theme="light"] .status-table thead,
+[data-theme="light"] .status-table thead tr,
+[data-theme="light"] .status-table thead th,
+[data-theme="light"] .status-table thead th.status-col-fixed,
+[data-theme="light"] .users-table thead,
+[data-theme="light"] .users-table thead tr,
+[data-theme="light"] .users-table thead th,
+[data-theme="light"] .blogs-table thead,
+[data-theme="light"] .blogs-table thead tr,
+[data-theme="light"] .blogs-table thead th,
+[data-theme="light"] .sales-table thead,
+[data-theme="light"] .sales-table thead tr,
+[data-theme="light"] .sales-table thead th,
+[data-theme="light"] .line-items-editor-table thead,
+[data-theme="light"] .line-items-editor-table thead tr,
+[data-theme="light"] .line-items-editor-table thead th {
+    background: color-mix(in srgb, #000 3%, var(--bg, #ffffff)) !important;
+}
+
+.table-pagination,
+.table-footer,
+tfoot,
+tfoot tr,
+tfoot td {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
