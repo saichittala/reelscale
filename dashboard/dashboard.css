@@ -5216,18 +5216,25 @@ input[type="number"] {
 }
 
 .line-items-editor-table input {
-    background: var(--white-03);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: var(--radius-input, 14px);
     color: var(--white);
     padding: 8px 12px;
     font-size: 14px;
     width: 100%;
-    transition: border-color 0.15s;
+    outline: none;
+    transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
+}
+
+.line-items-editor-table input:hover {
+    border-color: var(--border);
+    background: var(--white-03);
 }
 
 .line-items-editor-table input:focus {
     border-color: var(--white-40);
+    background: var(--white-03);
     outline: none;
 }
 
@@ -5307,13 +5314,26 @@ input[type="number"] {
 
 .totals-row-item input {
     width: 80px;
-    background: var(--white-03);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: var(--radius-input, 14px);
     color: var(--white);
     padding: 4px 8px;
     text-align: right;
     font-size: 14px;
+    outline: none;
+    transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
+}
+
+.totals-row-item input:hover {
+    border-color: var(--border);
+    background: var(--white-03);
+}
+
+.totals-row-item input:focus {
+    border-color: var(--white-40);
+    background: var(--white-03);
+    outline: none;
 }
 
 .totals-row-item.grand-total {
