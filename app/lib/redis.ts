@@ -7,14 +7,21 @@ declare global {
   var redisCircuitBreakerUntil: number | undefined;
 }
 
+// ── Default Production Fallbacks (Matches db.ts and client.ts pattern) ──
+const DEFAULT_REDIS_URL =
+  "rediss://default:gQAAAAAAAzc2AAIgcDFkY2E1ZWY0NWQxZDM0MjJhOTY5NzRhMmExNzc0NTE2Mw@capable-gobbler-210742.upstash.io:6379";
+const DEFAULT_UPSTASH_REST_URL = "https://capable-gobbler-210742.upstash.io";
+const DEFAULT_UPSTASH_REST_TOKEN =
+  "gQAAAAAAAzc2AAIgcDFkY2E1ZWY0NWQxZDM0MjJhOTY5NzRhMmExNzc0NTE2Mw";
+
 // ── Configuration Helper ──
 export function getRedisConfig() {
-  const url = process.env.REDIS_URL?.trim();
-  const host = process.env.REDIS_HOST?.trim() || "127.0.0.1";
+  const url = process.env.REDIS_URL?.trim() || DEFAULT_REDIS_URL;
+  const host = process.env.REDIS_HOST?.trim() || "capable-gobbler-210742.upstash.io";
   const port = Number(process.env.REDIS_PORT || 6379);
   const password = process.env.REDIS_PASSWORD?.trim() || undefined;
-  const restUrl = process.env.UPSTASH_REDIS_REST_URL?.trim();
-  const restToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  const restUrl = process.env.UPSTASH_REDIS_REST_URL?.trim() || DEFAULT_UPSTASH_REST_URL;
+  const restToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim() || DEFAULT_UPSTASH_REST_TOKEN;
   return { url, host, port, password, restUrl, restToken };
 }
 
