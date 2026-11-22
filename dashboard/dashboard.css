@@ -2339,7 +2339,7 @@ textarea::placeholder {
 /* ─────────────────────────────────────────────────────────────
    DESIGN SYSTEM BROWSER AUTOFILL (RED 10% BACKGROUND + WHITE TEXT)
    ───────────────────────────────────────────────────────────── */
-input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not(.user-name-input):not(.user-email-input):not(.user-password-input):not(.user-role-input):not(.user-input):not(.company-input):not(.phone-input):not(.note-input):not(.td-input),
 textarea,
 select {
     color-scheme: dark;
@@ -5730,4 +5730,83 @@ input[type="number"] {
 
 .filter-select {
     width: 160px !important;
+}
+
+/* =============================================================
+   TABLE EDITABLE CELLS: HOVER-ONLY BORDERS
+   Table editable inputs, textareas, selects & dropdown triggers
+   No border by default; display border on hover and focus
+   ============================================================= */
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+table td textarea,
+table td select,
+table td [class*="trigger"],
+table td button[class*="trigger"],
+.users-table input,
+.users-table [class*="trigger"],
+.users-table button[class*="trigger"],
+.company-input,
+.phone-input,
+.note-input,
+.user-name-input,
+.user-email-input,
+.user-password-input,
+.user-role-input,
+.user-input,
+.td-input,
+.line-items-editor-table input {
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    transition: border-color var(--duration-fast, 150ms) var(--ease-standard, ease),
+                background-color var(--duration-fast, 150ms) var(--ease-standard, ease),
+                box-shadow var(--duration-fast, 150ms) var(--ease-standard, ease) !important;
+}
+
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):hover,
+table td textarea:hover,
+table td select:hover,
+table td [class*="trigger"]:hover,
+table td button[class*="trigger"]:hover,
+.users-table input:hover,
+.users-table [class*="trigger"]:hover,
+.users-table button[class*="trigger"]:hover,
+.company-input:hover,
+.phone-input:hover,
+.note-input:hover,
+.user-name-input:hover,
+.user-email-input:hover,
+.user-password-input:hover,
+.user-role-input:hover,
+.user-input:hover,
+.td-input:hover,
+.line-items-editor-table input:hover {
+    border-color: var(--border) !important;
+    background: var(--white-03) !important;
+}
+
+table td input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus,
+table td textarea:focus,
+table td select:focus,
+table td [class*="trigger"]:focus,
+table td button[class*="trigger"]:focus,
+table td [class*="trigger"][data-state="open"],
+table td button[class*="trigger"][data-state="open"],
+.users-table input:focus,
+.users-table [class*="trigger"]:focus,
+.users-table button[class*="trigger"]:focus,
+.users-table [class*="trigger"][data-state="open"],
+.users-table button[class*="trigger"][data-state="open"],
+.company-input:focus,
+.phone-input:focus,
+.note-input:focus,
+.user-name-input:focus,
+.user-email-input:focus,
+.user-password-input:focus,
+.user-role-input:focus,
+.user-input:focus,
+.td-input:focus,
+.line-items-editor-table input:focus {
+    border-color: var(--white-40, var(--border-strong)) !important;
+    background: var(--white-03) !important;
+    outline: none !important;
 }
