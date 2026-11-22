@@ -52,48 +52,6 @@ export function IconFolder({ size = 20, strokeWidth = 2, className = "", ...prop
   );
 }
 
-// ── Untitled UI: Lock-01 ──
-export function IconLock({ size = 16, strokeWidth = 2, className = "", ...props }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-// ── Untitled UI: Lock-Unlocked-01 ──
-export function IconUnlock({ size = 16, strokeWidth = 2, className = "", ...props }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-    </svg>
-  );
-}
-
 // ── Untitled UI: Link-01 ──
 export function IconLink({ size = 16, strokeWidth = 2, className = "", ...props }: IconProps) {
   return (
@@ -138,27 +96,6 @@ export function IconKey({ size = 16, strokeWidth = 2, className = "", ...props }
   );
 }
 
-// ── Untitled UI: Copy-01 ──
-export function IconCopy({ size = 16, strokeWidth = 2, className = "", ...props }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <rect width="13" height="13" x="9" y="9" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
-
 // ── Untitled UI: Check ──
 export function IconCheck({ size = 16, strokeWidth = 2.5, className = "", ...props }: IconProps) {
   return (
@@ -196,28 +133,6 @@ export function IconArrowUpRight({ size = 16, strokeWidth = 2, className = "", .
     >
       <line x1="7" y1="17" x2="17" y2="7" />
       <polyline points="7 7 17 7 17 17" />
-    </svg>
-  );
-}
-
-// ── Untitled UI: Link-External-01 ──
-export function IconExternalLink({ size = 16, strokeWidth = 2, className = "", ...props }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-      <polyline points="15 3 21 3 21 9" />
-      <line x1="10" y1="14" x2="21" y2="3" />
     </svg>
   );
 }
@@ -448,6 +363,27 @@ export function IconLogOut({ size = 18, strokeWidth = 2, className = "", ...prop
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
+// ── Sidebar Toggle / Panel-Left (ChatGPT Style) ──
+export function IconSidebar({ size = 18, strokeWidth = 2, className = "", ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <rect width="18" height="18" x="3" y="3" rx="3.5" />
+      <path d="M9 3v18" />
     </svg>
   );
 }

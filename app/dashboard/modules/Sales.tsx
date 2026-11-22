@@ -17,7 +17,6 @@ interface SalesProps {
   newLeadRow: boolean;
   setNewLeadRow: (show: boolean) => void;
   salesFilterExpanded: boolean;
-  setSalesFilterExpanded: (show: boolean) => void;
   selectedLeadIds: string[];
   setSelectedLeadIds: React.Dispatch<React.SetStateAction<string[]>>;
   onAddLead: (lead: Omit<Lead, "id" | "createdDate">) => Promise<void>;
@@ -42,7 +41,6 @@ export function Sales({
   newLeadRow,
   setNewLeadRow,
   salesFilterExpanded,
-  setSalesFilterExpanded,
   selectedLeadIds,
   setSelectedLeadIds,
   onAddLead,

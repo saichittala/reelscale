@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { User, DashboardPage } from "../types";
 import { CustomSelect } from "./CustomSelect";
 import { Button } from "@/components/ui";
-import { IconLogOut } from "./Icons";
+import { IconLogOut, IconSidebar } from "./Icons";
 
 interface LayoutProps {
   page: DashboardPage;
@@ -47,6 +47,27 @@ export function Layout({
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   const role = user?.role?.toLowerCase();
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("sidebarCollapsed", String(next));
+      } catch (e) {}
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedCollapsed = localStorage.getItem("sidebarCollapsed");
+        if (savedCollapsed !== null) {
+          setSidebarCollapsed(savedCollapsed === "true");
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -142,42 +163,64 @@ export function Layout({
     "system-status": "System Status",
   };
 
-  const subs: Record<string, string> = {
-    dashboard: "Overview and revenue analytics of your business",
-    clients: "Manage all client accounts",
-    analytics: "Overview and revenue analytics of your business",
-    users: "Manage system users",
-    sales: "Manage sales leads",
-    blogs: "Manage your publication and draft posts",
-    "create-blog": "Compose, preview and optimize your article",
-    "blog-categories": "Manage blog taxonomies and organization",
-    resources: "Create, manage, and download client documents",
-    "system-status": "Live health status of Redis, Sanity CMS, database, and control services",
-  };
-
   return (
     <div className="app">
       {/* Sidebar Navigation */}
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-        <button
-          className="sidebar-toggle"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={sidebarCollapsed ? "Expand" : "Collapse"}
-        ></button>
-        <a href="/" className="dashboard-logo" style={{ display: "block", textDecoration: "none" }}>
-          <img
-            src={
-              sidebarCollapsed
-                ? "/assets/icons/logo-small.svg"
-                : "/assets/logo.svg"
-            }
-            alt="ReelScale Logo"
-          />
-          {!sidebarCollapsed && (
-            <div className="logo-sub">Reel Production House</div>
+        <div className="sidebar-header">
+          {!sidebarCollapsed ? (
+            <>
+              <a
+                href="/"
+                className="sidebar-brand"
+                style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
+              >
+                <img
+                  src="/assets/logo.svg"
+                  alt="ReelScale Logo"
+                  className="sidebar-brand-logo"
+                />
+              </a>
+              <div className="sidebar-toggle-wrap">
+                <button
+                  type="button"
+                  className="sidebar-toggle-btn"
+                  onClick={toggleSidebar}
+                  aria-label="Collapse sidebar"
+                  title="Close sidebar"
+                >
+                  <IconSidebar size={18} />
+                  <div className="sidebar-tooltip-pill sidebar-tooltip-expanded">
+                    <span>Close sidebar</span>
+                  </div>
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="sidebar-collapsed-trigger-wrap">
+              <button
+                type="button"
+                className="sidebar-collapsed-trigger"
+                onClick={toggleSidebar}
+                aria-label="Expand sidebar"
+                title="Expand sidebar"
+              >
+                <span className="collapsed-logo-icon">
+                  <img
+                    src="/assets/icons/logo-small.svg"
+                    alt="ReelScale Logo"
+                  />
+                </span>
+                <span className="collapsed-toggle-icon">
+                  <IconSidebar size={20} />
+                </span>
+                <div className="sidebar-tooltip-pill sidebar-tooltip-pop">
+                  <span>Toggle sidebar</span>
+                </div>
+              </button>
+            </div>
           )}
-        </a>
+        </div>
         <div className="nav">
           {nav.map((n) => (
             <button
@@ -244,7 +287,6 @@ export function Layout({
             </button>
             <div>
               <div className="page-title">{titles[page] || ""}</div>
-              <div className="page-sub">{subs[page] || ""}</div>
             </div>
           </div>
 

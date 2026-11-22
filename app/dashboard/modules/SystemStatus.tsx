@@ -335,7 +335,6 @@ export function SystemStatus({
           {/* Neon Postgres Details */}
           <div className="glass-card">
             <div className="chart-title" style={{ fontSize: "var(--text-sm)" }}>Neon Postgres Details</div>
-            <div className="chart-sub mb-16" style={{ fontSize: "var(--text-xs)" }}>Serverless relational database</div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "var(--text-sm)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
@@ -374,7 +373,6 @@ export function SystemStatus({
           {/* Redis Details */}
           <div className="glass-card">
             <div className="chart-title" style={{ fontSize: "var(--text-sm)" }}>Redis Cache Details</div>
-            <div className="chart-sub mb-16" style={{ fontSize: "var(--text-xs)" }}>In-memory cache connected to Neon Postgres</div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "var(--text-sm)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
@@ -425,7 +423,6 @@ export function SystemStatus({
           {/* Sanity Details */}
           <div className="glass-card">
             <div className="chart-title" style={{ fontSize: "var(--text-sm)" }}>Sanity Database Details</div>
-            <div className="chart-sub mb-16" style={{ fontSize: "var(--text-xs)" }}>Content lake configuration</div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "var(--text-sm)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>

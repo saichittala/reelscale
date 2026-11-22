@@ -153,54 +153,6 @@
     font-weight: var(--fw-medium);
 }
 
-.card-upi-item {
-    grid-column: span 2;
-    background: var(--white-03);
-    border: 0.8px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-3) var(--space-4);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    margin-top: 4px;
-}
-
-.upi-text-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.upi-id-value {
-    font-family: var(--font);
-    font-size: var(--text-sm);
-    font-weight: var(--fw-semibold);
-    color: var(--white);
-}
-
-.copy-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: var(--space-2);
-    border-radius: var(--radius-sm);
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition-fast);
-}
-
-.copy-btn:hover {
-    background: var(--white-07);
-    color: var(--white);
-}
-
-.copy-btn:active {
-    transform: scale(0.92);
-}
-
 /* ─────────────────────────── PAYMENT OPTIONS ─────────────────────────── */
 .payment-options {
     width: 100%;
@@ -585,40 +537,6 @@
 }
 
 .thank-you-text {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    line-height: 1.6;
-    margin: 0;
-}
-
-.security-tip-card {
-    width: 100%;
-    background: rgba(235, 94, 40, 0.05);
-    border: 1px solid rgba(235, 94, 40, 0.15);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    margin-bottom: var(--space-6);
-    box-sizing: border-box;
-}
-
-.tip-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: #eb5e28;
-    font-size: var(--text-sm);
-    font-weight: var(--fw-semibold);
-    margin-bottom: 6px;
-}
-
-.tip-icon {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    flex-shrink: 0;
-}
-
-.tip-content {
     font-size: var(--text-xs);
     color: var(--muted);
     line-height: 1.6;

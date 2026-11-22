@@ -76,10 +76,10 @@ export default function DashboardMainPage() {
           let parsed: any = stored;
           try {
             parsed = JSON.parse(stored);
-          } catch (e) {}
+          } catch (e) { }
           if (VALID_PAGES.includes(parsed)) return parsed;
         }
-      } catch (e) {}
+      } catch (e) { }
       return null;
     };
 
@@ -1086,7 +1086,6 @@ export default function DashboardMainPage() {
             newLeadRow={newLeadRow}
             setNewLeadRow={setNewLeadRow}
             salesFilterExpanded={salesFilterExpanded}
-            setSalesFilterExpanded={setSalesFilterExpanded}
             selectedLeadIds={selectedLeadIds}
             setSelectedLeadIds={setSelectedLeadIds}
             onAddLead={handleAddLead}

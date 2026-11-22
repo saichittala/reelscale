@@ -71,7 +71,7 @@ export function parseMarkdown(markdown: string): string {
 
   // 2. Headings with unique IDs
   const usedHeadingIds: Record<string, number> = {};
-  html = html.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, textContent) => {
+  html = html.replace(/^(#{1,6})\s+(.+)$/gm, (_, hashes, textContent) => {
     const level = hashes.length;
     const cleanText = textContent.replace(/[#*`_\[\]]/g, "").trim();
     let id = slugify(cleanText);

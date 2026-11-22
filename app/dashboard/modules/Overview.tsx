@@ -344,10 +344,6 @@ export function Overview({
       <div className="revenue-grid">
         <div className="glass-card">
           <div className="chart-title">Monthly Revenue Per Client</div>
-          <div className="chart-sub mb-16">
-            Sorted by monthly revenue · {clients.length}{" "}
-            {clients.length === 1 ? "client" : "clients"}
-          </div>
           <div className="analytics-chart-container">
             {clients.length === 0 ? (
               <div
@@ -370,7 +366,6 @@ export function Overview({
 
         <div className="glass-card">
           <div className="chart-title">Client Monthly Revenue Breakdown</div>
-          <div className="chart-sub mb-16">Share of total MRR by account</div>
           <div className="analytics-list-container">
             {clients.length === 0 ? (
               <div
@@ -429,9 +424,6 @@ export function Overview({
         {/* Top Clients by Revenue */}
         <div className="glass-card">
           <div className="chart-title">Top Clients by Monthly Revenue</div>
-          <div className="chart-sub mb-16">
-            Highest revenue generating accounts
-          </div>
           <div
             style={{
               maxHeight: "350px",
@@ -470,9 +462,9 @@ export function Overview({
                       style={
                         isGold
                           ? {
-                              background: "oklch(0.75 0.10 85 / 0.15)",
-                              color: "var(--gold)",
-                            }
+                            background: "oklch(0.75 0.10 85 / 0.15)",
+                            color: "var(--gold)",
+                          }
                           : undefined
                       }
                     >
@@ -512,7 +504,6 @@ export function Overview({
         {/* Recent Clients list */}
         <div className="glass-card">
           <div className="chart-title">Recent Clients</div>
-          <div className="chart-sub mb-16">Latest accounts onboarded</div>
           <div
             style={{
               maxHeight: "350px",
