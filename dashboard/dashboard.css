@@ -2602,6 +2602,10 @@ button.login-submit-btn,
         gap: 12px;
     }
 
+    .page-sub {
+        display: none;
+    }
+
     .mobile-menu-overlay {
         position: fixed;
         inset: 0;

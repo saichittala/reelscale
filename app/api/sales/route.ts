@@ -5,7 +5,7 @@ import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 
-const REDIS_CACHE_KEY = "db:sales";
+const REDIS_CACHE_KEY = "neon:sales:list";
 const CACHE_TTL_SECONDS = 120; // 2 minutes cache
 
 export async function GET(request: Request) {

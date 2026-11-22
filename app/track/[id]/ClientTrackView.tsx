@@ -12,7 +12,7 @@ import {
   IconEyeOff,
   IconSearch,
 } from "../../dashboard/components/Icons";
-import { Button, Input } from "@/components/ui";
+
 
 interface PublicClientData {
   id: string | number;
@@ -87,20 +87,41 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
     const inputClean = passcode.trim().toLowerCase();
     const inputNoSpace = inputClean.replace(/\s+/g, "");
 
-    // Verify against rule: client name + @123
-    const isMatched = validPasscodes.some((vp) => {
-      const cleanVp = vp.toLowerCase().trim();
-      return cleanVp === inputClean || cleanVp === inputNoSpace;
-    });
+    const clientNameClean = (client?.name || "").toLowerCase().trim();
+    const clientBizClean = (client?.business || "").toLowerCase().trim();
 
-    if (isMatched || inputClean.endsWith("@123")) {
+    // Secure verification: strictly match client's valid passcodes
+    const allowedPasscodes = [
+      ...validPasscodes.map((vp) => vp.toLowerCase().trim()),
+      ...validPasscodes.map((vp) => vp.toLowerCase().replace(/\s+/g, "")),
+      `${clientNameClean}@123`,
+      `${clientNameClean.replace(/\s+/g, "")}@123`,
+      `${clientBizClean}@123`,
+      `${clientBizClean.replace(/\s+/g, "")}@123`,
+    ].filter((p) => Boolean(p) && p !== "@123");
+
+    const isMatched = allowedPasscodes.some(
+      (ap) => ap === inputClean || ap === inputNoSpace
+    );
+
+    if (isMatched) {
       setIsUnlocked(true);
-      localStorage.setItem(`reelscale_client_auth_${clientId}`, "true");
+      try {
+        localStorage.setItem(`reelscale_client_auth_${clientId}`, "true");
+      } catch {}
       setPasscodeError("");
     } else {
-      setPasscodeError("Incorrect passcode. Format is: clientname@123");
+      setPasscodeError("Incorrect passcode. Format: clientname@123");
     }
     setIsVerifying(false);
+  };
+
+  const handleLock = () => {
+    try {
+      localStorage.removeItem(`reelscale_client_auth_${clientId}`);
+    } catch {}
+    setIsUnlocked(false);
+    setPasscode("");
   };
 
 
@@ -172,102 +193,231 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
   })();
 
   // ──────────────────────────────────────────────
-  // Passcode Lock Screen View (Reusing Dashboard Login Layout)
+  // Passcode Lock Screen View (Ultra-Minimalist)
   // ──────────────────────────────────────────────
   if (!isUnlocked) {
+    const displayName = client.business || client.name;
+    const examplePlaceholder = `${(client.business || client.name || "client")
+      .toLowerCase()
+      .replace(/\s+/g, "")}@123`;
+
     return (
-      <div className="login-wrap">
-        <div className="login-card">
-          <div className="login-logo">
-            <Link href="/" className="dashboard-logo" style={{ display: "inline-block", textDecoration: "none" }}>
+      <div
+        className="login-wrap"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "20px",
+          background: "radial-gradient(ellipse at 50% 18%, rgba(229, 9, 20, 0.08) 0%, #09090b 68%)",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "360px",
+            background: "rgba(18, 18, 22, 0.8)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "20px",
+            padding: "36px 28px 28px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0 24px 60px -12px rgba(0, 0, 0, 0.65)",
+            textAlign: "center",
+            boxSizing: "border-box",
+          }}
+        >
+          {/* Minimal ReelScale Brandmark */}
+          <div style={{ marginBottom: "26px" }}>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
               <img
                 src="/assets/logo.svg"
-                alt="ReelScale Logo"
-                className="login-icon-frame"
-                style={{ height: "28px" }}
+                alt="ReelScale"
+                style={{ height: "24px", width: "auto" }}
               />
             </Link>
           </div>
 
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <span
-              className="badge badge-gold"
+          {/* Clean Typography Header */}
+          <div style={{ marginBottom: "24px" }}>
+            <h1
               style={{
-                display: "inline-block",
-                marginBottom: "12px",
-                fontSize: "11px",
+                fontSize: "19px",
+                fontWeight: 600,
+                color: "#ffffff",
+                letterSpacing: "-0.02em",
+                margin: "0 0 5px",
               }}
             >
-              Client Delivery Portal
-            </span>
-            <div className="login-title" style={{ margin: "0 0 6px" }}>
-              {client.business || client.name}
-            </div>
-            <div className="login-sub" style={{ marginBottom: 0 }}>
-              Enter your passcode to access monthly reel deliveries and download footage.
-            </div>
+              {displayName}
+            </h1>
+            <p
+              style={{
+                fontSize: "13px",
+                color: "var(--muted, #8e8e93)",
+                margin: 0,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Enter passcode to view deliveries
+            </p>
           </div>
 
-          {passcodeError && (
-            <div className="login-error">
-              {passcodeError}
-            </div>
-          )}
-
-          <form onSubmit={handleUnlock}>
-            <div className="form-group mb-20">
-              <div style={{ position: "relative" }}>
-                <Input
-                  label="Client Passcode"
+          {/* Minimal Form */}
+          <form onSubmit={handleUnlock} style={{ textAlign: "left" }}>
+            <div style={{ marginBottom: "14px" }}>
+              <div style={{ position: "relative", width: "100%" }}>
+                <input
                   id="portal-passcode"
                   type={showPassword ? "text" : "password"}
                   value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="e.g. clientname@123"
+                  onChange={(e) => {
+                    setPasscode(e.target.value);
+                    if (passcodeError) setPasscodeError("");
+                  }}
+                  placeholder={`e.g. ${examplePlaceholder}`}
                   autoFocus
-                  error={passcodeError}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    background: "rgba(255, 255, 255, 0.04)",
+                    border: passcodeError
+                      ? "1px solid var(--danger, #ef4444)"
+                      : "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "12px",
+                    padding: "0 42px 0 14px",
+                    color: "#ffffff",
+                    fontSize: "14px",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                  }}
+                  onFocus={(e) => {
+                    if (!passcodeError) {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
+                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255, 255, 255, 0.04)";
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (!passcodeError) {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }
+                  }}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide passcode" : "Show passcode"}
+                  tabIndex={-1}
                   style={{
                     position: "absolute",
-                    right: "6px",
-                    bottom: "4px",
-                    padding: 0,
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    padding: "6px",
+                    color: showPassword ? "#ffffff" : "var(--muted, #8e8e93)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "6px",
+                    transition: "color 0.15s ease",
                   }}
-                  title={showPassword ? "hide" : "show"}
                 >
-                  {showPassword ? <IconEye size={18} /> : <IconEyeOff size={18} />}
-                </Button>
+                  {showPassword ? <IconEye size={17} /> : <IconEyeOff size={17} />}
+                </button>
               </div>
+
+              {passcodeError && (
+                <div
+                  style={{
+                    marginTop: "6px",
+                    fontSize: "12px",
+                    color: "var(--danger, #ef4444)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {passcodeError}
+                </div>
+              )}
             </div>
 
-            <Button
+            <button
               type="submit"
-              disabled={isVerifying || !passcode}
-              loading={isVerifying}
-              variant="primary"
-              size="lg"
-              className="w-full login-submit-btn"
+              disabled={isVerifying || !passcode.trim()}
+              style={{
+                width: "100%",
+                height: "44px",
+                background: !passcode.trim()
+                  ? "rgba(229, 9, 20, 0.35)"
+                  : "var(--red, #e50914)",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "12px",
+                fontSize: "14px",
+                fontWeight: 500,
+                letterSpacing: "-0.01em",
+                cursor: !passcode.trim() || isVerifying ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                transition: "all 0.2s ease",
+                boxShadow: passcode.trim()
+                  ? "0 4px 16px rgba(229, 9, 20, 0.25)"
+                  : "none",
+              }}
             >
-              View Delivery Tracker ↗
-            </Button>
+              {isVerifying ? (
+                <span
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    border: "2px solid rgba(255, 255, 255, 0.3)",
+                    borderTopColor: "#ffffff",
+                    borderRadius: "50%",
+                    animation: "spin 0.6s linear infinite",
+                    display: "inline-block",
+                  }}
+                />
+              ) : (
+                <>
+                  <span>Access Tracker</span>
+                  <span style={{ fontSize: "15px", lineHeight: 1 }}>→</span>
+                </>
+              )}
+            </button>
           </form>
 
+          {/* Minimal Footer */}
           <div
             style={{
-              marginTop: "24px",
-              paddingTop: "16px",
-              borderTop: "0.6px solid var(--border)",
+              marginTop: "22px",
               textAlign: "center",
-              fontSize: "var(--text-xs)",
-              color: "var(--muted)",
+              fontSize: "12px",
+              color: "rgba(255, 255, 255, 0.4)",
             }}
           >
-            Need your passcode? Contact your ReelScale account manager.
+            Need passcode?{" "}
+            <a
+              href="mailto:support@reelscale.co?subject=Client%20Portal%20Passcode%20Request"
+              style={{
+                color: "rgba(255, 255, 255, 0.75)",
+                textDecoration: "underline",
+                textUnderlineOffset: "2px",
+              }}
+            >
+              Contact manager
+            </a>
           </div>
         </div>
       </div>
@@ -324,6 +474,24 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
               />
               {client.plan || "Active Subscription"}
             </span>
+
+            {/* Lock session action */}
+            <button
+              onClick={handleLock}
+              className="btn btn-ghost btn-sm"
+              style={{
+                fontSize: "12px",
+                color: "var(--muted)",
+                padding: "4px 8px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                textDecoration: "none",
+              }}
+              title="Lock portal"
+            >
+              Lock
+            </button>
           </div>
         </div>
 

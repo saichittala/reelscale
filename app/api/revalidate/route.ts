@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { redisInvalidatePattern } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
 
     try {
       (revalidateTag as any)(tag || "testimonials");
+      await redisInvalidatePattern("sanity:*");
     } catch {
       // ignore
     }
@@ -55,6 +57,7 @@ export async function GET(req: NextRequest) {
 
     try {
       (revalidateTag as any)(tag);
+      await redisInvalidatePattern("sanity:*");
     } catch {
       // ignore
     }

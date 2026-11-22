@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { checkRedisHealth, redisGet, redisSet } from "../../lib/redis";
+import { checkRedisHealth, redisGet, redisSet, getRedisSanitizedHost } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     const health = await checkRedisHealth();
+    const hostInfo = getRedisSanitizedHost();
 
     // Perform a roundtrip write & read test if connected
     let roundtripSuccess = false;
@@ -19,8 +20,9 @@ export async function GET() {
     return NextResponse.json({
       success: health.status === "connected",
       server: {
-        host: process.env.REDIS_HOST || "127.0.0.1",
-        port: Number(process.env.REDIS_PORT || 6379),
+        host: hostInfo.host,
+        port: hostInfo.port,
+        isTls: hostInfo.isTls,
         status: health.status,
         pingLatencyMs: health.pingMs,
         uptimeSeconds: health.uptimeSeconds,

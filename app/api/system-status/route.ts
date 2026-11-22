@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRedisHealth, redis, redisGet, redisSet } from "../../lib/redis";
+import { checkRedisHealth, redis, redisGet, redisSet, getRedisSanitizedHost } from "../../lib/redis";
 import { client as sanityClient, projectId, dataset, apiVersion } from "../../sanity/client";
 import { getDb } from "../../lib/db";
 import { checkRole, clearUserCache } from "../rbac";
@@ -52,10 +52,12 @@ export async function GET(request: Request) {
         }
       }
 
+      const redisHostInfo = getRedisSanitizedHost();
       return {
         status: health.status,
-        host: process.env.REDIS_HOST || "127.0.0.1",
-        port: Number(process.env.REDIS_PORT || 6379),
+        host: redisHostInfo.host,
+        port: redisHostInfo.port,
+        isTls: redisHostInfo.isTls,
         latencyMs: health.pingMs ?? null,
         uptimeSeconds: health.uptimeSeconds ?? null,
         connectedClients: health.connectedClients ?? null,
@@ -69,10 +71,12 @@ export async function GET(request: Request) {
         message: health.message,
       };
     } catch (err: any) {
+      const redisHostInfo = getRedisSanitizedHost();
       return {
         status: "error",
-        host: process.env.REDIS_HOST || "127.0.0.1",
-        port: Number(process.env.REDIS_PORT || 6379),
+        host: redisHostInfo.host,
+        port: redisHostInfo.port,
+        isTls: redisHostInfo.isTls,
         latencyMs: null,
         message: err?.message || "Redis unavailable",
       };

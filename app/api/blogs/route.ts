@@ -9,10 +9,13 @@ import {
   deleteBlogFromSanity,
 } from "../../sanity/blog-sync";
 import { Blog } from "../../dashboard/types";
+import { redisGet, redisSet, redisInvalidatePattern } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
 
 const DB_PATH = join(process.cwd(), "content", "blogs.json");
+const SANITY_BLOGS_CACHE_KEY = "sanity:blogs:list";
+const BLOGS_CACHE_TTL = 3600; // 1 hour cache
 
 function getLocalBlogs(): Blog[] {
   if (!existsSync(DB_PATH)) {
@@ -37,6 +40,12 @@ function saveLocalBlogs(blogs: Blog[]) {
 
 export async function GET() {
   try {
+    // 0. Fast-path: Check Redis cache first
+    const cachedBlogs = await redisGet<Blog[]>(SANITY_BLOGS_CACHE_KEY);
+    if (Array.isArray(cachedBlogs) && cachedBlogs.length > 0) {
+      return NextResponse.json(cachedBlogs);
+    }
+
     // 1. Fetch directly from Sanity (both Published and Drafts so dashboard can manage both)
     const sanityQuery = `*[_type == "post"] | order(publishedDate desc, _createdAt desc) {
       _id,
@@ -66,6 +75,9 @@ export async function GET() {
     if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
       const blogs: Blog[] = sanityPosts.map(sanityDocToBlog);
 
+      // Async cache in Redis with TTL
+      redisSet(SANITY_BLOGS_CACHE_KEY, blogs, BLOGS_CACHE_TTL).catch(() => {});
+
       // Async update local backup cache
       try {
         saveLocalBlogs(blogs);
@@ -94,6 +106,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, ...data } = body;
     const localBlogs = getLocalBlogs();
+
+    // Invalidate Sanity blogs cache on mutations
+    await redisInvalidatePattern("sanity:blogs:*");
 
     switch (action) {
       case "add": {
