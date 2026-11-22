@@ -108,20 +108,6 @@ export interface BusinessDocument {
   updatedAt: string;
 }
 
-export interface ClientContract {
-  id: string;
-  contractNumber: string;
-  clientId: string | number;
-  clientName: string;
-  contractType: string;
-  startDate: string;
-  endDate: string;
-  status: "Draft" | "Active" | "Expired" | "Cancelled";
-  amount: number;
-  notes?: string;
-  createdAt: string;
-}
-
 export interface DeliveredReel {
   id: string;
   clientId: string | number;

@@ -214,7 +214,7 @@ export function Modal({
         </div>
 
         <div className="form-footer">
-          <Button variant="ghost" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleSave}>

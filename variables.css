@@ -41,9 +41,9 @@
 
     /* ── FONT FAMILIES ── */
     /* Single unified system font stack — all components use --font */
-    --font: -apple-system, BlinkMacSystemFont, 'Geist', system-ui, sans-serif;
+    --font: 'Geist', var(--font-geist, -apple-system), BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     /* Alias for backward-compatibility — do not use in new code */
-    --primary-font: var(--font);
+    --primary-font: 'Geist', var(--font-geist, -apple-system), BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-space-grotesk: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-instrument-serif: 'Instrument Serif', Georgia, serif;
     --font-bebas-neue: 'Bebas Neue', sans-serif;
@@ -130,6 +130,8 @@
     /* Circular avatars */
     --radius-xs: 18px;
     /* Tags, tiny chips */
+    --radius-tooltip: 8px;
+    /* Small floating tooltips */
 
     /* ── BORDER RADII — Backward-compat numeric aliases ── */
     /* Strict tokens: 18px, 24px, 36px, 99px */
@@ -234,7 +236,7 @@
 
     /* Neutrals */
     --white: oklch(92.046% 0.01066 100.933);
-    --muted: oklch(92.046% 0.01066 100.933 / 0.75);
+    --muted: oklab(71.2% 0 0);
     --border: oklch(0.92 0.01 95 / 0.13);
     --button-white: oklch(92.046% 0.01066 100.933);
 
@@ -274,8 +276,12 @@
     --warning: var(--gold);
     --info: var(--blue);
     --accent: var(--red);
+    --accent-foreground: var(--white);
+    --accent-strong: var(--red2);
 
     --text-secondary: var(--muted);
+    --text-primary: var(--foreground, var(--white));
+    --text-placeholder: color-mix(in oklab, var(--text-primary) 40%, transparent);
     --text-field: var(--text-sm, 14px);
     --leading-body: 1.5;
     --tracking-body: normal;
@@ -325,5 +331,7 @@
     --border-strong: oklch(27.685% 0.00003 271.152 / 0.24);
     --border-focus: var(--red-40);
     --text-secondary: var(--muted);
+    --text-primary: var(--foreground, var(--white));
+    --text-placeholder: color-mix(in oklab, var(--text-primary) 40%, transparent);
     --text-field: var(--text-sm, 14px);
 }

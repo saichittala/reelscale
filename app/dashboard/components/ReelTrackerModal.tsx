@@ -502,7 +502,7 @@ export function ReelTrackerModal({
                     fontSize: "11px",
                     background: progressPct >= 100 ? "var(--green-12)" : "var(--gold-10)",
                     color: progressPct >= 100 ? "var(--green)" : "var(--gold)",
-                    border: `0.6px solid ${progressPct >= 100 ? "var(--green)" : "var(--gold)"}`,
+                    border: "none",
                   }}
                 >
                   {progressPct}%
@@ -893,7 +893,7 @@ export function ReelTrackerModal({
                 </div>
 
                 <div>
-                  <label className="form-label" style={{ fontSize: "11px", marginBottom: "4px" }}>
+                  <label className="form-label" style={{ fontSize: "var(--text-xs)", marginBottom: "6px" }}>
                     Status
                   </label>
                   <CustomSelect
@@ -1037,13 +1037,7 @@ export function ReelTrackerModal({
                                   : del.status === "In Review"
                                   ? "var(--gold)"
                                   : "var(--muted)",
-                              border: `0.6px solid ${
-                                del.status === "Delivered"
-                                  ? "var(--green)"
-                                  : del.status === "In Review"
-                                  ? "var(--gold)"
-                                  : "var(--border)"
-                              }`,
+                              border: "none",
                             }}
                           >
                             {del.status}

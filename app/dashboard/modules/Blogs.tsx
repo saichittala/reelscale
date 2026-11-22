@@ -5,6 +5,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
 import { IconEye, IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BlogsProps {
   blogs: Blog[];
@@ -23,6 +24,12 @@ interface BlogsProps {
       onConfirm: () => void | Promise<void>;
     } | null>
   >;
+  search?: string;
+  onSearchChange?: (val: string) => void;
+  statusFilter?: string;
+  onStatusFilterChange?: (val: string) => void;
+  categoryFilter?: string;
+  onCategoryFilterChange?: (val: string) => void;
 }
 
 export function Blogs({
@@ -34,10 +41,22 @@ export function Blogs({
   onEditBlog,
   onDeleteBlog,
   setConfirmModal,
+  search: externalSearch,
+  onSearchChange,
+  statusFilter: externalStatusFilter,
+  onStatusFilterChange,
+  categoryFilter: externalCategoryFilter,
+  onCategoryFilterChange,
 }: BlogsProps) {
-  const [blogSearch, setBlogSearch] = useState("");
-  const [blogStatusFilter, setBlogStatusFilter] = useState("all");
-  const [blogCategoryFilter, setBlogCategoryFilter] = useState("all");
+  const [internalSearch, setInternalSearch] = useState("");
+  const blogSearch = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setBlogSearch = onSearchChange || setInternalSearch;
+  const [internalStatusFilter, setInternalStatusFilter] = useState("all");
+  const blogStatusFilter = externalStatusFilter !== undefined ? externalStatusFilter : internalStatusFilter;
+  const setBlogStatusFilter = onStatusFilterChange || setInternalStatusFilter;
+  const [internalCategoryFilter, setInternalCategoryFilter] = useState("all");
+  const blogCategoryFilter = externalCategoryFilter !== undefined ? externalCategoryFilter : internalCategoryFilter;
+  const setBlogCategoryFilter = onCategoryFilterChange || setInternalCategoryFilter;
   const [blogSortKey, setBlogSortKey] = useState<"title" | "date">("date");
   const [blogSortDir, setBlogSortDir] = useState<-1 | 1>(-1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -160,8 +179,8 @@ export function Blogs({
 
   return (
     <>
-      {/* Controls: Search and Filters */}
-      <div className="controls">
+      {/* Controls: Search and Filters (fallback for mobile) */}
+      <div className="controls hide-desktop">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             id="blog-search-input"
@@ -285,11 +304,6 @@ export function Blogs({
                         <div className="blog-title-text" title={b.title}>
                           {b.title}
                         </div>
-                        <div className="blog-description-text">
-                          {b.description
-                            ? `${b.description.substring(0, 85)}...`
-                            : "—"}
-                        </div>
                       </div>
                     </td>
                     <td className="td-category">
@@ -369,8 +383,9 @@ export function Blogs({
                 className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                aria-label="Previous page"
               >
-                Previous
+                <ChevronLeft size={16} />
               </Button>
               <div className="pagination-numbers">
                 {getPageNumbers().map((pageNum, index) =>
@@ -398,8 +413,9 @@ export function Blogs({
                 className="pagination-btn"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                aria-label="Next page"
               >
-                Next
+                <ChevronRight size={16} />
               </Button>
             </div>
           </div>

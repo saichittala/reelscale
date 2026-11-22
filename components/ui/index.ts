@@ -38,3 +38,11 @@ export {
   type LineChartDatum,
   type LineChartSeries,
 } from "./chart";
+export {
+  Calendar,
+  type CalendarProps,
+  type CalendarDateMatcher,
+} from "./calendar";
+export { DatePicker, type DatePickerProps } from "./date-picker";
+
+

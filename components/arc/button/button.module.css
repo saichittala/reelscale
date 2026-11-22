@@ -19,8 +19,8 @@
 .labelPhase svg, .labelPhase img { flex: none; display: block; vertical-align: middle; margin: 0; }
 .labelPhase span { display: inline-flex; align-items: center; justify-content: center; }
 .primary { color: var(--white); background: var(--red); border-color: var(--red); font-weight: 500; }
-.secondary { color: var(--white); background: var(--surface); border-color: var(--white-20); }
-.ghost { color: var(--white); background: var(--white-05); border-color: transparent; }
+.secondary { color: var(--white); background: transparent; border: 1px solid var(--border); }
+.ghost { color: var(--white); background: transparent; border-color: transparent; }
 .danger { color: var(--red); background: var(--red-10); border-color: var(--red-op); }
 .gold { color: var(--gold); background: var(--gold-10); border-color: var(--gold-30); }
 .growth { color: #000000; background: var(--green-brand); border-color: var(--green-brand); font-weight: 600; }
@@ -32,13 +32,13 @@
   opacity: 1;
   color: var(--text-muted);
   background: var(--surface-muted);
-  border-color: var(--border);
+  border: 1px solid var(--border);
 }
 .danger:disabled:not([aria-busy="true"]):not([data-loading="true"]) { color: color-mix(in oklab, var(--danger) 55%, var(--surface-muted)); }
 .ghost:disabled:not([aria-busy="true"]):not([data-loading="true"]) { opacity: 1; color: var(--text-muted); }
 @media (hover: hover) and (pointer: fine) {
   .primary:hover:not(:disabled) { background: var(--red2); border-color: var(--red2); box-shadow: var(--shadow-focus-red); }
-  .secondary:hover:not(:disabled) { background: var(--surface-muted); border-color: var(--white-35); box-shadow: var(--shadow-resting); }
+  .secondary:hover:not(:disabled) { background: var(--white-10); border-color: var(--border-strong); box-shadow: var(--shadow-resting); }
   .ghost:hover:not(:disabled) { background: var(--white-10); color: var(--white); }
   .danger:hover:not(:disabled) { border-color: var(--danger); background: var(--red-20); }
   .gold:hover:not(:disabled) { border-color: var(--gold-50); background: var(--gold-15); box-shadow: 0 0 10px var(--gold-15); }
@@ -46,7 +46,8 @@
 }
 /* Color feedback on press, so touch and menu triggers (which never scale) still answer the finger. */
 .primary:active:not(:disabled) { background: var(--red-active-bg); opacity: .92; }
-.secondary:active:not(:disabled), .ghost:active:not(:disabled) { color: var(--foreground); background: var(--surface-muted); }
+.secondary:active:not(:disabled) { color: var(--foreground); background: var(--surface-muted); border-color: var(--border-strong); }
+.ghost:active:not(:disabled) { color: var(--foreground); background: var(--surface-muted); }
 .danger:active:not(:disabled) { border-color: var(--danger); background: var(--red-hover-bg); }
 .gold:active:not(:disabled) { background: var(--gold-25); }
 .growth:active:not(:disabled) { background: var(--green-brand-active); }
@@ -160,6 +161,21 @@
 :global([data-theme="light"]) .ghost .spinner {
   border-color: rgba(0, 0, 0, 0.15);
   border-top-color: #111115;
+}
+
+:global([data-theme="light"]) .secondary {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+:global([data-theme="light"]) .secondary:hover:not(:disabled) {
+  background: var(--surface-muted);
+  border-color: var(--border-strong);
+}
+
+:global([data-theme="light"]) .secondary:active:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--border-strong);
 }
 
 .loadingLabel {

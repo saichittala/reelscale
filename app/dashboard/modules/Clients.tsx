@@ -31,6 +31,8 @@ interface ClientsProps {
       onConfirm: () => void | Promise<void>;
     } | null>
   >;
+  search?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 // ─── STANDARD PRICING PLANS ───
@@ -70,8 +72,12 @@ export function Clients({
   onDeleteClient,
   showToast,
   setConfirmModal,
+  search: externalSearch,
+  onSearchChange,
 }: ClientsProps) {
-  const [search, setSearch] = useState("");
+  const [internalSearch, setInternalSearch] = useState("");
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = onSearchChange || setInternalSearch;
   const [sortKey, setSortKey] = useState<"revenue" | "reels" | "name">("revenue");
   const [sortDir, setSortDir] = useState<-1 | 1>(-1);
   const [viewScope, setViewScope] = useState<"month" | "all">("month");
@@ -847,13 +853,7 @@ export function Clients({
                     : c.status === "Churned"
                     ? "#ef4444"
                     : "var(--green)",
-                border: `1px solid ${
-                  c.status === "Paused"
-                    ? "rgba(234, 179, 8, 0.3)"
-                    : c.status === "Churned"
-                    ? "rgba(239, 68, 68, 0.3)"
-                    : "rgba(34, 197, 94, 0.3)"
-                }`,
+                border: "none",
               }}
             >
               <span
@@ -1076,8 +1076,8 @@ export function Clients({
         </div>
       )}
 
-      {/* Controls: Search and Sort */}
-      <div className="controls">
+      {/* Controls: Search and Sort (fallback for mobile) */}
+      <div className="controls hide-desktop">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             id="search-input"

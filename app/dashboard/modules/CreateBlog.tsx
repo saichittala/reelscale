@@ -292,11 +292,20 @@ export function CreateBlog({
             </div>
 
             {/* Quick Helper Formatting Bar */}
-            <div className="df-g8 editor-toolbar-helper">
+            <div
+              className="df-g4 al-c"
+              style={{
+                background: "var(--white-03)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-pill)",
+                padding: "2px",
+              }}
+            >
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
                 onClick={() => insertAtCursor("## ")}
               >
                 H2
@@ -305,6 +314,7 @@ export function CreateBlog({
                 variant="ghost"
                 size="sm"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
                 onClick={() => insertAtCursor("### ")}
               >
                 H3
@@ -313,6 +323,7 @@ export function CreateBlog({
                 variant="ghost"
                 size="sm"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", fontWeight: 700, borderRadius: "var(--radius-pill)" }}
                 onClick={() => insertAtCursor("**", "**")}
               >
                 B
@@ -320,8 +331,8 @@ export function CreateBlog({
               <Button
                 variant="ghost"
                 size="sm"
-                className="italic"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", fontStyle: "italic", borderRadius: "var(--radius-pill)" }}
                 onClick={() => insertAtCursor("> ")}
               >
                 Quote
@@ -330,6 +341,7 @@ export function CreateBlog({
                 variant="ghost"
                 size="sm"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
                 onClick={() => insertAtCursor("- ")}
               >
                 List
@@ -338,6 +350,7 @@ export function CreateBlog({
                 variant="gold"
                 size="sm"
                 type="button"
+                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
                 onClick={() =>
                   insertAtCursor(
                     "[Book a Reel Shoot](https://wa.me/919966239433)"

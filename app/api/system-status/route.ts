@@ -182,8 +182,8 @@ export async function GET(request: Request) {
   const overall = isHealthy
     ? "operational"
     : neonResult.status === "connected" || redisResult.status === "connected"
-    ? "degraded"
-    : "offline";
+      ? "degraded"
+      : "offline";
 
   return NextResponse.json({
     success: true,
@@ -194,8 +194,8 @@ export async function GET(request: Request) {
         overall === "operational"
           ? "All Control Systems Operational"
           : overall === "degraded"
-          ? "Partial Degradation Detected"
-          : "System Connectivity Offline",
+            ? "Partial Degradation Detected"
+            : "System Connectivity Offline",
       activeServices: [
         neonResult.status === "connected" && "Neon Postgres DB",
         redisResult.status === "connected" && "Redis Cache DB",

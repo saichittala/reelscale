@@ -10,14 +10,21 @@ interface LayoutProps {
   user: User | null;
   logout: () => void;
   children: React.ReactNode;
+  searchBar?: React.ReactNode;
   // Specific action buttons for Topbar
+  clientFiltersBtn?: React.ReactNode;
   addClientBtn?: React.ReactNode;
   addSaleBtn?: React.ReactNode;
+  userFiltersBtn?: React.ReactNode;
   addUserBtn?: React.ReactNode;
   salesFiltersBtn?: React.ReactNode;
   blogActionsBtn?: React.ReactNode;
+  createBlogBtn?: React.ReactNode;
   createBlogActionsBtn?: React.ReactNode;
   systemStatusActionsBtn?: React.ReactNode;
+  systemStatusOperational?: boolean | null;
+  resourcesHeaderLeft?: React.ReactNode;
+  resourcesActionsBtn?: React.ReactNode;
   toast?: React.ReactNode;
   selectedMonth?: string;
   setSelectedMonth?: (month: string) => void;
@@ -30,13 +37,20 @@ export function Layout({
   user,
   logout,
   children,
+  searchBar,
+  clientFiltersBtn,
   addClientBtn,
   addSaleBtn,
+  userFiltersBtn,
   addUserBtn,
   salesFiltersBtn,
   blogActionsBtn,
+  createBlogBtn,
   createBlogActionsBtn,
   systemStatusActionsBtn,
+  systemStatusOperational,
+  resourcesHeaderLeft,
+  resourcesActionsBtn,
   toast,
   selectedMonth,
   setSelectedMonth,
@@ -233,7 +247,46 @@ export function Layout({
             >
               <img src={n.icon} alt={n.label} className="nav-icon" />
               {!sidebarCollapsed && (
-                <span className="nav-label">{n.label}</span>
+                <span
+                  className="nav-label"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <span>{n.label}</span>
+                  {n.id === "system-status" && systemStatusOperational === false && (
+                    <span
+                      style={{
+                        width: "7px",
+                        height: "7px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--red)",
+                        boxShadow: "0 0 6px var(--red)",
+                        marginLeft: "auto",
+                        flexShrink: 0,
+                      }}
+                      title="Issues Detected"
+                    />
+                  )}
+                </span>
+              )}
+              {sidebarCollapsed && n.id === "system-status" && systemStatusOperational === false && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "8px",
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--red)",
+                    boxShadow: "0 0 6px var(--red)",
+                  }}
+                  title="Issues Detected"
+                />
               )}
             </button>
           ))}
@@ -276,7 +329,7 @@ export function Layout({
       <div className={`main ${sidebarCollapsed ? "collapsed" : ""}`}>
         {/* Topbar Header */}
         <div className="topbar">
-          <div className="mobile-topbar-left">
+          <div className="topbar-left mobile-topbar-left">
             <button
               type="button"
               className="mobile-menu-btn"
@@ -285,13 +338,22 @@ export function Layout({
             >
               <img src="/assets/icons/menu.svg" width="20" alt="Menu" />
             </button>
-            <div>
+            {page === "resources" && resourcesHeaderLeft ? (
+              resourcesHeaderLeft
+            ) : (
               <div className="page-title">{titles[page] || ""}</div>
-            </div>
+            )}
           </div>
 
           <div className="topbar-actions">
-            <div className="df-g8">
+            <div className="df-g8 al-c">
+              {/* Search bar beside left from all primary, secondary, tertiary elements and dropdowns */}
+              {searchBar && (
+                <div className="topbar-search-wrap">
+                  {searchBar}
+                </div>
+              )}
+
               {/* Month Filter Selector */}
               {selectedMonth !== undefined && setSelectedMonth && availableMonths.length > 0 &&
                 (page === "dashboard" || page === "clients" || page === "analytics") && (
@@ -308,14 +370,20 @@ export function Layout({
                   </div>
                 )}
 
-              {page === "clients" && addClientBtn}
+              {page === "clients" && clientFiltersBtn}
               {page === "sales" && salesFiltersBtn}
-              {page === "sales" && addSaleBtn}
-              {page === "users" && addUserBtn}
+              {page === "users" && userFiltersBtn}
               {page === "blogs" && blogActionsBtn}
               {(page === "create-blog" || page === "blog-categories") &&
                 createBlogActionsBtn}
+
+              {/* Primary action buttons on pure right side (at the end) */}
+              {page === "clients" && addClientBtn}
+              {page === "sales" && addSaleBtn}
+              {page === "users" && addUserBtn}
+              {page === "blogs" && createBlogBtn}
               {page === "system-status" && systemStatusActionsBtn}
+              {page === "resources" && resourcesActionsBtn}
 
               {/* Theme Toggle Button - Made consistently visible for premium feel */}
               <Button
@@ -380,9 +448,29 @@ export function Layout({
                   localStorage.setItem("reelscale_current_page", item.id);
                   setMobileMenuOpen(false);
                 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
               >
-                <img src={item.icon} width="18" alt={item.label} />
-                {item.label}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <img src={item.icon} width="18" alt={item.label} />
+                  <span>{item.label}</span>
+                </div>
+                {item.id === "system-status" && systemStatusOperational === false && (
+                  <span
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--red)",
+                      boxShadow: "0 0 6px var(--red)",
+                    }}
+                    title="Issues Detected"
+                  />
+                )}
               </button>
             ))}
           </div>

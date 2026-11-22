@@ -5,6 +5,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
 import { IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -30,6 +31,8 @@ interface UsersProps {
       onConfirm: () => void | Promise<void>;
     } | null>
   >;
+  search?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 export function Users({
@@ -44,6 +47,8 @@ export function Users({
   onDeleteUser,
   showToast,
   setConfirmModal,
+  search: externalSearch,
+  onSearchChange,
 }: UsersProps) {
   // Local state for password visibility mapping (id -> boolean)
   const [passwordVisible, setPasswordVisible] = useState<
@@ -51,7 +56,9 @@ export function Users({
   >({});
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
-  const [search, setSearch] = useState("");
+  const [internalSearch, setInternalSearch] = useState("");
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = onSearchChange || setInternalSearch;
   const [sortKey, setSortKey] = useState<"name" | "role">("name");
   const [sortDir, setSortDir] = useState<-1 | 1>(1);
 
@@ -197,8 +204,8 @@ export function Users({
 
   return (
     <>
-      {/* Controls: Search */}
-      <div className="controls">
+      {/* Controls: Search (fallback for mobile / when not in topbar) */}
+      <div className="controls hide-desktop">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             type="search"
@@ -464,8 +471,9 @@ export function Users({
                 className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                aria-label="Previous page"
               >
-                Previous
+                <ChevronLeft size={16} />
               </Button>
               <div className="pagination-numbers">
                 {getPageNumbers().map((pageNum, index) =>
@@ -494,8 +502,9 @@ export function Users({
                 className="pagination-btn"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                aria-label="Next page"
               >
-                Next
+                <ChevronRight size={16} />
               </Button>
             </div>
           </div>

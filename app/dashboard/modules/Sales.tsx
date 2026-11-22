@@ -10,6 +10,7 @@ import {
 } from "../utils/format";
 import { loadXLSX } from "../utils/loader";
 import { Button, Input } from "@/components/ui";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SalesProps {
   leads: Lead[];
@@ -17,6 +18,10 @@ interface SalesProps {
   newLeadRow: boolean;
   setNewLeadRow: (show: boolean) => void;
   salesFilterExpanded: boolean;
+  salesDateFrom?: string;
+  setSalesDateFrom?: React.Dispatch<React.SetStateAction<string>>;
+  salesDateTo?: string;
+  setSalesDateTo?: React.Dispatch<React.SetStateAction<string>>;
   selectedLeadIds: string[];
   setSelectedLeadIds: React.Dispatch<React.SetStateAction<string[]>>;
   onAddLead: (lead: Omit<Lead, "id" | "createdDate">) => Promise<void>;
@@ -33,6 +38,8 @@ interface SalesProps {
       onConfirm: () => void | Promise<void>;
     } | null>
   >;
+  search?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 export function Sales({
@@ -41,6 +48,10 @@ export function Sales({
   newLeadRow,
   setNewLeadRow,
   salesFilterExpanded,
+  salesDateFrom: propDateFrom,
+  setSalesDateFrom: propSetDateFrom,
+  salesDateTo: propDateTo,
+  setSalesDateTo: propSetDateTo,
   selectedLeadIds,
   setSelectedLeadIds,
   onAddLead,
@@ -48,12 +59,20 @@ export function Sales({
   onDeleteLead,
   showToast,
   setConfirmModal,
+  search: externalSearch,
+  onSearchChange,
 }: SalesProps) {
-  const [salesDateFrom, setSalesDateFrom] = useState("");
-  const [salesDateTo, setSalesDateTo] = useState("");
+  const [internalDateFrom, setInternalDateFrom] = useState("");
+  const [internalDateTo, setInternalDateTo] = useState("");
+  const salesDateFrom = propDateFrom !== undefined ? propDateFrom : internalDateFrom;
+  const setSalesDateFrom = propSetDateFrom || setInternalDateFrom;
+  const salesDateTo = propDateTo !== undefined ? propDateTo : internalDateTo;
+  const setSalesDateTo = propSetDateTo || setInternalDateTo;
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
-  const [search, setSearch] = useState("");
+  const [internalSearch, setInternalSearch] = useState("");
+  const search = externalSearch !== undefined ? externalSearch : internalSearch;
+  const setSearch = onSearchChange || setInternalSearch;
   const [sortKey, setSortKey] = useState<"company" | "createdDate">("createdDate");
   const [sortDir, setSortDir] = useState<-1 | 1>(-1);
 
@@ -276,9 +295,8 @@ export function Sales({
 
   return (
     <>
-      {/* Controls: Search */}
-      {/* Search Bar */}
-      <div className="controls">
+      {/* Controls: Search (fallback for mobile) */}
+      <div className="controls hide-desktop">
         <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
           <Input
             type="search"
@@ -290,44 +308,7 @@ export function Sales({
         </div>
       </div>
 
-      {/* Date Filter Panel */}
-      {salesFilterExpanded && (
-        <div className="sales-date-filter-panel">
-          <div className="sales-date-filter" style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
-            <div className="date-filter-group" style={{ minWidth: "160px" }}>
-              <Input
-                label="From"
-                type="date"
-                id="sales-date-from"
-                value={salesDateFrom}
-                onChange={(e) => setSalesDateFrom(e.target.value)}
-              />
-            </div>
-            <div className="date-filter-group" style={{ minWidth: "160px" }}>
-              <Input
-                label="To"
-                type="date"
-                id="sales-date-to"
-                value={salesDateTo}
-                onChange={(e) => setSalesDateTo(e.target.value)}
-              />
-            </div>
-            {(salesDateFrom || salesDateTo) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                id="clear-sales-date"
-                onClick={() => {
-                  setSalesDateFrom("");
-                  setSalesDateTo("");
-                }}
-              >
-                Clear
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+
 
       {/* Hidden File Input for Excel Uploads */}
       <input
@@ -637,8 +618,9 @@ export function Sales({
                 className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                aria-label="Previous page"
               >
-                Previous
+                <ChevronLeft size={16} />
               </Button>
               <div className="pagination-numbers">
                 {getPageNumbers().map((pageNum, index) =>
@@ -665,8 +647,9 @@ export function Sales({
                 className="pagination-btn"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                aria-label="Next page"
               >
-                Next
+                <ChevronRight size={16} />
               </Button>
             </div>
           </div>

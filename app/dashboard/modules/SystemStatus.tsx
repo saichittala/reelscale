@@ -7,7 +7,14 @@ interface SystemStatusProps {
   showToast?: (msg: string, type?: "success" | "error") => void;
   refreshTrigger?: number;
   flushTrigger?: number;
-  onStateChange?: (state: { refreshing: boolean; flushing: boolean; isOperational: boolean }) => void;
+  onStateChange?: (state: {
+    refreshing: boolean;
+    flushing: boolean;
+    isOperational: boolean;
+    timestamp?: string;
+    label?: string;
+    redisOk?: boolean;
+  }) => void;
 }
 
 interface StatusData {
@@ -150,13 +157,21 @@ export function SystemStatus({
     }
   }, [flushTrigger, handleFlushRedis]);
 
+  const isOperational = data?.overall?.status === "operational";
+  const neonOk = data?.services?.neon?.status === "connected";
+  const redisOk = data?.services?.redis?.status === "connected";
+  const sanityOk = data?.services?.sanity?.status === "connected";
+
   useEffect(() => {
     onStateChange?.({
       refreshing,
       flushing,
-      isOperational: data?.overall?.status === "operational",
+      isOperational,
+      timestamp: data?.timestamp,
+      label: data?.overall?.label,
+      redisOk,
     });
-  }, [refreshing, flushing, data, onStateChange]);
+  }, [refreshing, flushing, data, isOperational, redisOk, onStateChange]);
 
   const formatUptime = (seconds?: number | null) => {
     if (!seconds && seconds !== 0) return "—";
@@ -170,67 +185,9 @@ export function SystemStatus({
     return <SkeletonLoader type="dashboard" />;
   }
 
-  const isOperational = data?.overall?.status === "operational";
-  const neonOk = data?.services?.neon?.status === "connected";
-  const redisOk = data?.services?.redis?.status === "connected";
-  const sanityOk = data?.services?.sanity?.status === "connected";
-
   return (
     <>
-      {/* ── 1. Minimal Header Card ── */}
-      <div
-        className="glass-card"
-        style={{
-          margin: 0,
-          padding: "16px 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "12px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span
-            className={`save-status-dot ${isOperational ? "saved" : "saving"}`}
-            style={{ width: "9px", height: "9px" }}
-          />
-          <span style={{ fontWeight: 600, color: "var(--white)", fontSize: "var(--text-md)" }}>
-            {isOperational ? "All Systems Connected" : data?.overall?.label || "System Degraded"}
-          </span>
-        </div>
-
-        <div className="df-g8 al-c">
-          <Button
-            variant="ghost"
-            onClick={handleFlushRedis}
-            disabled={flushing || !redisOk}
-            style={{ fontSize: "var(--text-xs)", padding: "6px 12px" }}
-          >
-            <img src="/assets/icons/delete.svg" width="14" alt="" className="opacity-70" />
-            <span>{flushing ? "Flushing..." : "Flush Cache"}</span>
-          </Button>
-
-          <Button
-            variant="primary"
-            onClick={() => fetchStatus(true)}
-            disabled={refreshing}
-            style={{ fontSize: "var(--text-xs)", padding: "6px 14px" }}
-          >
-            <img
-              src="/assets/icons/nav-status.svg"
-              width="14"
-              alt=""
-              style={{
-                animation: refreshing ? "spin 1s linear infinite" : "none",
-              }}
-            />
-            <span>{refreshing ? "Checking..." : "Refresh"}</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* ── 2. The 3 Required Core Cards (Strict 16px Gap) ── */}
+      {/* ── Core Stat Cards ── */}
       <div
         className="stat-grid"
         style={{
@@ -302,23 +259,17 @@ export function SystemStatus({
         }}
       >
         <Button
-          variant="ghost"
+          variant="secondary"
           onClick={() => setViewMore(!viewMore)}
           style={{
             fontSize: "var(--text-xs)",
             padding: "6px 16px",
-            border: "1px solid var(--border)",
-            borderRadius: "var(--border-radius-99)",
-            background: "var(--white-03)",
+            borderRadius: "var(--radius-pill)",
             display: "inline-flex",
             alignItems: "center",
-            gap: "6px",
           }}
         >
-          <span>{viewMore ? "Hide Details" : "View More Details"}</span>
-          <span style={{ fontSize: "10px", opacity: 0.6 }}>
-            {viewMore ? "▲" : "▼"}
-          </span>
+          <span>{viewMore ? "Hide Details" : "More Details"}</span>
         </Button>
       </div>
 

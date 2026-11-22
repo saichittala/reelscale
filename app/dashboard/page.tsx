@@ -7,6 +7,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { Layout } from "./components/Layout";
 import { Client, User, Lead, Blog, DashboardPage } from "./types";
 import {
+  customFetch,
   fetchClients,
   fetchUsers,
   fetchLeads,
@@ -38,7 +39,9 @@ import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
 import { SystemStatus } from "./modules/SystemStatus";
-import { Button, toast } from "@/components/ui";
+import { Button, Input, DatePicker, toast } from "@/components/ui";
+import { IconSearch } from "./components/Icons";
+import { CustomSelect } from "./components/CustomSelect";
 
 export default function DashboardMainPage() {
   const router = useRouter();
@@ -47,6 +50,16 @@ export default function DashboardMainPage() {
 
   // Selected tab route state (synced with localStorage)
   const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
+
+  // Top header search inputs state
+  const [clientSearch, setClientSearch] = useState("");
+  const [userSearch, setUserSearch] = useState("");
+  const [leadSearch, setLeadSearch] = useState("");
+  const [blogSearch, setBlogSearch] = useState("");
+  const [blogStatusFilter, setBlogStatusFilter] = useState("all");
+  const [blogCategoryFilter, setBlogCategoryFilter] = useState("all");
+  const [resourcesHeaderLeft, setResourcesHeaderLeft] = useState<React.ReactNode>(null);
+  const [resourcesActionsBtn, setResourcesActionsBtn] = useState<React.ReactNode>(null);
 
   // Sync active page with URL query parameter ?tab=... on reload and browser back/forward
   useEffect(() => {
@@ -143,9 +156,16 @@ export default function DashboardMainPage() {
   // Modal / inline UI triggers
   const [newUserRow, setNewUserRow] = useState(false);
   const [newLeadRow, setNewLeadRow] = useState(false);
+  const [salesDateFrom, setSalesDateFrom] = useState("");
+  const [salesDateTo, setSalesDateTo] = useState("");
   const [sysRefreshing, setSysRefreshing] = useState(false);
+  const [sysFlushing, setSysFlushing] = useState(false);
   const [sysTriggerRefresh, setSysTriggerRefresh] = useState(0);
-  const [sysTriggerFlush] = useState(0);
+  const [sysTriggerFlush, setSysTriggerFlush] = useState(0);
+  const [sysIsOperational, setSysIsOperational] = useState<boolean | null>(null);
+  const [sysTimestamp, setSysTimestamp] = useState<string>("");
+  const [sysLabel, setSysLabel] = useState<string>("");
+  const [sysRedisOk, setSysRedisOk] = useState<boolean>(true);
   const [salesFilterExpanded, setSalesFilterExpanded] = useState(false);
 
   // Active blog being edited
@@ -176,6 +196,44 @@ export default function DashboardMainPage() {
     setNewLeadRow(false);
     setNewClientRow(false);
   }, [page]);
+
+  // Initial and periodic system health check for live nav status dot
+  useEffect(() => {
+    let mounted = true;
+    const checkSystemHealth = async () => {
+      try {
+        const res = await customFetch("/api/system-status");
+        const json = await res.json();
+        if (mounted && json?.success) {
+          setSysIsOperational(json.overall?.status === "operational");
+        }
+      } catch {
+        if (mounted) setSysIsOperational(false);
+      }
+    };
+    checkSystemHealth();
+    const interval = setInterval(checkSystemHealth, 60000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const dateFilterPopoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!salesFilterExpanded) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (
+        dateFilterPopoverRef.current &&
+        !dateFilterPopoverRef.current.contains(e.target as Node)
+      ) {
+        setSalesFilterExpanded(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [salesFilterExpanded]);
 
   const [confirmModal, setConfirmModal] = useState<{
     title: string;
@@ -722,58 +780,56 @@ export default function DashboardMainPage() {
   }
 
   // Define dynamic action elements for the Layout topbar portal
-  const addClientBtn = (
-    <div className="df-g8 al-c">
-      {selectedClientIds.length > 0 && (
-        <Button
-          variant="danger"
-          onClick={() => {
-            setConfirmModal({
-              title: "Delete Selected Clients",
-              message: `Are you sure you want to delete the ${selectedClientIds.length} selected clients?`,
-              onConfirm: async () => {
-                try {
-                  showToast(`Deleting ${selectedClientIds.length} selected clients...`);
-                  await Promise.all(
-                    selectedClientIds.map((id) => handleDeleteClient(id))
-                  );
-                  setSelectedClientIds([]);
-                  showToast(`Deleted ${selectedClientIds.length} clients successfully`, "success");
-                } catch (err: any) {
-                  showToast(
-                    err.message || "Failed to delete some selected clients",
-                    "error"
-                  );
-                }
-              }
-            });
-          }}
-        >
-          <img
-            src="/assets/icons/delete.svg"
-            width="16"
-            className="icon-red"
-            alt=""
-          />
-          <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
-        </Button>
-      )}
+  const clientFiltersBtn = selectedClientIds.length > 0 && (
+    <Button
+      variant="danger"
+      onClick={() => {
+        setConfirmModal({
+          title: "Delete Selected Clients",
+          message: `Are you sure you want to delete the ${selectedClientIds.length} selected clients?`,
+          onConfirm: async () => {
+            try {
+              showToast(`Deleting ${selectedClientIds.length} selected clients...`);
+              await Promise.all(
+                selectedClientIds.map((id) => handleDeleteClient(id))
+              );
+              setSelectedClientIds([]);
+              showToast(`Deleted ${selectedClientIds.length} clients successfully`, "success");
+            } catch (err: any) {
+              showToast(
+                err.message || "Failed to delete some selected clients",
+                "error"
+              );
+            }
+          }
+        });
+      }}
+    >
+      <img
+        src="/assets/icons/delete.svg"
+        width="16"
+        className="icon-red"
+        alt=""
+      />
+      <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
+    </Button>
+  );
 
-      <Button
-        variant="primary"
-        onClick={() => {
-          setNewClientRow(true);
-        }}
-      >
-        <img
-          src="/assets/icons/add.svg"
-          alt="Add"
-          width="18"
-          height="18"
-        />
-        <span>Add Client</span>
-      </Button>
-    </div>
+  const addClientBtn = (
+    <Button
+      variant="primary"
+      onClick={() => {
+        setNewClientRow(true);
+      }}
+    >
+      <img
+        src="/assets/icons/add.svg"
+        alt="Add"
+        width="18"
+        height="18"
+      />
+      <span>Add Client</span>
+    </Button>
   );
 
   const addSaleBtn = (
@@ -787,7 +843,7 @@ export default function DashboardMainPage() {
   );
 
   const salesFiltersBtn = (
-    <>
+    <div className="df-g8 al-c">
       {selectedLeadIds.length > 0 && (
         <Button
           variant="danger"
@@ -823,45 +879,109 @@ export default function DashboardMainPage() {
         </Button>
       )}
 
-      <Button
-        variant="ghost"
-        className="df-g8 al-c"
-        onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="opacity-70"
+      <div ref={dateFilterPopoverRef} style={{ position: "relative" }}>
+        <Button
+          variant={salesDateFrom || salesDateTo ? "primary" : "secondary"}
+          className="df-g8 al-c"
+          onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
         >
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-        <span>Filter by Date</span>
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`chevron-icon-rotatable${salesFilterExpanded ? " chevron-rotated" : ""}`}
-        >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </Button>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="opacity-70"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span>
+            {salesDateFrom || salesDateTo
+              ? `${salesDateFrom || "..."} → ${salesDateTo || "..."}`
+              : "Filter by Date"}
+          </span>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`chevron-icon-rotatable${salesFilterExpanded ? " chevron-rotated" : ""}`}
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </Button>
+
+        {salesFilterExpanded && (
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 8px)",
+              left: 0,
+              zIndex: 1000,
+              background: "var(--bg2, #141414)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--border-radius-2)",
+              padding: "16px",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.8)",
+              minWidth: "290px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
+                Filter Leads by Date
+              </span>
+              {(salesDateFrom || salesDateTo) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSalesDateFrom("");
+                    setSalesDateTo("");
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--red)",
+                    fontSize: "var(--text-xs)",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  Clear Filter
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <DatePicker
+                label="From Date"
+                value={salesDateFrom}
+                onChange={(e: any) => setSalesDateFrom(e?.target?.value ?? e)}
+              />
+              <DatePicker
+                label="To Date"
+                value={salesDateTo}
+                onChange={(e: any) => setSalesDateTo(e?.target?.value ?? e)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       <Button
-        variant="ghost"
+        variant="secondary"
         onClick={() => {
           const trigger = document.getElementById(
             "import-sales-btn-trigger"
@@ -872,58 +992,56 @@ export default function DashboardMainPage() {
         <img src="/assets/icons/upload.svg" width="18" alt="" />
         <span>Import XLS</span>
       </Button>
-    </>
-  );
-
-  const addUserBtn = (
-    <div className="df-g8 al-c">
-      {selectedUserIds.length > 0 && (
-        <Button
-          variant="danger"
-          onClick={() => {
-            setConfirmModal({
-              title: "Delete Selected Users",
-              message: `Are you sure you want to delete the ${selectedUserIds.length} selected users?`,
-              onConfirm: async () => {
-                try {
-                  showToast(`Deleting ${selectedUserIds.length} selected users...`);
-                  await Promise.all(
-                    selectedUserIds.map((id) => handleDeleteUser(id))
-                  );
-                  setSelectedUserIds([]);
-                  showToast(`Deleted ${selectedUserIds.length} users successfully`, "success");
-                } catch (err: any) {
-                  showToast(
-                    err.message || "Failed to delete some selected users",
-                    "error"
-                  );
-                }
-              }
-            });
-          }}
-        >
-          <img
-            src="/assets/icons/delete.svg"
-            width="16"
-            className="icon-red"
-            alt=""
-          />
-          <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
-        </Button>
-      )}
-
-      <Button
-        variant="primary"
-        onClick={() => setNewUserRow(true)}
-      >
-        <img src="/assets/icons/add.svg" width="18" alt="" />
-        <span>Add User</span>
-      </Button>
     </div>
   );
 
+  const userFiltersBtn = selectedUserIds.length > 0 && (
+    <Button
+      variant="danger"
+      onClick={() => {
+        setConfirmModal({
+          title: "Delete Selected Users",
+          message: `Are you sure you want to delete the ${selectedUserIds.length} selected users?`,
+          onConfirm: async () => {
+            try {
+              showToast(`Deleting ${selectedUserIds.length} selected users...`);
+              await Promise.all(
+                selectedUserIds.map((id) => handleDeleteUser(id))
+              );
+              setSelectedUserIds([]);
+              showToast(`Deleted ${selectedUserIds.length} users successfully`, "success");
+            } catch (err: any) {
+              showToast(
+                err.message || "Failed to delete some selected users",
+                "error"
+              );
+            }
+          }
+        });
+      }}
+    >
+      <img
+        src="/assets/icons/delete.svg"
+        width="16"
+        className="icon-red"
+        alt=""
+      />
+      <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
+    </Button>
+  );
+
+  const addUserBtn = (
+    <Button
+      variant="primary"
+      onClick={() => setNewUserRow(true)}
+    >
+      <img src="/assets/icons/add.svg" width="18" alt="" />
+      <span>Add User</span>
+    </Button>
+  );
+
   const blogActionsBtn = (
-    <>
+    <div className="df-g8 al-c">
       {selectedBlogIds.length > 0 && (
         <Button
           variant="danger"
@@ -961,6 +1079,30 @@ export default function DashboardMainPage() {
         </Button>
       )}
 
+      <CustomSelect
+        id="topbar-blog-status-filter"
+        value={blogStatusFilter}
+        onChange={(v) => setBlogStatusFilter(v)}
+        options={[
+          { value: "all", label: "All Statuses" },
+          { value: "Draft", label: "Draft" },
+          { value: "Published", label: "Published" },
+        ]}
+        size="md"
+      />
+
+      <CustomSelect
+        id="topbar-blog-category-filter"
+        value={blogCategoryFilter}
+        onChange={(v) => setBlogCategoryFilter(v)}
+        options={[
+          { value: "all", label: "All Categories" },
+          ...blogCategories.map((c) => ({ value: c, label: c })),
+        ]}
+        size="md"
+        align="right"
+      />
+
       <Button
         variant="ghost"
         onClick={() => setPage("blog-categories")}
@@ -973,22 +1115,25 @@ export default function DashboardMainPage() {
         />
         <span>Categories</span>
       </Button>
-      <Button
-        variant="primary"
-        onClick={() => {
-          setEditingBlog(null);
-          setPage("create-blog");
-        }}
-      >
-        <img src="/assets/icons/add.svg" width="18" alt="" />
-        <span>Create Blog</span>
-      </Button>
-    </>
+    </div>
+  );
+
+  const createBlogBtn = (
+    <Button
+      variant="primary"
+      onClick={() => {
+        setEditingBlog(null);
+        setPage("create-blog");
+      }}
+    >
+      <img src="/assets/icons/add.svg" width="18" alt="" />
+      <span>Create Blog</span>
+    </Button>
   );
 
   const createBlogActionsBtn = (
     <Button
-      variant="ghost"
+      variant="secondary"
       onClick={() => {
         setEditingBlog(null);
         setPage("blogs");
@@ -999,20 +1144,103 @@ export default function DashboardMainPage() {
   );
 
   const systemStatusActionsBtn = (
-    <Button
-      variant="primary"
-      disabled={sysRefreshing}
-      onClick={() => setSysTriggerRefresh((c) => c + 1)}
-    >
-      <img
-        src="/assets/icons/nav-status.svg"
-        width="16"
-        alt=""
-        style={{ animation: sysRefreshing ? "spin 1s linear infinite" : "none" }}
-      />
-      <span>{sysRefreshing ? "Checking..." : "Refresh Status"}</span>
-    </Button>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+      {/* Status Pill: Dot + Perfect/Issues + Checked Timestamp */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "7px 14px",
+          borderRadius: "var(--border-radius-99, 99px)",
+          background: "transparent",
+          border: "1px solid var(--border)",
+          fontSize: "var(--text-xs)",
+        }}
+      >
+        <span
+          style={{
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            backgroundColor: sysIsOperational === false ? "var(--red)" : "var(--green)",
+            boxShadow: sysIsOperational === false ? "0 0 6px var(--red)" : "0 0 6px var(--green)",
+            display: "inline-block",
+            flexShrink: 0,
+          }}
+        />
+        <span style={{ color: "var(--white)", fontWeight: 600 }}>
+          {sysIsOperational === false ? sysLabel || "Issues" : "Perfect"}
+        </span>
+        {sysTimestamp && (
+          <span style={{ color: "var(--muted)", fontSize: "11px" }}>
+            (Checked: {new Date(sysTimestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })})
+          </span>
+        )}
+      </div>
+
+      {/* Flush Cache Button */}
+      <Button
+        variant="secondary"
+        onClick={() => setSysTriggerFlush((c) => c + 1)}
+        disabled={sysFlushing || !sysRedisOk}
+        style={{ fontSize: "var(--text-xs)" }}
+      >
+        <img src="/assets/icons/delete.svg" width="14" alt="" className="opacity-70" />
+        <span>{sysFlushing ? "Flushing..." : "Flush Cache"}</span>
+      </Button>
+
+      {/* Refresh Button */}
+      <Button
+        variant="primary"
+        onClick={() => setSysTriggerRefresh((c) => c + 1)}
+        disabled={sysRefreshing}
+        style={{ fontSize: "var(--text-xs)" }}
+      >
+        <img
+          src="/assets/icons/nav-status.svg"
+          width="14"
+          alt=""
+          style={{
+            animation: sysRefreshing ? "spin 1s linear infinite" : "none",
+          }}
+        />
+        <span>{sysRefreshing ? "Checking..." : "Refresh"}</span>
+      </Button>
+    </div>
   );
+
+  const searchBar = ["clients", "sales", "users", "blogs"].includes(page) ? (
+    <Input
+      type="search"
+      startIcon={<IconSearch size={16} />}
+      placeholder={
+        page === "clients"
+          ? "Search clients..."
+          : page === "sales"
+            ? "Search leads..."
+            : page === "users"
+              ? "Search users..."
+              : "Search blogs..."
+      }
+      value={
+        page === "clients"
+          ? clientSearch
+          : page === "sales"
+            ? leadSearch
+            : page === "users"
+              ? userSearch
+              : blogSearch
+      }
+      onChange={(e) => {
+        const val = e.target.value;
+        if (page === "clients") setClientSearch(val);
+        else if (page === "sales") setLeadSearch(val);
+        else if (page === "users") setUserSearch(val);
+        else if (page === "blogs") setBlogSearch(val);
+      }}
+    />
+  ) : null;
 
   return (
     <Layout
@@ -1020,13 +1248,20 @@ export default function DashboardMainPage() {
       setPage={setPage}
       user={user}
       logout={logout}
+      searchBar={searchBar}
+      clientFiltersBtn={clientFiltersBtn}
       addClientBtn={addClientBtn}
       addSaleBtn={addSaleBtn}
+      userFiltersBtn={userFiltersBtn}
       addUserBtn={addUserBtn}
       salesFiltersBtn={salesFiltersBtn}
       blogActionsBtn={blogActionsBtn}
+      createBlogBtn={createBlogBtn}
       createBlogActionsBtn={createBlogActionsBtn}
       systemStatusActionsBtn={systemStatusActionsBtn}
+      systemStatusOperational={sysIsOperational}
+      resourcesHeaderLeft={resourcesHeaderLeft}
+      resourcesActionsBtn={resourcesActionsBtn}
       selectedMonth={selectedMonth}
       setSelectedMonth={setSelectedMonth}
       availableMonths={availableMonths}
@@ -1060,6 +1295,8 @@ export default function DashboardMainPage() {
             onDeleteClient={handleDeleteClient}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
+            search={clientSearch}
+            onSearchChange={setClientSearch}
           />
         )}
 
@@ -1076,6 +1313,8 @@ export default function DashboardMainPage() {
             onDeleteUser={handleDeleteUser}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
+            search={userSearch}
+            onSearchChange={setUserSearch}
           />
         )}
 
@@ -1086,6 +1325,10 @@ export default function DashboardMainPage() {
             newLeadRow={newLeadRow}
             setNewLeadRow={setNewLeadRow}
             salesFilterExpanded={salesFilterExpanded}
+            salesDateFrom={salesDateFrom}
+            setSalesDateFrom={setSalesDateFrom}
+            salesDateTo={salesDateTo}
+            setSalesDateTo={setSalesDateTo}
             selectedLeadIds={selectedLeadIds}
             setSelectedLeadIds={setSelectedLeadIds}
             onAddLead={handleAddLead}
@@ -1093,6 +1336,8 @@ export default function DashboardMainPage() {
             onDeleteLead={handleDeleteLead}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
+            search={leadSearch}
+            onSearchChange={setLeadSearch}
           />
         )}
 
@@ -1114,6 +1359,12 @@ export default function DashboardMainPage() {
             }}
             onManageCategories={() => setPage("blog-categories")}
             setConfirmModal={setConfirmModal}
+            search={blogSearch}
+            onSearchChange={setBlogSearch}
+            statusFilter={blogStatusFilter}
+            onStatusFilterChange={setBlogStatusFilter}
+            categoryFilter={blogCategoryFilter}
+            onCategoryFilterChange={setBlogCategoryFilter}
           />
         )}
 
@@ -1141,6 +1392,10 @@ export default function DashboardMainPage() {
             clients={clients}
             showToast={showToast}
             setConfirmModal={setConfirmModal}
+            onHeaderChange={(left, right) => {
+              setResourcesHeaderLeft(left);
+              setResourcesActionsBtn(right);
+            }}
           />
         )}
 
@@ -1149,8 +1404,20 @@ export default function DashboardMainPage() {
             showToast={showToast}
             refreshTrigger={sysTriggerRefresh}
             flushTrigger={sysTriggerFlush}
-            onStateChange={({ refreshing }) => {
+            onStateChange={({
+              refreshing,
+              flushing,
+              isOperational,
+              timestamp,
+              label,
+              redisOk,
+            }) => {
               setSysRefreshing(refreshing);
+              setSysFlushing(flushing);
+              setSysIsOperational(isOperational);
+              if (timestamp) setSysTimestamp(timestamp);
+              if (label) setSysLabel(label);
+              if (redisOk !== undefined) setSysRedisOk(redisOk);
             }}
           />
         )}
@@ -1209,7 +1476,7 @@ export default function DashboardMainPage() {
             <div className="delete-sub text-left mb-28">{confirmModal.message}</div>
             <div className="delete-actions del-actions-end">
               <Button
-                variant="ghost"
+                variant="secondary"
                 className="btn-auto"
                 onClick={() => setConfirmModal(null)}
               >

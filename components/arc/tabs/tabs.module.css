@@ -45,7 +45,7 @@
   display: inline-flex;
   width: max-content;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   padding: 0;
 }
 

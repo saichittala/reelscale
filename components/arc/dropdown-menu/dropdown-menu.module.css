@@ -9,7 +9,7 @@
   padding: 0 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill, 99px);
-  background: var(--surface);
+  background: transparent;
   color: var(--foreground);
   font: inherit;
   font-size: var(--text-sm, 14px);
@@ -26,8 +26,8 @@
 
 .fullWidth {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
+  display: flex !important;
+  justify-content: space-between !important;
 }
 
 .triggerSm {
@@ -54,20 +54,20 @@
 @media (hover: hover) and (pointer: fine) {
   .trigger:hover {
     border-color: var(--border-strong);
-    background: var(--surface-muted);
+    background: transparent;
     box-shadow: var(--shadow-resting);
   }
 }
 
 .trigger[data-state="open"] {
   border-color: var(--border-strong);
-  background: var(--surface-muted);
+  background: transparent;
   box-shadow: none;
 }
 
 .trigger:active {
   border-color: var(--border-strong);
-  background: color-mix(in oklab, var(--surface-muted), var(--border) 55%);
+  background: transparent;
   box-shadow: none;
 }
 
@@ -86,10 +86,11 @@
 .label {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start !important;
   font-size: var(--text-sm, 14px);
   font-weight: 500;
   color: var(--foreground);
-  text-align: left;
+  text-align: left !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -99,12 +100,14 @@
 
 .fullWidth .label {
   flex: 1 1 auto;
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
 
 
 .labelText {
   display: inline-block;
-  text-align: left;
+  text-align: left !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -118,7 +121,8 @@
 }
 
 .fullWidth .chevron {
-  margin-left: auto;
+  margin-left: auto !important;
+  flex-shrink: 0;
 }
 
 .trigger[data-state="open"] .chevron {
