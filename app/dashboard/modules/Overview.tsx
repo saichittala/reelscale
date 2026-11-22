@@ -1,13 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Client } from "../types";
 import { fmt, fmtFull } from "../utils/format";
 import { SkeletonLoader } from "../components/SkeletonLoader";
-import { loadChartJS } from "../utils/loader";
 import { fetchDeliveries } from "../services/api";
 import {
   getPreviousMonthKey,
   isClientActiveInMonth,
 } from "../utils/subscription";
+import {
+  BarChart,
+  DonutChart,
+  type BarChartDatum,
+  type DonutChartDatum,
+} from "@/components/ui/chart";
 
 interface OverviewProps {
   clients: Client[];
@@ -24,8 +29,9 @@ export function Overview({
   availableMonths = [],
   isLoading,
 }: OverviewProps) {
-  const chartInstanceRef = useRef<any>(null);
   const [totalDeliveredInMonth, setTotalDeliveredInMonth] = useState<number>(0);
+  const [revenueChartMode, setRevenueChartMode] = useState<"bar" | "arc">("bar");
+  const [breakdownMode, setBreakdownMode] = useState<"arc" | "list">("arc");
 
   useEffect(() => {
     async function loadDeliveries() {
@@ -92,99 +98,43 @@ export function Overview({
   const topClients = sortedClients.slice(0, 8);
   const recentClients = [...clients].slice(-8).reverse();
 
-  // Chart initialization
-  useEffect(() => {
-    if (isLoading || clients.length === 0) return;
+  // Arc UI Chart data mapping
+  const selectedMonthLabel =
+    availableMonths.find((m) => m.key === selectedMonth)?.label ||
+    (selectedMonth === "all" ? "All Time" : selectedMonth);
 
-    let active = true;
-
-    async function initChart() {
-      const Chart = await loadChartJS();
-      if (!Chart || !active) return;
-
-      const canvas = document.getElementById(
-        "rev-chart"
-      ) as HTMLCanvasElement | null;
-      if (!canvas) return;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-      }
-
-      const chartData = [...clients].sort(
-        (a, b) => getClientRevenue(b) - getClientRevenue(a)
-      );
-
-      chartInstanceRef.current = new Chart(canvas, {
-        type: "bar",
-        data: {
-          labels: chartData.map((c) => {
-            const displayName =
-              c.name && c.name.trim() ? c.name : c.business || "Unnamed";
-            return displayName.split(" ")[0];
-          }),
-          datasets: [
-            {
-              label: "Monthly Revenue (₹)",
-              data: chartData.map((c) => getClientRevenue(c)),
-              backgroundColor: chartData.map((_, i) =>
-                i === 0
-                  ? "oklch(0.75 0.10 85 / 0.7)"
-                  : "oklch(52% 0.22 25 / 0.5)"
-              ),
-              borderColor: chartData.map((_, i) =>
-                i === 0
-                  ? "oklch(0.75 0.10 85)"
-                  : "oklch(62.944% 0.25583 25.982)"
-              ),
-              borderWidth: 1.5,
-              borderRadius: 18,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (context: any) =>
-                  "₹" + context.raw.toLocaleString("en-IN"),
-              },
-            },
-          },
-          scales: {
-            x: {
-              grid: { color: "rgba(128,128,128,0.1)" },
-              ticks: { color: "rgba(128,128,128,0.75)", font: { size: 11 } },
-            },
-            y: {
-              grid: { color: "rgba(128,128,128,0.1)" },
-              ticks: {
-                color: "rgba(128,128,128,0.75)",
-                font: { size: 11 },
-                callback: (v: any) => "₹" + v.toLocaleString("en-IN"),
-              },
-            },
-          },
-        },
-      });
-    }
-
-    initChart();
-
-    return () => {
-      active = false;
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-        chartInstanceRef.current = null;
-      }
+  const barChartData: BarChartDatum[] = sortedClients.map((c) => {
+    const displayName =
+      c.name && c.name.trim() ? c.name : c.business || "Unnamed";
+    return {
+      key: String(c.id),
+      label: displayName,
+      axisLabel: displayName.split(" ")[0],
+      value: getClientRevenue(c),
     };
-  }, [clients, isLoading]);
+  });
+
+  const donutColors = [
+    "var(--series-1)",
+    "var(--series-2)",
+    "var(--series-3)",
+    "var(--series-4)",
+    "oklch(0.70 0.14 320)",
+    "oklch(0.65 0.12 200)",
+    "oklch(0.72 0.15 45)",
+    "oklch(0.68 0.18 100)",
+  ];
+
+  const donutChartData: DonutChartDatum[] = sortedClients.map((c, i) => {
+    const displayName =
+      c.name && c.name.trim() ? c.name : c.business || "Unnamed";
+    return {
+      key: String(c.id),
+      label: displayName,
+      value: getClientRevenue(c),
+      color: donutColors[i % donutColors.length],
+    };
+  });
 
   if (isLoading) {
     return <SkeletonLoader type="dashboard" />;
@@ -343,7 +293,66 @@ export function Overview({
       {/* Analytics Visuals: Chart & Revenue Breakdown */}
       <div className="revenue-grid">
         <div className="glass-card">
-          <div className="chart-title">Monthly Revenue Per Client</div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <div className="chart-title" style={{ margin: 0 }}>
+              Monthly Revenue Per Client
+            </div>
+            {clients.length > 0 && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  gap: "4px",
+                  background: "var(--white-04)",
+                  padding: "3px",
+                  borderRadius: "var(--radius-pill)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setRevenueChartMode("bar")}
+                  style={{
+                    padding: "4px 10px",
+                    fontSize: "var(--text-xs)",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    cursor: "pointer",
+                    background:
+                      revenueChartMode === "bar" ? "var(--red)" : "transparent",
+                    color: revenueChartMode === "bar" ? "#fff" : "var(--muted)",
+                    fontWeight: 500,
+                    transition: "all var(--duration-fast)",
+                  }}
+                >
+                  Bar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRevenueChartMode("arc")}
+                  style={{
+                    padding: "4px 10px",
+                    fontSize: "var(--text-xs)",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    cursor: "pointer",
+                    background:
+                      revenueChartMode === "arc" ? "var(--red)" : "transparent",
+                    color: revenueChartMode === "arc" ? "#fff" : "var(--muted)",
+                    fontWeight: 500,
+                    transition: "all var(--duration-fast)",
+                  }}
+                >
+                  Arc
+                </button>
+              </div>
+            )}
+          </div>
           <div className="analytics-chart-container">
             {clients.length === 0 ? (
               <div
@@ -358,14 +367,109 @@ export function Overview({
               >
                 No client revenue data available for this selection
               </div>
+            ) : revenueChartMode === "arc" ? (
+              <div
+                style={{
+                  padding: "16px 0",
+                  minHeight: "280px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DonutChart
+                  data={donutChartData}
+                  label="Monthly Revenue"
+                  totalLabel="Total Revenue"
+                  formatValue={(val) =>
+                    "₹" + Math.round(val).toLocaleString("en-IN")
+                  }
+                  legendAction="select"
+                  legend={true}
+                  size={210}
+                  thickness={26}
+                />
+              </div>
             ) : (
-              <canvas id="rev-chart"></canvas>
+              <div style={{ padding: "8px 0" }}>
+                <BarChart
+                  data={barChartData}
+                  label="Monthly Revenue"
+                  period={selectedMonthLabel}
+                  averageLabel="Average per client"
+                  valueLabel="Client Revenue"
+                  showAverage={true}
+                  height={220}
+                  formatValue={(val) =>
+                    "₹" + Math.round(val).toLocaleString("en-IN")
+                  }
+                />
+              </div>
             )}
           </div>
         </div>
 
         <div className="glass-card">
-          <div className="chart-title">Client Monthly Revenue Breakdown</div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <div className="chart-title" style={{ margin: 0 }}>
+              Client Monthly Revenue Breakdown
+            </div>
+            {clients.length > 0 && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  gap: "4px",
+                  background: "var(--white-04)",
+                  padding: "3px",
+                  borderRadius: "var(--radius-pill)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setBreakdownMode("arc")}
+                  style={{
+                    padding: "4px 10px",
+                    fontSize: "var(--text-xs)",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    cursor: "pointer",
+                    background:
+                      breakdownMode === "arc" ? "var(--red)" : "transparent",
+                    color: breakdownMode === "arc" ? "#fff" : "var(--muted)",
+                    fontWeight: 500,
+                    transition: "all var(--duration-fast)",
+                  }}
+                >
+                  Arc Graph
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBreakdownMode("list")}
+                  style={{
+                    padding: "4px 10px",
+                    fontSize: "var(--text-xs)",
+                    borderRadius: "var(--radius-pill)",
+                    border: "none",
+                    cursor: "pointer",
+                    background:
+                      breakdownMode === "list" ? "var(--red)" : "transparent",
+                    color: breakdownMode === "list" ? "#fff" : "var(--muted)",
+                    fontWeight: 500,
+                    transition: "all var(--duration-fast)",
+                  }}
+                >
+                  List View
+                </button>
+              </div>
+            )}
+          </div>
           <div className="analytics-list-container">
             {clients.length === 0 ? (
               <div
@@ -379,6 +483,29 @@ export function Overview({
                 }}
               >
                 No clients found
+              </div>
+            ) : breakdownMode === "arc" ? (
+              <div
+                style={{
+                  padding: "16px 0",
+                  minHeight: "280px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DonutChart
+                  data={donutChartData}
+                  label="Revenue Breakdown"
+                  totalLabel="Total Revenue"
+                  formatValue={(val) =>
+                    "₹" + Math.round(val).toLocaleString("en-IN")
+                  }
+                  legendAction="select"
+                  legend={true}
+                  size={210}
+                  thickness={26}
+                />
               </div>
             ) : (
               sortedClients.map((c, i) => {

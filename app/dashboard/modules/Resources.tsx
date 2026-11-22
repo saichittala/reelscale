@@ -3,7 +3,7 @@ import { Client, BusinessDocument, ClientContract, DocumentLineItem } from "../t
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
 import { IconSearch } from "../components/Icons";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, Textarea, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 
 interface ResourcesProps {
   clients: Client[];
@@ -136,7 +136,7 @@ const INITIAL_CONTRACTS: ClientContract[] = [
 ];
 
 export function Resources({ clients, showToast, setConfirmModal }: ResourcesProps) {
-  const [view, setView] = useState<"overview" | "invoice-generator" | "quotation-generator" | "contracts" | "history">("overview");
+  const [view, setView] = useState<"overview" | "generator" | "invoice-generator" | "quotation-generator" | "contracts" | "history">("overview");
   
   // Storage states
   const [documents, setDocuments] = useState<BusinessDocument[]>([]);
@@ -302,8 +302,29 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
       setSelectedClientId("custom");
       setShowNewClientForm(true);
     }
-    setView(type === "Invoice" ? "invoice-generator" : "quotation-generator");
+    setView("generator");
     setMobileTab("details");
+  };
+
+  // Seamless mode switch between Invoice and Quotation without losing entered form data
+  const handleTypeChange = (nextType: "Invoice" | "Quotation") => {
+    if (!activeDoc || activeDoc.type === nextType) return;
+    const oldPrefix = activeDoc.type === "Invoice" ? "RS-INV" : "RS-Q";
+    const newPrefix = nextType === "Invoice" ? "RS-INV" : "RS-Q";
+    let newNumber = activeDoc.number;
+    if (newNumber.includes(oldPrefix)) {
+      newNumber = newNumber.replace(oldPrefix, newPrefix);
+    } else {
+      newNumber = generateDocNumber(nextType);
+    }
+    setActiveDoc({
+      ...activeDoc,
+      type: nextType,
+      number: newNumber,
+      updatedAt: new Date().toISOString(),
+    });
+    setSaveStatus("unsaved");
+    showToast(`Switched mode to ${nextType}`, "success");
   };
 
   // Totals auto calculator helper
@@ -615,27 +636,13 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
             <div className="resource-card" onClick={() => startDocumentGenerator("Invoice")}>
               <div className="resource-card-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span>Invoice Generator</span>
-              </div>
-              <svg className="resource-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </div>
-
-            <div className="resource-card" onClick={() => startDocumentGenerator("Quotation")}>
-              <div className="resource-card-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
-                <span>Quotation Generator</span>
+                <span>Invoice & Quotation Generator</span>
               </div>
               <svg className="resource-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -675,7 +682,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
       )}
 
       {/* View: Document Generator Workspace */}
-      {(view === "invoice-generator" || view === "quotation-generator") && activeDoc && (
+      {(view === "generator" || view === "invoice-generator" || view === "quotation-generator") && activeDoc && (
         <div className="resources-workspace-wrapper">
           {/* Header Bar */}
           <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
@@ -684,7 +691,12 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                 ← Back
               </Button>
               <div>
-                <h2 style={{ fontSize: "20px", fontWeight: 600 }}>{activeDoc.type} Generator</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <h2 style={{ fontSize: "20px", fontWeight: 600, margin: 0 }}>{activeDoc.type} Generator</h2>
+                  <span className={`badge ${activeDoc.type === "Invoice" ? "badge-red" : "badge-gold"}`}>
+                    {activeDoc.type}
+                  </span>
+                </div>
                 <div style={{ fontSize: "13px", color: "var(--muted)" }}>Document No: {activeDoc.number}</div>
               </div>
             </div>
@@ -694,7 +706,7 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                 <span className={`save-status-dot ${saveStatus}`}></span>
                 <span style={{ textTransform: "capitalize" }}>{saveStatus === "unsaved" ? "unsaved changes" : saveStatus}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => {
+              <Button variant="secondary" size="sm" onClick={() => {
                 showToast("Draft saved successfully", "success");
                 setSaveStatus("saved");
               }}>
@@ -707,9 +719,13 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
           </div>
 
           {/* Mobile responsive tabs switch */}
-          <div className="segmented-control dn" style={{ marginBottom: "20px" }} id="mobile-workspace-tabs">
-            <Button variant={mobileTab === "details" ? "primary" : "ghost"} size="sm" onClick={() => setMobileTab("details")}>Edit details</Button>
-            <Button variant={mobileTab === "preview" ? "primary" : "ghost"} size="sm" onClick={() => setMobileTab("preview")}>Preview Document</Button>
+          <div className="dn" style={{ marginBottom: "20px" }} id="mobile-workspace-tabs">
+            <Tabs value={mobileTab} onValueChange={(val) => setMobileTab(val as "details" | "preview")}>
+              <TabsList style={{ width: "100%" }}>
+                <TabsTrigger value="details" style={{ flex: 1, textAlign: "center" }}>Edit Details</TabsTrigger>
+                <TabsTrigger value="preview" style={{ flex: 1, textAlign: "center" }}>Preview Document</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
 
           {/* Desktop Dual Panel Layout */}
@@ -718,28 +734,24 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
             <div className={`details-panel ${mobileTab === "preview" ? "mobile-hidden-panel" : ""}`}>
               {/* Step 1: Switch between Invoice/Quotation */}
               <div>
-                <div className="section-title-sm">Document Type</div>
-                <div className="segmented-control">
-                  <button className={`segmented-btn ${activeDoc.type === "Quotation" ? "active" : ""}`} onClick={() => {
-                    handleUpdateField("type", "Quotation");
-                    handleUpdateField("number", generateDocNumber("Quotation"));
-                  }}>
-                    Quotation
-                  </button>
-                  <button className={`segmented-btn ${activeDoc.type === "Invoice" ? "active" : ""}`} onClick={() => {
-                    handleUpdateField("type", "Invoice");
-                    handleUpdateField("number", generateDocNumber("Invoice"));
-                  }}>
-                    Invoice
-                  </button>
-                </div>
+                <div className="section-title-sm">Document Mode</div>
+                <Tabs value={activeDoc.type} onValueChange={(val) => handleTypeChange(val as "Invoice" | "Quotation")}>
+                  <TabsList style={{ width: "100%" }}>
+                    <TabsTrigger value="Invoice" style={{ flex: 1, textAlign: "center" }}>
+                      Invoice
+                    </TabsTrigger>
+                    <TabsTrigger value="Quotation" style={{ flex: 1, textAlign: "center" }}>
+                      Quotation / Estimate
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
 
               {/* Step 2: Client configuration */}
               <div>
                 <div className="section-title-sm">Client Details</div>
                 <div className="form-group mb-16">
-                  <label>Select Client profile</label>
+                  <label>Select Client Profile</label>
                   <CustomSelect
                     value={selectedClientId}
                     onChange={handleSelectClient}
@@ -755,34 +767,50 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
 
                 {showNewClientForm && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "16px" }}>
-                    <div className="form-group">
-                      <label>Client Contact Name *</label>
-                      <input type="text" className="form-input" placeholder="e.g. Alice Miller" value={activeDoc.clientName} onChange={(e) => handleUpdateField("clientName", e.target.value)} />
+                    <Input
+                      label="Client Contact Name *"
+                      placeholder="e.g. Alice Miller"
+                      value={activeDoc.clientName}
+                      onChange={(e) => handleUpdateField("clientName", e.target.value)}
+                    />
+                    <div className="form-row-grid">
+                      <Input
+                        label="Company / Business Name"
+                        placeholder="e.g. Miller Group"
+                        value={activeDoc.companyName}
+                        onChange={(e) => handleUpdateField("companyName", e.target.value)}
+                      />
+                      <Input
+                        label="GSTIN (Optional)"
+                        placeholder="e.g. 36AAAAA1111A1Z1"
+                        value={activeDoc.gstin || ""}
+                        onChange={(e) => handleUpdateField("gstin", e.target.value)}
+                      />
                     </div>
                     <div className="form-row-grid">
-                      <div className="form-group">
-                        <label>Company/Business Name</label>
-                        <input type="text" className="form-input" placeholder="e.g. Miller Group" value={activeDoc.companyName} onChange={(e) => handleUpdateField("companyName", e.target.value)} />
-                      </div>
-                      <div className="form-group">
-                        <label>GSTIN (Optional)</label>
-                        <input type="text" className="form-input" placeholder="e.g. 36AAAAA1111A1Z1" value={activeDoc.gstin || ""} onChange={(e) => handleUpdateField("gstin", e.target.value)} />
-                      </div>
+                      <Input
+                        type="email"
+                        label="Billing Email"
+                        placeholder="e.g. billing@miller.com"
+                        value={activeDoc.clientEmail}
+                        onChange={(e) => handleUpdateField("clientEmail", e.target.value)}
+                      />
+                      <Input
+                        type="tel"
+                        label="Billing Phone"
+                        placeholder="e.g. +91 99662 39433"
+                        value={activeDoc.clientPhone}
+                        onChange={(e) => handleUpdateField("clientPhone", e.target.value)}
+                      />
                     </div>
-                    <div className="form-row-grid">
-                      <div className="form-group">
-                        <label>Billing Email</label>
-                        <input type="email" className="form-input" placeholder="e.g. billing@miller.com" value={activeDoc.clientEmail} onChange={(e) => handleUpdateField("clientEmail", e.target.value)} />
-                      </div>
-                      <div className="form-group">
-                        <label>Billing Phone</label>
-                        <input type="text" className="form-input" placeholder="e.g. +91 99662 39433" value={activeDoc.clientPhone} onChange={(e) => handleUpdateField("clientPhone", e.target.value)} />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Billing Address</label>
-                      <textarea className="form-input" rows={2} placeholder="Full physical billing address" value={activeDoc.billingAddress} onChange={(e) => handleUpdateField("billingAddress", e.target.value)} style={{ resize: "none" }} />
-                    </div>
+                    <Textarea
+                      label="Billing Address"
+                      rows={2}
+                      placeholder="Full physical billing address"
+                      value={activeDoc.billingAddress}
+                      onChange={(e) => handleUpdateField("billingAddress", e.target.value)}
+                      style={{ resize: "none" }}
+                    />
                   </div>
                 )}
               </div>
@@ -790,9 +818,13 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
               {/* Step 3: Project Configuration */}
               <div>
                 <div className="section-title-sm">Project & Timing</div>
-                <div className="form-group mb-16">
-                  <label>Project/Engagement Title *</label>
-                  <input type="text" className="form-input" placeholder="e.g. Premium Short-form Reels Production" value={activeDoc.projectName} onChange={(e) => handleUpdateField("projectName", e.target.value)} />
+                <div className="mb-16">
+                  <Input
+                    label="Project / Engagement Title *"
+                    placeholder="e.g. Premium Short-form Reels Production"
+                    value={activeDoc.projectName}
+                    onChange={(e) => handleUpdateField("projectName", e.target.value)}
+                  />
                 </div>
                 
                 <div className="form-row-grid mb-16">
@@ -810,27 +842,35 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                       ]}
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Issue Date</label>
-                    <input type="date" className="form-input" value={activeDoc.issueDate} onChange={(e) => handleUpdateField("issueDate", e.target.value)} />
-                  </div>
+                  <Input
+                    type="date"
+                    label="Issue Date"
+                    value={activeDoc.issueDate}
+                    onChange={(e) => handleUpdateField("issueDate", e.target.value)}
+                  />
                 </div>
 
                 <div className="form-row-grid">
-                  <div className="form-group">
-                    <label>Due Date</label>
-                    <input type="date" className="form-input" value={activeDoc.dueDate} onChange={(e) => handleUpdateField("dueDate", e.target.value)} />
-                  </div>
+                  <Input
+                    type="date"
+                    label={activeDoc.type === "Invoice" ? "Payment Due Date" : "Expected Start Date"}
+                    value={activeDoc.dueDate}
+                    onChange={(e) => handleUpdateField("dueDate", e.target.value)}
+                  />
                   {activeDoc.type === "Quotation" ? (
-                    <div className="form-group">
-                      <label>Validity Date (Quotation)</label>
-                      <input type="date" className="form-input" value={activeDoc.validityDate} onChange={(e) => handleUpdateField("validityDate", e.target.value)} />
-                    </div>
+                    <Input
+                      type="date"
+                      label="Validity Date (Quote Expiry)"
+                      value={activeDoc.validityDate}
+                      onChange={(e) => handleUpdateField("validityDate", e.target.value)}
+                    />
                   ) : (
-                    <div className="form-group">
-                      <label>Doc Number (Auto)</label>
-                      <input type="text" className="form-input" value={activeDoc.number} readOnly disabled style={{opacity:0.6}} />
-                    </div>
+                    <Input
+                      label="Invoice Number"
+                      value={activeDoc.number}
+                      readOnly
+                      disabled
+                    />
                   )}
                 </div>
               </div>
@@ -882,9 +922,9 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                   </table>
                 </div>
 
-                <button className="btn-add-item" onClick={handleAddLineItem}>
+                <Button variant="secondary" size="sm" onClick={handleAddLineItem} style={{ marginTop: "12px", width: "100%" }}>
                   + Add Service / Line Item
-                </button>
+                </Button>
 
                 {/* Adjustments: Discount, Tax, Expenses */}
                 <div className="totals-summary-block" style={{ marginTop: "24px" }}>
@@ -915,44 +955,49 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
               <div>
                 <div className="section-title-sm">Payment Details</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                  <div className="form-group">
-                    <label>Account Name</label>
-                    <input type="text" className="form-input" value={activeDoc.paymentDetails.accountName} onChange={(e) => {
+                  <Input
+                    label="Account Holder Name"
+                    value={activeDoc.paymentDetails.accountName}
+                    onChange={(e) => {
                       const pay = { ...activeDoc.paymentDetails, accountName: e.target.value };
                       handleUpdateField("paymentDetails", pay);
-                    }} />
-                  </div>
+                    }}
+                  />
                   <div className="form-row-grid">
-                    <div className="form-group">
-                      <label>Bank Name</label>
-                      <input type="text" className="form-input" value={activeDoc.paymentDetails.bank} onChange={(e) => {
+                    <Input
+                      label="Bank Name"
+                      value={activeDoc.paymentDetails.bank}
+                      onChange={(e) => {
                         const pay = { ...activeDoc.paymentDetails, bank: e.target.value };
                         handleUpdateField("paymentDetails", pay);
-                      }} />
-                    </div>
-                    <div className="form-group">
-                      <label>Account Number</label>
-                      <input type="text" className="form-input" value={activeDoc.paymentDetails.accountNumber} onChange={(e) => {
+                      }}
+                    />
+                    <Input
+                      label="Account Number"
+                      value={activeDoc.paymentDetails.accountNumber}
+                      onChange={(e) => {
                         const pay = { ...activeDoc.paymentDetails, accountNumber: e.target.value };
                         handleUpdateField("paymentDetails", pay);
-                      }} />
-                    </div>
+                      }}
+                    />
                   </div>
                   <div className="form-row-grid">
-                    <div className="form-group">
-                      <label>IFSC Code</label>
-                      <input type="text" className="form-input" value={activeDoc.paymentDetails.ifsc} onChange={(e) => {
+                    <Input
+                      label="IFSC Code"
+                      value={activeDoc.paymentDetails.ifsc}
+                      onChange={(e) => {
                         const pay = { ...activeDoc.paymentDetails, ifsc: e.target.value };
                         handleUpdateField("paymentDetails", pay);
-                      }} />
-                    </div>
-                    <div className="form-group">
-                      <label>UPI ID</label>
-                      <input type="text" className="form-input" value={activeDoc.paymentDetails.upiId} onChange={(e) => {
+                      }}
+                    />
+                    <Input
+                      label="UPI ID"
+                      value={activeDoc.paymentDetails.upiId}
+                      onChange={(e) => {
                         const pay = { ...activeDoc.paymentDetails, upiId: e.target.value };
                         handleUpdateField("paymentDetails", pay);
-                      }} />
-                    </div>
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -960,13 +1005,23 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
               {/* Step 6: Terms and Notes */}
               <div>
                 <div className="section-title-sm">Terms & Conditions</div>
-                <div className="form-group mb-16">
-                  <label>Document Terms / Notes</label>
-                  <textarea className="form-input" rows={2} value={activeDoc.terms} onChange={(e) => handleUpdateField("terms", e.target.value)} style={{ resize: "none" }} />
+                <div className="mb-16">
+                  <Textarea
+                    label="Terms & Conditions"
+                    rows={2}
+                    value={activeDoc.terms}
+                    onChange={(e) => handleUpdateField("terms", e.target.value)}
+                    style={{ resize: "none" }}
+                  />
                 </div>
-                <div className="form-group">
-                  <label>Footer Personal Note</label>
-                  <textarea className="form-input" rows={2} value={activeDoc.notes} onChange={(e) => handleUpdateField("notes", e.target.value)} style={{ resize: "none" }} />
+                <div>
+                  <Textarea
+                    label="Footer Personal Note"
+                    rows={2}
+                    value={activeDoc.notes}
+                    onChange={(e) => handleUpdateField("notes", e.target.value)}
+                    style={{ resize: "none" }}
+                  />
                 </div>
               </div>
             </div>
@@ -1433,13 +1488,14 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }} className="modal-body-text">
-              <div className="form-group">
-                <label>Contract / Agreement Number *</label>
-                <input type="text" className="form-input" value={newContract.contractNumber} onChange={(e) => setNewContract({...newContract, contractNumber: e.target.value})} />
-              </div>
+              <Input
+                label="Contract / Agreement Number *"
+                value={newContract.contractNumber}
+                onChange={(e) => setNewContract({...newContract, contractNumber: e.target.value})}
+              />
 
               <div className="form-group">
-                <label>Select Client profile *</label>
+                <label>Select Client Profile *</label>
                 <CustomSelect
                   value={String(newContract.clientId || "custom")}
                   onChange={(val) => {
@@ -1465,10 +1521,12 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
               </div>
 
               {newContract.clientId === "custom" && (
-                <div className="form-group">
-                  <label>Client Name *</label>
-                  <input type="text" className="form-input" placeholder="e.g. Alice Miller (Miller Group)" value={newContract.clientName} onChange={(e) => setNewContract({...newContract, clientName: e.target.value})} />
-                </div>
+                <Input
+                  label="Client Name *"
+                  placeholder="e.g. Alice Miller (Miller Group)"
+                  value={newContract.clientName}
+                  onChange={(e) => setNewContract({...newContract, clientName: e.target.value})}
+                />
               )}
 
               <div className="form-row-grid">
@@ -1485,27 +1543,36 @@ export function Resources({ clients, showToast, setConfirmModal }: ResourcesProp
                     ]}
                   />
                 </div>
-                <div className="form-group">
-                  <label>Monthly Budget / Fee (₹)</label>
-                  <input type="number" className="form-input" value={newContract.amount} onChange={(e) => setNewContract({...newContract, amount: Number(e.target.value)})} />
-                </div>
+                <Input
+                  type="number"
+                  label="Monthly Budget / Fee (₹)"
+                  value={newContract.amount}
+                  onChange={(e) => setNewContract({...newContract, amount: Number(e.target.value)})}
+                />
               </div>
 
               <div className="form-row-grid">
-                <div className="form-group">
-                  <label>Start Date</label>
-                  <input type="date" className="form-input" value={newContract.startDate} onChange={(e) => setNewContract({...newContract, startDate: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label>End Date</label>
-                  <input type="date" className="form-input" value={newContract.endDate} onChange={(e) => setNewContract({...newContract, endDate: e.target.value})} />
-                </div>
+                <Input
+                  type="date"
+                  label="Start Date"
+                  value={newContract.startDate}
+                  onChange={(e) => setNewContract({...newContract, startDate: e.target.value})}
+                />
+                <Input
+                  type="date"
+                  label="End Date"
+                  value={newContract.endDate}
+                  onChange={(e) => setNewContract({...newContract, endDate: e.target.value})}
+                />
               </div>
 
-              <div className="form-group">
-                <label>Add Notes / Specific details</label>
-                <textarea className="form-input" rows={2} value={newContract.notes} onChange={(e) => setNewContract({...newContract, notes: e.target.value})} style={{ resize: "none" }} />
-              </div>
+              <Textarea
+                label="Add Notes / Specific Details"
+                rows={2}
+                value={newContract.notes}
+                onChange={(e) => setNewContract({...newContract, notes: e.target.value})}
+                style={{ resize: "none" }}
+              />
             </div>
 
             <div className="form-footer" style={{ marginTop: "24px", display: "flex", justifyContent: "flex-end", gap: "12px" }}>

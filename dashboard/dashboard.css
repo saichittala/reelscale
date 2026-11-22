@@ -1758,6 +1758,13 @@ tr:hover td {
     border: 0.6px solid color-mix(in oklch, var(--blue) 30%, transparent);
 }
 
+.badge-default,
+.badge-gray {
+    background: var(--white-05);
+    color: var(--muted);
+    border: 0.6px solid var(--border);
+}
+
 /* ── SYSTEM STATUS TABLE (Horizontal Scroll with Fixed First Column) ── */
 .status-table-wrap {
     overflow-x: auto;
@@ -4768,19 +4775,13 @@ input[type="number"] {
 
 .resources-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-top: 0;
     width: 100%;
 }
 
-@media (max-width: 1024px) {
-    .resources-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 640px) {
+@media (max-width: 900px) {
     .resources-grid {
         grid-template-columns: 1fr;
     }
@@ -5395,6 +5396,16 @@ input[type="number"] {
         margin: 0 !important;
         padding: 0 !important;
         min-height: auto !important;
+        display: block !important;
+    }
+}
+
+.printable-only-area {
+    display: none;
+}
+
+@media print {
+    .printable-only-area {
         display: block !important;
     }
 }

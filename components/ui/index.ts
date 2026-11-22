@@ -26,3 +26,15 @@ export {
   type SelectProps,
   type SelectOption,
 } from "./dropdown-menu";
+export {
+  BarChart,
+  DonutChart,
+  LineChart,
+  type BarChartProps,
+  type BarChartDatum,
+  type DonutChartProps,
+  type DonutChartDatum,
+  type LineChartProps,
+  type LineChartDatum,
+  type LineChartSeries,
+} from "./chart";

@@ -87,9 +87,18 @@
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
     --duration-instant: 80ms;
     --duration-fast: 150ms;
+    --duration-standard: 200ms;
     --duration-base: 250ms;
     --duration-slow: 400ms;
     --duration-xslow: 500ms;
+
+    /* ── CHART & DISPLAY TOKENS (Arc UI) ── */
+    --tracking-display: -0.02em;
+    --leading-display: 1.1;
+    --series-1: var(--red);
+    --series-2: var(--gold);
+    --series-3: var(--green);
+    --series-4: var(--blue);
 
     /* ── TRANSITIONS (shorthand) ── */
     --transition-fast: 0.15s ease;
