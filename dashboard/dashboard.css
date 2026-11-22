@@ -1417,7 +1417,7 @@ button:not([class*="trigger"]) span {
 /* GLASS CARDS */
 .glass-card {
     background: var(--white-03);
-    border: 1px solid var(--border);
+    border: none;
     border-radius: var(--border-radius-2);
     padding: 20px;
     backdrop-filter: blur(14px);
@@ -5042,7 +5042,7 @@ input[type="number"] {
 
 .details-panel .glass-card {
     background: var(--white-03);
-    border: 1px solid var(--border);
+    border: none;
     border-radius: var(--border-radius-2);
     padding: 22px;
     position: relative;
@@ -5070,7 +5070,7 @@ input[type="number"] {
     overflow-y: auto;
     max-height: calc(100vh - 120px);
     background: var(--white-03);
-    border: 1px solid var(--border);
+    border: none;
     border-radius: var(--radius-md);
     padding: 28px;
 }
