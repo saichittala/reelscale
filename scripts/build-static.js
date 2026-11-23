@@ -44,9 +44,17 @@ try {
   if (fs.existsSync(dotNextDir)) {
     console.log('==> Cleaning .next cache...');
     try {
-      execSync('rm -rf .next', { cwd: rootDir });
+      if (process.platform === 'win32') {
+        execSync('cmd /c "if exist .next rd /s /q .next"', { cwd: rootDir, stdio: 'ignore' });
+      } else {
+        execSync('rm -rf .next', { cwd: rootDir, stdio: 'ignore' });
+      }
     } catch {
-      fs.rmSync(dotNextDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(dotNextDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+      } catch (rmErr) {
+        console.warn('==> Note: .next directory cleanup skipped, next build will overwrite.');
+      }
     }
   }
 
