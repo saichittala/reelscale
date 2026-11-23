@@ -2981,8 +2981,9 @@ input:autofill:focus,
     padding: var(--space-10);
 
     background: var(--bg2);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong) !important;
     border-radius: var(--border-radius-2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .login-logo {
@@ -3148,10 +3149,11 @@ button.login-submit-btn,
 
     .login-card {
         background: var(--bg2);
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-strong) !important;
         border-radius: var(--border-radius-2);
         padding: var(--space-10);
         width: 100%;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .filter-btn {
@@ -3288,6 +3290,7 @@ button.login-submit-btn,
     .login-card {
         width: calc(100% - 40px);
         padding: 28px;
+        border: 1px solid var(--border-strong) !important;
     }
 
     @keyframes slideMenu {

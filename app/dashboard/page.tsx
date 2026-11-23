@@ -1104,6 +1104,8 @@ export default function DashboardMainPage() {
 
       <Button
         variant="secondary"
+        pill
+        className="btn-secondary"
         onClick={() => setPage("blog-categories")}
       >
         <img

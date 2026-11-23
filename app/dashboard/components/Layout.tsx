@@ -566,6 +566,8 @@ export function Layout({
               {page === "blog-categories" && (
                 <Button
                   variant="secondary"
+                  pill
+                  className="btn-secondary"
                   onClick={() => {
                     setPage("blogs");
                   }}
