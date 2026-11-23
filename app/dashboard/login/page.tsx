@@ -17,7 +17,7 @@ export default function DashboardLoginPage() {
   // If already logged in, redirect to dashboard main
   useEffect(() => {
     if (isLoggedIn) {
-      router.push("/dashboard/");
+      router.push("/dashboard");
     }
   }, [isLoggedIn, router]);
 
@@ -36,7 +36,7 @@ export default function DashboardLoginPage() {
       const success = await login(email.trim(), password);
       if (success) {
         // Redirection handled by useEffect, or force push
-        router.push("/dashboard/");
+        router.push("/dashboard");
       } else {
         setError("Invalid credentials. Please try again.");
       }

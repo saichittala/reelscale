@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole } from "../rbac";
-import { getDb } from "../../lib/db";
+import { getDb, type DbSaleRow } from "../../lib/db";
 import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       ORDER BY id DESC;
     `;
 
-    const sales = rows.map((r: any) => ({
+    const sales = (rows as unknown as DbSaleRow[]).map((r: DbSaleRow) => ({
       id: r.id,
       category: r.category || "",
       companyName: r.company_name || "",

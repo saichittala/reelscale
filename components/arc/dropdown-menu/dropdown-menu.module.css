@@ -38,6 +38,10 @@
   border-radius: var(--radius-pill, 99px);
 }
 
+.triggerSm .label {
+  font-size: 13px;
+}
+
 .triggerMd {
   min-height: 38px;
   height: 38px;
@@ -190,6 +194,7 @@
     opacity: 0;
     transform: translate(var(--menu-x), var(--menu-y)) scale(0.97);
   }
+
   .menu[data-state="open"] .item {
     opacity: 0;
     transform: translate(calc(var(--menu-x) * 0.4), calc(var(--menu-y) * 0.4));
@@ -304,12 +309,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .trigger,
   .chevron,
   .item,
   .highlight {
     transition: none;
   }
+
   .menu,
   .menu[data-state="closed"] {
     transform: none;

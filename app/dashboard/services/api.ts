@@ -5,21 +5,11 @@ import {
   deleteBlogFromSanity,
   sanityDocToBlog,
 } from "../../sanity/blog-sync";
-
-export const GAS_USERS_URL =
-  "https://script.google.com/macros/s/AKfycbx4ZaU3l-XsieGxzfGg26XRSFb5TmxL3anOxrLHmpXcufsk3O8zMGWZkj-u0VWdPULG/exec";
-export const GAS_CLIENTS_URL =
-  "https://script.google.com/macros/s/AKfycbwjmC5mDKejUEDSuXsf_7IlhEznHR7vA9pvu1O16DOS8J2Nn6bXNEv_w3xaOuRFAXZS/exec";
-export const GAS_SALES_URL =
-  "https://script.google.com/macros/s/AKfycbyofRzBP8UpOX5Nt-l8C6Mj5rw5dHQH8YAt5sBPiltzyfndAiEKZh_4xyVhsV11lBb0/exec";
-export const GAS_BLOGS_URL =
-  process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_BLOGS_URL || "";
-
-const useLocalAPI = process.env.NEXT_PUBLIC_STATIC_EXPORT !== "true";
+import { STORAGE_KEYS, API_ROUTES } from "../constants";
 
 export function getCurrentUser(): User | null {
   if (typeof window === "undefined") return null;
-  const userStr = localStorage.getItem("reelscale_user");
+  const userStr = localStorage.getItem(STORAGE_KEYS.USER);
   if (!userStr) return null;
   try {
     return JSON.parse(userStr);
@@ -32,85 +22,39 @@ export async function customFetch(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  let targetUrl = url;
   const updatedOptions = { ...options };
-
-  if (useLocalAPI) {
-    if (url === GAS_USERS_URL) {
-      if (options.body && typeof options.body === "string") {
-        try {
-          const bodyObj = JSON.parse(options.body);
-          if (bodyObj.action === "login") {
-            targetUrl = "/api/auth";
-            updatedOptions.body = JSON.stringify({
-              email: bodyObj.email,
-              password: bodyObj.password,
-            });
-          } else {
-            targetUrl = "/api/users";
-          }
-        } catch (e) {
-          targetUrl = "/api/users";
-        }
-      } else {
-        targetUrl = "/api/users";
-      }
-    } else if (url === GAS_CLIENTS_URL) {
-      targetUrl = "/api/clients";
-    } else if (url === GAS_SALES_URL) {
-      targetUrl = "/api/sales";
-    } else if (
-      (GAS_BLOGS_URL && url === GAS_BLOGS_URL) ||
-      url === "/api/blogs"
-    ) {
-      targetUrl = "/api/blogs";
-    }
-  }
-
   const user = getCurrentUser();
 
-  if (useLocalAPI) {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...(options.headers as Record<string, string>),
-    };
-    if (user) {
-      headers["x-user-role"] = user.role;
-      headers["x-user-email"] = user.email;
-    }
-    updatedOptions.headers = headers;
-  } else {
-    if (options.body) {
-      updatedOptions.headers = {
-        "Content-Type": "text/plain",
-      };
-    } else {
-      if (updatedOptions.headers) {
-        delete (updatedOptions as any).headers;
-      }
-    }
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string>),
+  };
+  if (user) {
+    headers["x-user-role"] = user.role;
+    headers["x-user-email"] = user.email;
   }
+  updatedOptions.headers = headers;
 
-  return fetch(targetUrl, updatedOptions);
+  return fetch(url, updatedOptions);
 }
 
 // ==============================
-// USER API SERVICES
+// USER API SERVICES (Database-backed)
 // ==============================
 export async function loginUser(
   email: string,
   password: string
 ): Promise<{ success: boolean; user?: User; message?: string }> {
   try {
-    const response = await customFetch(GAS_USERS_URL, {
+    const response = await customFetch(API_ROUTES.AUTH, {
       method: "POST",
-      body: JSON.stringify({ action: "login", email, password }),
+      body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
     if (data.success) {
       if (typeof window !== "undefined") {
-        localStorage.setItem("reelscale_auth", "1");
-        localStorage.setItem("reelscale_user", JSON.stringify(data.user));
+        localStorage.setItem(STORAGE_KEYS.AUTH, "1");
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
       }
       return { success: true, user: data.user };
     }
@@ -123,7 +67,7 @@ export async function loginUser(
 
 export async function fetchUsers(): Promise<User[]> {
   try {
-    const response = await customFetch(GAS_USERS_URL);
+    const response = await customFetch(API_ROUTES.USERS);
     const data = await response.json();
     if (data.success) {
       return data.users || [];
@@ -136,7 +80,7 @@ export async function fetchUsers(): Promise<User[]> {
 }
 
 export async function apiAddUser(user: Omit<User, "id">): Promise<any> {
-  const response = await customFetch(GAS_USERS_URL, {
+  const response = await customFetch(API_ROUTES.USERS, {
     method: "POST",
     body: JSON.stringify({
       action: "add",
@@ -157,7 +101,7 @@ export async function apiUpdateUser(
   id: string | number,
   user: User
 ): Promise<void> {
-  const response = await customFetch(GAS_USERS_URL, {
+  const response = await customFetch(API_ROUTES.USERS, {
     method: "POST",
     body: JSON.stringify({
       action: "update",
@@ -175,7 +119,7 @@ export async function apiUpdateUser(
 }
 
 export async function apiDeleteUser(id: string | number): Promise<void> {
-  const response = await customFetch(GAS_USERS_URL, {
+  const response = await customFetch(API_ROUTES.USERS, {
     method: "POST",
     body: JSON.stringify({
       action: "delete",
@@ -189,41 +133,16 @@ export async function apiDeleteUser(id: string | number): Promise<void> {
 }
 
 // ==============================
-// CLIENT API SERVICES
+// CLIENT API SERVICES (Database-backed)
 // ==============================
 export async function fetchClients(): Promise<Client[]> {
-  const response = await customFetch(GAS_CLIENTS_URL);
-  const data = await response.json();
-  const list = data.clients || data || [];
+  try {
+    const response = await customFetch(API_ROUTES.CLIENTS);
+    const data = await response.json();
+    const list = data.clients || data || [];
 
-  // Read local dates and statuses dictionary
-  let localDates: Record<string, string> = {};
-  let localStatuses: Record<string, string> = {};
-  if (typeof window !== "undefined") {
-    try {
-      const stored = localStorage.getItem("reelscale_client_dates");
-      if (stored) localDates = JSON.parse(stored);
-      const storedStatus = localStorage.getItem("reelscale_client_statuses");
-      if (storedStatus) localStatuses = JSON.parse(storedStatus);
-    } catch (e) {
-      console.warn("Error reading local client cache", e);
-    }
-  }
-
-  const DEFAULT_CLIENT_DATES: Record<number | string, string> = {
-    1: "2026-06-15",
-    2: "2026-07-10",
-    3: "2026-07-20",
-    4: "2026-08-01",
-    6: "2026-08-05",
-    7: "2026-08-10",
-    8: "2026-08-14"
-  };
-
-  if (Array.isArray(list)) {
-    return list.map((row: any) => {
-      const rowId = String(row.id);
-      return {
+    if (Array.isArray(list)) {
+      return list.map((row: any) => ({
         id: row.id,
         name: row.clientName || row.name || "",
         business: row.business || "",
@@ -237,20 +156,23 @@ export async function fetchClients(): Promise<Client[]> {
         baseRate: Number(row.baseRate || 0),
         bargain: Number(row.bargain || 0),
         revenue: Number(row.revenue || 0),
-        date: row.date || row.createdDate || localDates[rowId] || DEFAULT_CLIENT_DATES[rowId] || "2026-08-14",
-        status: row.status || localStatuses[rowId] || "Active",
-        startDate: row.startDate || row.date || localDates[rowId] || DEFAULT_CLIENT_DATES[rowId] || "2026-08-14",
+        date: row.date || "",
+        status: row.status || "Active",
+        startDate: row.startDate || row.date || "",
         endDate: row.endDate || "",
-      };
-    });
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("fetchClients Error:", error);
+    return [];
   }
-  return [];
 }
 
 export async function apiAddClient(
   client: Omit<Client, "id">
 ): Promise<any> {
-  const response = await customFetch(GAS_CLIENTS_URL, {
+  const response = await customFetch(API_ROUTES.CLIENTS, {
     method: "POST",
     body: JSON.stringify({
       action: "add",
@@ -275,26 +197,6 @@ export async function apiAddClient(
   if (!result.success) {
     throw new Error(result.message || "Add client failed");
   }
-
-  const newId = result.id || (result.client && result.client.id);
-  if (newId && typeof window !== "undefined") {
-    try {
-      if (client.date) {
-        const stored = localStorage.getItem("reelscale_client_dates");
-        const localDates = stored ? JSON.parse(stored) : {};
-        localDates[String(newId)] = client.date;
-        localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
-      }
-      if (client.status) {
-        const storedS = localStorage.getItem("reelscale_client_statuses");
-        const localStatuses = storedS ? JSON.parse(storedS) : {};
-        localStatuses[String(newId)] = client.status;
-        localStorage.setItem("reelscale_client_statuses", JSON.stringify(localStatuses));
-      }
-    } catch (e) {
-      console.warn("Failed to save local mapping on add", e);
-    }
-  }
   return result;
 }
 
@@ -302,26 +204,7 @@ export async function apiUpdateClient(
   id: string | number,
   client: Omit<Client, "id">
 ): Promise<void> {
-  if (typeof window !== "undefined") {
-    try {
-      if (client.date) {
-        const stored = localStorage.getItem("reelscale_client_dates");
-        const localDates = stored ? JSON.parse(stored) : {};
-        localDates[String(id)] = client.date;
-        localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
-      }
-      if (client.status) {
-        const storedS = localStorage.getItem("reelscale_client_statuses");
-        const localStatuses = storedS ? JSON.parse(storedS) : {};
-        localStatuses[String(id)] = client.status;
-        localStorage.setItem("reelscale_client_statuses", JSON.stringify(localStatuses));
-      }
-    } catch (e) {
-      console.warn("Failed to save local mapping on update", e);
-    }
-  }
-
-  const response = await customFetch(GAS_CLIENTS_URL, {
+  const response = await customFetch(API_ROUTES.CLIENTS, {
     method: "POST",
     body: JSON.stringify({
       action: "update",
@@ -350,7 +233,7 @@ export async function apiUpdateClient(
 }
 
 export async function apiDeleteClient(id: string | number): Promise<void> {
-  const response = await customFetch(GAS_CLIENTS_URL, {
+  const response = await customFetch(API_ROUTES.CLIENTS, {
     method: "POST",
     body: JSON.stringify({
       action: "delete",
@@ -364,18 +247,23 @@ export async function apiDeleteClient(id: string | number): Promise<void> {
 }
 
 // ==============================
-// SALES LEAD API SERVICES
+// SALES LEAD API SERVICES (Database-backed)
 // ==============================
 export async function fetchLeads(): Promise<Lead[]> {
-  const response = await customFetch(GAS_SALES_URL);
-  const result = await response.json();
-  return result.leads || [];
+  try {
+    const response = await customFetch(API_ROUTES.SALES);
+    const result = await response.json();
+    return result.leads || [];
+  } catch (error) {
+    console.error("fetchLeads Error:", error);
+    return [];
+  }
 }
 
 export async function apiAddLead(
   lead: Omit<Lead, "id" | "createdDate">
 ): Promise<any> {
-  const response = await customFetch(GAS_SALES_URL, {
+  const response = await customFetch(API_ROUTES.SALES, {
     method: "POST",
     body: JSON.stringify({
       action: "add",
@@ -398,7 +286,7 @@ export async function apiUpdateLead(
   id: string | number,
   lead: Omit<Lead, "id" | "createdDate">
 ): Promise<void> {
-  const response = await customFetch(GAS_SALES_URL, {
+  const response = await customFetch(API_ROUTES.SALES, {
     method: "POST",
     body: JSON.stringify({
       action: "update",
@@ -418,7 +306,7 @@ export async function apiUpdateLead(
 }
 
 export async function apiDeleteLead(id: string | number): Promise<void> {
-  const response = await customFetch(GAS_SALES_URL, {
+  const response = await customFetch(API_ROUTES.SALES, {
     method: "POST",
     body: JSON.stringify({
       action: "delete",
@@ -480,13 +368,13 @@ export async function fetchBlogs(): Promise<Blog[]> {
         }
       }
     }
-  } catch {}
+  } catch { }
 
   // 3. Fallback to static /blogs.json
   try {
     const basePath =
       typeof window !== "undefined" &&
-      window.location.pathname.startsWith("/reelscale")
+        window.location.pathname.startsWith("/reelscale")
         ? "/reelscale"
         : "";
     const response = await fetch(`${basePath}/blogs.json`);
@@ -497,27 +385,18 @@ export async function fetchBlogs(): Promise<Blog[]> {
         if (Array.isArray(blogsData)) return blogsData;
       }
     }
-  } catch {}
+  } catch { }
 
   return [];
 }
 
 export async function apiSaveBlog(blog: Blog): Promise<void> {
-  let sanitySuccess = false;
+  let apiSuccess = false;
   let lastError: any = null;
 
-  // 1. Direct Sanity Sync (instant, works everywhere including GitHub Pages)
+  // 1. Primary: Save via /api/blogs server route (runs in Node.js, handles remote images without CORS, caches in Redis, saves local backup)
   try {
-    await syncBlogToSanity(blog);
-    sanitySuccess = true;
-  } catch (sanityErr: any) {
-    console.error("Direct Sanity save error:", sanityErr);
-    lastError = sanityErr;
-  }
-
-  // 2. Also sync to /api/blogs if running with server or as fallback
-  try {
-    const res = await customFetch("/api/blogs", {
+    const res = await customFetch(API_ROUTES.BLOGS, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -525,45 +404,68 @@ export async function apiSaveBlog(blog: Blog): Promise<void> {
         ...blog,
       }),
     });
+
     if (res.ok) {
       const json = await res.json();
-      if (json.success) return;
-    } else if (!sanitySuccess) {
+      if (json.success) {
+        apiSuccess = true;
+        return;
+      }
+    } else {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.message || `API server returned ${res.status}`);
+      lastError = new Error(errJson.message || `API server returned ${res.status}`);
     }
   } catch (apiErr: any) {
-    if (!sanitySuccess) {
-      console.error("API route save error:", apiErr);
-      throw new Error(apiErr.message || lastError?.message || "Failed to save blog to Sanity");
-    }
+    lastError = apiErr;
+    console.warn("API route save error, attempting direct Sanity fallback:", apiErr);
   }
 
-  if (!sanitySuccess && lastError) {
-    throw new Error(lastError.message || "Failed to save blog to Sanity");
+  // 2. Fallback: Direct Sanity Sync (for static environments like GitHub Pages or when API server is unreachable)
+  if (!apiSuccess) {
+    try {
+      await syncBlogToSanity(blog);
+    } catch (sanityErr: any) {
+      console.error("Direct Sanity save error:", sanityErr);
+      throw new Error(sanityErr.message || lastError?.message || "Failed to save blog to Sanity");
+    }
   }
 }
 
 export async function apiDeleteBlog(id: string | number): Promise<void> {
-  // 1. Direct Sanity Delete
-  try {
-    await deleteBlogFromSanity(id);
-  } catch (sanityErr: any) {
-    console.error("Direct Sanity delete error:", sanityErr);
-    throw new Error(sanityErr.message || "Failed to delete from Sanity");
-  }
+  let apiSuccess = false;
+  let lastError: any = null;
 
-  // 2. Non-blocking sync to local API
+  // 1. Primary: Delete via /api/blogs server route
   try {
-    customFetch("/api/blogs", {
+    const res = await customFetch(API_ROUTES.BLOGS, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "delete",
         id,
       }),
-    }).catch(() => {});
-  } catch {}
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success) {
+        apiSuccess = true;
+        return;
+      }
+    }
+  } catch (apiErr: any) {
+    lastError = apiErr;
+    console.warn("API route delete error, attempting direct Sanity fallback:", apiErr);
+  }
+
+  // 2. Fallback: Direct Sanity Delete
+  if (!apiSuccess) {
+    try {
+      await deleteBlogFromSanity(id);
+    } catch (sanityErr: any) {
+      console.error("Direct Sanity delete error:", sanityErr);
+      throw new Error(sanityErr.message || lastError?.message || "Failed to delete from Sanity");
+    }
+  }
 }
 
 // ==============================
@@ -578,12 +480,12 @@ export async function fetchDeliveries(
     if (clientId) params.append("clientId", String(clientId));
     if (month && month !== "all") params.append("month", month);
 
-    const response = await fetch(`/api/deliveries?${params.toString()}`);
+    const response = await fetch(`${API_ROUTES.DELIVERIES}?${params.toString()}`);
     const data = await response.json();
     if (data.success && Array.isArray(data.deliveries)) {
       if (typeof window !== "undefined") {
         // Cache in localStorage for offline / fast fallback
-        localStorage.setItem(`reelscale_deliveries_cache`, JSON.stringify(data.deliveries));
+        localStorage.setItem(STORAGE_KEYS.DELIVERIES_CACHE, JSON.stringify(data.deliveries));
       }
       return {
         deliveries: data.deliveries,
@@ -596,14 +498,14 @@ export async function fetchDeliveries(
     console.warn("fetchDeliveries API error, falling back to cache:", error);
     if (typeof window !== "undefined") {
       try {
-        const cached = localStorage.getItem(`reelscale_deliveries_cache`);
+        const cached = localStorage.getItem(STORAGE_KEYS.DELIVERIES_CACHE);
         if (cached) {
           let list: DeliveredReel[] = JSON.parse(cached);
           if (clientId) list = list.filter((d) => String(d.clientId) === String(clientId));
           if (month && month !== "all") list = list.filter((d) => d.month === month);
           return { deliveries: list, driveLink: "", showDriveLink: true };
         }
-      } catch {}
+      } catch { }
     }
     return { deliveries: [], driveLink: "", showDriveLink: true };
   }

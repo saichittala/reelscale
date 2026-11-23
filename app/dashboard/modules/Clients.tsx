@@ -5,9 +5,11 @@ import { SortIcon } from "../components/SortIcon";
 import { CustomSelect } from "../components/CustomSelect";
 import { ReelTrackerModal } from "../components/ReelTrackerModal";
 import { fetchDeliveries } from "../services/api";
-import { IconFilm, IconSearch } from "../components/Icons";
+import { IconFilm, IconSearch, IconCalendar } from "../components/Icons";
 import { Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { normalizeDate } from "../utils/subscription";
+import { STANDARD_PLANS, CLIENT_STATUS_OPTIONS, PLAN_OPTIONS } from "../constants";
+import { Users, TrendingUp } from "lucide-react";
 
 interface ClientsProps {
   clients: Client[];
@@ -35,27 +37,9 @@ interface ClientsProps {
   onSearchChange?: (val: string) => void;
 }
 
-// ─── STANDARD PRICING PLANS ───
-const STANDARD_PLANS: Record<string, { price: number; reels: number }> = {
-  "Presence (Growth)": { price: 14999, reels: 4 },
-  "Growth (Growth)": { price: 24999, reels: 6 },
-  "Scale (Growth)": { price: 34999, reels: 10 },
-  "Starter (Prod)": { price: 11499, reels: 5 },
-  "Standard (Prod)": { price: 19999, reels: 10 },
-  "Growth (Prod)": { price: 24999, reels: 15 },
-};
-
-// Dropdown options constants
-const statusOptions = [
-  { value: "Active", label: "Active" },
-  { value: "Paused", label: "Paused" },
-  { value: "Churned", label: "Churned" },
-];
-
-const planOptions = [
-  { value: "Custom", label: "Custom Plan" },
-  ...Object.keys(STANDARD_PLANS).map((p) => ({ value: p, label: p })),
-];
+// ─── STANDARD PRICING PLANS & DROPDOWN OPTIONS (Centralised) ───
+const statusOptions = [...CLIENT_STATUS_OPTIONS];
+const planOptions = [...PLAN_OPTIONS];
 
 export function Clients({
   clients,
@@ -172,14 +156,14 @@ export function Clients({
       sortKey === "revenue"
         ? getClientRevenue(a)
         : sortKey === "reels"
-        ? a.reels || 0
-        : 0;
+          ? a.reels || 0
+          : 0;
     const bv =
       sortKey === "revenue"
         ? getClientRevenue(b)
         : sortKey === "reels"
-        ? b.reels || 0
-        : 0;
+          ? b.reels || 0
+          : 0;
     return (av - bv) * sortDir;
   });
 
@@ -219,7 +203,7 @@ export function Clients({
     const rateVal = Number(newClientPpr || 0);
     const baseRateVal = Number(newBasePpr || newClientPpr || 0);
     const discountPct = baseRateVal > rateVal ? Math.round(((baseRateVal - rateVal) / baseRateVal) * 100) : 0;
-    
+
     const clientPayload = {
       name: newClientName,
       business: newClientBusiness,
@@ -235,7 +219,7 @@ export function Clients({
       date: normalizeDate(newClientDate) || "2026-08-14",
       status: newClientStatus || "Active",
     };
-    
+
     // Close row and reset inputs immediately for instant UI response
     setNewClientName("");
     setNewClientBusiness("");
@@ -788,9 +772,9 @@ export function Clients({
               {(() => {
                 const cleanImg = String(c.image || "").trim().toLowerCase();
                 const hasValidImage = cleanImg !== "" &&
-                                      cleanImg !== "—" &&
-                                      cleanImg !== "image url" &&
-                                      (cleanImg.startsWith("http") || cleanImg.startsWith("/"));
+                  cleanImg !== "—" &&
+                  cleanImg !== "image url" &&
+                  (cleanImg.startsWith("http") || cleanImg.startsWith("/"));
                 return hasValidImage ? (
                   <img
                     src={c.image}
@@ -845,14 +829,14 @@ export function Clients({
                   c.status === "Paused"
                     ? "rgba(234, 179, 8, 0.15)"
                     : c.status === "Churned"
-                    ? "rgba(239, 68, 68, 0.15)"
-                    : "rgba(34, 197, 94, 0.15)",
+                      ? "rgba(239, 68, 68, 0.15)"
+                      : "rgba(34, 197, 94, 0.15)",
                 color:
                   c.status === "Paused"
                     ? "#eab308"
                     : c.status === "Churned"
-                    ? "#ef4444"
-                    : "var(--green)",
+                      ? "#ef4444"
+                      : "var(--green)",
                 border: "none",
               }}
             >
@@ -896,11 +880,11 @@ export function Clients({
               const activeCycle = selectedMonth && selectedMonth !== "all"
                 ? availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth
                 : "Current Cycle";
-              
+
               let bg = "rgba(255, 255, 255, 0.05)";
               let border = "0.6px solid rgba(255, 255, 255, 0.12)";
               let color = "var(--muted)";
-              
+
               if (isFull) {
                 bg = "var(--green-12)";
                 border = "0.6px solid var(--green)";
@@ -1012,49 +996,31 @@ export function Clients({
   return (
     <>
       {selectedMonth && selectedMonth !== "all" && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "12px",
-            background: "rgba(255, 255, 255, 0.03)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "18px",
-            padding: "10px 16px",
-            marginBottom: "16px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                fontWeight: 600,
-                fontSize: "13px",
-                color: "var(--white)",
-              }}
-            >
-              📅 {availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth}
+        <div className="dashboard-month-banner">
+          <div className="dashboard-month-banner-left">
+            <span className="dashboard-month-banner-title">
+              <IconCalendar size={14} className="text-muted" />
+              {availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth}
             </span>
-            <span style={{ color: "rgba(255,255,255,0.2)" }}>|</span>
-            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+            <span className="dashboard-metric-sep">|</span>
+            <span className="dashboard-metric-item">
+              <Users size={13} />
               <strong style={{ color: "var(--white)" }}>
                 {clients.length}
               </strong>{" "}
               Clients
             </span>
-            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
-            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+            <span className="dashboard-metric-sep">•</span>
+            <span className="dashboard-metric-item">
+              <TrendingUp size={13} style={{ color: "var(--green)" }} />
               MRR:{" "}
               <strong style={{ color: "var(--green)" }}>
                 ₹{clients.reduce((sum, c) => sum + getClientRevenue(c), 0).toLocaleString("en-IN")}
               </strong>
             </span>
-            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
-            <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+            <span className="dashboard-metric-sep">•</span>
+            <span className="dashboard-metric-item">
+              <IconFilm size={13} style={{ color: "#facc15" }} />
               Reels:{" "}
               <strong style={{ color: "#facc15" }}>
                 {clients.reduce((sum, c) => sum + (c.reels || 0), 0)}
@@ -1091,7 +1057,7 @@ export function Clients({
       </div>
 
       {/* ─── CLIENTS TABLE ─── */}
-      <div className="table-wrap table-scroll-wrap mt-24">
+      <div className="table-wrap table-scroll-wrap">
         <div className="table-inner-scroll">
           <table>
             <thead>

@@ -3,6 +3,22 @@ import { User, DashboardPage } from "../types";
 import { CustomSelect } from "./CustomSelect";
 import { Button } from "@/components/ui";
 import { IconLogOut, IconSidebar } from "./Icons";
+import { STORAGE_KEYS } from "../constants";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
+
+interface SubNavItem {
+  id: DashboardPage;
+  icon: string;
+  label: string;
+}
+
+interface NavItem {
+  id: DashboardPage | string;
+  icon: string;
+  label: string;
+  isGroup?: boolean;
+  subItems?: SubNavItem[];
+}
 
 interface LayoutProps {
   page: DashboardPage;
@@ -20,11 +36,16 @@ interface LayoutProps {
   salesFiltersBtn?: React.ReactNode;
   blogActionsBtn?: React.ReactNode;
   createBlogBtn?: React.ReactNode;
+  createBlogHeaderLeft?: React.ReactNode;
   createBlogActionsBtn?: React.ReactNode;
   systemStatusActionsBtn?: React.ReactNode;
   systemStatusOperational?: boolean | null;
   resourcesHeaderLeft?: React.ReactNode;
   resourcesActionsBtn?: React.ReactNode;
+  aiWritingHeaderLeft?: React.ReactNode;
+  aiWritingActionsBtn?: React.ReactNode;
+  aiSettingsHeaderLeft?: React.ReactNode;
+  aiSettingsActionsBtn?: React.ReactNode;
   toast?: React.ReactNode;
   selectedMonth?: string;
   setSelectedMonth?: (month: string) => void;
@@ -46,11 +67,16 @@ export function Layout({
   salesFiltersBtn,
   blogActionsBtn,
   createBlogBtn,
+  createBlogHeaderLeft,
   createBlogActionsBtn,
   systemStatusActionsBtn,
   systemStatusOperational,
   resourcesHeaderLeft,
   resourcesActionsBtn,
+  aiWritingHeaderLeft,
+  aiWritingActionsBtn,
+  aiSettingsHeaderLeft,
+  aiSettingsActionsBtn,
   toast,
   selectedMonth,
   setSelectedMonth,
@@ -66,7 +92,7 @@ export function Layout({
     setSidebarCollapsed((prev) => {
       const next = !prev;
       try {
-        localStorage.setItem("sidebarCollapsed", String(next));
+        localStorage.setItem(STORAGE_KEYS.SIDEBAR_COLLAPSED, String(next));
       } catch (e) {}
       return next;
     });
@@ -75,7 +101,7 @@ export function Layout({
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const savedCollapsed = localStorage.getItem("sidebarCollapsed");
+        const savedCollapsed = localStorage.getItem(STORAGE_KEYS.SIDEBAR_COLLAPSED);
         if (savedCollapsed !== null) {
           setSidebarCollapsed(savedCollapsed === "true");
         }
@@ -86,7 +112,7 @@ export function Layout({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedTheme =
-        (localStorage.getItem("theme") as "light" | "dark") || "dark";
+        (localStorage.getItem(STORAGE_KEYS.THEME) as "light" | "dark") || "dark";
       setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme);
       if (savedTheme === "light") {
@@ -100,7 +126,7 @@ export function Layout({
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
     if (newTheme === "light") {
       document.body.classList.add("light-theme");
@@ -109,11 +135,24 @@ export function Layout({
     }
   };
 
-  const nav =
+  const isBlogsActive =
+    page === "blogs" ||
+    page === "ai-blog-writing" ||
+    page === "ai-blog-settings" ||
+    page === "create-blog" ||
+    page === "blog-categories";
+
+  const [blogsOpen, setBlogsOpen] = useState(false);
+
+  useEffect(() => {
+    setBlogsOpen(isBlogsActive);
+  }, [isBlogsActive]);
+
+  const nav: NavItem[] =
     role === "sales"
       ? [
         {
-          id: "sales" as DashboardPage,
+          id: "sales",
           icon: "/assets/icons/nav-sales.svg",
           label: "Sales",
         },
@@ -121,44 +160,80 @@ export function Layout({
       : role === "blogger"
         ? [
           {
-            id: "blogs" as DashboardPage,
+            id: "blogs-group",
             icon: "/assets/icons/blog.svg",
             label: "Blogs",
+            isGroup: true,
+            subItems: [
+              {
+                id: "blogs",
+                icon: "/assets/icons/nav-blog-manage.svg",
+                label: "Blog Management",
+              },
+              {
+                id: "ai-blog-writing",
+                icon: "/assets/icons/nav-ai-writing.svg",
+                label: "AI Blog Writing",
+              },
+              {
+                id: "ai-blog-settings",
+                icon: "/assets/icons/nav-ai-settings.svg",
+                label: "AI Blog Settings",
+              },
+            ],
           },
         ]
         : [
           {
-            id: "dashboard" as DashboardPage,
+            id: "dashboard",
             icon: "/assets/icons/nav-dashboard.svg",
             label: "Dashboard",
           },
           {
-            id: "clients" as DashboardPage,
+            id: "clients",
             icon: "/assets/icons/nav-clients.svg",
             label: "Clients",
           },
           {
-            id: "users" as DashboardPage,
+            id: "users",
             icon: "/assets/icons/nav-users.svg",
             label: "Users",
           },
           {
-            id: "sales" as DashboardPage,
+            id: "sales",
             icon: "/assets/icons/nav-sales.svg",
             label: "Sales",
           },
           {
-            id: "blogs" as DashboardPage,
+            id: "blogs-group",
             icon: "/assets/icons/blog.svg",
             label: "Blogs",
+            isGroup: true,
+            subItems: [
+              {
+                id: "blogs",
+                icon: "/assets/icons/nav-blog-manage.svg",
+                label: "Blog Management",
+              },
+              {
+                id: "ai-blog-writing",
+                icon: "/assets/icons/nav-ai-writing.svg",
+                label: "AI Blog Writing",
+              },
+              {
+                id: "ai-blog-settings",
+                icon: "/assets/icons/nav-ai-settings.svg",
+                label: "AI Blog Settings",
+              },
+            ],
           },
           {
-            id: "resources" as DashboardPage,
+            id: "resources",
             icon: "/assets/icons/nav-resources-v2.svg",
             label: "Resources",
           },
           {
-            id: "system-status" as DashboardPage,
+            id: "system-status",
             icon: "/assets/icons/nav-status.svg",
             label: "System Status",
           },
@@ -171,6 +246,8 @@ export function Layout({
     users: "Users",
     sales: "Sales",
     blogs: "Blog Management",
+    "ai-blog-writing": "AI Blog Writing Studio",
+    "ai-blog-settings": "AI Blog Automation Settings",
     "create-blog": "Create Blog Post",
     "blog-categories": "Blog Categories",
     resources: "Resources",
@@ -236,60 +313,165 @@ export function Layout({
           )}
         </div>
         <div className="nav">
-          {nav.map((n) => (
-            <button
-              key={n.id}
-              className={`nav-item ${page === n.id ? "active" : ""}`}
-              onClick={() => {
-                setPage(n.id);
-              }}
-              data-tooltip={sidebarCollapsed ? n.label : undefined}
-            >
-              <img src={n.icon} alt={n.label} className="nav-icon" />
-              {!sidebarCollapsed && (
-                <span
-                  className="nav-label"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <span>{n.label}</span>
-                  {n.id === "system-status" && systemStatusOperational === false && (
-                    <span
-                      style={{
-                        width: "7px",
-                        height: "7px",
-                        borderRadius: "50%",
-                        backgroundColor: "var(--red)",
-                        boxShadow: "0 0 6px var(--red)",
-                        marginLeft: "auto",
-                        flexShrink: 0,
-                      }}
-                      title="Issues Detected"
-                    />
+          {nav.map((n) => {
+            if (n.isGroup && n.subItems) {
+              return (
+                <div key={n.id} className="nav-group">
+                  <button
+                    type="button"
+                    className={`nav-group-toggle ${isBlogsActive ? "active" : ""}`}
+                    onClick={() => {
+                      if (sidebarCollapsed) {
+                        setPage("blogs");
+                        return;
+                      }
+                      if (!isBlogsActive) {
+                        setPage("blogs");
+                        setBlogsOpen(true);
+                      } else {
+                        setBlogsOpen((prev) => !prev);
+                      }
+                    }}
+                    data-tooltip={sidebarCollapsed ? n.label : undefined}
+                    aria-expanded={blogsOpen}
+                  >
+                    <img src={n.icon} alt={n.label} className="nav-icon" />
+                    {!sidebarCollapsed && (
+                      <span
+                        className="nav-label"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <span>{n.label}</span>
+                        <span
+                          className={`nav-chevron ${blogsOpen ? "open" : ""}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setBlogsOpen((prev) => !prev);
+                          }}
+                          title={blogsOpen ? "Collapse submodules" : "Expand submodules"}
+                        />
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Submodules – Expanded in sidebar */}
+                  {!sidebarCollapsed && (
+                    <div className={`nav-submenu ${blogsOpen ? "open" : ""}`}>
+                      {n.subItems.map((sub) => {
+                        const isSubActive =
+                          page === sub.id ||
+                          (sub.id === "blogs" &&
+                            (page === "create-blog" || page === "blog-categories"));
+                        return (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            className={`nav-sub-item ${isSubActive ? "active" : ""}`}
+                            onClick={() => setPage(sub.id)}
+                          >
+                            <img src={sub.icon} alt={sub.label} className="nav-sub-icon" />
+                            <span>{sub.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
-                </span>
-              )}
-              {sidebarCollapsed && n.id === "system-status" && systemStatusOperational === false && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "8px",
-                    right: "8px",
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--red)",
-                    boxShadow: "0 0 6px var(--red)",
-                  }}
-                  title="Issues Detected"
-                />
-              )}
-            </button>
-          ))}
+
+                  {/* Submodules – Floating flyout menu when sidebar is collapsed */}
+                  {sidebarCollapsed && (
+                    <div className="nav-collapsed-flyout">
+                      <div className="flyout-header">{n.label}</div>
+                      {n.subItems.map((sub) => {
+                        const isSubActive =
+                          page === sub.id ||
+                          (sub.id === "blogs" &&
+                            (page === "create-blog" || page === "blog-categories"));
+                        return (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            className={`flyout-item ${isSubActive ? "active" : ""}`}
+                            onClick={() => setPage(sub.id)}
+                          >
+                            <img src={sub.icon} alt={sub.label} className="nav-sub-icon" />
+                            <span>{sub.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <button
+                key={n.id}
+                className={`nav-item ${page === n.id ? "active" : ""}`}
+                onClick={() => {
+                  setPage(n.id as DashboardPage);
+                }}
+                data-tooltip={sidebarCollapsed ? n.label : undefined}
+              >
+                <img src={n.icon} alt={n.label} className="nav-icon" />
+                {!sidebarCollapsed && (
+                  <span
+                    className="nav-label"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <span>{n.label}</span>
+                    {n.id === "system-status" && systemStatusOperational === false && (
+                      <span
+                        title="Issues Detected"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          marginLeft: "auto",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <AlertTriangle
+                          size={15}
+                          style={{
+                            color: "var(--red)",
+                          }}
+                        />
+                      </span>
+                    )}
+                  </span>
+                )}
+                {sidebarCollapsed && n.id === "system-status" && systemStatusOperational === false && (
+                  <span
+                    title="Issues Detected"
+                    style={{
+                      position: "absolute",
+                      top: "6px",
+                      right: "6px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <AlertTriangle
+                      size={12}
+                      style={{
+                        color: "var(--red)",
+                      }}
+                    />
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
         <div className="sidebar-footer">
           <div className="user-pill">
@@ -340,6 +522,12 @@ export function Layout({
             </button>
             {page === "resources" && resourcesHeaderLeft ? (
               resourcesHeaderLeft
+            ) : page === "create-blog" && createBlogHeaderLeft ? (
+              createBlogHeaderLeft
+            ) : page === "ai-blog-writing" && aiWritingHeaderLeft ? (
+              aiWritingHeaderLeft
+            ) : page === "ai-blog-settings" && aiSettingsHeaderLeft ? (
+              aiSettingsHeaderLeft
             ) : (
               <div className="page-title">{titles[page] || ""}</div>
             )}
@@ -374,8 +562,18 @@ export function Layout({
               {page === "sales" && salesFiltersBtn}
               {page === "users" && userFiltersBtn}
               {page === "blogs" && blogActionsBtn}
-              {(page === "create-blog" || page === "blog-categories") &&
-                createBlogActionsBtn}
+              {page === "create-blog" && createBlogActionsBtn}
+              {page === "blog-categories" && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setPage("blogs");
+                  }}
+                >
+                  <ArrowLeft size={16} />
+                  <span>Back to list</span>
+                </Button>
+              )}
 
               {/* Primary action buttons on pure right side (at the end) */}
               {page === "clients" && addClientBtn}
@@ -384,6 +582,8 @@ export function Layout({
               {page === "blogs" && createBlogBtn}
               {page === "system-status" && systemStatusActionsBtn}
               {page === "resources" && resourcesActionsBtn}
+              {page === "ai-blog-writing" && aiWritingActionsBtn}
+              {page === "ai-blog-settings" && aiSettingsActionsBtn}
 
               {/* Theme Toggle Button - Made consistently visible for premium feel */}
               <Button
@@ -439,40 +639,96 @@ export function Layout({
                 />
               </Button>
             </div>
-            {nav.map((item) => (
-              <button
-                key={item.id}
-                className={`mobile-nav-item ${page === item.id ? "active" : ""}`}
-                onClick={() => {
-                  setPage(item.id);
-                  localStorage.setItem("reelscale_current_page", item.id);
-                  setMobileMenuOpen(false);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <img src={item.icon} width="18" alt={item.label} />
-                  <span>{item.label}</span>
-                </div>
-                {item.id === "system-status" && systemStatusOperational === false && (
-                  <span
-                    style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      backgroundColor: "var(--red)",
-                      boxShadow: "0 0 6px var(--red)",
-                    }}
-                    title="Issues Detected"
-                  />
-                )}
-              </button>
-            ))}
+            {nav.map((item) => {
+              if (item.isGroup && item.subItems) {
+                return (
+                  <div key={item.id} className="mobile-nav-group">
+                    <button
+                      type="button"
+                      className={`mobile-nav-item ${isBlogsActive ? "active" : ""}`}
+                      onClick={() => setBlogsOpen((prev) => !prev)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <img src={item.icon} width="18" alt={item.label} />
+                        <span>{item.label}</span>
+                      </div>
+                      <span className={`nav-chevron ${blogsOpen ? "open" : ""}`} />
+                    </button>
+                    {blogsOpen && (
+                      <div className="mobile-nav-submenu">
+                        {item.subItems.map((sub) => {
+                          const isSubActive =
+                            page === sub.id ||
+                            (sub.id === "blogs" &&
+                              (page === "create-blog" || page === "blog-categories"));
+                          return (
+                            <button
+                              key={sub.id}
+                              type="button"
+                              className={`mobile-nav-sub-item ${isSubActive ? "active" : ""}`}
+                              onClick={() => {
+                                setPage(sub.id);
+                                localStorage.setItem(STORAGE_KEYS.CURRENT_PAGE, sub.id);
+                                setMobileMenuOpen(false);
+                              }}
+                            >
+                              <img src={sub.icon} width="16" alt={sub.label} />
+                              <span>{sub.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={item.id}
+                  className={`mobile-nav-item ${page === item.id ? "active" : ""}`}
+                  onClick={() => {
+                    setPage(item.id as DashboardPage);
+                    localStorage.setItem(STORAGE_KEYS.CURRENT_PAGE, item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <img src={item.icon} width="18" alt={item.label} />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.id === "system-status" && systemStatusOperational === false && (
+                    <span
+                      title="Issues Detected"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <AlertTriangle
+                        size={15}
+                        style={{
+                          color: "var(--red)",
+                        }}
+                      />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

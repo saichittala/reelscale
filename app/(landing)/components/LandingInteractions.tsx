@@ -44,7 +44,7 @@ const COVERFLOW_CARDS: CoverFlowCard[] = [
     posterSrc: "/assets/clients/parthu.webp",
     client: "Interiors",
     stat: "1.2M Organic Reach",
-    video: "https://drive.google.com/file/d/1yD3ofnBBHKVUkblmLgTm8qYk0A82hK61/view?usp=sharing",
+    video: "/assets/clients/parthu.mp4",
   },
   {
     videoSrc: "/assets/clients/jak-interiors.mp4",
@@ -170,6 +170,11 @@ export default function LandingInteractions() {
             allowfullscreen
             style="width: 100%; height: 100%; border: none; border-radius: inherit; background: #000;">
           </iframe>
+          <div style="position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: auto;">
+            <a href="${videoUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(18, 18, 22, 0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 999px; padding: 10px 20px; color: #fff; text-decoration: none; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+              <span>Watch on Google Drive ↗</span>
+            </a>
+          </div>
         `;
       } else if (isInsta) {
         wrapper.innerHTML = `

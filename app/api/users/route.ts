@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole, clearUserCache } from "../rbac";
-import { getDb } from "../../lib/db";
+import { getDb, type DbUserRow } from "../../lib/db";
 import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
 
     const result = {
       success: true,
-      users: rows.map((u: any) => ({
+      users: (rows as unknown as DbUserRow[]).map((u: DbUserRow) => ({
         id: u.id,
         name: u.name,
         email: u.email,

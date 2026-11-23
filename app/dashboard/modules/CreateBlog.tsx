@@ -2,12 +2,34 @@ import React, { useState, useEffect, useRef } from "react";
 import { Blog, FAQ } from "../types";
 import { CustomSelect } from "../components/CustomSelect";
 import { Button, Input, Textarea } from "@/components/ui";
+import { STORAGE_KEYS, API_ROUTES } from "../constants";
+import { customFetch } from "../services/api";
+import {
+  ArrowLeft,
+  Calendar,
+  Check,
+  CheckCircle2,
+  X,
+  Plus,
+  Trash2,
+  Upload,
+  Image as ImageIcon,
+  Bold,
+  Heading2,
+  Heading3,
+  Quote,
+  List,
+  ExternalLink,
+  Sparkles,
+} from "lucide-react";
 
 interface CreateBlogProps {
   editingBlog: Blog | null;
   blogCategories: string[];
   onSaveBlog: (blogData: Blog) => void;
   showToast: (msg: string, type?: "success" | "error") => void;
+  onBack?: () => void;
+  onHeaderChange?: (left: React.ReactNode, right: React.ReactNode) => void;
 }
 
 export function CreateBlog({
@@ -15,6 +37,8 @@ export function CreateBlog({
   blogCategories,
   onSaveBlog,
   showToast,
+  onBack,
+  onHeaderChange,
 }: CreateBlogProps) {
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,7 +57,46 @@ export function CreateBlog({
   const [metaDescription, setMetaDescription] = useState("");
   const [faq, setFaq] = useState<FAQ[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAiSearchingImage, setIsAiSearchingImage] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAiSearchImage = async () => {
+    if (!title.trim()) {
+      showToast("Please enter an article title first so AI can match an image", "error");
+      return;
+    }
+
+    setIsAiSearchingImage(true);
+    showToast("Searching random high-resolution image from Unsplash...", "success");
+
+    try {
+      const res = await customFetch(API_ROUTES.AI_IMAGES, {
+        method: "POST",
+        body: JSON.stringify({
+          title: title.trim(),
+          category: category || "Production",
+          keyword: focusKeyword || title.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.image) {
+        setFeaturedImage(data.image.imageUrl);
+        setAltText(data.image.altText || `${title.trim()} - ReelScale`);
+        const providerName = data.image.provider
+          ? data.image.provider.charAt(0).toUpperCase() + data.image.provider.slice(1)
+          : "Unsplash";
+        showToast(`Matched photo from ${providerName} (${data.image.photographerName})!`, "success");
+      } else {
+        showToast(data.message || "Failed to find matching image", "error");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Error searching image", "error");
+    } finally {
+      setIsAiSearchingImage(false);
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +109,7 @@ export function CreateBlog({
       const formData = new FormData();
       formData.append("file", file);
 
-      const userStr = typeof window !== "undefined" ? localStorage.getItem("reelscale_user") : null;
+      const userStr = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEYS.USER) : null;
       const headers: Record<string, string> = {};
       if (userStr) {
         try {
@@ -56,7 +119,7 @@ export function CreateBlog({
         } catch {}
       }
 
-      const res = await fetch("/api/upload", {
+      const res = await fetch(API_ROUTES.UPLOAD, {
         method: "POST",
         headers,
         body: formData,
@@ -140,30 +203,34 @@ export function CreateBlog({
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim() || !slug.trim()) {
       showToast("Article Title and Slug are required", "error");
       return;
     }
 
-    // Filter empty FAQ items
     const filteredFaq = faq.filter((f) => f.question.trim() && f.answer.trim());
 
-    onSaveBlog({
-      id: editingBlog?.id,
-      title,
-      slug,
-      description,
-      category,
-      content,
-      status,
-      publishedDate,
-      featuredImage,
-      focusKeyword,
-      metaTitle,
-      metaDescription,
-      faq: filteredFaq,
-    });
+    setIsSaving(true);
+    try {
+      await onSaveBlog({
+        id: editingBlog?.id,
+        title,
+        slug,
+        description,
+        category,
+        content,
+        status,
+        publishedDate,
+        featuredImage,
+        focusKeyword,
+        metaTitle,
+        metaDescription,
+        faq: filteredFaq,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Markdown Editor Toolbars Help Insertions
@@ -177,16 +244,12 @@ export function CreateBlog({
     const selected = text.substring(start, end);
     const replacement = openTag + selected + closeTag;
 
-    const newValue =
-      text.substring(0, start) + replacement + text.substring(end);
+    const newValue = text.substring(0, start) + replacement + text.substring(end);
     setContent(newValue);
 
     setTimeout(() => {
       textarea.focus();
-      textarea.setSelectionRange(
-        start + openTag.length,
-        start + openTag.length + selected.length
-      );
+      textarea.setSelectionRange(start + openTag.length, start + openTag.length + selected.length);
     }, 0);
   };
 
@@ -213,71 +276,148 @@ export function CreateBlog({
   const hasImg = !!featuredImage;
   const hasKeyword = !!focusKeyword;
   const hasSlug = slug.length > 3;
-  const longContent = content.length > 150;
+  const longContent = content.length > 1000;
   const hasAltText = altText.length > 0;
 
-  const scoreArray = [
-    hasTitle,
-    hasDesc,
-    hasImg,
-    hasKeyword,
-    hasSlug,
-    longContent,
-    hasAltText,
-  ];
+  const scoreArray = [hasTitle, hasDesc, hasImg, hasKeyword, hasSlug, longContent, hasAltText];
   const passedCount = scoreArray.filter(Boolean).length;
-  // Calculate SEO score up to 100%
   const seoScore = Math.min(Math.round((passedCount / 7) * 100), 100);
+
+  // Synchronize Topbar Left and Right
+  const onHeaderChangeRef = useRef(onHeaderChange);
+  useEffect(() => {
+    onHeaderChangeRef.current = onHeaderChange;
+  });
+
+  const leftHeaderContent = (
+    <div className="topbar-back-wrap">
+      {onBack && (
+        <Button
+          variant="secondary"
+          type="button"
+          className="topbar-back-btn"
+          onClick={onBack}
+          title="Back to blogs"
+        >
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </Button>
+      )}
+      <div className="page-title">{editingBlog ? "Edit Article" : "Create Article"}</div>
+    </div>
+  );
+
+  const rightHeaderContent = (
+    <div className="topbar-create-blog-actions">
+      <div className="topbar-status-select-wrap">
+        <CustomSelect
+          id="tb-status"
+          value={status}
+          onChange={(v) => setStatus(v)}
+          options={[
+            { value: "Draft", label: "Draft" },
+            { value: "Published", label: "Published" },
+          ]}
+          size="md"
+          fullWidth={true}
+        />
+      </div>
+
+      <div className="topbar-date-wrap" title="Publish Date">
+        <Calendar size={16} className="topbar-date-icon" />
+        <input
+          type="date"
+          id="tb-pubdate"
+          className="topbar-date-input"
+          value={publishedDate}
+          onChange={(e) => setPublishedDate(e.target.value)}
+        />
+      </div>
+
+      <Button
+        variant="primary"
+        id="save-blog-btn"
+        type="button"
+        disabled={isSaving}
+        loading={isSaving}
+        onClick={handleSave}
+      >
+        <Check size={16} />
+        <span>Save & Apply Changes</span>
+      </Button>
+    </div>
+  );
+
+  useEffect(() => {
+    onHeaderChangeRef.current?.(leftHeaderContent, rightHeaderContent);
+  }, [
+    status,
+    publishedDate,
+    title,
+    slug,
+    description,
+    category,
+    content,
+    featuredImage,
+    focusKeyword,
+    metaTitle,
+    metaDescription,
+    faq,
+    isSaving,
+    editingBlog,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      onHeaderChangeRef.current?.(null, null);
+    };
+  }, []);
 
   return (
     <div className="editor-grid">
       {/* LEFT COLUMN: Main Editor Area */}
       <div className="editor-main-panel">
         {/* Basic Details Card */}
-        <div className="glass-card editor-main-panel">
-          <div className="glass-card-label mb-neg4">
-            Basic Details
-          </div>
+        <div className="glass-card">
+          <div className="glass-card-label mb-12">Basic Details</div>
 
-          <div className="form-group mb-16">
+          <div className="editor-form-stack">
             <Input
               label="Article Title"
               id="eb-title"
-              placeholder="How to Craft a High-Retention Reels Strategy"
+              placeholder="e.g. 10-Minute Video Reels for Jubilee Hills Cafes: The Complete Guide"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
             />
-          </div>
 
-          <div className="form-row mb-16">
-            <div className="form-group flex-1">
-              <Input
-                label="URL Slug"
-                id="eb-slug"
-                placeholder="how-to-craft-high-retention-strategy"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-              />
+            <div className="form-row-12">
+              <div className="flex-1">
+                <Input
+                  label="URL Slug"
+                  id="eb-slug"
+                  placeholder="10-minute-video-reels-jubilee-hills-cafes"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="form-label">Category</label>
+                <CustomSelect
+                  id="eb-category"
+                  value={category}
+                  onChange={(v) => setCategory(v)}
+                  options={blogCategories.map((c) => ({ value: c, label: c }))}
+                  size="md"
+                  fullWidth={true}
+                />
+              </div>
             </div>
-            <div className="form-group flex-1">
-              <label className="form-label">Category</label>
-              <CustomSelect
-                id="eb-category"
-                value={category}
-                onChange={(v) => setCategory(v)}
-                options={blogCategories.map((c) => ({ value: c, label: c }))}
-                size="md"
-                fullWidth={true}
-              />
-            </div>
-          </div>
 
-          <div className="form-group">
             <Textarea
-              label="Short Description"
+              label="Short Description / Meta Excerpt"
               id="eb-desc"
               rows={3}
-              placeholder="Compose a short excerpt / description for cards..."
+              placeholder="Compose a compelling excerpt for search engines and social cards..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -285,79 +425,74 @@ export function CreateBlog({
         </div>
 
         {/* Markdown Text Area card */}
-        <div className="glass-card flex-grow-1 flex-column">
-          <div className="chart-header">
-            <div className="glass-card-label mb-0">
-              Markdown Editor
-            </div>
+        <div className="glass-card">
+          <div className="editor-card-header">
+            <div className="glass-card-label mb-0">Markdown Editor</div>
 
             {/* Quick Helper Formatting Bar */}
-            <div
-              className="df-g4 al-c"
-              style={{
-                background: "var(--white-03)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-pill)",
-                padding: "2px",
-              }}
-            >
+            <div className="editor-toolbar-pill">
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
+                className="editor-toolbar-btn"
                 onClick={() => insertAtCursor("## ")}
+                title="Heading 2"
               >
-                H2
+                <Heading2 size={14} />
+                <span>H2</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
+                className="editor-toolbar-btn"
                 onClick={() => insertAtCursor("### ")}
+                title="Heading 3"
               >
-                H3
+                <Heading3 size={14} />
+                <span>H3</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", fontWeight: 700, borderRadius: "var(--radius-pill)" }}
+                className="editor-toolbar-btn editor-toolbar-btn-bold"
                 onClick={() => insertAtCursor("**", "**")}
+                title="Bold"
               >
-                B
+                <Bold size={14} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", fontStyle: "italic", borderRadius: "var(--radius-pill)" }}
+                className="editor-toolbar-btn"
                 onClick={() => insertAtCursor("> ")}
+                title="Quote"
               >
-                Quote
+                <Quote size={14} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
+                className="editor-toolbar-btn"
                 onClick={() => insertAtCursor("- ")}
+                title="Bullet List"
               >
-                List
+                <List size={14} />
               </Button>
               <Button
-                variant="gold"
+                variant="ghost"
                 size="sm"
                 type="button"
-                style={{ minHeight: "28px", height: "28px", padding: "0 10px", fontSize: "12px", borderRadius: "var(--radius-pill)" }}
-                onClick={() =>
-                  insertAtCursor(
-                    "[Book a Reel Shoot](https://wa.me/919966239433)"
-                  )
-                }
+                className="editor-toolbar-btn editor-toolbar-btn-gold"
+                onClick={() => insertAtCursor("[Book an On-Location Shoot](https://wa.me/919966239433)")}
+                title="Call to Action link"
               >
-                CTA
+                <ExternalLink size={14} />
+                <span>CTA</span>
               </Button>
             </div>
           </div>
@@ -366,53 +501,51 @@ export function CreateBlog({
             ref={contentRef}
             className="form-input editor-textarea"
             id="eb-content"
-            placeholder="Compose your post using Markdown formatting..."
+            placeholder="Write your article in Markdown or click 'Generate Full Article' above..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
-          <div className="editor-char-counter-row">
-            <span>Save Shortcut: Cmd / Ctrl + S</span>
-            <span id="editor-char-counter">{content.length} characters</span>
+          <div className="editor-char-counter-row flex items-center justify-between text-xs text-zinc-500 pt-2">
+            <span>Shortcut: Cmd / Ctrl + S to save</span>
+            <span>
+              Word Count: <strong className="text-zinc-200">{content.trim().split(/\s+/).filter(Boolean).length}</strong>{" "}
+              (Target: ~1,200–1,800 words)
+            </span>
           </div>
         </div>
 
         {/* FAQs Dynamic Editor Panel */}
         <div className="glass-card">
-          <div className="glass-card-label">Frequently Asked Questions (FAQ)</div>
+          <div className="glass-card-label mb-4">Frequently Asked Questions (FAQ)</div>
 
-          <div id="eb-faq-container" className="df-g12 flex-column">
+          <div id="eb-faq-container" className="faq-list-stack space-y-3">
             {faq.map((f, idx) => (
-              <div className="faq-edit-row faq-editor-row" key={idx}>
-                <div className="faq-row-header">
-                  <div className="faq-item-label">
-                    FAQ Item #{idx + 1}
-                  </div>
+              <div className="faq-editor-row p-4 rounded-[18px] bg-[var(--white-02)] border border-[var(--border)] space-y-3" key={idx}>
+                <div className="faq-row-header flex justify-between items-center">
+                  <span className="text-xs font-semibold text-[var(--muted)]">FAQ Item #{idx + 1}</span>
                   <Button
                     variant="danger"
                     size="sm"
-                    className="eb-faq-delete faq-delete-btn"
+                    className="faq-delete-btn h-7 text-xs"
                     type="button"
                     onClick={() => handleRemoveFaq(idx)}
                   >
-                    Remove
+                    <Trash2 size={13} />
+                    <span>Remove</span>
                   </Button>
                 </div>
                 <Input
-                  className="faq-q-input mb-8"
-                  placeholder="Question Title"
+                  placeholder="Question Title (e.g. How fast does ReelScale deliver videos?)"
                   value={f.question}
-                  onChange={(e) =>
-                    handleFaqChange(idx, "question", e.target.value)
-                  }
+                  onChange={(e) => handleFaqChange(idx, "question", e.target.value)}
+                  className="bg-[var(--white-02)] border-[var(--border)] text-xs rounded-[18px]"
                 />
                 <Textarea
-                  className="faq-a-input"
                   rows={2}
                   placeholder="Answer text..."
                   value={f.answer}
-                  onChange={(e) =>
-                    handleFaqChange(idx, "answer", e.target.value)
-                  }
+                  onChange={(e) => handleFaqChange(idx, "answer", e.target.value)}
+                  className="bg-[var(--white-02)] border-[var(--border)] text-xs rounded-[18px]"
                 />
               </div>
             ))}
@@ -420,205 +553,158 @@ export function CreateBlog({
 
           <Button
             variant="ghost"
-            className="add-faq-btn mt-12"
+            type="button"
+            className="add-faq-btn mt-3"
             onClick={handleAddFaq}
           >
-            + Add FAQ Item
+            <Plus size={16} />
+            <span>Add FAQ Item Manually</span>
           </Button>
         </div>
       </div>
 
       {/* RIGHT COLUMN: Metadata & SEO controls */}
       <div className="editor-sidebar-panel">
-        {/* Publish settings */}
-        <div className="glass-card editor-main-panel">
-          <div className="glass-card-label">Publish Settings</div>
-
-          <div className="form-group">
-            <label className="form-label">Status</label>
-            <CustomSelect
-              id="eb-status"
-              value={status}
-              onChange={(v) => setStatus(v)}
-              options={[
-                { value: "Draft", label: "Draft" },
-                { value: "Published", label: "Published" },
-              ]}
-              size="md"
-            />
-          </div>
-
-          <div className="form-group mb-16">
-            <Input
-              label="Publish Date"
-              type="date"
-              id="eb-pubdate"
-              value={publishedDate}
-              onChange={(e) => setPublishedDate(e.target.value)}
-            />
-          </div>
-
-          <Button
-            variant="primary"
-            className="w-full mt-8"
-            id="save-blog-btn"
-            onClick={handleSave}
-          >
-            Save & Apply Updates
-          </Button>
-        </div>
-
         {/* Featured Image */}
         <div className="glass-card sidebar-card-body">
-          <div className="glass-card-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Featured Image</span>
-            <span style={{ fontSize: "11px", color: "var(--color-primary, #6366f1)" }}>Sanity Synced</span>
+          <div className="editor-card-header">
+            <div className="glass-card-label mb-0">Featured Image</div>
+            <span className="badge badge-green">
+              <CheckCircle2 size={12} />
+              <span>Sanity Synced</span>
+            </span>
           </div>
 
-          <div className="editor-image-frame">
+          <div className="editor-image-frame aspect-video rounded-[18px] overflow-hidden bg-[var(--white-02)] border border-[var(--border)] flex items-center justify-center my-3">
             {featuredImage ? (
               <img
                 id="eb-img-preview"
                 src={featuredImage}
-                alt=""
-                className="aspect-video-img"
+                alt={altText || "Featured preview"}
+                className="w-full h-full object-cover"
               />
             ) : (
-              <div id="eb-img-empty" className="td-muted-small">
-                No Image Selected
+              <div id="eb-img-empty" className="editor-empty-placeholder text-center text-zinc-500">
+                <ImageIcon size={26} className="mx-auto mb-1 opacity-50" />
+                <span className="text-xs text-[var(--muted)]">No Image Selected</span>
               </div>
             )}
           </div>
 
           {/* Direct File Upload to Sanity */}
-          <div className="form-group mb-12">
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleFileUpload}
-            />
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            className="hidden-file-input hidden"
+            onChange={handleFileUpload}
+          />
+          <div className="flex gap-2 mb-3">
+            <Button
+              variant="gold"
+              className="flex-1"
+              disabled={isAiSearchingImage || isUploading}
+              loading={isAiSearchingImage}
+              type="button"
+              onClick={handleAiSearchImage}
+              title="Search and attach random matching stock image from Unsplash/Pexels based on blog title"
+            >
+              <Sparkles size={16} />
+              <span>{isAiSearchingImage ? "Searching..." : "AI Image Search"}</span>
+            </Button>
+
             <Button
               variant="secondary"
-              className="w-full"
-              disabled={isUploading}
+              className="flex-1"
+              disabled={isUploading || isAiSearchingImage}
               loading={isUploading}
+              type="button"
               onClick={() => fileInputRef.current?.click()}
             >
-              <span>{isUploading ? "Uploading..." : "📁 Upload from Device"}</span>
+              <Upload size={16} />
+              <span>{isUploading ? "Uploading..." : "Upload File"}</span>
             </Button>
           </div>
 
-          <div className="form-group mb-12">
-            <Input
-              label="Or Image URL (Unsplash / Pexels / CDN)"
-              id="eb-img-url"
-              placeholder="https://images.unsplash.com/..."
-              value={featuredImage}
-              onChange={(e) => {
-                setFeaturedImage(e.target.value);
-                if (e.target.value && !altText) {
-                  setAltText("Configured");
-                } else if (!e.target.value) {
-                  setAltText("");
-                }
-              }}
-            />
-          </div>
+          <Input
+            label="Or Image URL (Pexels / Unsplash / CDN)"
+            id="eb-img-url"
+            placeholder="https://images.pexels.com/..."
+            value={featuredImage}
+            onChange={(e) => {
+              setFeaturedImage(e.target.value);
+              if (e.target.value && !altText) {
+                setAltText("Configured");
+              } else if (!e.target.value) {
+                setAltText("");
+              }
+            }}
+          />
 
-          <div className="form-group">
-            <Input
-              label="Image Alt Text (SEO)"
-              id="eb-img-alt"
-              placeholder="Cinematic reel filming gears setup"
-              value={altText}
-              onChange={(e) => setAltText(e.target.value)}
-            />
-          </div>
+          <Input
+            label="Image Alt Text (SEO)"
+            id="eb-img-alt"
+            placeholder="e.g. Professional mobile videographer in Hyderabad cafe"
+            value={altText}
+            onChange={(e) => setAltText(e.target.value)}
+          />
         </div>
 
         {/* SEO Panel */}
         <div className="glass-card sidebar-card-body">
-          <div className="chart-header">
-            <div className="glass-card-label mb-0">
-              SEO Optimization
-            </div>
-            <span
-              className={`badge ${seoScore > 70 ? "badge-green" : "badge-red"} text-xxs`}
-            >
+          <div className="editor-card-header">
+            <div className="glass-card-label mb-0">SEO Optimization</div>
+            <span className={`badge ${seoScore > 70 ? "badge-green" : "badge-red"} text-xxs`}>
               Score: {seoScore}%
             </span>
           </div>
 
-          <div className="form-group mb-12">
-            <Input
-              label="Focus Keyword"
-              id="eb-keyword"
-              placeholder="reel growth strategy"
-              value={focusKeyword}
-              onChange={(e) => setFocusKeyword(e.target.value)}
-            />
-          </div>
+          <Input
+            label="Focus Keyword"
+            id="eb-keyword"
+            placeholder="e.g. cafe reels hyderabad"
+            value={focusKeyword}
+            onChange={(e) => setFocusKeyword(e.target.value)}
+          />
 
-          <div className="form-group mb-12">
-            <Input
-              label="Meta Title"
-              id="eb-meta-title"
-              placeholder="Optional meta title tag override..."
-              value={metaTitle}
-              onChange={(e) => setMetaTitle(e.target.value)}
-            />
-          </div>
+          <Input
+            label="Meta Title"
+            id="eb-meta-title"
+            placeholder="50-60 characters title tag..."
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+          />
 
-          <div className="form-group mb-12">
-            <Textarea
-              label="Meta Description"
-              id="eb-meta-desc"
-              rows={2}
-              placeholder="Optional meta description override..."
-              value={metaDescription}
-              onChange={(e) => setMetaDescription(e.target.value)}
-            />
-          </div>
+          <Textarea
+            label="Meta Description"
+            id="eb-meta-desc"
+            rows={2}
+            placeholder="130-160 characters search description..."
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+          />
 
           {/* SEO Optimization Checklist */}
-          <div className="seo-checklist-container">
-            <div className="seo-check-item">
-              <span className={hasTitle ? "text-green" : "text-red"}>
-                {hasTitle ? "✓" : "✗"}
-              </span>{" "}
-              Title length and structure
+          <div className="seo-checklist-container space-y-2 pt-3 border-t border-[var(--border)]">
+            <div className="seo-check-item flex items-center gap-2 text-xs">
+              {hasTitle ? <Check size={14} className="text-[var(--green)]" /> : <X size={14} className="text-[var(--red)]" />}
+              <span className={hasTitle ? "text-zinc-200" : "text-[var(--muted)]"}>Title length & structure</span>
             </div>
-            <div className="seo-check-item">
-              <span className={hasDesc ? "text-green" : "text-red"}>
-                {hasDesc ? "✓" : "✗"}
-              </span>{" "}
-              Short description excerpt
+            <div className="seo-check-item flex items-center gap-2 text-xs">
+              {hasDesc ? <Check size={14} className="text-[var(--green)]" /> : <X size={14} className="text-[var(--red)]" />}
+              <span className={hasDesc ? "text-zinc-200" : "text-[var(--muted)]"}>Meta description configured</span>
             </div>
-            <div className="seo-check-item">
-              <span className={hasImg ? "text-green" : "text-red"}>
-                {hasImg ? "✓" : "✗"}
-              </span>{" "}
-              Featured Image attached
+            <div className="seo-check-item flex items-center gap-2 text-xs">
+              {hasImg ? <Check size={14} className="text-[var(--green)]" /> : <X size={14} className="text-[var(--red)]" />}
+              <span className={hasImg ? "text-zinc-200" : "text-[var(--muted)]"}>Featured stock image attached</span>
             </div>
-            <div className="seo-check-item">
-              <span className={hasKeyword ? "text-green" : "text-red"}>
-                {hasKeyword ? "✓" : "✗"}
-              </span>{" "}
-              Focus keyword config
+            <div className="seo-check-item flex items-center gap-2 text-xs">
+              {hasKeyword ? <Check size={14} className="text-[var(--green)]" /> : <X size={14} className="text-[var(--red)]" />}
+              <span className={hasKeyword ? "text-zinc-200" : "text-[var(--muted)]"}>Primary focus keyword</span>
             </div>
-            <div className="seo-check-item">
-              <span className={hasSlug ? "text-green" : "text-red"}>
-                {hasSlug ? "✓" : "✗"}
-              </span>{" "}
-              Clean URL slug format
-            </div>
-            <div className="seo-check-item">
-              <span className={longContent ? "text-green" : "text-red"}>
-                {longContent ? "✓" : "✗"}
-              </span>{" "}
-              Content article length
+            <div className="seo-check-item flex items-center gap-2 text-xs">
+              {longContent ? <Check size={14} className="text-[var(--green)]" /> : <X size={14} className="text-[var(--red)]" />}
+              <span className={longContent ? "text-zinc-200" : "text-[var(--muted)]"}>Content depth (&gt;1,000 words)</span>
             </div>
           </div>
         </div>
@@ -626,4 +712,5 @@ export function CreateBlog({
     </div>
   );
 }
+
 export default CreateBlog;

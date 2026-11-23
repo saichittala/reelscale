@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import { DeliveredReel } from "../../dashboard/types";
-import { getDb } from "../../lib/db";
+import { getDb, type DbDeliveryRow } from "../../lib/db";
 import { redisGet, redisSet, redisInvalidatePattern } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
@@ -111,14 +111,14 @@ export async function GET(request: NextRequest) {
         `;
       }
 
-      deliveries = rows.map((r: any) => ({
+      deliveries = (rows as unknown as DbDeliveryRow[]).map((r: DbDeliveryRow) => ({
         id: r.id,
         clientId: Number(r.client_id),
         month: r.month,
         title: r.title,
         deliveredDate: r.delivered_date,
         link: r.link || "",
-        status: r.status || "Delivered",
+        status: (r.status as DeliveredReel["status"]) || "Delivered",
         notes: r.notes || "",
         createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined,
       }));

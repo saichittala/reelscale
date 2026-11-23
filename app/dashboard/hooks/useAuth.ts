@@ -1,80 +1,149 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { User } from "../types";
 import { loginUser, getCurrentUser } from "../services/api";
+import { STORAGE_KEYS } from "../constants";
 
-const AUTO_LOGOUT_TIME = 5 * 60 * 1000;
+const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes inactivity threshold
 
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [sessionExpired, setSessionExpired] = useState<boolean>(false);
-  const logoutTimerRef = useRef<any>(null);
+  const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync initial state
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const auth = localStorage.getItem("reelscale_auth") === "1";
-      setIsLoggedIn(auth);
-      setUser(getCurrentUser());
+  const clearTimer = useCallback(() => {
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
     }
   }, []);
 
+  // Standard user-initiated or explicit logout
   const logout = useCallback(() => {
-    if (logoutTimerRef.current) {
-      clearTimeout(logoutTimerRef.current);
-    }
+    clearTimer();
     if (typeof window !== "undefined") {
-      localStorage.removeItem("reelscale_auth");
-      localStorage.removeItem("reelscale_user");
-      localStorage.removeItem("reelscale_current_page");
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_PAGE);
+      localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
+      sessionStorage.removeItem(STORAGE_KEYS.SESSION_EXPIRED);
     }
     setIsLoggedIn(false);
     setUser(null);
-  }, []);
+  }, [clearTimer]);
 
+  // Inactivity timeout triggers session expired popup
+  const triggerSessionExpired = useCallback(() => {
+    clearTimer();
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem(STORAGE_KEYS.SESSION_EXPIRED, "1");
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+      localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
+    }
+    setSessionExpired(true);
+  }, [clearTimer]);
+
+  // Sync initial state and check for existing expired session
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 1. Check if session was already marked expired
+    if (sessionStorage.getItem(STORAGE_KEYS.SESSION_EXPIRED) === "1") {
+      setSessionExpired(true);
+      setUser(getCurrentUser());
+      return;
+    }
+
+    // 2. Check auth status and elapsed inactivity
+    const auth = localStorage.getItem(STORAGE_KEYS.AUTH) === "1";
+    if (auth) {
+      const lastActive = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY);
+      const now = Date.now();
+      if (lastActive && now - Number(lastActive) >= AUTO_LOGOUT_TIME) {
+        triggerSessionExpired();
+        return;
+      }
+      setIsLoggedIn(true);
+      setUser(getCurrentUser());
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY, String(now));
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  }, [triggerSessionExpired]);
+
+  // Reset or restart inactivity timer
   const resetLogoutTimer = useCallback(() => {
     if (typeof window === "undefined") return;
-    const auth = localStorage.getItem("reelscale_auth") === "1";
+    const auth = localStorage.getItem(STORAGE_KEYS.AUTH) === "1";
     if (!auth) return;
 
-    if (logoutTimerRef.current) {
-      clearTimeout(logoutTimerRef.current);
-    }
+    clearTimer();
     logoutTimerRef.current = setTimeout(() => {
-      setSessionExpired(true);
-      logout();
+      triggerSessionExpired();
     }, AUTO_LOGOUT_TIME);
-  }, [logout]);
+  }, [clearTimer, triggerSessionExpired]);
 
-  // Set up activity tracking
+  // Set up multi-source activity & visibility tracking
   useEffect(() => {
     if (!isLoggedIn) return;
 
     const handleActivity = () => {
+      if (typeof window === "undefined") return;
+      const lastActive = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY);
+      const now = Date.now();
+      if (lastActive && now - Number(lastActive) >= AUTO_LOGOUT_TIME) {
+        triggerSessionExpired();
+        return;
+      }
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY, String(now));
       resetLogoutTimer();
     };
 
-    const events = ["click", "mousemove", "keydown", "scroll", "touchstart"];
+    // Events that signify user presence
+    const events = ["click", "keydown", "scroll", "touchstart", "mousemove"];
     events.forEach((event) => {
-      document.addEventListener(event, handleActivity);
+      window.addEventListener(event, handleActivity, { passive: true });
     });
 
-    // Start timer on mount/login
+    // Check when user switches back to tab or focuses window
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        handleActivity();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleActivity);
+
+    // Periodic heartbeat check every 10 seconds to catch background sleep/wake
+    const intervalId = setInterval(() => {
+      const lastActive = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY);
+      if (lastActive && Date.now() - Number(lastActive) >= AUTO_LOGOUT_TIME) {
+        triggerSessionExpired();
+      }
+    }, 10000);
+
+    // Initial trigger
     resetLogoutTimer();
 
     return () => {
       events.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
+        window.removeEventListener(event, handleActivity);
       });
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
-      }
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleActivity);
+      clearInterval(intervalId);
+      clearTimer();
     };
-  }, [isLoggedIn, resetLogoutTimer]);
+  }, [isLoggedIn, resetLogoutTimer, triggerSessionExpired, clearTimer]);
 
   const login = async (email: string, pass: string): Promise<boolean> => {
     const res = await loginUser(email, pass);
     if (res.success && res.user) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY, String(Date.now()));
+        sessionStorage.removeItem(STORAGE_KEYS.SESSION_EXPIRED);
+      }
       setIsLoggedIn(true);
       setUser(res.user);
       setSessionExpired(false);
@@ -96,4 +165,5 @@ export function useAuth() {
     resetLogoutTimer,
   };
 }
+
 export type UseAuthReturn = ReturnType<typeof useAuth>;

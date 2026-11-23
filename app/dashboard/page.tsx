@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
-import { useLocalStorage } from "./hooks/useLocalStorage";
 import { Layout } from "./components/Layout";
 import { Client, User, Lead, Blog, DashboardPage } from "./types";
 import {
@@ -35,21 +34,44 @@ import {
 import { Users } from "./modules/Users";
 import { Sales } from "./modules/Sales";
 import { Blogs } from "./modules/Blogs";
+import { AiBlogWriting } from "./modules/AiBlogWriting";
+import { AiBlogSettings } from "./modules/AiBlogSettings";
 import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
 import { SystemStatus } from "./modules/SystemStatus";
 import { Button, Input, DatePicker, toast } from "@/components/ui";
-import { IconSearch } from "./components/Icons";
+import { AlertTriangle } from "lucide-react";
+import { IconSearch, IconLogOut } from "./components/Icons";
 import { CustomSelect } from "./components/CustomSelect";
+import { STORAGE_KEYS } from "./constants";
+
+function updateCache<T>(key: string, data: T): void {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }
+}
 
 export default function DashboardMainPage() {
   const router = useRouter();
   const auth = useAuth();
   const { isLoggedIn, role, user, logout, sessionExpired, setSessionExpired } = auth;
 
-  // Selected tab route state (synced with localStorage)
-  const [page, setPage] = useLocalStorage<DashboardPage>("reelscale_current_page", "dashboard");
+  // Selected tab route state (synced with URL)
+  const [page, setPageState] = useState<DashboardPage>("dashboard");
+
+  const setPage = useCallback((newPage: DashboardPage) => {
+    setPageState(newPage);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEYS.CURRENT_PAGE, JSON.stringify(newPage));
+      } catch (e) {}
+    }
+  }, []);
 
   // Top header search inputs state
   const [clientSearch, setClientSearch] = useState("");
@@ -60,11 +82,42 @@ export default function DashboardMainPage() {
   const [blogCategoryFilter, setBlogCategoryFilter] = useState("all");
   const [resourcesHeaderLeft, setResourcesHeaderLeft] = useState<React.ReactNode>(null);
   const [resourcesActionsBtn, setResourcesActionsBtn] = useState<React.ReactNode>(null);
+  const [createBlogHeaderLeft, setCreateBlogHeaderLeft] = useState<React.ReactNode>(null);
+  const [createBlogActionsBtn, setCreateBlogActionsBtn] = useState<React.ReactNode>(null);
+
+  const handleCreateBlogHeaderChange = useCallback(
+    (left: React.ReactNode, right: React.ReactNode) => {
+      setCreateBlogHeaderLeft(left);
+      setCreateBlogActionsBtn(right);
+    },
+    []
+  );
 
   const handleResourcesHeaderChange = useCallback(
     (left: React.ReactNode, right: React.ReactNode) => {
       setResourcesHeaderLeft(left);
       setResourcesActionsBtn(right);
+    },
+    []
+  );
+
+  const [aiWritingHeaderLeft, setAiWritingHeaderLeft] = useState<React.ReactNode>(null);
+  const [aiWritingActionsBtn, setAiWritingActionsBtn] = useState<React.ReactNode>(null);
+  const [aiSettingsHeaderLeft, setAiSettingsHeaderLeft] = useState<React.ReactNode>(null);
+  const [aiSettingsActionsBtn, setAiSettingsActionsBtn] = useState<React.ReactNode>(null);
+
+  const handleAiWritingHeaderChange = useCallback(
+    (left: React.ReactNode, right: React.ReactNode) => {
+      setAiWritingHeaderLeft(left);
+      setAiWritingActionsBtn(right);
+    },
+    []
+  );
+
+  const handleAiSettingsHeaderChange = useCallback(
+    (left: React.ReactNode, right: React.ReactNode) => {
+      setAiSettingsHeaderLeft(left);
+      setAiSettingsActionsBtn(right);
     },
     []
   );
@@ -79,39 +132,31 @@ export default function DashboardMainPage() {
       "users",
       "sales",
       "blogs",
+      "ai-blog-writing",
+      "ai-blog-settings",
       "create-blog",
       "blog-categories",
       "resources",
       "system-status",
     ];
 
-    const getTargetTab = (): DashboardPage | null => {
+    const getTargetTab = (): DashboardPage => {
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get("tab") as DashboardPage | null;
       if (urlTab && VALID_PAGES.includes(urlTab)) {
         return urlTab;
       }
-      try {
-        const stored = window.localStorage.getItem("reelscale_current_page");
-        if (stored) {
-          let parsed: any = stored;
-          try {
-            parsed = JSON.parse(stored);
-          } catch (e) { }
-          if (VALID_PAGES.includes(parsed)) return parsed;
-        }
-      } catch (e) { }
-      return null;
+      return "dashboard";
     };
 
     const target = getTargetTab();
-    if (target && target !== page) {
+    if (target !== page) {
       setPage(target);
     }
 
     const handlePopState = () => {
       const popTarget = getTargetTab();
-      if (popTarget && popTarget !== page) {
+      if (popTarget !== page) {
         setPage(popTarget);
       }
     };
@@ -205,6 +250,21 @@ export default function DashboardMainPage() {
     setNewClientRow(false);
   }, [page]);
 
+  // Purge legacy local storage mock cache keys to ensure data is always fresh from database
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(STORAGE_KEYS.CLIENT_DATES);
+        localStorage.removeItem(STORAGE_KEYS.CLIENT_STATUSES);
+        localStorage.removeItem(STORAGE_KEYS.CLIENTS_CACHE);
+        localStorage.removeItem(STORAGE_KEYS.USERS_CACHE);
+        localStorage.removeItem(STORAGE_KEYS.SALES_CACHE);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, []);
+
   // Initial and periodic system health check for live nav status dot
   useEffect(() => {
     let mounted = true;
@@ -278,9 +338,13 @@ export default function DashboardMainPage() {
 
   // Check login authentication
   useEffect(() => {
-    const authFlag = localStorage.getItem("reelscale_auth") === "1";
-    if (!authFlag && !sessionExpired) {
-      router.push("/dashboard/login/");
+    const authFlag = localStorage.getItem(STORAGE_KEYS.AUTH) === "1";
+    const isExpired =
+      sessionExpired ||
+      (typeof window !== "undefined" &&
+        sessionStorage.getItem(STORAGE_KEYS.SESSION_EXPIRED) === "1");
+    if (!authFlag && !isExpired) {
+      router.push("/dashboard/login");
     }
   }, [isLoggedIn, sessionExpired, router]);
 
@@ -293,6 +357,8 @@ export default function DashboardMainPage() {
     } else if (
       role === "blogger" &&
       page !== "blogs" &&
+      page !== "ai-blog-writing" &&
+      page !== "ai-blog-settings" &&
       page !== "create-blog" &&
       page !== "blog-categories"
     ) {
@@ -306,17 +372,9 @@ export default function DashboardMainPage() {
 
     const loadClientsData = async () => {
       setClientsLoading(true);
-      // Try load cache
-      const cached = localStorage.getItem("clients_cache");
-      if (cached) {
-        try {
-          setClients(JSON.parse(cached));
-        } catch (e) { }
-      }
       try {
         const data = await fetchClients();
         setClients(data);
-        localStorage.setItem("clients_cache", JSON.stringify(data));
       } catch (err) {
         console.error("Clients Fetch Error:", err);
       } finally {
@@ -326,16 +384,9 @@ export default function DashboardMainPage() {
 
     const loadUsersData = async () => {
       setUsersLoading(true);
-      const cached = localStorage.getItem("users_cache");
-      if (cached) {
-        try {
-          setUsers(JSON.parse(cached));
-        } catch (e) { }
-      }
       try {
         const data = await fetchUsers();
         setUsers(data);
-        localStorage.setItem("users_cache", JSON.stringify(data));
       } catch (err) {
         console.error("Users Fetch Error:", err);
       } finally {
@@ -345,16 +396,9 @@ export default function DashboardMainPage() {
 
     const loadSalesData = async () => {
       setLeadsLoading(true);
-      const cached = localStorage.getItem("sales_cache");
-      if (cached) {
-        try {
-          setLeads(JSON.parse(cached));
-        } catch (e) { }
-      }
       try {
         const data = await fetchLeads();
         setLeads(data);
-        localStorage.setItem("sales_cache", JSON.stringify(data));
       } catch (err) {
         console.error("Leads Fetch Error:", err);
       } finally {
@@ -413,28 +457,7 @@ export default function DashboardMainPage() {
       await apiAddClient(clientData);
       showToast("Client added successfully");
       const data = await fetchClients();
-
-      // Auto-assign local storage date mapping if not returned by server
-      if (typeof window !== "undefined" && clientData.date) {
-        try {
-          const stored = localStorage.getItem("reelscale_client_dates") || "{}";
-          const localDates = JSON.parse(stored);
-          const maxIdClient = data.reduce((max: Client | null, curr: Client) => {
-            if (!max) return curr;
-            return Number(curr.id) > Number(max.id) ? curr : max;
-          }, null);
-          if (maxIdClient && !localDates[String(maxIdClient.id)]) {
-            localDates[String(maxIdClient.id)] = clientData.date;
-            localStorage.setItem("reelscale_client_dates", JSON.stringify(localDates));
-            maxIdClient.date = clientData.date;
-          }
-        } catch (e) {
-          console.warn("Failed to map added client date locally", e);
-        }
-      }
-
       setClients(data);
-      localStorage.setItem("clients_cache", JSON.stringify(data));
     } catch (err: any) {
       setClients((prev) => prev.filter((c) => c.id !== tempId));
       showToast(err.message || "Failed to add client", "error");
@@ -452,24 +475,22 @@ export default function DashboardMainPage() {
       const next = prev.map((c) =>
         String(c.id) === String(id) ? { ...c, ...clientData } : c
       );
-      try {
-        localStorage.setItem("clients_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.CLIENTS_CACHE, next);
       return next;
     });
 
     try {
       await apiUpdateClient(id, clientData);
       showToast("Client updated successfully");
+      const data = await fetchClients();
+      setClients(data);
     } catch (err: any) {
       if (prevClient) {
         setClients((prev) => {
           const reverted = prev.map((c) =>
             String(c.id) === String(id) ? prevClient! : c
           );
-          try {
-            localStorage.setItem("clients_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.CLIENTS_CACHE, reverted);
           return reverted;
         });
       }
@@ -482,22 +503,20 @@ export default function DashboardMainPage() {
     setClients((prev) => {
       deletedClient = prev.find((c) => String(c.id) === String(id));
       const next = prev.filter((c) => String(c.id) !== String(id));
-      try {
-        localStorage.setItem("clients_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.CLIENTS_CACHE, next);
       return next;
     });
 
     try {
       await apiDeleteClient(id);
       showToast("Client deleted successfully");
+      const data = await fetchClients();
+      setClients(data);
     } catch (err: any) {
       if (deletedClient) {
         setClients((prev) => {
           const reverted = [...prev, deletedClient!];
-          try {
-            localStorage.setItem("clients_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.CLIENTS_CACHE, reverted);
           return reverted;
         });
       }
@@ -514,9 +533,7 @@ export default function DashboardMainPage() {
     };
     setUsers((prev) => {
       const next = [...prev, tempUser];
-      try {
-        localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.USERS_CACHE, next);
       return next;
     });
 
@@ -529,22 +546,18 @@ export default function DashboardMainPage() {
           const next = prev.map((u) =>
             u.id === tempId ? { ...u, id: realId, ...(res.user || {}) } : u
           );
-          try {
-            localStorage.setItem("users_cache", JSON.stringify(next));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.USERS_CACHE, next);
           return next;
         });
       } else {
         const data = await fetchUsers();
         setUsers(data);
-        localStorage.setItem("users_cache", JSON.stringify(data));
+        updateCache(STORAGE_KEYS.USERS_CACHE, data);
       }
     } catch (err: any) {
       setUsers((prev) => {
         const next = prev.filter((u) => u.id !== tempId);
-        try {
-          localStorage.setItem("users_cache", JSON.stringify(next));
-        } catch (e) { }
+        updateCache(STORAGE_KEYS.USERS_CACHE, next);
         return next;
       });
       showToast(err.message || "Failed to add user", "error");
@@ -560,9 +573,7 @@ export default function DashboardMainPage() {
       const next = prev.map((u) =>
         String(u.id) === String(id) ? { ...u, ...userData } : u
       );
-      try {
-        localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.USERS_CACHE, next);
       return next;
     });
 
@@ -575,9 +586,7 @@ export default function DashboardMainPage() {
           const reverted = prev.map((u) =>
             String(u.id) === String(id) ? prevUser! : u
           );
-          try {
-            localStorage.setItem("users_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.USERS_CACHE, reverted);
           return reverted;
         });
       }
@@ -590,9 +599,7 @@ export default function DashboardMainPage() {
     setUsers((prev) => {
       deletedUser = prev.find((u) => String(u.id) === String(id));
       const next = prev.filter((u) => String(u.id) !== String(id));
-      try {
-        localStorage.setItem("users_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.USERS_CACHE, next);
       return next;
     });
 
@@ -603,9 +610,7 @@ export default function DashboardMainPage() {
       if (deletedUser) {
         setUsers((prev) => {
           const reverted = [...prev, deletedUser!];
-          try {
-            localStorage.setItem("users_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.USERS_CACHE, reverted);
           return reverted;
         });
       }
@@ -623,9 +628,7 @@ export default function DashboardMainPage() {
     };
     setLeads((prev) => {
       const next = [tempLead, ...prev];
-      try {
-        localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.SALES_CACHE, next);
       return next;
     });
 
@@ -638,22 +641,18 @@ export default function DashboardMainPage() {
           const next = prev.map((l) =>
             l.id === tempId ? { ...l, id: realId, ...(res.lead || {}) } : l
           );
-          try {
-            localStorage.setItem("sales_cache", JSON.stringify(next));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.SALES_CACHE, next);
           return next;
         });
       } else {
         const data = await fetchLeads();
         setLeads(data);
-        localStorage.setItem("sales_cache", JSON.stringify(data));
+        updateCache(STORAGE_KEYS.SALES_CACHE, data);
       }
     } catch (err: any) {
       setLeads((prev) => {
         const next = prev.filter((l) => l.id !== tempId);
-        try {
-          localStorage.setItem("sales_cache", JSON.stringify(next));
-        } catch (e) { }
+        updateCache(STORAGE_KEYS.SALES_CACHE, next);
         return next;
       });
       showToast(err.message || "Failed to add lead", "error");
@@ -672,9 +671,7 @@ export default function DashboardMainPage() {
       const next = prev.map((l) =>
         String(l.id) === String(id) ? { ...l, ...leadData } : l
       );
-      try {
-        localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.SALES_CACHE, next);
       return next;
     });
 
@@ -687,9 +684,7 @@ export default function DashboardMainPage() {
           const reverted = prev.map((l) =>
             String(l.id) === String(id) ? prevLead! : l
           );
-          try {
-            localStorage.setItem("sales_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.SALES_CACHE, reverted);
           return reverted;
         });
       }
@@ -702,9 +697,7 @@ export default function DashboardMainPage() {
     setLeads((prev) => {
       deletedLead = prev.find((l) => String(l.id) === String(id));
       const next = prev.filter((l) => String(l.id) !== String(id));
-      try {
-        localStorage.setItem("sales_cache", JSON.stringify(next));
-      } catch (e) { }
+      updateCache(STORAGE_KEYS.SALES_CACHE, next);
       return next;
     });
 
@@ -715,9 +708,7 @@ export default function DashboardMainPage() {
       if (deletedLead) {
         setLeads((prev) => {
           const reverted = [...prev, deletedLead!];
-          try {
-            localStorage.setItem("sales_cache", JSON.stringify(reverted));
-          } catch (e) { }
+          updateCache(STORAGE_KEYS.SALES_CACHE, reverted);
           return reverted;
         });
       }
@@ -782,8 +773,8 @@ export default function DashboardMainPage() {
     setBlogCategories((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  // Safe SSR Auth Check
-  if (!isLoggedIn) {
+  // Safe SSR Auth Check - Allow rendering if sessionExpired modal is active so user sees popup instead of blank screen
+  if (!isLoggedIn && !sessionExpired) {
     return null;
   }
 
@@ -1139,18 +1130,6 @@ export default function DashboardMainPage() {
     </Button>
   );
 
-  const createBlogActionsBtn = (
-    <Button
-      variant="secondary"
-      onClick={() => {
-        setEditingBlog(null);
-        setPage("blogs");
-      }}
-    >
-      <span>Back to list</span>
-    </Button>
-  );
-
   const systemStatusActionsBtn = (
     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
       {/* Status Pill: Dot + Perfect/Issues + Checked Timestamp */}
@@ -1166,17 +1145,28 @@ export default function DashboardMainPage() {
           fontSize: "var(--text-xs)",
         }}
       >
-        <span
-          style={{
-            width: "8px",
-            height: "8px",
-            borderRadius: "50%",
-            backgroundColor: sysIsOperational === false ? "var(--red)" : "var(--green)",
-            boxShadow: sysIsOperational === false ? "0 0 6px var(--red)" : "0 0 6px var(--green)",
-            display: "inline-block",
-            flexShrink: 0,
-          }}
-        />
+        {sysIsOperational === false ? (
+          <AlertTriangle
+            size={14}
+            style={{
+              color: "var(--red)",
+              display: "inline-block",
+              flexShrink: 0,
+            }}
+          />
+        ) : (
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              backgroundColor: "var(--green)",
+              boxShadow: "0 0 6px var(--green)",
+              display: "inline-block",
+              flexShrink: 0,
+            }}
+          />
+        )}
         <span style={{ color: "var(--white)", fontWeight: 600 }}>
           {sysIsOperational === false ? sysLabel || "Issues" : "Perfect"}
         </span>
@@ -1251,212 +1241,311 @@ export default function DashboardMainPage() {
   ) : null;
 
   return (
-    <Layout
-      page={page}
-      setPage={setPage}
-      user={user}
-      logout={logout}
-      searchBar={searchBar}
-      clientFiltersBtn={clientFiltersBtn}
-      addClientBtn={addClientBtn}
-      addSaleBtn={addSaleBtn}
-      userFiltersBtn={userFiltersBtn}
-      addUserBtn={addUserBtn}
-      salesFiltersBtn={salesFiltersBtn}
-      blogActionsBtn={blogActionsBtn}
-      createBlogBtn={createBlogBtn}
-      createBlogActionsBtn={createBlogActionsBtn}
-      systemStatusActionsBtn={systemStatusActionsBtn}
-      systemStatusOperational={sysIsOperational}
-      resourcesHeaderLeft={resourcesHeaderLeft}
-      resourcesActionsBtn={resourcesActionsBtn}
-      selectedMonth={selectedMonth}
-      setSelectedMonth={setSelectedMonth}
-      availableMonths={availableMonths}
-    >
-      {/* Active page views wrapped in a premium entrance animation container */}
-      <div key={page} className="active-view">
-        {(page === "dashboard" || page === "analytics") && (
-          <Overview
-            clients={filteredClientsByMonth}
-            allClients={clients}
-            selectedMonth={selectedMonth}
-            availableMonths={availableMonths}
-            isLoading={clientsLoading}
-          />
-        )}
+    <>
+      <Layout
+        page={page}
+        setPage={setPage}
+        user={user}
+        logout={logout}
+        searchBar={searchBar}
+        clientFiltersBtn={clientFiltersBtn}
+        addClientBtn={addClientBtn}
+        addSaleBtn={addSaleBtn}
+        userFiltersBtn={userFiltersBtn}
+        addUserBtn={addUserBtn}
+        salesFiltersBtn={salesFiltersBtn}
+        blogActionsBtn={blogActionsBtn}
+        createBlogBtn={createBlogBtn}
+        createBlogHeaderLeft={createBlogHeaderLeft}
+        createBlogActionsBtn={createBlogActionsBtn}
+        systemStatusActionsBtn={systemStatusActionsBtn}
+        systemStatusOperational={sysIsOperational}
+        resourcesHeaderLeft={resourcesHeaderLeft}
+        resourcesActionsBtn={resourcesActionsBtn}
+        aiWritingHeaderLeft={aiWritingHeaderLeft}
+        aiWritingActionsBtn={aiWritingActionsBtn}
+        aiSettingsHeaderLeft={aiSettingsHeaderLeft}
+        aiSettingsActionsBtn={aiSettingsActionsBtn}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+        availableMonths={availableMonths}
+      >
+        {/* Active page views wrapped in a premium entrance animation container */}
+        <div key={page} className="active-view">
+          {(page === "dashboard" || page === "analytics") && (
+            <Overview
+              clients={filteredClientsByMonth}
+              allClients={clients}
+              selectedMonth={selectedMonth}
+              availableMonths={availableMonths}
+              isLoading={clientsLoading}
+            />
+          )}
 
-        {page === "clients" && (
-          <Clients
-            clients={filteredClientsByMonth}
-            allClients={clients}
-            selectedMonth={selectedMonth}
-            setSelectedMonth={setSelectedMonth}
-            availableMonths={availableMonths}
-            isLoading={clientsLoading}
-            newClientRow={newClientRow}
-            setNewClientRow={setNewClientRow}
-            selectedClientIds={selectedClientIds}
-            setSelectedClientIds={setSelectedClientIds}
-            onAddClient={handleAddClient}
-            onUpdateClient={handleUpdateClient}
-            onDeleteClient={handleDeleteClient}
-            showToast={showToast}
-            setConfirmModal={setConfirmModal}
-            search={clientSearch}
-            onSearchChange={setClientSearch}
-          />
-        )}
+          {page === "clients" && (
+            <Clients
+              clients={filteredClientsByMonth}
+              allClients={clients}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+              availableMonths={availableMonths}
+              isLoading={clientsLoading}
+              newClientRow={newClientRow}
+              setNewClientRow={setNewClientRow}
+              selectedClientIds={selectedClientIds}
+              setSelectedClientIds={setSelectedClientIds}
+              onAddClient={handleAddClient}
+              onUpdateClient={handleUpdateClient}
+              onDeleteClient={handleDeleteClient}
+              showToast={showToast}
+              setConfirmModal={setConfirmModal}
+              search={clientSearch}
+              onSearchChange={setClientSearch}
+            />
+          )}
 
-        {page === "users" && (
-          <Users
-            users={users}
-            isLoading={usersLoading}
-            newUserRow={newUserRow}
-            setNewUserRow={setNewUserRow}
-            selectedUserIds={selectedUserIds}
-            setSelectedUserIds={setSelectedUserIds}
-            onAddUser={handleAddUser}
-            onUpdateUser={handleUpdateUser}
-            onDeleteUser={handleDeleteUser}
-            showToast={showToast}
-            setConfirmModal={setConfirmModal}
-            search={userSearch}
-            onSearchChange={setUserSearch}
-          />
-        )}
+          {page === "users" && (
+            <Users
+              users={users}
+              isLoading={usersLoading}
+              newUserRow={newUserRow}
+              setNewUserRow={setNewUserRow}
+              selectedUserIds={selectedUserIds}
+              setSelectedUserIds={setSelectedUserIds}
+              onAddUser={handleAddUser}
+              onUpdateUser={handleUpdateUser}
+              onDeleteUser={handleDeleteUser}
+              showToast={showToast}
+              setConfirmModal={setConfirmModal}
+              search={userSearch}
+              onSearchChange={setUserSearch}
+            />
+          )}
 
-        {page === "sales" && (
-          <Sales
-            leads={leads}
-            isLoading={leadsLoading}
-            newLeadRow={newLeadRow}
-            setNewLeadRow={setNewLeadRow}
-            salesFilterExpanded={salesFilterExpanded}
-            salesDateFrom={salesDateFrom}
-            setSalesDateFrom={setSalesDateFrom}
-            salesDateTo={salesDateTo}
-            setSalesDateTo={setSalesDateTo}
-            selectedLeadIds={selectedLeadIds}
-            setSelectedLeadIds={setSelectedLeadIds}
-            onAddLead={handleAddLead}
-            onUpdateLead={handleUpdateLead}
-            onDeleteLead={handleDeleteLead}
-            showToast={showToast}
-            setConfirmModal={setConfirmModal}
-            search={leadSearch}
-            onSearchChange={setLeadSearch}
-          />
-        )}
+          {page === "sales" && (
+            <Sales
+              leads={leads}
+              isLoading={leadsLoading}
+              newLeadRow={newLeadRow}
+              setNewLeadRow={setNewLeadRow}
+              salesFilterExpanded={salesFilterExpanded}
+              salesDateFrom={salesDateFrom}
+              setSalesDateFrom={setSalesDateFrom}
+              salesDateTo={salesDateTo}
+              setSalesDateTo={setSalesDateTo}
+              selectedLeadIds={selectedLeadIds}
+              setSelectedLeadIds={setSelectedLeadIds}
+              onAddLead={handleAddLead}
+              onUpdateLead={handleUpdateLead}
+              onDeleteLead={handleDeleteLead}
+              showToast={showToast}
+              setConfirmModal={setConfirmModal}
+              search={leadSearch}
+              onSearchChange={setLeadSearch}
+            />
+          )}
 
-        {page === "blogs" && (
-          <Blogs
-            blogs={blogs}
-            isLoading={blogsLoading}
-            blogCategories={blogCategories}
-            selectedBlogIds={selectedBlogIds}
-            setSelectedBlogIds={setSelectedBlogIds}
-            onEditBlog={(blog) => {
-              setEditingBlog(blog);
-              setPage("create-blog");
-            }}
-            onDeleteBlog={handleDeleteBlog}
-            onCreateBlog={() => {
-              setEditingBlog(null);
-              setPage("create-blog");
-            }}
-            onManageCategories={() => setPage("blog-categories")}
-            setConfirmModal={setConfirmModal}
-            search={blogSearch}
-            onSearchChange={setBlogSearch}
-            statusFilter={blogStatusFilter}
-            onStatusFilterChange={setBlogStatusFilter}
-            categoryFilter={blogCategoryFilter}
-            onCategoryFilterChange={setBlogCategoryFilter}
-          />
-        )}
+          {page === "blogs" && (
+            <Blogs
+              blogs={blogs}
+              isLoading={blogsLoading}
+              blogCategories={blogCategories}
+              selectedBlogIds={selectedBlogIds}
+              setSelectedBlogIds={setSelectedBlogIds}
+              onEditBlog={(blog) => {
+                setEditingBlog(blog);
+                setPage("create-blog");
+              }}
+              onDeleteBlog={handleDeleteBlog}
+              onCreateBlog={() => {
+                setEditingBlog(null);
+                setPage("create-blog");
+              }}
+              onManageCategories={() => setPage("blog-categories")}
+              setConfirmModal={setConfirmModal}
+              search={blogSearch}
+              onSearchChange={setBlogSearch}
+              statusFilter={blogStatusFilter}
+              onStatusFilterChange={setBlogStatusFilter}
+              categoryFilter={blogCategoryFilter}
+              onCategoryFilterChange={setBlogCategoryFilter}
+            />
+          )}
 
-        {page === "create-blog" && (
-          <CreateBlog
-            editingBlog={editingBlog}
-            blogCategories={blogCategories}
-            onSaveBlog={handleSaveBlog}
-            showToast={showToast}
-          />
-        )}
+          {page === "ai-blog-writing" && (
+            <AiBlogWriting
+              blogs={blogs}
+              blogCategories={blogCategories}
+              onEditBlog={(blog) => {
+                setEditingBlog(blog);
+                setPage("create-blog");
+              }}
+              onCreateBlog={() => {
+                setEditingBlog(null);
+                setPage("create-blog");
+              }}
+              onNavigateTab={(tab) => setPage(tab as DashboardPage)}
+              showToast={showToast}
+              onHeaderChange={handleAiWritingHeaderChange}
+            />
+          )}
 
-        {page === "blog-categories" && (
-          <BlogCategories
-            blogCategories={blogCategories}
-            onAddCategory={handleAddCategory}
-            onDeleteCategory={handleDeleteCategory}
-            showToast={showToast}
-            setConfirmModal={setConfirmModal}
-          />
-        )}
+          {page === "ai-blog-settings" && (
+            <AiBlogSettings
+              blogs={blogs}
+              onNavigateTab={(tab) => setPage(tab as DashboardPage)}
+              showToast={showToast}
+              onHeaderChange={handleAiSettingsHeaderChange}
+            />
+          )}
 
-        {page === "resources" && (
-          <Resources
-            clients={clients}
-            showToast={showToast}
-            setConfirmModal={setConfirmModal}
-            onHeaderChange={handleResourcesHeaderChange}
-          />
-        )}
+          {page === "create-blog" && (
+            <CreateBlog
+              editingBlog={editingBlog}
+              blogCategories={blogCategories}
+              onSaveBlog={handleSaveBlog}
+              showToast={showToast}
+              onBack={() => {
+                setEditingBlog(null);
+                setPage("blogs");
+              }}
+              onHeaderChange={handleCreateBlogHeaderChange}
+            />
+          )}
 
-        {page === "system-status" && (
-          <SystemStatus
-            showToast={showToast}
-            refreshTrigger={sysTriggerRefresh}
-            flushTrigger={sysTriggerFlush}
-            onStateChange={({
-              refreshing,
-              flushing,
-              isOperational,
-              timestamp,
-              label,
-              redisOk,
-            }) => {
-              setSysRefreshing(refreshing);
-              setSysFlushing(flushing);
-              setSysIsOperational(isOperational);
-              if (timestamp) setSysTimestamp(timestamp);
-              if (label) setSysLabel(label);
-              if (redisOk !== undefined) setSysRedisOk(redisOk);
-            }}
-          />
-        )}
-      </div>
+          {page === "blog-categories" && (
+            <BlogCategories
+              blogCategories={blogCategories}
+              onAddCategory={handleAddCategory}
+              onDeleteCategory={handleDeleteCategory}
+              showToast={showToast}
+              setConfirmModal={setConfirmModal}
+            />
+          )}
 
-      {/* Add / Edit Client Modal overlay has been replaced with inline editing */}
+          {page === "resources" && (
+            <Resources
+              clients={clients}
+              showToast={showToast}
+              setConfirmModal={setConfirmModal}
+              onHeaderChange={handleResourcesHeaderChange}
+            />
+          )}
 
-
+          {page === "system-status" && (
+            <SystemStatus
+              showToast={showToast}
+              refreshTrigger={sysTriggerRefresh}
+              flushTrigger={sysTriggerFlush}
+              onStateChange={({
+                refreshing,
+                flushing,
+                isOperational,
+                timestamp,
+                label,
+                redisOk,
+              }) => {
+                setSysRefreshing(refreshing);
+                setSysFlushing(flushing);
+                setSysIsOperational(isOperational);
+                if (timestamp) setSysTimestamp(timestamp);
+                if (label) setSysLabel(label);
+                if (redisOk !== undefined) setSysRedisOk(redisOk);
+              }}
+            />
+          )}
+        </div>
+      </Layout>
 
       {/* 5-minute Inactivity Session Expired Overlay Modal */}
       {sessionExpired && (
-        <div className="modal-overlay active">
-          <div className="modal modal-sm">
-            <div className="modal-icon">
-              <img
-                src="/assets/icons/log-out.svg"
-                alt="Info"
-                width="24"
-                height="24"
-              />
+        <div
+          className="modal-overlay active"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 999999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0, 0, 0, 0.78)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+          }}
+        >
+          <div
+            className="modal modal-sm"
+            style={{
+              position: "relative",
+              zIndex: 1000000,
+              opacity: 1,
+              transform: "scale(1)",
+              background: "var(--bg, #111115)",
+              border: "1px solid var(--border, rgba(255, 255, 255, 0.1))",
+              borderRadius: "24px",
+              padding: "32px",
+              maxWidth: "420px",
+              width: "90%",
+              textAlign: "center",
+              boxShadow: "0 24px 64px rgba(0, 0, 0, 0.8)",
+            }}
+          >
+            <div
+              className="modal-icon"
+              style={{
+                width: "56px",
+                height: "56px",
+                borderRadius: "50%",
+                background: "rgba(229, 9, 20, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 20px auto",
+              }}
+            >
+              <IconLogOut size={26} style={{ color: "var(--red, #e50914)" }} />
             </div>
-            <div className="modal-header">
-              <div className="modal-title">Session Expired</div>
+            <div className="modal-header" style={{ marginBottom: "12px", justifyContent: "center" }}>
+              <div
+                className="modal-title"
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 600,
+                  color: "var(--text, #fff)",
+                  justifyContent: "center"
+                }}
+              >
+                Session Expired
+              </div>
             </div>
-            <div className="text-muted mb-24 modal-body-text">
-              Your session expired due to inactivity. Please sign in again to
+            <div
+              className="text-muted mb-24 modal-body-text"
+              style={{
+                fontSize: "14px",
+                lineHeight: 1.6,
+                color: "var(--text-muted, #8e8e93)",
+                marginBottom: "24px",
+              }}
+            >
+              Your session expired due to 5 minutes of inactivity. Please sign in again to
               continue using ReelScale.
             </div>
-            <div className="form-footer">
+            <div className="form-footer" style={{ display: "flex", justifyContent: "center" }}>
               <Button
                 variant="primary"
+                style={{
+                  minWidth: "100%",
+                  padding: "12px 24px",
+                  fontWeight: 600,
+                  borderRadius: "12px",
+                }}
                 onClick={() => {
+                  if (typeof window !== "undefined") {
+                    sessionStorage.removeItem(STORAGE_KEYS.SESSION_EXPIRED);
+                  }
+                  logout();
                   setSessionExpired(false);
-                  router.push("/dashboard/login/");
+                  router.push("/dashboard/login");
                 }}
               >
                 Login Again
@@ -1468,7 +1557,7 @@ export default function DashboardMainPage() {
 
       {/* Custom Confirm Modal */}
       {confirmModal && (
-        <div className="modal-overlay active">
+        <div className="modal-overlay active" style={{ zIndex: 99999 }}>
           <div className="delete-modal modal-sm text-left">
             <div className="delete-icon mb-20">
               <img
@@ -1502,7 +1591,7 @@ export default function DashboardMainPage() {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   );
 }
 export const dynamic = "force-dynamic";

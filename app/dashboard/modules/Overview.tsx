@@ -4,6 +4,7 @@ import { fmt, fmtFull } from "../utils/format";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { loadChartJS } from "../utils/loader";
 import { fetchDeliveries } from "../services/api";
+import { IconCalendar } from "../components/Icons";
 import {
   getPreviousMonthKey,
   isClientActiveInMonth,
@@ -224,41 +225,18 @@ export function Overview({
     <>
       {/* Month Insights Banner when month filter is active */}
       {selectedMonth && selectedMonth !== "all" && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "12px",
-            background: "rgba(255, 255, 255, 0.03)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "18px",
-            padding: "10px 16px",
-            marginBottom: "20px",
-            fontSize: "13px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ fontWeight: 600, color: "var(--white)" }}>
-              📅 {availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth} Overview
+        <div className="dashboard-month-banner">
+          <div className="dashboard-month-banner-left">
+            <span className="dashboard-month-banner-title">
+              <IconCalendar size={14} className="text-muted" />
+              {availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth} Overview
             </span>
-            <span style={{ color: "rgba(255,255,255,0.2)" }}>•</span>
+            <span className="dashboard-metric-sep">•</span>
             <span style={{ color: "var(--muted)" }}>
               Subscription retainers carried forward & active in this month
             </span>
           </div>
-          <span
-            style={{
-              padding: "2px 10px",
-              borderRadius: "99px",
-              fontSize: "11px",
-              fontWeight: 600,
-              background: "rgba(34, 197, 94, 0.15)",
-              color: "var(--green)",
-              border: "1px solid rgba(34, 197, 94, 0.3)",
-            }}
-          >
+          <span className="dashboard-badge-success">
             {totalClients} Active {totalClients === 1 ? "Account" : "Accounts"}
           </span>
         </div>
@@ -322,10 +300,10 @@ export function Overview({
                 totalDeliveredInMonth >= totalReels && totalReels > 0
                   ? `All ${totalReels} reels delivered this cycle (100%)`
                   : totalDeliveredInMonth > 0
-                  ? `${totalDeliveredInMonth} delivered · ${Math.max(0, totalReels - totalDeliveredInMonth)} pending this cycle`
-                  : selectedMonth && selectedMonth !== "all"
-                  ? `Cycle reset for ${availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth} (0/${totalReels})`
-                  : `0/${totalReels} delivered this cycle (${totalReels} pending)`
+                    ? `${totalDeliveredInMonth} delivered · ${Math.max(0, totalReels - totalDeliveredInMonth)} pending this cycle`
+                    : selectedMonth && selectedMonth !== "all"
+                      ? `Cycle reset for ${availableMonths.find((m) => m.key === selectedMonth)?.label || selectedMonth} (0/${totalReels})`
+                      : `0/${totalReels} delivered this cycle (${totalReels} pending)`
               }
             />
           </div>

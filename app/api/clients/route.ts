@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRole } from "../rbac";
-import { getDb } from "../../lib/db";
+import { getDb, type DbClientRow } from "../../lib/db";
 import { redisGet, redisSet, redisDel } from "../../lib/redis";
 
 export const dynamic = "force-dynamic";
@@ -40,12 +40,13 @@ export async function GET(request: Request) {
         base_rate, 
         bargain, 
         revenue, 
-        date
+        date,
+        status
       FROM clients
       ORDER BY id ASC;
     `;
 
-    const clients = rows.map((r: any) => ({
+    const clients = (rows as unknown as DbClientRow[]).map((r: DbClientRow) => ({
       id: r.id,
       name: r.name,
       clientName: r.name,
@@ -56,12 +57,13 @@ export async function GET(request: Request) {
       pricePerReel: Number(r.ppr || 0),
       ppr: Number(r.ppr || 0),
       image: r.image || "",
-      billingModel: r.billing_model || "Reel-to-Reel",
+      billingModel: r.billing_model || "Subscription",
       plan: r.plan || "",
       baseRate: Number(r.base_rate || 0),
       bargain: Number(r.bargain || 0),
       revenue: Number(r.revenue || 0),
       date: r.date || "",
+      status: r.status || "Active",
     }));
 
     const result = {
@@ -103,7 +105,7 @@ export async function POST(request: NextRequest) {
 
         const rows = await sql`
           INSERT INTO clients (
-            name, business, phone, instagram, reels, ppr, image, billing_model, plan, base_rate, bargain, revenue, date
+            name, business, phone, instagram, reels, ppr, image, billing_model, plan, base_rate, bargain, revenue, date, status
           ) VALUES (
             ${clientName},
             ${data.business || ''},
@@ -112,12 +114,13 @@ export async function POST(request: NextRequest) {
             ${reels},
             ${ppr},
             ${data.image || ''},
-            ${data.billingModel || 'Reel-to-Reel'},
+            ${data.billingModel || 'Subscription'},
             ${data.plan || ''},
             ${Number(data.baseRate || 0)},
             ${Number(data.bargain || 0)},
             ${revenue},
-            ${data.date || new Date().toISOString().slice(0, 10)}
+            ${data.date || new Date().toISOString().slice(0, 10)},
+            ${data.status || 'Active'}
           )
           RETURNING *;
         `;
@@ -146,6 +149,7 @@ export async function POST(request: NextRequest) {
             bargain = ${Number(data.bargain || 0)},
             revenue = ${revenue},
             date = ${data.date || ''},
+            status = ${data.status || 'Active'},
             updated_at = NOW()
           WHERE id = ${Number(data.id)}
           RETURNING *;

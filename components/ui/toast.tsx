@@ -26,9 +26,9 @@ export function toast(options: ToastOptions | string, type?: ToastType): string 
   const opts: ToastOptions =
     typeof options === "string"
       ? {
-          title: options,
-          type: type || "info",
-        }
+        title: options,
+        type: type || "info",
+      }
       : { ...options };
 
   if (!opts.id) {

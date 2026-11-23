@@ -68,6 +68,26 @@ interface StatusData {
       };
       message?: string;
     };
+    groq?: {
+      status: "connected" | "error";
+      latencyMs: number | null;
+      activeModel: string;
+      message?: string;
+    };
+    gemini?: {
+      status: "connected" | "error";
+      latencyMs: number | null;
+      activeModel: string;
+      isBackup?: boolean;
+      message?: string;
+    };
+    openrouter?: {
+      status: "connected" | "error";
+      latencyMs: number | null;
+      activeModel: string;
+      isTertiaryBackup?: boolean;
+      message?: string;
+    };
     localDb?: {
       status: string;
       sizeBytes: number;
@@ -404,6 +424,44 @@ export function SystemStatus({
                 <span style={{ color: "var(--muted)" }}>Testimonials</span>
                 <span style={{ color: "var(--white)" }}>
                   {data?.services?.sanity?.counts?.testimonials ?? 0} verified
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Services & Backup Details */}
+          <div className="glass-card">
+            <div className="chart-title" style={{ fontSize: "var(--text-sm)" }}>AI Engine & Backup Details</div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "var(--text-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>Primary Engine (Groq)</span>
+                <span style={{ fontWeight: 600, color: data?.services?.groq?.status === "connected" ? "var(--green)" : "var(--yellow)" }}>
+                  {data?.services?.groq?.status === "connected" ? `Active (${data?.services?.groq?.latencyMs ?? 0}ms)` : "Unavailable"}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>2nd Backup (Gemini)</span>
+                <span style={{ fontWeight: 600, color: data?.services?.gemini?.status === "connected" ? "var(--green)" : "var(--red)" }}>
+                  {data?.services?.gemini?.status === "connected" ? `Ready • Failover Armed (${data?.services?.gemini?.latencyMs ?? 0}ms)` : "Offline"}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>3rd Backup (OpenRouter)</span>
+                <span style={{ fontWeight: 600, color: data?.services?.openrouter?.status === "connected" ? "var(--green)" : "var(--red)" }}>
+                  {data?.services?.openrouter?.status === "connected" ? `Ready • Failover Armed (${data?.services?.openrouter?.latencyMs ?? 0}ms)` : "Offline"}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "0.6px solid var(--white-07)", paddingBottom: "8px" }}>
+                <span style={{ color: "var(--muted)" }}>OpenRouter Model</span>
+                <span style={{ fontFamily: "monospace", color: "var(--white)", fontSize: "12px" }}>
+                  {data?.services?.openrouter?.activeModel || "meta-llama/llama-3.3-70b-instruct"}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "var(--muted)" }}>Cascade Policy</span>
+                <span className="badge badge-green" style={{ fontSize: "11px", padding: "2px 8px" }}>
+                  3-Tier Failover: Groq → Gemini → OpenRouter
                 </span>
               </div>
             </div>

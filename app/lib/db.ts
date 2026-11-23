@@ -36,3 +36,62 @@ export async function checkDbHealth(): Promise<{
     };
   }
 }
+
+// ─── STRONGLY TYPED DATABASE SCHEMA MODELS ───
+
+export interface DbUserRow {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DbClientRow {
+  id: number;
+  name: string;
+  business?: string | null;
+  phone?: string | null;
+  instagram?: string | null;
+  reels?: number | null;
+  ppr?: number | string | null;
+  image?: string | null;
+  billing_model?: string | null;
+  plan?: string | null;
+  base_rate?: number | string | null;
+  bargain?: number | string | null;
+  revenue?: number | string | null;
+  date?: string | null;
+  status?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DbSaleRow {
+  id: number;
+  category?: string | null;
+  company_name?: string | null;
+  contact_person?: string | null;
+  phone_number?: string | null;
+  notes?: string | null;
+  contacted?: string | null;
+  created_date?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DbDeliveryRow {
+  id: string;
+  client_id: number | string;
+  month: string;
+  title: string;
+  delivered_date: string;
+  link?: string | null;
+  status: "Delivered" | "In Review" | "Scheduled" | string;
+  notes?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+

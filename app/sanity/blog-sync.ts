@@ -96,14 +96,49 @@ export async function uploadImageToSanity(
 ): Promise<{ assetId: string; url: string } | null> {
   try {
     if (typeof imageSource === 'string') {
+      const trimmedUrl = imageSource.trim()
+      if (!trimmedUrl) return null
+
       // Check if already a Sanity CDN URL
-      const existingAssetId = extractSanityAssetId(imageSource)
+      const existingAssetId = extractSanityAssetId(trimmedUrl)
       if (existingAssetId) {
-        return { assetId: existingAssetId, url: imageSource }
+        return { assetId: existingAssetId, url: trimmedUrl }
       }
 
-      // Download remote image (Unsplash, Pexels, etc.)
-      const res = await fetch(imageSource)
+      // If running in browser environment, direct fetch of cross-origin images (e.g. Unsplash, Pexels)
+      // is blocked by browser CORS policy (TypeError: Failed to fetch).
+      // Delegate to our backend upload API route instead!
+      if (typeof window !== 'undefined') {
+        try {
+          const userStr = localStorage.getItem('reelscale_user')
+          const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+          }
+          if (userStr) {
+            try {
+              const u = JSON.parse(userStr)
+              if (u?.role) headers['x-user-role'] = u.role
+              if (u?.email) headers['x-user-email'] = u.email
+            } catch {}
+          }
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ imageUrl: trimmedUrl, filename }),
+          })
+          if (uploadRes.ok) {
+            const data = await uploadRes.json()
+            if (data.success && data.assetId && data.url) {
+              return { assetId: data.assetId, url: data.url }
+            }
+          }
+        } catch (apiErr) {
+          console.warn('Delegated browser image upload to /api/upload failed, falling back:', apiErr)
+        }
+      }
+
+      // Download remote image (Node.js runtime on server, or direct if allowed)
+      const res = await fetch(trimmedUrl)
       if (!res.ok) {
         throw new Error(`Failed to fetch image: ${res.statusText}`)
       }
@@ -122,8 +157,8 @@ export async function uploadImageToSanity(
       })
       return { assetId: asset._id, url: asset.url }
     }
-  } catch (err) {
-    console.error('Sanity image upload error:', err)
+  } catch (err: any) {
+    console.warn('Sanity image upload notice (using original URL fallback):', err?.message || err)
     return null
   }
 }
@@ -251,6 +286,11 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
         _type: 'reference',
         _ref: imageAsset.assetId,
       },
+    }
+  } else if (blog.featuredImage && blog.featuredImage.trim()) {
+    sanityDoc.featuredImageUrl = blog.featuredImage.trim()
+    if (blog.ogImage || blog.featuredImage) {
+      sanityDoc.ogImageUrl = (blog.ogImage || blog.featuredImage).trim()
     }
   }
 
