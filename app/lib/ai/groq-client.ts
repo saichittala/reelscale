@@ -1,4 +1,3 @@
-import Groq from "groq-sdk";
 import { getDb } from "../db";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -15,7 +14,27 @@ import {
   checkOpenRouterHealth,
 } from "./openrouter-client";
 
-let cachedGroqClient: Groq | null = null;
+export interface GroqLikeClient {
+  models: {
+    list: () => Promise<{ data: Array<{ id: string; created?: number; owned_by?: string }> }>;
+  };
+  chat: {
+    completions: {
+      create: (params: {
+        model: string;
+        messages: Array<{ role: string; content: string }>;
+        temperature?: number;
+        max_tokens?: number;
+        response_format?: { type: string };
+      }) => Promise<{
+        choices: Array<{ message: { content: string } }>;
+        usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+      }>;
+    };
+  };
+}
+
+let cachedGroqClient: GroqLikeClient | null = null;
 let cachedKey: string | null = null;
 let groqRateLimitedUntil = 0; // Timestamp until which Groq is considered in rate-limit cooldown
 
@@ -67,7 +86,49 @@ export async function getEffectiveGroqApiKey(): Promise<string> {
   return "";
 }
 
-export async function getGroqClient(): Promise<Groq> {
+async function createGroqClientInstance(apiKey: string): Promise<GroqLikeClient> {
+  try {
+    const mod = await import("groq-sdk");
+    const GroqClass = (mod.default || mod) as any;
+    return new GroqClass({ apiKey });
+  } catch {
+    return {
+      models: {
+        list: async () => {
+          const res = await fetch("https://api.groq.com/openai/v1/models", {
+            headers: { Authorization: `Bearer ${apiKey}` },
+          });
+          if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`Groq models error (${res.status}): ${errText}`);
+          }
+          return await res.json();
+        },
+      },
+      chat: {
+        completions: {
+          create: async (body: any) => {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+            if (!res.ok) {
+              const errText = await res.text();
+              throw new Error(`Groq completions error (${res.status}): ${errText}`);
+            }
+            return await res.json();
+          },
+        },
+      },
+    };
+  }
+}
+
+export async function getGroqClient(): Promise<GroqLikeClient> {
   const apiKey = await getEffectiveGroqApiKey();
   if (!apiKey) {
     throw new Error(
@@ -79,7 +140,7 @@ export async function getGroqClient(): Promise<Groq> {
     return cachedGroqClient;
   }
 
-  cachedGroqClient = new Groq({ apiKey });
+  cachedGroqClient = await createGroqClientInstance(apiKey);
   cachedKey = apiKey;
   return cachedGroqClient;
 }

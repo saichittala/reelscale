@@ -2,6 +2,7 @@
 const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true';
 
 const nextConfig = {
+  serverExternalPackages: ["groq-sdk"],
   output: isStaticExport ? 'export' : undefined,
   trailingSlash: isStaticExport ? true : undefined,
   ...(isStaticExport && {
