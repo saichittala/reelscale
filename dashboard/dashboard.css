@@ -2981,7 +2981,7 @@ input:autofill:focus,
     padding: var(--space-10);
 
     background: var(--bg2);
-    border: none !important;
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-2);
 }
 
@@ -3148,7 +3148,7 @@ button.login-submit-btn,
 
     .login-card {
         background: var(--bg2);
-        border: none !important;
+        border: 1px solid var(--border);
         border-radius: var(--border-radius-2);
         padding: var(--space-10);
         width: 100%;
