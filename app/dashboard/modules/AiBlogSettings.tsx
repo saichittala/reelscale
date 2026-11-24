@@ -579,10 +579,9 @@ export function AiBlogSettings({
               <div className="ai-card-header">
                 <div className="ai-card-header-text">
                   <div className="glass-card-label">Generation Strategy & Frequency</div>
-                  <p className="ai-section-desc">Configure automation cadence, daily quotas, and scheduled execution times.</p>
                 </div>
                 <Button
-                  variant="primary"
+                  variant="secondary"
                   onClick={handleSaveScheduleConfig}
                   disabled={savingSchedule}
                 >
