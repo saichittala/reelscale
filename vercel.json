@@ -10,7 +10,7 @@
   "crons": [
     {
       "path": "/api/ai/schedule?action=evaluate-schedule",
-      "schedule": "* * * * *"
+      "schedule": "0 4 * * *"
     }
   ]
 }
