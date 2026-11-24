@@ -97,7 +97,7 @@
   background: transparent;
   color: var(--muted, rgba(255, 255, 255, 0.7));
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
@@ -112,10 +112,13 @@
 
 .trigger:focus {
   outline: none !important;
+  box-shadow: none !important;
+
 }
 
 .trigger:focus-visible {
   outline: none !important;
+  box-shadow: none !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
