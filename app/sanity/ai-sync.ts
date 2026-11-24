@@ -94,13 +94,13 @@ export interface SanityAiJob {
 }
 
 const DEFAULT_SETTINGS: SanityAiSettings = {
-  provider: 'groq',
-  model: 'openai/gpt-oss-120b',
+  provider: 'gemini',
+  model: 'gemini-3.5-flash-lite',
   is_enabled: true,
   is_paused: false,
-  daily_target: 10,
-  max_daily_limit: 50,
-  auto_publish: false,
+  daily_target: 1,
+  max_daily_limit: 5,
+  auto_publish: true,
   updated_at: new Date().toISOString(),
 };
 
@@ -173,6 +173,12 @@ export async function saveAiSettingsToSanity(settings: Partial<SanityAiSettings>
     ...settings,
     updated_at: new Date().toISOString(),
   };
+
+  if (merged.model?.startsWith('gemini')) {
+    merged.provider = 'gemini';
+  } else if (merged.model?.includes('llama') || merged.model?.includes('openrouter')) {
+    merged.provider = 'openrouter';
+  }
 
   const doc = {
     _id: 'ai-automation-settings',

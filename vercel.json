@@ -6,5 +6,11 @@
     "deploymentEnabled": {
       "gh-pages": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/ai/schedule?action=evaluate-schedule",
+      "schedule": "* * * * *"
+    }
+  ]
 }

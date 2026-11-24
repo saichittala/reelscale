@@ -1,13 +1,13 @@
 {
-  "provider": "groq",
-  "model": "llama-3.3-70b-versatile",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
   "is_enabled": true,
   "is_paused": false,
   "daily_target": 1,
-  "max_daily_limit": 50,
+  "max_daily_limit": 1,
   "auto_publish": true,
   "unsplash_access_key": "",
   "pexels_api_key": "",
   "pixabay_api_key": "",
-  "updated_at": "2026-11-23T10:50:13.793Z"
+  "updated_at": "2026-11-24T11:07:27.378Z"
 }

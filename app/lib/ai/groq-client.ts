@@ -52,7 +52,7 @@ function readKeyFromLocalEnvFile(keyName: string): string {
         return match[1].trim().replace(/^["']|["']$/g, "");
       }
     }
-  } catch {}
+  } catch { }
   return "";
 }
 
@@ -72,6 +72,16 @@ export function getGroqApiKey(): string {
 export async function getEffectiveGroqApiKey(): Promise<string> {
   const envKey = getGroqApiKey();
   if (envKey) return envKey;
+
+  // Check Sanity Environment Variables
+  try {
+    const { getEnvironmentVariablesFromSanity } = await import("../../sanity/env-sync");
+    const envVars = await getEnvironmentVariablesFromSanity();
+    if (envVars?.groqApiKey) {
+      process.env.GROQ_API_KEY = envVars.groqApiKey;
+      return envVars.groqApiKey;
+    }
+  } catch { }
 
   // Check database settings
   try {
@@ -188,8 +198,8 @@ export async function getSupportedGroqModels(): Promise<{
     // Fallbacks if list is filtered out
     const finalChatList =
       chatModels.length > 0
-        ? [...chatModels, "gemini-2.5-flash", "meta-llama/llama-3.3-70b-instruct"]
-        : ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "gemini-2.5-flash", "meta-llama/llama-3.3-70b-instruct"];
+        ? [...chatModels, "gemini-3.5-flash-lite", "meta-llama/llama-3.3-70b-instruct"]
+        : ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "gemini-3.5-flash-lite", "meta-llama/llama-3.3-70b-instruct"];
 
     supportedModelsCache = {
       models: finalChatList,
@@ -258,91 +268,36 @@ export interface GroqCompletionOptions {
 
 /**
  * Cascading failover helper:
- * Tier 2 -> Google Gemini (gemini-2.5-flash)
+ * Tier 2 -> Google Gemini (gemini-3.5-flash-lite)
  * Tier 3 -> OpenRouter AI (meta-llama/llama-3.3-70b-instruct)
  */
-async function handleFailover(
-  options: GroqCompletionOptions,
-  reason: string
-): Promise<{
+async function executeGroq(options: GroqCompletionOptions): Promise<{
   content: string;
   usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   latencyMs: number;
   model: string;
 }> {
-  // Tier 2: Google Gemini Backup
-  const geminiKey = await getEffectiveGeminiApiKey();
-  if (geminiKey) {
-    try {
-      console.warn(
-        `[AI Failover Tier 2] ${reason}. Routing stage "${options.stage || 'general'}" to Gemini (${mapModelToGemini(options.model)})...`
-      );
-      return await callGemini({
-        ...options,
-        model: mapModelToGemini(options.model),
-      });
-    } catch (geminiErr: any) {
-      console.warn(
-        `[AI Failover Tier 2 -> 3] Gemini backup failed (${geminiErr.message}). Escalating to OpenRouter tertiary backup...`
-      );
-    }
-  }
-
-  // Tier 3: OpenRouter Multi-Provider Backup
-  const openrouterKey = await getEffectiveOpenRouterApiKey();
-  if (openrouterKey) {
-    console.warn(
-      `[AI Failover Tier 3] Routing stage "${options.stage || 'general'}" to OpenRouter (${mapModelToOpenRouter(options.model)})...`
-    );
-    return await callOpenRouter({
-      ...options,
-      model: mapModelToOpenRouter(options.model),
-    });
-  }
-
-  throw new Error(`AI generation failed: Groq (${reason}) and no backup providers available.`);
-}
-
-export async function callGroqWithRetry(options: GroqCompletionOptions): Promise<{
-  content: string;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  latencyMs: number;
-  model: string;
-}> {
-  // 1. Direct routing if model is explicitly a Gemini model
-  if (options.model && options.model.startsWith("gemini-")) {
-    return await callGemini(options);
-  }
-
-  // 2. Direct routing if model is explicitly an OpenRouter model
-  if (
-    options.model &&
-    (options.model.startsWith("meta-llama/") ||
-      options.model.startsWith("anthropic/") ||
-      options.model.startsWith("deepseek/") ||
-      options.model.startsWith("openrouter/"))
-  ) {
-    return await callOpenRouter(options);
-  }
-
-  // 3. Fast-failover if Groq is currently in rate-limit cooldown
+  // Fast-failover if Groq is currently in rate-limit cooldown
   if (Date.now() < groqRateLimitedUntil) {
-    return await handleFailover(options, "Groq rate-limit cooldown active");
+    throw new Error("Groq rate-limit cooldown active");
   }
 
-  // 4. Check Groq API Key availability
   const groqKey = await getEffectiveGroqApiKey();
   if (!groqKey) {
-    return await handleFailover(options, "GROQ_API_KEY is not configured");
+    throw new Error("GROQ_API_KEY is not configured");
   }
 
   const client = await getGroqClient();
-  const model = options.model || (await getActiveAiModel());
-  const maxRetries = 3;
+  let model = options.model || (await getActiveAiModel());
+
+  // Automatic model mapping: map deprecated/unavailable model IDs to active high-speed Groq models
+  if (model === "llama-3.3-70b-versatile" || model === "llama3-70b-8192" || model.startsWith("gemini-")) {
+    model = "openai/gpt-oss-120b";
+  } else if (model === "llama-3.1-8b-instant" || model === "llama3-8b-8192") {
+    model = "openai/gpt-oss-20b";
+  }
+
+  const maxRetries = 2;
   let attempt = 0;
   let lastError: any = null;
 
@@ -368,15 +323,13 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
           }
         : undefined;
 
-      // Reset cooldown on successful Groq call
       groqRateLimitedUntil = 0;
 
-      // Log usage asynchronously to DB
-      if (usage && options.stage) {
+      if (usage) {
         logProviderUsage({
           provider: "groq",
           model,
-          stage: options.stage,
+          stage: options.stage || "general",
           prompt_tokens: usage.prompt_tokens,
           completion_tokens: usage.completion_tokens,
           total_tokens: usage.total_tokens,
@@ -385,12 +338,7 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
         }).catch(() => {});
       }
 
-      return {
-        content,
-        usage,
-        latencyMs,
-        model,
-      };
+      return { content, usage, latencyMs, model };
     } catch (err: any) {
       lastError = err;
       const isRateOrTokenLimit =
@@ -398,59 +346,102 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
         /rate_limit|rate limit|quota|tokens|tpm|tpd|rpd|resource_exhausted|insufficient_quota|overloaded/i.test(
           err?.message || ""
         );
-      const isTimeout = err?.code === "ETIMEDOUT" || err?.message?.includes("timeout");
-
-      // If token limits are over or rate limit encountered, immediately attempt cascading failover
       if (isRateOrTokenLimit) {
-        groqRateLimitedUntil = Date.now() + 60 * 1000; // 60s cooldown
-        return await handleFailover(
-          options,
-          `Groq token/rate limit hit (${err.message})`
-        );
+        groqRateLimitedUntil = Date.now() + 60 * 1000;
+        throw err;
       }
-
-      if ((isRateOrTokenLimit || isTimeout || err?.status >= 500) && attempt < maxRetries) {
-        const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
-        console.warn(`Groq API call failed (attempt ${attempt}/${maxRetries}). Retrying in ${Math.round(delay)}ms... Error: ${err.message}`);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        continue;
-      }
-
-      // Log failed usage
-      if (options.stage) {
-        logProviderUsage({
-          provider: "groq",
-          model,
-          stage: options.stage,
-          prompt_tokens: 0,
-          completion_tokens: 0,
-          total_tokens: 0,
-          latency_ms: Date.now() - start,
-          status: "error",
-          error_message: err?.message || "Unknown error",
-        }).catch(() => {});
-      }
-
-      break;
     }
   }
 
-  // If all Groq retries failed, attempt cascading backup before throwing
-  return await handleFailover(
-    options,
-    `Groq exhausted all retries (${lastError?.message})`
-  );
+  throw lastError || new Error("Groq execution failed");
+}
+
+/**
+ * 3-Tier Enterprise AI Engine:
+ * Tier 1 (PRIMARY): Google Gemini (gemini-3.5-flash-lite)
+ * Tier 2 (FALLBACK): Groq LPU (openai/gpt-oss-120b)
+ * Tier 3 (TERTIARY): OpenRouter (meta-llama/llama-3.3-70b-instruct)
+ */
+export async function callGroqWithRetry(options: GroqCompletionOptions): Promise<{
+  content: string;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+  latencyMs: number;
+  model: string;
+}> {
+  // 1. Explicit OpenRouter routing
+  if (
+    options.model &&
+    (options.model.startsWith("meta-llama/") ||
+      options.model.startsWith("anthropic/") ||
+      options.model.startsWith("deepseek/") ||
+      options.model.startsWith("openrouter/"))
+  ) {
+    return await callOpenRouter(options);
+  }
+
+  // 2. Explicit Groq routing
+  if (
+    options.model &&
+    (options.model.startsWith("llama-") ||
+      options.model.startsWith("openai/gpt-oss") ||
+      options.model.startsWith("gsk_"))
+  ) {
+    try {
+      return await executeGroq(options);
+    } catch (err: any) {
+      console.warn(`[Groq Explicit Failed] ${err.message}. Falling back to Gemini Tier 1...`);
+    }
+  }
+
+  // 3. TIER 1 (PRIMARY): Google Gemini
+  const geminiKey = await getEffectiveGeminiApiKey();
+  if (geminiKey) {
+    try {
+      return await callGemini({
+        ...options,
+        model: mapModelToGemini(options.model),
+      });
+    } catch (geminiErr: any) {
+      console.warn(
+        `[AI Failover Tier 1 -> 2] Gemini primary failed (${geminiErr.message}). Escalating to Groq LPU backup...`
+      );
+    }
+  }
+
+  // 4. TIER 2 (FALLBACK): Groq LPU
+  try {
+    return await executeGroq(options);
+  } catch (groqErr: any) {
+    console.warn(
+      `[AI Failover Tier 2 -> 3] Groq backup failed (${groqErr.message}). Escalating to OpenRouter tertiary backup...`
+    );
+  }
+
+  // 5. TIER 3 (TERTIARY FALLBACK): OpenRouter Multi-Provider
+  const openrouterKey = await getEffectiveOpenRouterApiKey();
+  if (openrouterKey) {
+    return await callOpenRouter({
+      ...options,
+      model: mapModelToOpenRouter(options.model),
+    });
+  }
+
+  throw new Error("All AI providers (Gemini Tier 1, Groq Tier 2, OpenRouter Tier 3) exhausted or unavailable.");
 }
 
 async function logProviderUsage(record: {
   provider: string;
   model: string;
-  stage: string;
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-  latency_ms: number;
-  status: string;
+  stage?: string;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  total_tokens?: number;
+  latency_ms?: number;
+  status?: string;
   error_message?: string;
 }) {
   try {
@@ -462,18 +453,16 @@ async function logProviderUsage(record: {
       [
         record.provider,
         record.model,
-        record.stage,
-        record.prompt_tokens,
-        record.completion_tokens,
-        record.total_tokens,
-        record.latency_ms,
-        record.status,
+        record.stage || "general",
+        record.prompt_tokens || 0,
+        record.completion_tokens || 0,
+        record.total_tokens || 0,
+        record.latency_ms || 0,
+        record.status || "success",
         record.error_message || null,
       ]
     );
-  } catch (e) {
-    // Non-blocking telemetry
-  }
+  } catch {}
 }
 
 export { checkGeminiHealth, getEffectiveGeminiApiKey, callGemini } from "./gemini-client";

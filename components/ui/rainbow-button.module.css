@@ -1,0 +1,111 @@
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.outline {
+  position: relative;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-bottom-color: transparent !important;
+}
+
+.outline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-1, #e11d48),
+    var(--color-5, #22c55e),
+    var(--color-3, #3b82f6),
+    var(--color-4, #06b6d4),
+    var(--color-2, #a855f7),
+    var(--color-1, #e11d48)
+  );
+  background-size: 200% 100%;
+  animation: rainbow var(--speed, 3s) infinite linear;
+  pointer-events: none;
+}
+
+.outline::before {
+  content: "";
+  position: absolute;
+  bottom: -20%;
+  left: 50%;
+  z-index: 0;
+  height: 25%;
+  width: 60%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    var(--color-1, #e11d48),
+    var(--color-5, #22c55e),
+    var(--color-3, #3b82f6),
+    var(--color-4, #06b6d4),
+    var(--color-2, #a855f7),
+    var(--color-1, #e11d48)
+  );
+  background-size: 200% 100%;
+  animation: rainbow var(--speed, 3s) infinite linear;
+  filter: blur(0.75rem);
+  opacity: 0.65;
+  pointer-events: none;
+  transition: opacity var(--duration-fast, 150ms) var(--ease-standard, ease), filter var(--duration-fast, 150ms) var(--ease-standard, ease);
+}
+
+.outline:hover:not(:disabled) {
+  border-color: var(--border-strong) !important;
+  border-bottom-color: transparent !important;
+}
+
+.outline:hover:not(:disabled)::before {
+  opacity: 0.95;
+  filter: blur(0.85rem);
+  animation-duration: 1.8s;
+}
+
+.outline:hover:not(:disabled)::after {
+  animation-duration: 1.8s;
+}
+
+.default {
+  position: relative;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid transparent !important;
+}
+
+.default::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    90deg,
+    var(--color-1, #e11d48),
+    var(--color-5, #22c55e),
+    var(--color-3, #3b82f6),
+    var(--color-4, #06b6d4),
+    var(--color-2, #a855f7),
+    var(--color-1, #e11d48)
+  );
+  background-size: 200% 100%;
+  animation: rainbow var(--speed, 3s) infinite linear;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}

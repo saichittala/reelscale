@@ -26,6 +26,13 @@ export async function GET(request: NextRequest) {
     }
 
     const topics = await getSeoTopics(status);
+    if (status === "suggested") {
+      const { getPublishedBlogsAsync } = await import("../../../lib/blog");
+      const { filterOutDuplicateTopics } = await import("../../../lib/seo/topic-engine");
+      const publishedBlogs = await getPublishedBlogsAsync().catch(() => []);
+      const uniqueTopics = filterOutDuplicateTopics(topics, publishedBlogs);
+      return NextResponse.json({ success: true, topics: uniqueTopics });
+    }
     return NextResponse.json({ success: true, topics });
   } catch (error: any) {
     return NextResponse.json(

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./hooks/useAuth";
 import { Layout } from "./components/Layout";
-import { Client, User, Lead, Blog, DashboardPage } from "./types";
+import { Client, User, Lead, Blog, DashboardPage, EditorialValidationReport } from "./types";
 import {
   customFetch,
   fetchClients,
@@ -21,6 +21,7 @@ import {
   apiUpdateLead,
   apiDeleteLead,
   apiSaveBlog,
+  apiValidateBlog,
   apiDeleteBlog,
 } from "./services/api";
 
@@ -41,7 +42,9 @@ import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
 import { SystemStatus } from "./modules/SystemStatus";
 import { Button, Input, DatePicker, toast } from "@/components/ui";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Sparkles } from "lucide-react";
+import { GenerateAiBlogModal } from "./components/GenerateAiBlogModal";
+import { BlogValidationModal } from "./components/BlogValidationModal";
 import { IconSearch, IconLogOut } from "./components/Icons";
 import { CustomSelect } from "./components/CustomSelect";
 import { STORAGE_KEYS } from "./constants";
@@ -223,6 +226,50 @@ export default function DashboardMainPage() {
 
   // Active blog being edited
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
+  const [showAiGenerateModal, setShowAiGenerateModal] = useState(false);
+  const [aiModalAutoStart, setAiModalAutoStart] = useState(false);
+  const [validationModalData, setValidationModalData] = useState<{
+    blog: Blog;
+    report: EditorialValidationReport;
+  } | null>(null);
+
+  const handleAiBlogPublished = useCallback(
+    (newBlog: Blog, validationReport?: EditorialValidationReport) => {
+      // Prepend newly published blog to the very top of blogs list immediately
+      setBlogs((prev) => {
+        const next = [
+          newBlog,
+          ...prev.filter(
+            (b) => b.slug !== newBlog.slug && String(b.id) !== String(newBlog.id)
+          ),
+        ];
+        return next;
+      });
+
+      if (validationReport) {
+        setValidationModalData({
+          blog: newBlog,
+          report: validationReport,
+        });
+      }
+
+      // Re-fetch in background to keep data in sync, while strictly preserving newBlog at the top
+      fetchBlogs()
+        .then((fresh) => {
+          if (fresh && fresh.length > 0) {
+            setBlogs((prev) => {
+              const withoutNew = fresh.filter(
+                (b) =>
+                  b.slug !== newBlog.slug && String(b.id) !== String(newBlog.id)
+              );
+              return [newBlog, ...withoutNew];
+            });
+          }
+        })
+        .catch(() => {});
+    },
+    []
+  );
 
   // Active selected leads for bulk delete option
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
@@ -278,6 +325,15 @@ export default function DashboardMainPage() {
       } catch {
         if (mounted) setSysIsOperational(false);
       }
+
+      // Autonomous AI Blog Automation schedule evaluation
+      try {
+        await customFetch("/api/ai/schedule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "evaluate-schedule" }),
+        });
+      } catch {}
     };
     checkSystemHealth();
     const interval = setInterval(checkSystemHealth, 60000);
@@ -720,29 +776,74 @@ export default function DashboardMainPage() {
   const handleSaveBlog = async (blogData: Blog) => {
     if (blogData.id) {
       showToast("Updating...", "loading");
+    } else {
+      showToast("Publishing blog...", "loading");
     }
     try {
-      await apiSaveBlog(blogData);
+      const result = await apiSaveBlog(blogData);
+      const today = new Date().toISOString().split("T")[0];
+      const savedBlog: Blog = result?.blog || {
+        ...blogData,
+        id: blogData.id || Date.now().toString(),
+        updatedDate: today,
+        publishedDate: blogData.publishedDate || today,
+      };
+
       showToast(
-        blogData.id ? "Blog updated successfully" : "Blog created successfully"
+        blogData.id ? "Blog updated successfully" : "Blog published successfully",
+        "success"
       );
       setEditingBlog(null);
       setPage("blogs");
-      if (blogData.id) {
-        setBlogs((prev) =>
-          prev.map((b) =>
-            String(b.id) === String(blogData.id) ? { ...b, ...blogData } : b
-          )
+
+      // Prepend the recently saved/published blog to the very top of blogs list immediately
+      setBlogs((prev) => {
+        const remaining = prev.filter(
+          (b) => String(b.id) !== String(savedBlog.id) && b.slug !== savedBlog.slug
         );
-      } else {
-        setBlogsLoading(true);
-        const data = await fetchBlogs();
-        setBlogs(data);
+        return [savedBlog, ...remaining];
+      });
+
+      // Show validation modal if validation report is available
+      if (result?.validation) {
+        setValidationModalData({
+          blog: savedBlog,
+          report: result.validation,
+        });
       }
+
+      // Re-fetch in background to ensure sync, while strictly keeping savedBlog at the top
+      fetchBlogs()
+        .then((fresh) => {
+          if (fresh && fresh.length > 0) {
+            setBlogs((prev) => {
+              const remaining = fresh.filter(
+                (b) => String(b.id) !== String(savedBlog.id) && b.slug !== savedBlog.slug
+              );
+              return [savedBlog, ...remaining];
+            });
+          }
+        })
+        .catch(() => {});
     } catch (err: any) {
       showToast(err.message || "Failed to save blog", "error");
     } finally {
       setBlogsLoading(false);
+    }
+  };
+
+  const handleInspectBlogValidation = async (blog: Blog) => {
+    showToast("Inspecting editorial & SEO validation...", "loading");
+    try {
+      const rep = await apiValidateBlog(blog);
+      if (rep) {
+        showToast(`Validation score: ${rep.overallScore}/100 (${rep.status.toUpperCase()})`, "success");
+        setValidationModalData({ blog, report: rep });
+      } else {
+        showToast("Could not retrieve validation report", "error");
+      }
+    } catch {
+      showToast("Failed to run validation check", "error");
     }
   };
 
@@ -1120,16 +1221,30 @@ export default function DashboardMainPage() {
   );
 
   const createBlogBtn = (
-    <Button
-      variant="primary"
-      onClick={() => {
-        setEditingBlog(null);
-        setPage("create-blog");
-      }}
-    >
-      <img src="/assets/icons/add.svg" width="18" alt="" />
-      <span>Create Blog</span>
-    </Button>
+    <div className="df-g8 al-c">
+      <Button
+        variant="ai"
+        onClick={() => {
+          setAiModalAutoStart(true);
+          setShowAiGenerateModal(true);
+        }}
+        title="Directly auto-generate AI Blog and publish to production"
+      >
+        <Sparkles size={16} />
+        <span>Generate with AI</span>
+      </Button>
+
+      <Button
+        variant="primary"
+        onClick={() => {
+          setEditingBlog(null);
+          setPage("create-blog");
+        }}
+      >
+        <img src="/assets/icons/add.svg" width="18" alt="" />
+        <span>Create Blog</span>
+      </Button>
+    </div>
   );
 
   const systemStatusActionsBtn = (
@@ -1364,6 +1479,10 @@ export default function DashboardMainPage() {
                 setPage("create-blog");
               }}
               onManageCategories={() => setPage("blog-categories")}
+              onGenerateAiBlog={() => {
+                setAiModalAutoStart(true);
+                setShowAiGenerateModal(true);
+              }}
               setConfirmModal={setConfirmModal}
               search={blogSearch}
               onSearchChange={setBlogSearch}
@@ -1371,6 +1490,7 @@ export default function DashboardMainPage() {
               onStatusFilterChange={setBlogStatusFilter}
               categoryFilter={blogCategoryFilter}
               onCategoryFilterChange={setBlogCategoryFilter}
+              onValidateBlog={handleInspectBlogValidation}
             />
           )}
 
@@ -1389,6 +1509,7 @@ export default function DashboardMainPage() {
               onNavigateTab={(tab) => setPage(tab as DashboardPage)}
               showToast={showToast}
               onHeaderChange={handleAiWritingHeaderChange}
+              onBlogPublished={handleAiBlogPublished}
             />
           )}
 
@@ -1406,6 +1527,8 @@ export default function DashboardMainPage() {
               editingBlog={editingBlog}
               blogCategories={blogCategories}
               onSaveBlog={handleSaveBlog}
+              onBlogPublished={handleAiBlogPublished}
+              onShowValidation={(blog, report) => setValidationModalData({ blog, report })}
               showToast={showToast}
               onBack={() => {
                 setEditingBlog(null);
@@ -1593,6 +1716,31 @@ export default function DashboardMainPage() {
           </div>
         </div>
       )}
+
+      {/* Manual AI Blog Generator Modal with Direct Production Publish */}
+      <GenerateAiBlogModal
+        isOpen={showAiGenerateModal}
+        onClose={() => {
+          setShowAiGenerateModal(false);
+          setAiModalAutoStart(false);
+        }}
+        autoStart={aiModalAutoStart}
+        blogCategories={blogCategories}
+        onBlogPublished={handleAiBlogPublished}
+        showToast={showToast}
+      />
+
+      {/* Editorial & SEO Quality Validation Modal */}
+      <BlogValidationModal
+        isOpen={!!validationModalData}
+        onClose={() => setValidationModalData(null)}
+        blog={validationModalData?.blog || null}
+        report={validationModalData?.report || null}
+        onEditBlog={(b) => {
+          setEditingBlog(b);
+          setPage("create-blog");
+        }}
+      />
     </>
   );
 }

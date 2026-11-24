@@ -1,6 +1,27 @@
 {
+  "schedule_type": "daily",
+  "blogs_per_active_day": 1,
+  "max_generation_qty": 1,
+  "generation_time": "09:30",
+  "active_weekdays": [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday"
+  ],
+  "interval_days": 1,
+  "weekly_quantities": {
+    "friday": 1,
+    "monday": 1,
+    "saturday": 0,
+    "sunday": 0,
+    "thursday": 1,
+    "tuesday": 1,
+    "wednesday": 1
+  },
   "is_active": true,
-  "last_run_at": null,
+  "last_run_at": "2026-11-24T11:00:49.259Z",
   "next_run_at": null,
-  "updated_at": "2026-11-23T10:50:57.545Z"
+  "updated_at": "2026-11-24T11:07:25.871Z"
 }

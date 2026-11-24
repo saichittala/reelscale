@@ -1,5 +1,6 @@
 import { getPublishedBlogsAsync } from "../blog";
 import { getAllValidReelScaleUrls, isValidReelScaleUrl } from "../seo/url-registry";
+import { isHeadlineDuplicate } from "../seo/topic-engine";
 
 export interface ValidationCheckItem {
   id: string;
@@ -51,7 +52,7 @@ export async function validateArticleContent(article: {
 
   // 1. Duplicate title check
   const duplicateTitleMatch = publishedBlogs.find(
-    (b) => b.title.toLowerCase() === article.title.toLowerCase() && b.slug !== article.slug
+    (b) => b.slug !== article.slug && (b.title.toLowerCase() === article.title.toLowerCase() || isHeadlineDuplicate(article.title, [b]))
   );
   checks.push({
     id: "duplicate_title",
@@ -60,8 +61,8 @@ export async function validateArticleContent(article: {
     passed: !duplicateTitleMatch,
     score: duplicateTitleMatch ? 0 : 100,
     details: duplicateTitleMatch
-      ? `Duplicate title found with existing article '${duplicateTitleMatch.title}' (/blog/${duplicateTitleMatch.slug})`
-      : "Title is completely unique across the catalog.",
+      ? `Duplicate or highly similar headline matches existing article '${duplicateTitleMatch.title}' (/blog/${duplicateTitleMatch.slug})`
+      : "Headline is completely unique across published and posted catalog.",
   });
 
   // 2. Duplicate slug check
@@ -181,8 +182,8 @@ export async function validateArticleContent(article: {
     details: `Meta description is ${metaDescLength} characters long (Optimal: 130-160 characters).`,
   });
 
-  // 11. Internal links count & validity
-  const internalLinkRegex = /\[([^\]]+)\]\((https:\/\/reelscale\.in[^)]+|\/[^)]+)\)/g;
+  // 11. Internal links count & validity (Target: 5-6 backlinks for reelscale.in)
+  const internalLinkRegex = /\[([^\]]+)\]\((https:\/\/reelscale\.in[^)]*|\/[^)]*)\)/gi;
   const foundLinks: { text: string; url: string }[] = [];
   let linkMatch;
   while ((linkMatch = internalLinkRegex.exec(article.content)) !== null) {
@@ -190,14 +191,14 @@ export async function validateArticleContent(article: {
   }
 
   const validInternalLinks = foundLinks.filter((l) => isValidReelScaleUrl(l.url, validUrls));
-  const hasSufficientLinks = validInternalLinks.length >= 2;
+  const hasTargetBacklinks = validInternalLinks.length >= 5 && validInternalLinks.length <= 6;
   checks.push({
     id: "internal_links",
-    name: "Contextual Internal Links",
+    name: "Backlinks to ReelScale.in (Target: 5-6)",
     category: "seo",
-    passed: hasSufficientLinks,
-    score: hasSufficientLinks ? 100 : foundLinks.length > 0 ? 60 : 30,
-    details: `Found ${foundLinks.length} internal links (${validInternalLinks.length} verified against site registry).`,
+    passed: validInternalLinks.length >= 5,
+    score: hasTargetBacklinks ? 100 : validInternalLinks.length >= 4 ? 85 : 50,
+    details: `Found ${validInternalLinks.length} verified backlinks to reelscale.in (${validInternalLinks.length >= 5 ? "Target 5-6 backlinks verified" : "Fewer than 5 backlinks"}).`,
   });
 
   // 12. Featured image relevance

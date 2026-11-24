@@ -192,6 +192,136 @@ export async function GET(request: Request) {
   // ── 6. AI Automation Settings (Sanity Content Lake) ──
   const aiSettingsPromise = getAiSettingsFromSanity();
 
+  // ── 7. AI Token Usage & Current Realtime Activity ──
+  const aiUsagePromise = (async () => {
+    try {
+      const sql = getDb();
+      const [totalRow, todayRow, byProviderRows, byStageRows, recentCalls, activeJobs] = await Promise.all([
+        sql.query(`
+          SELECT
+            COUNT(*) as total_requests,
+            COALESCE(SUM(total_tokens), 0) as total_tokens,
+            COALESCE(SUM(prompt_tokens), 0) as prompt_tokens,
+            COALESCE(SUM(completion_tokens), 0) as completion_tokens,
+            COALESCE(AVG(latency_ms), 0) as avg_latency_ms
+          FROM ai_provider_usage;
+        `),
+        sql.query(`
+          SELECT
+            COUNT(*) as today_requests,
+            COALESCE(SUM(total_tokens), 0) as today_tokens
+          FROM ai_provider_usage
+          WHERE created_at >= CURRENT_DATE;
+        `),
+        sql.query(`
+          SELECT
+            provider,
+            model,
+            COUNT(*) as requests,
+            COALESCE(SUM(total_tokens), 0) as tokens,
+            COALESCE(AVG(latency_ms), 0) as avg_latency_ms
+          FROM ai_provider_usage
+          GROUP BY provider, model
+          ORDER BY tokens DESC;
+        `),
+        sql.query(`
+          SELECT
+            stage,
+            COUNT(*) as requests,
+            COALESCE(SUM(total_tokens), 0) as tokens
+          FROM ai_provider_usage
+          GROUP BY stage
+          ORDER BY tokens DESC;
+        `),
+        sql.query(`
+          SELECT
+            id, provider, model, stage, total_tokens, latency_ms, status, created_at
+          FROM ai_provider_usage
+          ORDER BY created_at DESC
+          LIMIT 8;
+        `),
+        sql.query(`
+          SELECT
+            id, title, status, stage, tokens_used, created_at
+          FROM ai_generation_jobs
+          WHERE status IN ('queued', 'processing')
+          ORDER BY created_at ASC
+          LIMIT 5;
+        `),
+      ]);
+
+      const stageLabels: Record<string, string> = {
+        stage_4_writing: "Full Article Generation",
+        internal_linking: "Semantic Internal Linking",
+        stage_3_outline: "Article Outline Hierarchy",
+        stage_5_metadata: "SEO Metadata & Schema",
+        stage_2_keyword_strategy: "Keyword & Search Intent",
+        topic_research: "Topic & Trend Discovery",
+        test_prompt_master_brand: "Brand Tone Testing",
+        test_prompt_seo_strategy: "SEO Strategy Testing",
+        backlink_discovery: "Backlink Discovery",
+        general: "AI Prompt Processing",
+      };
+
+      return {
+        totalTokens: Number(totalRow[0]?.total_tokens || 0),
+        promptTokens: Number(totalRow[0]?.prompt_tokens || 0),
+        completionTokens: Number(totalRow[0]?.completion_tokens || 0),
+        totalRequests: Number(totalRow[0]?.total_requests || 0),
+        avgLatencyMs: Math.round(Number(totalRow[0]?.avg_latency_ms || 0)),
+        todayTokens: Number(todayRow[0]?.today_tokens || 0),
+        todayRequests: Number(todayRow[0]?.today_requests || 0),
+        byProvider: byProviderRows.map((r: any) => ({
+          provider: r.provider,
+          model: r.model,
+          requests: Number(r.requests),
+          tokens: Number(r.tokens),
+          avgLatencyMs: Math.round(Number(r.avg_latency_ms || 0)),
+        })),
+        byStage: byStageRows.map((r: any) => ({
+          stage: r.stage,
+          label: stageLabels[r.stage] || r.stage.replace(/_/g, " "),
+          requests: Number(r.requests),
+          tokens: Number(r.tokens),
+        })),
+        recentCalls: recentCalls.map((r: any) => ({
+          id: r.id,
+          provider: r.provider,
+          model: r.model,
+          stage: r.stage,
+          stageLabel: stageLabels[r.stage] || r.stage.replace(/_/g, " "),
+          tokens: Number(r.total_tokens),
+          latencyMs: Number(r.latency_ms),
+          status: r.status,
+          createdAt: r.created_at,
+        })),
+        activeJobs: activeJobs.map((r: any) => ({
+          id: r.id,
+          title: r.title,
+          status: r.status,
+          stage: r.stage,
+          tokensUsed: Number(r.tokens_used || 0),
+          createdAt: r.created_at,
+        })),
+      };
+    } catch (err: any) {
+      console.warn("Failed to query AI token usage:", err?.message);
+      return {
+        totalTokens: 0,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalRequests: 0,
+        avgLatencyMs: 0,
+        todayTokens: 0,
+        todayRequests: 0,
+        byProvider: [],
+        byStage: [],
+        recentCalls: [],
+        activeJobs: [],
+      };
+    }
+  })();
+
   const [
     redisResult,
     sanityResult,
@@ -205,6 +335,7 @@ export async function GET(request: Request) {
     activeSchedule,
     supportedModels,
     aiSettings,
+    aiUsage,
   ] = await Promise.all([
     redisHealthPromise,
     sanityHealthPromise,
@@ -218,6 +349,7 @@ export async function GET(request: Request) {
     activeSchedulePromise,
     supportedModelsPromise,
     aiSettingsPromise,
+    aiUsagePromise,
   ]);
 
   // Generate 30-day preview
@@ -226,16 +358,74 @@ export async function GET(request: Request) {
     schedulePreview = calculate30DayPreview(activeSchedule);
   }
 
+  // AI service status and latency evaluation
+  const aiConnected =
+    groqResult.status === "connected" ||
+    geminiResult.status === "connected" ||
+    openrouterResult.status === "connected";
+
+  const aiLatencyMs =
+    (geminiResult.status === "connected" ? geminiResult.latencyMs : null) ??
+    (groqResult.status === "connected" ? groqResult.latencyMs : null) ??
+    (openrouterResult.status === "connected" ? openrouterResult.latencyMs : null) ??
+    250;
+
+  const isGenerating = aiUsage.activeJobs.some((j: any) => j.status === "processing");
+  const hasQueued = aiUsage.activeJobs.some((j: any) => j.status === "queued");
+
+  const currentConsumer = isGenerating
+    ? `Generating Blog: "${aiUsage.activeJobs[0].title}" (${aiUsage.activeJobs[0].stage})`
+    : hasQueued
+    ? `${aiUsage.activeJobs.length} Job(s) Queued in Generation Pipeline`
+    : aiSettings?.is_enabled && !aiSettings?.is_paused
+    ? `Automated Scheduler Ready (Next run at ${schedulePreview?.nextScheduledRun ? new Date(schedulePreview.nextScheduledRun).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "09:00 IST"})`
+    : "System Standby • Idle";
+
+  const aiServiceStatus = {
+    status: aiConnected ? "connected" : "error",
+    latencyMs: aiLatencyMs,
+    primaryProvider: "gemini",
+    primaryModel: geminiResult.activeModel || "gemini-3.5-flash-lite",
+    activeModel: geminiResult.activeModel || "gemini-3.5-flash-lite",
+    cascadePolicy: "3-Tier Failover: Gemini (Tier 1) → Groq LPU (Tier 2) → OpenRouter (Tier 3)",
+    tokens: {
+      total: aiUsage.totalTokens,
+      today: aiUsage.todayTokens,
+      prompt: aiUsage.promptTokens,
+      completion: aiUsage.completionTokens,
+      requests: aiUsage.totalRequests,
+      todayRequests: aiUsage.todayRequests,
+      avgLatencyMs: aiUsage.avgLatencyMs,
+      byProvider: aiUsage.byProvider,
+      byStage: aiUsage.byStage,
+    },
+    currentActivity: {
+      status: isGenerating ? "generating" : hasQueued ? "queued" : "idle",
+      activeJob: aiUsage.activeJobs[0] || null,
+      activeJobsCount: aiUsage.activeJobs.length,
+      isGenerating,
+      activeConsumer: currentConsumer,
+      currentlyUsing: [
+        "Multi-Stage Blog Article Writer (8-Stage Generation)",
+        "Semantic Internal Link Discovery Engine",
+        "SEO Keyword Clustering & Search Intent Analyzer",
+        "Autonomous Daily Cron Scheduler (Asia/Kolkata)",
+        "Automated SEO Metadata & FAQ Schema Generator",
+      ],
+      recentCalls: aiUsage.recentCalls,
+    },
+  };
+
   // Overall status evaluation
   const coreHealthy =
     redisResult.status === "connected" &&
     sanityResult.status === "connected" &&
     neonResult.status === "connected" &&
-    groqResult.status === "connected";
+    aiConnected;
 
   const overall = coreHealthy
     ? "operational"
-    : neonResult.status === "connected" || groqResult.status === "connected"
+    : neonResult.status === "connected" || aiConnected
     ? "degraded"
     : "offline";
 
@@ -252,9 +442,9 @@ export async function GET(request: Request) {
           : "System Connectivity Offline",
       activeServices: [
         sanityResult.status === "connected" && "Sanity Content Lake (Primary Blog DB)",
-        groqResult.status === "connected" && "Groq AI Cloud",
-        geminiResult.status === "connected" && "Google Gemini (Active AI Backup)",
-        openrouterResult.status === "connected" && "OpenRouter AI (Tertiary AI Backup)",
+        geminiResult.status === "connected" && "Google Gemini (Primary AI Engine)",
+        groqResult.status === "connected" && "Groq AI Cloud (Active LPU Backup)",
+        openrouterResult.status === "connected" && "OpenRouter AI (Tertiary Backup)",
         redisResult.status === "connected" && "Redis Cache DB",
         neonResult.status === "connected" && "Neon Postgres (CRM & Leads)",
       ].filter(Boolean),
@@ -263,6 +453,7 @@ export async function GET(request: Request) {
       neon: neonResult,
       redis: redisResult,
       sanity: sanityResult,
+      ai: aiServiceStatus,
       groq: groqResult,
       gemini: geminiResult,
       openrouter: openrouterResult,

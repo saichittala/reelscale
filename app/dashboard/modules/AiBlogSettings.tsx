@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Blog } from "../types";
-import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { Button, Input, Slider, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
 import { customFetch } from "../services/api";
 import {
@@ -58,7 +58,7 @@ export function AiBlogSettings({
   const [generationTime, setGenerationTime] = useState<string>("09:00");
   const [timezone] = useState<string>("Asia/Kolkata");
   const [autoPublish, setAutoPublish] = useState<boolean>(true);
-  const [selectedModel, setSelectedModel] = useState<string>("llama-3.3-70b-versatile");
+  const [selectedModel, setSelectedModel] = useState<string>("gemini-3.5-flash-lite");
   const [savingSchedule, setSavingSchedule] = useState(false);
 
   // Dynamic 30-day Preview
@@ -91,12 +91,11 @@ export function AiBlogSettings({
   const [triggeringBatch, setTriggeringBatch] = useState(false);
 
   const supportedModelsList = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it",
-    "gemini-2.5-flash",
-    "meta-llama/llama-3.3-70b-instruct",
+    { value: "gemini-3.5-flash-lite", label: "Google Gemini 3.5 Flash Lite (Tier 1 Primary Engine)" },
+    { value: "gemini-3-flash-preview", label: "Google Gemini 3 Flash Preview (Tier 1 High Capacity)" },
+    { value: "openai/gpt-oss-120b", label: "Groq LPU: GPT-OSS 120B (Tier 2 Fast Fallback)" },
+    { value: "meta-llama/llama-3.3-70b-instruct", label: "OpenRouter: LLaMA 3.3 70B (Tier 3 Tertiary)" },
+    { value: "qwen/qwen3.8-27b", label: "Groq LPU: Qwen 3.8 27B" },
   ];
 
   // Fetch Schedule Configuration
@@ -447,6 +446,37 @@ export function AiBlogSettings({
     };
   }, []);
 
+  // Autonomous schedule evaluation heartbeat (every 30s while dashboard is active)
+  useEffect(() => {
+    if (!automationActive) return;
+
+    let isEvaluating = false;
+    const evaluateCron = async () => {
+      if (isEvaluating) return;
+      isEvaluating = true;
+      try {
+        const res = await customFetch("/api/ai/schedule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "evaluate-schedule" }),
+        });
+        const json = await res.json();
+        if (json.success && json.result?.triggered) {
+          showToast?.(`AI Automation: ${json.result.message}`, "success");
+          fetchPreview();
+        }
+      } catch {
+        // silent background check
+      } finally {
+        isEvaluating = false;
+      }
+    };
+
+    evaluateCron();
+    const intervalId = setInterval(evaluateCron, 30000);
+    return () => clearInterval(intervalId);
+  }, [automationActive, fetchPreview, showToast]);
+
   return (
     <div className="ai-view-container">
       {/* ─── Unified Metrics Row (ReelScale Standard .stat-grid) ─── */}
@@ -485,7 +515,7 @@ export function AiBlogSettings({
         <div className="stat-card red">
           <div className="stat-label">AI Inference Engine</div>
           <div className="stat-value text-lg">
-            <span>Groq LPU</span>
+            <span>Gemini (Primary Tier 1)</span>
           </div>
           <div className="stat-icon">
             <Cpu size={20} className="text-[var(--red)]" />
@@ -568,7 +598,7 @@ export function AiBlogSettings({
                 </label>
                 <div className="schedule-mode-grid">
                   {[
-                    { id: "daily", label: "Every Day", desc: "Uniform daily batches" },
+                    { id: "daily", label: "Daily Production Publishing", desc: "Automated daily creation" },
                     { id: "selected_weekdays", label: "Selected Weekdays", desc: "Mon, Wed, Fri etc." },
                     { id: "alternate_days", label: "Alternate Days", desc: "Day on, day off" },
                     { id: "every_n_days", label: "Every N Days", desc: "Every 2, 3, 5, 7 days" },
@@ -583,7 +613,6 @@ export function AiBlogSettings({
                       className={`schedule-mode-card ${scheduleType === m.id ? "active" : ""}`}
                     >
                       <div className="schedule-mode-title">{m.label}</div>
-                      <div className="schedule-mode-desc">{m.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -678,17 +707,14 @@ export function AiBlogSettings({
               {/* Core Quantity & Timing Controls */}
               <div className="ai-controls-grid">
                 <div className="ai-control-field">
-                  <div className="ai-field-header">
-                    <label>Blogs Per Active Day</label>
-                    <span className="ai-field-value-pill">{blogsPerActiveDay} blogs</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
+                  <Slider
+                    label="Blogs Per Active Day"
+                    min={1}
                     max={maxGenerationQty}
+                    step={1}
                     value={blogsPerActiveDay}
-                    onChange={(e) => setBlogsPerActiveDay(Number(e.target.value))}
-                    className="ai-field-slider"
+                    onValueChange={(val) => setBlogsPerActiveDay(typeof val === "number" ? val : val[0])}
+                    format={(val) => `${val} blogs`}
                   />
                   <p className="ai-field-hint">Configurable daily target quota</p>
                 </div>
@@ -723,22 +749,22 @@ export function AiBlogSettings({
               {/* Publishing & Provider Config */}
               <div className="ai-provider-grid">
                 <div className="ai-control-field">
-                  <label className="ai-field-label">Active Groq AI Model</label>
+                  <label className="ai-field-label">Active Primary AI Model</label>
                   <CustomSelect
                     value={selectedModel}
                     onChange={(val) => setSelectedModel(val)}
                     options={supportedModelsList.map((m) => ({
-                      value: m,
-                      label: m,
+                      value: m.value,
+                      label: m.label,
                     }))}
                   />
-                  <p className="ai-field-hint">Connected to Groq LPU inference</p>
+                  <p className="ai-field-hint">Primary: Google Gemini (Tier 1) · Auto-failover: Groq LPU & OpenRouter</p>
                 </div>
 
                 <div className="ai-checkbox-card">
                   <div className="ai-checkbox-info">
                     <span className="ai-checkbox-title">Auto-Publish to Sanity</span>
-                    <span className="ai-checkbox-desc">
+                    <span className="ai-checkbox-desc dn">
                       {autoPublish
                         ? "Publishes to Sanity Studio when validation score >= 80"
                         : "Saves as Draft in Sanity for editorial review"}

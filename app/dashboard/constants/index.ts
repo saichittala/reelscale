@@ -31,6 +31,10 @@ export const API_ROUTES = {
   SYSTEM_STATUS: "/api/system-status",
   UPLOAD: "/api/upload",
   AI_IMAGES: "/api/ai/images",
+  AI_GENERATE: "/api/ai/generate",
+  AI_JOBS: "/api/ai/jobs",
+  AI_TOPICS: "/api/ai/topics",
+  AI_BUFFER: "/api/ai/buffer",
   REVALIDATE: "/api/revalidate",
 } as const;
 

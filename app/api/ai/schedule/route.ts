@@ -13,6 +13,22 @@ import { saveAiSettingsToSanity } from "../../../sanity/ai-sync";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const actionParam = searchParams.get("action");
+
+  // Allow autonomous cron triggers (Vercel Cron, external pingers, or server workers)
+  if (actionParam === "evaluate-schedule" || actionParam === "evaluate") {
+    try {
+      const result = await evaluateAndTriggerScheduler();
+      return NextResponse.json({ success: true, result });
+    } catch (err: any) {
+      return NextResponse.json(
+        { success: false, message: err?.message || "Failed to evaluate schedule" },
+        { status: 500 }
+      );
+    }
+  }
+
   const rbac = await checkRole(request, ["admin", "blogger"]);
   if (!rbac.authorized) {
     return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
@@ -195,17 +211,22 @@ export async function POST(request: NextRequest) {
         const activeId = schedule?.id || null;
 
         const { createGenerationBatch, processNextJob } = await import("../../../lib/queue/job-queue");
-        const { getSeoTopics, researchAndSuggestTopics } = await import("../../../lib/seo/topic-engine");
+        const { getPublishedBlogsAsync } = await import("../../../lib/blog");
+        const { getSeoTopics, researchAndSuggestTopics, filterOutDuplicateTopics } = await import("../../../lib/seo/topic-engine");
 
+        const publishedBlogs = await getPublishedBlogsAsync().catch(() => []);
         let topics = await getSeoTopics("suggested");
-        if (topics.length < targetQuantity) {
+        let uniqueTopics = filterOutDuplicateTopics(topics, publishedBlogs);
+
+        if (uniqueTopics.length < targetQuantity) {
           try {
-            await researchAndSuggestTopics(targetQuantity);
+            await researchAndSuggestTopics(targetQuantity + 3);
             topics = await getSeoTopics("suggested");
+            uniqueTopics = filterOutDuplicateTopics(topics, publishedBlogs);
           } catch {}
         }
 
-        const selected = topics.slice(0, targetQuantity);
+        const selected = uniqueTopics.slice(0, targetQuantity);
         const jobs = selected.map((t) => ({
           title: t.title,
           category: t.category,

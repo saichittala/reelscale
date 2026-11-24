@@ -99,7 +99,7 @@ export async function createGenerationJob(params: {
       [
         jobId,
         params.batch_id || null,
-        params.topic_id || null,
+        typeof params.topic_id === "number" ? params.topic_id : (Number(params.topic_id) || null),
         params.title,
         slug,
         params.category || "Video Production",

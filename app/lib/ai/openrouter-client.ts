@@ -39,6 +39,16 @@ export async function getEffectiveOpenRouterApiKey(): Promise<string> {
   const envKey = getOpenRouterApiKey();
   if (envKey) return envKey;
 
+  // Check Sanity Environment Variables
+  try {
+    const { getEnvironmentVariablesFromSanity } = await import("../../sanity/env-sync");
+    const envVars = await getEnvironmentVariablesFromSanity();
+    if (envVars?.openrouterApiKey) {
+      process.env.OPENROUTER_API_KEY = envVars.openrouterApiKey;
+      return envVars.openrouterApiKey;
+    }
+  } catch {}
+
   try {
     const sql = getDb();
     const rows = await sql.query("SELECT openrouter_api_key FROM ai_automation_settings LIMIT 1;");
@@ -267,12 +277,12 @@ export async function checkOpenRouterHealth(): Promise<{
 async function logOpenRouterUsage(record: {
   provider: string;
   model: string;
-  stage: string;
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-  latency_ms: number;
-  status: string;
+  stage?: string;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  total_tokens?: number;
+  latency_ms?: number;
+  status?: string;
   error_message?: string;
 }) {
   try {
@@ -284,16 +294,14 @@ async function logOpenRouterUsage(record: {
       [
         record.provider,
         record.model,
-        record.stage,
-        record.prompt_tokens,
-        record.completion_tokens,
-        record.total_tokens,
-        record.latency_ms,
-        record.status,
+        record.stage || "general",
+        record.prompt_tokens || 0,
+        record.completion_tokens || 0,
+        record.total_tokens || 0,
+        record.latency_ms || 0,
+        record.status || "success",
         record.error_message || null,
       ]
     );
-  } catch (e) {
-    // Non-blocking telemetry
-  }
+  } catch {}
 }

@@ -10,6 +10,7 @@ import {
 } from "../../sanity/blog-sync";
 import { Blog } from "../../dashboard/types";
 import { redisGet, redisSet, redisInvalidatePattern } from "../../lib/redis";
+import { validateArticleContent } from "../../lib/editorial/validation-pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export async function GET() {
     }
 
     // 1. Fetch directly from Sanity (both Published and Drafts so dashboard can manage both)
-    const sanityQuery = `*[_type == "post"] | order(publishedDate desc, _createdAt desc) {
+    const sanityQuery = `*[_type == "post"] | order(publishedDate desc, updatedDate desc, _updatedAt desc, _createdAt desc) {
       _id,
       title,
       slug,
@@ -111,8 +112,30 @@ export async function POST(request: NextRequest) {
     await redisInvalidatePattern("sanity:blogs:*");
 
     switch (action) {
+      case "validate": {
+        const validation = await validateArticleContent({
+          title: data.title || "",
+          slug: data.slug || "",
+          description: data.description || "",
+          content: data.content || "",
+          category: data.category || "General",
+          focusKeyword: data.focusKeyword || "",
+          metaTitle: data.metaTitle || "",
+          metaDescription: data.metaDescription || "",
+          canonicalUrl: data.canonicalUrl || "",
+          featuredImage: data.featuredImage || "",
+          altText: data.altText || data.title || "",
+          faq: Array.isArray(data.faq) ? data.faq : [],
+        });
+        return NextResponse.json({ success: true, validation });
+      }
+
       case "add": {
-        const title = data.title || "Untitled Blog";
+        const title = (data.title || "").trim();
+        if (!title) {
+          return NextResponse.json({ success: false, message: "Blog title is required" }, { status: 400 });
+        }
+
         const slug = (data.slug || title)
           .toLowerCase()
           .trim()
@@ -122,6 +145,18 @@ export async function POST(request: NextRequest) {
           .replace(/^-+/, "")
           .replace(/-+$/, "");
 
+        if (!slug) {
+          return NextResponse.json({ success: false, message: "Valid blog slug is required" }, { status: 400 });
+        }
+
+        if (data.status === "Published" && (!data.content || data.content.trim().length < 50)) {
+          return NextResponse.json(
+            { success: false, message: "Cannot publish: blog content must contain at least 50 words" },
+            { status: 400 }
+          );
+        }
+
+        const today = new Date().toISOString().split("T")[0];
         const newBlog: Blog = {
           id: data.id || slug || Date.now().toString(),
           title,
@@ -130,8 +165,8 @@ export async function POST(request: NextRequest) {
           category: data.category || "General",
           tags: Array.isArray(data.tags) ? data.tags : [],
           featuredImage: data.featuredImage || "",
-          publishedDate: data.publishedDate || new Date().toISOString().split("T")[0],
-          updatedDate: new Date().toISOString().split("T")[0],
+          publishedDate: data.publishedDate || today,
+          updatedDate: today,
           status: data.status || "Draft",
           content: data.content || "",
           metaTitle: data.metaTitle || title,
@@ -142,7 +177,28 @@ export async function POST(request: NextRequest) {
           faq: Array.isArray(data.faq) ? data.faq : [],
         };
 
-        // 1. Sync to Sanity
+        // 1. Run full 15-point editorial validation
+        let validation = null;
+        try {
+          validation = await validateArticleContent({
+            title: newBlog.title,
+            slug: newBlog.slug,
+            description: newBlog.description,
+            content: newBlog.content,
+            category: newBlog.category,
+            focusKeyword: newBlog.focusKeyword,
+            metaTitle: newBlog.metaTitle,
+            metaDescription: newBlog.metaDescription,
+            canonicalUrl: newBlog.canonicalUrl,
+            featuredImage: newBlog.featuredImage,
+            altText: data.altText || newBlog.title,
+            faq: newBlog.faq,
+          });
+        } catch (valErr) {
+          console.warn("Validation execution notice:", valErr);
+        }
+
+        // 2. Sync to Sanity
         let syncedBlog = newBlog;
         try {
           syncedBlog = await syncBlogToSanity(newBlog);
@@ -150,18 +206,25 @@ export async function POST(request: NextRequest) {
           console.error("Sanity sync error on add:", sanityErr);
         }
 
-        // 2. Update local backup cache
-        localBlogs.unshift(syncedBlog);
-        saveLocalBlogs(localBlogs);
+        // 3. Update local backup cache - ALWAYS prepend recently added blog to the very top
+        const filteredLocal = localBlogs.filter((b) => b.id !== syncedBlog.id && b.slug !== syncedBlog.slug);
+        filteredLocal.unshift(syncedBlog);
+        saveLocalBlogs(filteredLocal);
 
-        return NextResponse.json({ success: true, blog: syncedBlog });
+        return NextResponse.json({ success: true, blog: syncedBlog, validation });
       }
 
       case "update": {
+        const title = (data.title !== undefined ? data.title : "").trim();
+        if (data.title !== undefined && !title) {
+          return NextResponse.json({ success: false, message: "Blog title cannot be empty" }, { status: 400 });
+        }
+
         const idx = localBlogs.findIndex(
           (b) => b.id === data.id || b.slug === data.slug
         );
 
+        const today = new Date().toISOString().split("T")[0];
         const updatedBlog: Blog = {
           ...(idx !== -1 ? localBlogs[idx] : {}),
           id: data.id || (idx !== -1 ? localBlogs[idx].id : Date.now().toString()),
@@ -171,8 +234,8 @@ export async function POST(request: NextRequest) {
           category: data.category !== undefined ? data.category : localBlogs[idx]?.category || "General",
           tags: Array.isArray(data.tags) ? data.tags : localBlogs[idx]?.tags || [],
           featuredImage: data.featuredImage !== undefined ? data.featuredImage : localBlogs[idx]?.featuredImage || "",
-          publishedDate: data.publishedDate !== undefined ? data.publishedDate : localBlogs[idx]?.publishedDate || new Date().toISOString().split("T")[0],
-          updatedDate: new Date().toISOString().split("T")[0],
+          publishedDate: data.publishedDate !== undefined ? data.publishedDate : localBlogs[idx]?.publishedDate || today,
+          updatedDate: today,
           status: data.status !== undefined ? data.status : localBlogs[idx]?.status || "Draft",
           content: data.content !== undefined ? data.content : localBlogs[idx]?.content || "",
           metaTitle: data.metaTitle !== undefined ? data.metaTitle : localBlogs[idx]?.metaTitle || "",
@@ -183,7 +246,35 @@ export async function POST(request: NextRequest) {
           faq: Array.isArray(data.faq) ? data.faq : localBlogs[idx]?.faq || [],
         };
 
-        // 1. Sync to Sanity
+        if (updatedBlog.status === "Published" && (!updatedBlog.content || updatedBlog.content.trim().length < 50)) {
+          return NextResponse.json(
+            { success: false, message: "Cannot publish: blog content must contain at least 50 words" },
+            { status: 400 }
+          );
+        }
+
+        // 1. Run full 15-point editorial validation
+        let validation = null;
+        try {
+          validation = await validateArticleContent({
+            title: updatedBlog.title,
+            slug: updatedBlog.slug,
+            description: updatedBlog.description,
+            content: updatedBlog.content,
+            category: updatedBlog.category,
+            focusKeyword: updatedBlog.focusKeyword,
+            metaTitle: updatedBlog.metaTitle,
+            metaDescription: updatedBlog.metaDescription,
+            canonicalUrl: updatedBlog.canonicalUrl,
+            featuredImage: updatedBlog.featuredImage,
+            altText: data.altText || updatedBlog.title,
+            faq: updatedBlog.faq,
+          });
+        } catch (valErr) {
+          console.warn("Validation execution notice:", valErr);
+        }
+
+        // 2. Sync to Sanity
         let syncedBlog = updatedBlog;
         try {
           syncedBlog = await syncBlogToSanity(updatedBlog);
@@ -191,15 +282,12 @@ export async function POST(request: NextRequest) {
           console.error("Sanity sync error on update:", sanityErr);
         }
 
-        // 2. Update local cache
-        if (idx !== -1) {
-          localBlogs[idx] = syncedBlog;
-        } else {
-          localBlogs.unshift(syncedBlog);
-        }
-        saveLocalBlogs(localBlogs);
+        // 3. Update local cache - ALWAYS prepend recently updated/published blog to the top
+        const filteredLocal = localBlogs.filter((b) => b.id !== syncedBlog.id && b.slug !== syncedBlog.slug);
+        filteredLocal.unshift(syncedBlog);
+        saveLocalBlogs(filteredLocal);
 
-        return NextResponse.json({ success: true, blog: syncedBlog });
+        return NextResponse.json({ success: true, blog: syncedBlog, validation });
       }
 
       case "delete": {

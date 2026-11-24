@@ -50,6 +50,7 @@ export interface Blog {
   category: string;
   tags?: string[];
   featuredImage: string;
+  altText?: string;
   publishedDate: string;
   updatedDate?: string;
   status: "Draft" | "Published" | string;
@@ -60,6 +61,29 @@ export interface Blog {
   canonicalUrl?: string;
   ogImage?: string;
   faq?: FAQ[];
+  validation?: EditorialValidationReport;
+}
+
+export interface ValidationCheckItem {
+  id: string;
+  name: string;
+  category: "technical" | "seo" | "brand" | "editorial";
+  passed: boolean;
+  score: number; // 0 to 100
+  details: string;
+  recommendation?: string;
+}
+
+export interface EditorialValidationReport {
+  overallScore: number; // 0 to 100
+  status: "passed" | "flagged" | "rejected";
+  summary: string;
+  checks: ValidationCheckItem[];
+  wordCount: number;
+  readingTimeMinutes: number;
+  headingsCount: { h1: number; h2: number; h3: number };
+  faqCount: number;
+  internalLinksCount: number;
 }
 
 export interface DocumentLineItem {

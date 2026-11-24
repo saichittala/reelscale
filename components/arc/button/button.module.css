@@ -160,6 +160,43 @@
   border-top-color: var(--gold);
 }
 
+.ai {
+  color: var(--white);
+  background: var(--bg2);
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, #e11d48, #a855f7, #3b82f6, #06b6d4, #a855f7, #e11d48);
+  background-size: 200% 100%;
+  animation: rainbow 3s infinite linear;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.ai:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+}
+
+.ai:active:not(:disabled) {
+  opacity: 0.92;
+}
+
+.ai .spinner {
+  border-color: rgba(168, 85, 247, 0.3);
+  border-top-color: #a855f7;
+}
+
 :global([data-theme="light"]) .secondary .spinner,
 :global([data-theme="light"]) .ghost .spinner {
   border-color: rgba(0, 0, 0, 0.15);

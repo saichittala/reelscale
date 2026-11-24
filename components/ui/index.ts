@@ -44,5 +44,13 @@ export {
   type CalendarDateMatcher,
 } from "./calendar";
 export { DatePicker, type DatePickerProps } from "./date-picker";
+export {
+  Slider,
+  type SliderProps,
+  type SliderValue,
+  type SliderMark,
+} from "./slider";
+export { RainbowButton, type RainbowButtonProps } from "./rainbow-button";
+
 
 

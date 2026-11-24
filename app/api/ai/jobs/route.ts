@@ -13,6 +13,7 @@ import { rewriteArticleSection } from "../../../lib/ai/ai-pipeline";
 import { getDb } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const rbac = await checkRole(request, ["admin", "blogger"]);
@@ -86,6 +87,12 @@ export async function POST(request: NextRequest) {
     const { action, jobId, ...data } = body;
 
     switch (action) {
+      case "generate-instant":
+      case "generate-and-publish": {
+        const { POST: generateHandler } = await import("../generate/route");
+        return generateHandler(request);
+      }
+
       case "create": {
         if (!data.title) {
           return NextResponse.json(
@@ -138,17 +145,22 @@ export async function POST(request: NextRequest) {
         const category = data.category || "Video Production";
         const { getActiveSchedule } = await import("../../../lib/scheduler/cron-scheduler");
         const schedule = await getActiveSchedule();
-        const { getSeoTopics, researchAndSuggestTopics } = await import("../../../lib/seo/topic-engine");
+        const { getPublishedBlogsAsync } = await import("../../../lib/blog");
+        const { getSeoTopics, researchAndSuggestTopics, filterOutDuplicateTopics } = await import("../../../lib/seo/topic-engine");
 
+        const publishedBlogs = await getPublishedBlogsAsync().catch(() => []);
         let topics = await getSeoTopics("suggested");
-        if (topics.length < targetQuantity) {
+        let uniqueTopics = filterOutDuplicateTopics(topics, publishedBlogs);
+
+        if (uniqueTopics.length < targetQuantity) {
           try {
-            await researchAndSuggestTopics(targetQuantity);
+            await researchAndSuggestTopics(targetQuantity + 3);
             topics = await getSeoTopics("suggested");
+            uniqueTopics = filterOutDuplicateTopics(topics, publishedBlogs);
           } catch {}
         }
 
-        const selected = topics.slice(0, targetQuantity);
+        const selected = uniqueTopics.slice(0, targetQuantity);
         const jobsToCreate = selected.map((t) => ({
           title: t.title,
           category: t.category,

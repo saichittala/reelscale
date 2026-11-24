@@ -137,19 +137,28 @@ export async function uploadImageToSanity(
         }
       }
 
-      // Download remote image (Node.js runtime on server, or direct if allowed)
-      const res = await fetch(trimmedUrl)
-      if (!res.ok) {
-        throw new Error(`Failed to fetch image: ${res.statusText}`)
-      }
-      const mime = res.headers.get('content-type') || contentType
-      const blob = await res.blob()
+      // Download remote image with 6-second timeout to avoid any hang
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      try {
+        const res = await fetch(trimmedUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch image: ${res.statusText}`);
+        }
+        const mime = res.headers.get('content-type') || contentType;
+        const blob = await res.blob();
 
-      const asset = await writeClient.assets.upload('image', blob, {
-        filename,
-        contentType: mime,
-      })
-      return { assetId: asset._id, url: asset.url }
+        const asset = await writeClient.assets.upload('image', blob, {
+          filename,
+          contentType: mime,
+        });
+        return { assetId: asset._id, url: asset.url };
+      } catch (dlErr: any) {
+        clearTimeout(timeoutId);
+        console.warn('Image asset download notice (using fallback URL directly):', dlErr?.message);
+        return null;
+      }
     } else {
       const asset = await writeClient.assets.upload('image', imageSource, {
         filename,

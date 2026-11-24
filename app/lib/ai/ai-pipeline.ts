@@ -3,7 +3,7 @@ import { callGroqWithRetry } from "./groq-client";
 import { sourceFeaturedImage, SourcedImage } from "../images/image-service";
 import { generateInternalLinks } from "../seo/internal-linker";
 import { validateArticleContent, EditorialValidationReport } from "../editorial/validation-pipeline";
-import { slugify } from "../blog-utils";
+import { slugify, stripDuplicateTitleHeading } from "../blog-utils";
 import { Blog, FAQ } from "../../dashboard/types";
 
 export interface GenerationInput {
@@ -126,7 +126,7 @@ export async function executeMultiStageBlogGeneration(
       title: rawTitle,
       primary_keyword: primaryKw,
       secondary_keywords: secondaryKeywords.join(", "),
-      internal_links: "- https://reelscale.in/\n- https://reelscale.in/services\n- https://reelscale.in/pricing",
+      internal_links: "- https://reelscale.in/\n- https://reelscale.in/services\n- https://reelscale.in/pricing\n- https://reelscale.in/works\n- https://reelscale.in/reels-shoot-hyderabad\n- https://reelscale.in/growth",
     }
   );
 
@@ -135,7 +135,9 @@ export async function executeMultiStageBlogGeneration(
       {
         role: "system",
         content: `${writingTemplate?.system_prompt || "You are a Senior Technical Writer for ReelScale."}
-CRITICAL INSTRUCTION: Write a comprehensive, highly thorough long-form guide (minimum 1,200 words). Use rich Markdown with clear H2 and H3 headings, bullet points, and practical frameworks. Do not write short summaries or outlines. Mention ReelScale's on-location iPhone shoots and 10-minute turnaround naturally.`,
+CRITICAL INSTRUCTION: Write a comprehensive, highly thorough long-form guide (minimum 1,200 words). Use rich Markdown with clear H2 and H3 headings, bullet points, and practical frameworks. Do not write short summaries or outlines. Mention ReelScale's on-location iPhone shoots and 10-minute turnaround naturally.
+CRITICAL FORMATTING RULE: Do NOT start your markdown with an H1 (#) or H2 (##) repeating the article title ("${rawTitle}"). The website layout already displays the title as the page H1 above the hero image. Start directly with an engaging opening paragraph or introductory section. Never output an H1 (#) heading anywhere in the markdown body.
+CRITICAL BACKLINK REQUIREMENT: Every blog must contain 5 to 6 contextual backlinks to reelscale.in (e.g. [ReelScale](https://reelscale.in/), [video production services](https://reelscale.in/services), [pricing packages](https://reelscale.in/pricing), [case studies & works](https://reelscale.in/works), [reels shoot in Hyderabad](https://reelscale.in/reels-shoot-hyderabad)). Ensure every link uses exact valid reelscale.in URLs with natural anchor text.`,
       },
       { role: "user", content: writingUserPrompt },
     ],
@@ -145,7 +147,7 @@ CRITICAL INSTRUCTION: Write a comprehensive, highly thorough long-form guide (mi
     model: input.model,
   });
   totalTokens += writingRes.usage?.total_tokens || 0;
-  let articleMarkdown = writingRes.content;
+  let articleMarkdown = stripDuplicateTitleHeading(writingRes.content, rawTitle);
   stagesCompleted.push("stage_4_writing");
 
   // ─── STAGE 5: SEO Metadata & FAQs Generation ───
@@ -241,6 +243,7 @@ Respond ONLY in valid JSON format.`,
 
   // ─── STAGE 8: Editorial Validation Pipeline & Final Schema Assembly ───
   onProgress?.("stage_8", "Stage 8/8: Executing 15-point quality validation and assembling Sanity schema...");
+  articleMarkdown = stripDuplicateTitleHeading(articleMarkdown, rawTitle);
   const today = new Date().toISOString().split("T")[0];
   const canonicalUrl = `https://reelscale.in/blog/${generatedSlug}`;
 

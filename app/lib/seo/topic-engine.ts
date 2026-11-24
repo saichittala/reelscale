@@ -31,13 +31,21 @@ export async function getExistingContentCatalog(): Promise<{
   summaryText: string;
 }> {
   const blogs = await getPublishedBlogsAsync();
-  const titles = blogs.map((b) => b.title).filter(Boolean);
-  const slugs = blogs.map((b) => b.slug).filter(Boolean);
+  const existingTopics = await getSeoTopics().catch(() => []);
+
+  const titles = [
+    ...blogs.map((b) => b.title).filter(Boolean),
+    ...existingTopics.map((t) => t.title).filter(Boolean),
+  ];
+  const slugs = [
+    ...blogs.map((b) => b.slug).filter(Boolean),
+    ...existingTopics.map((t) => t.slug).filter(Boolean),
+  ];
   const keywords = blogs.map((b) => b.focusKeyword || "").filter(Boolean);
   const categories = Array.from(new Set(blogs.map((b) => b.category).filter(Boolean)));
 
-  const summaryLines = blogs.slice(0, 40).map((b) => {
-    return `- Title: "${b.title}" | Slug: /blog/${b.slug} | Category: ${b.category} | Keyword: "${b.focusKeyword || ""}"`;
+  const summaryLines = blogs.slice(0, 30).map((b) => {
+    return `- Title: "${b.title}" | Slug: /blog/${b.slug} | Category: ${b.category}`;
   });
 
   return {
@@ -46,6 +54,165 @@ export async function getExistingContentCatalog(): Promise<{
     keywords,
     categories,
     summaryText: summaryLines.join("\n"),
+  };
+}
+
+/**
+ * Check whether a candidate headline matches any existing published/posted blog.
+ * Performs exact normalized matching, slug matching, and token overlap similarity.
+ */
+export function isHeadlineDuplicate(
+  candidateTitle: string,
+  existingBlogs: { title?: string; slug?: string }[],
+  similarityThreshold = 0.75
+): boolean {
+  if (!candidateTitle || !candidateTitle.trim()) return false;
+
+  const cleanCandidate = candidateTitle.trim().toLowerCase();
+  const normCandidate = cleanCandidate.replace(/[^a-z0-9]/g, "");
+  if (!normCandidate) return false;
+
+  const candidateSlug = slugify(candidateTitle);
+  const stopWords = new Set(["the", "for", "and", "with", "how", "why", "what", "to", "in", "a", "an", "of", "on"]);
+  const candidateWords = new Set(
+    cleanCandidate
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !stopWords.has(w))
+  );
+
+  for (const b of existingBlogs) {
+    const cleanExisting = (b.title || "").trim().toLowerCase();
+    const normExisting = cleanExisting.replace(/[^a-z0-9]/g, "");
+    const existingSlug = b.slug || slugify(b.title || "");
+
+    // 1. Exact normalized match
+    if (normCandidate === normExisting) {
+      return true;
+    }
+
+    // 2. Slug match
+    if (candidateSlug === existingSlug) {
+      return true;
+    }
+
+    // 3. Substring containment for long titles
+    if (normCandidate.length > 20 && normExisting.length > 20) {
+      if (normCandidate.includes(normExisting) || normExisting.includes(normCandidate)) {
+        return true;
+      }
+    }
+
+    // 4. Token overlap similarity
+    const existingWords = new Set(
+      cleanExisting
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((w) => w.length > 2 && !stopWords.has(w))
+    );
+
+    if (candidateWords.size > 0 && existingWords.size > 0) {
+      let intersection = 0;
+      for (const w of candidateWords) {
+        if (existingWords.has(w)) intersection++;
+      }
+      const union = new Set([...candidateWords, ...existingWords]).size;
+      const jaccard = union > 0 ? intersection / union : 0;
+
+      if (jaccard >= similarityThreshold) {
+        return true;
+      }
+
+      // If at least 5 meaningful words match and it's >= 70% of the candidate's words
+      if (intersection >= 5 && intersection / candidateWords.size >= 0.7) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Filter an array of topics and discard any that match an existing published/posted blog.
+ */
+export function filterOutDuplicateTopics(
+  topics: SeoTopic[],
+  existingBlogs: { title?: string; slug?: string }[]
+): SeoTopic[] {
+  return topics.filter((t) => !isHeadlineDuplicate(t.title, existingBlogs));
+}
+
+/**
+ * Returns the next unique topic that does NOT match any published/posted blog.
+ * If the requested title matches an existing blog (or is empty), it searches through
+ * available suggested topics. If none exist or all are duplicates, it triggers research
+ * of fresh new topics.
+ */
+export async function getUniqueNextTopic(
+  existingBlogs: { title?: string; slug?: string }[],
+  requestedTitle?: string,
+  preferredCategory?: string
+): Promise<{ title: string; category: string; primary_keyword: string; topic_id?: number }> {
+  // 1. Check if the requested title is provided and completely unique
+  if (requestedTitle && requestedTitle.trim() && !isHeadlineDuplicate(requestedTitle, existingBlogs)) {
+    return {
+      title: requestedTitle.trim(),
+      category: preferredCategory || "Video Production",
+      primary_keyword: requestedTitle.trim().toLowerCase().replace(/[^a-z0-9 ]/g, ""),
+    };
+  }
+
+  // 2. Retrieve suggested topics and filter out any that match published blogs
+  let topics = await getSeoTopics("suggested").catch(() => []);
+  let freshTopics = filterOutDuplicateTopics(topics, existingBlogs);
+
+  // 3. If no fresh topics are available, research and discover brand new topics
+  if (freshTopics.length === 0) {
+    try {
+      await researchAndSuggestTopics(5);
+      topics = await getSeoTopics("suggested").catch(() => []);
+      freshTopics = filterOutDuplicateTopics(topics, existingBlogs);
+    } catch (err) {
+      console.warn("Topic research call notice in getUniqueNextTopic:", err);
+    }
+  }
+
+  // 4. If we found a unique topic, return it
+  if (freshTopics.length > 0) {
+    const top = freshTopics[0];
+    return {
+      title: top.title,
+      category: top.category || preferredCategory || "Video Production",
+      primary_keyword: top.primary_keyword,
+      topic_id: top.id,
+    };
+  }
+
+  // 5. Fallback safeguard: Dynamically construct a guaranteed unique headline with distinct angle
+  const categories = ["Video Production", "Commercial Ads", "Instagram Growth", "Local Business Marketing"];
+  const areas = ["Jubilee Hills", "Gachibowli", "Banjara Hills", "HITEC City", "Madhapur", "Kondapur"];
+  const formats = [
+    "Complete ROI Blueprint & Production Playbook",
+    "On-Location iPhone Shoot Guide: 10-Minute Delivery",
+    "How to Scale Inbound Customer Footfall with 10-Minute Video Reels",
+    "Comprehensive Case Study & Implementation Framework",
+  ];
+
+  const randomArea = areas[Math.floor(Math.random() * areas.length)];
+  const randomFormat = formats[Math.floor(Math.random() * formats.length)];
+  const currentYear = new Date().getFullYear();
+
+  let fallbackTitle = `${randomFormat} for ${randomArea} Businesses (${currentYear})`;
+  let counter = 1;
+  while (isHeadlineDuplicate(fallbackTitle, existingBlogs)) {
+    fallbackTitle = `${randomFormat} for ${randomArea} Brands (Edition ${counter++})`;
+  }
+
+  return {
+    title: fallbackTitle,
+    category: preferredCategory || categories[0],
+    primary_keyword: `video production ${randomArea.toLowerCase()}`,
   };
 }
 
@@ -94,18 +261,34 @@ export async function researchAndSuggestTopics(targetCount = 5): Promise<SeoTopi
   for (const item of rawTopics) {
     if (!item?.title || !item?.primary_keyword) continue;
 
-    const baseSlug = item.proposed_slug ? slugify(item.proposed_slug) : slugify(item.title);
-    let finalSlug = baseSlug;
+    const trimmedTitle = item.title.trim();
+    const normTitle = trimmedTitle.toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!normTitle || normTitle.length < 10) continue;
 
-    // Check cannibalization with existing blogs
-    if (catalog.slugs.includes(finalSlug)) {
-      finalSlug = `${finalSlug}-guide`;
+    // Strict deduplication: check against existing catalog and topics created in this run
+    const isDuplicateTitle =
+      catalog.titles.some(
+        (t) => t.trim().toLowerCase().replace(/[^a-z0-9]/g, "") === normTitle
+      ) ||
+      insertedTopics.some(
+        (t) => t.title.trim().toLowerCase().replace(/[^a-z0-9]/g, "") === normTitle
+      );
+
+    if (isDuplicateTitle) {
+      console.log(`[TopicEngine] Discarding duplicate title: "${trimmedTitle}"`);
+      continue;
+    }
+
+    const baseSlug = item.proposed_slug ? slugify(item.proposed_slug) : slugify(trimmedTitle);
+    if (catalog.slugs.includes(baseSlug) || insertedTopics.some((t) => t.slug === baseSlug)) {
+      console.log(`[TopicEngine] Discarding duplicate slug: "${baseSlug}"`);
+      continue;
     }
 
     const topicObj: SeoTopic = {
       id: Date.now() + Math.floor(Math.random() * 1000),
-      title: item.title,
-      slug: finalSlug,
+      title: trimmedTitle,
+      slug: baseSlug,
       primary_keyword: item.primary_keyword,
       secondary_keywords: Array.isArray(item.secondary_keywords) ? item.secondary_keywords : [],
       search_intent: item.search_intent || "Commercial",
@@ -129,7 +312,7 @@ export async function researchAndSuggestTopics(targetCount = 5): Promise<SeoTopi
       const sql = getDb();
       const existing = await sql.query(
         "SELECT id, status FROM seo_topics WHERE slug = $1 LIMIT 1;",
-        [finalSlug]
+        [baseSlug]
       );
 
       if (existing.length === 0) {
@@ -140,8 +323,8 @@ export async function researchAndSuggestTopics(targetCount = 5): Promise<SeoTopi
             status, existing_related_articles, reason_for_creation
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'suggested', $10, $11);`,
           [
-            item.title,
-            finalSlug,
+            trimmedTitle,
+            baseSlug,
             item.primary_keyword,
             JSON.stringify(Array.isArray(item.secondary_keywords) ? item.secondary_keywords : []),
             item.search_intent || "Commercial",

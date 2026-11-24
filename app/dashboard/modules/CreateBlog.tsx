@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Blog, FAQ } from "../types";
+import { Blog, FAQ, EditorialValidationReport } from "../types";
 import { CustomSelect } from "../components/CustomSelect";
 import { Button, Input, Textarea } from "@/components/ui";
 import { STORAGE_KEYS, API_ROUTES } from "../constants";
-import { customFetch } from "../services/api";
+import { customFetch, apiValidateBlog } from "../services/api";
 import {
   ArrowLeft,
   Calendar,
@@ -21,13 +21,16 @@ import {
   List,
   ExternalLink,
   Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 
 interface CreateBlogProps {
   editingBlog: Blog | null;
   blogCategories: string[];
   onSaveBlog: (blogData: Blog) => void;
-  showToast: (msg: string, type?: "success" | "error") => void;
+  onBlogPublished?: (blog: Blog, validation?: EditorialValidationReport) => void;
+  onShowValidation?: (blog: Blog, report: EditorialValidationReport) => void;
+  showToast: (msg: string, type?: "success" | "error" | "loading") => void;
   onBack?: () => void;
   onHeaderChange?: (left: React.ReactNode, right: React.ReactNode) => void;
 }
@@ -36,6 +39,8 @@ export function CreateBlog({
   editingBlog,
   blogCategories,
   onSaveBlog,
+  onBlogPublished,
+  onShowValidation,
   showToast,
   onBack,
   onHeaderChange,
@@ -59,7 +64,58 @@ export function CreateBlog({
   const [isUploading, setIsUploading] = useState(false);
   const [isAiSearchingImage, setIsAiSearchingImage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAiGenerateAndPublish = async () => {
+    setIsGeneratingAi(true);
+    showToast("Generating 1,500+ word article with AI & publishing directly to production...", "success");
+
+    try {
+      const res = await customFetch(API_ROUTES.AI_GENERATE, {
+        method: "POST",
+        body: JSON.stringify({
+          title: title.trim() || undefined,
+          category: category || "Video Production",
+          primary_keyword: focusKeyword.trim() || undefined,
+          publish_directly: true,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.success && json.blog) {
+        const b = json.blog;
+        setTitle(b.title || "");
+        setSlug(b.slug || "");
+        setDescription(b.description || "");
+        setCategory(b.category || category);
+        setContent(b.content || "");
+        setStatus("Published");
+        setPublishedDate(b.publishedDate || new Date().toISOString().split("T")[0]);
+        if (b.featuredImage) {
+          setFeaturedImage(b.featuredImage);
+          setAltText(b.title || "Featured Image");
+        }
+        if (b.focusKeyword) setFocusKeyword(b.focusKeyword);
+        if (b.metaTitle) setMetaTitle(b.metaTitle);
+        if (b.metaDescription) setMetaDescription(b.metaDescription);
+        if (Array.isArray(b.faq)) setFaq(b.faq);
+
+        onBlogPublished?.(b, json.validation);
+        if (json.validation) {
+          onShowValidation?.(b, json.validation);
+        }
+
+        showToast(`Blog "${b.title}" generated, validated, and published directly to production!`, "success");
+      } else {
+        showToast(json.message || "Failed to generate blog with AI", "error");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Error generating blog with AI", "error");
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
 
   const handleAiSearchImage = async () => {
     if (!title.trim()) {
@@ -203,10 +259,76 @@ export function CreateBlog({
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
+  const [isValidating, setIsValidating] = useState(false);
+
+  const handleValidate = async () => {
+    if (!title.trim() || !slug.trim()) {
+      showToast("Please enter an article title and slug to run validation", "error");
+      return;
+    }
+    setIsValidating(true);
+    showToast("Running 15-point editorial & SEO validation...", "loading");
+    try {
+      const rep = await apiValidateBlog({
+        title,
+        slug,
+        description,
+        category,
+        content,
+        featuredImage,
+        focusKeyword,
+        metaTitle,
+        metaDescription,
+        canonicalUrl: `https://reelscale.in/blog/${slug}`,
+        altText,
+        faq: faq.filter((f) => f.question.trim() && f.answer.trim()),
+      });
+      if (rep) {
+        showToast(`Validation complete: Score ${rep.overallScore}/100 (${rep.status.toUpperCase()})`, "success");
+        onShowValidation?.(
+          {
+            id: editingBlog?.id,
+            title,
+            slug,
+            description,
+            category,
+            content,
+            status,
+            publishedDate,
+            featuredImage,
+            focusKeyword,
+            metaTitle,
+            metaDescription,
+            faq,
+          },
+          rep
+        );
+      } else {
+        showToast("Could not complete validation", "error");
+      }
+    } catch {
+      showToast("Validation check failed", "error");
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!title.trim() || !slug.trim()) {
       showToast("Article Title and Slug are required", "error");
       return;
+    }
+
+    if (status === "Published") {
+      const words = content.trim().split(/\s+/).filter(Boolean).length;
+      if (words < 50) {
+        showToast("Cannot publish: Article content must contain at least 50 words.", "error");
+        return;
+      }
+      if (!description.trim()) {
+        showToast("Short description / meta excerpt is required for published articles.", "error");
+        return;
+      }
     }
 
     const filteredFaq = faq.filter((f) => f.question.trim() && f.answer.trim());
@@ -335,10 +457,36 @@ export function CreateBlog({
       </div>
 
       <Button
+        variant="ai"
+        id="ai-generate-publish-btn"
+        type="button"
+        disabled={isGeneratingAi || isSaving}
+        loading={isGeneratingAi}
+        onClick={handleAiGenerateAndPublish}
+        title="Generate article with AI and publish directly to production"
+      >
+        <Sparkles size={16} />
+        <span>{isGeneratingAi ? "Generating & Publishing..." : "AI Generate & Publish"}</span>
+      </Button>
+
+      <Button
+        variant="secondary"
+        id="validate-blog-btn"
+        type="button"
+        disabled={isValidating || isSaving || isGeneratingAi}
+        loading={isValidating}
+        onClick={handleValidate}
+        title="Run 15-point editorial and SEO quality validation"
+      >
+        <ShieldCheck size={16} />
+        <span>{isValidating ? "Validating..." : "Validate"}</span>
+      </Button>
+
+      <Button
         variant="primary"
         id="save-blog-btn"
         type="button"
-        disabled={isSaving}
+        disabled={isSaving || isGeneratingAi || isValidating}
         loading={isSaving}
         onClick={handleSave}
       >
@@ -364,6 +512,8 @@ export function CreateBlog({
     metaDescription,
     faq,
     isSaving,
+    isGeneratingAi,
+    isValidating,
     editingBlog,
   ]);
 
@@ -377,6 +527,59 @@ export function CreateBlog({
     <div className="editor-grid">
       {/* LEFT COLUMN: Main Editor Area */}
       <div className="editor-main-panel">
+        {/* Quick AI Generator Banner with Green -> Violet -> Blue Branding */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(59, 130, 246, 0.12) 100%)",
+            border: "1px solid rgba(139, 92, 246, 0.35)",
+            borderRadius: "14px",
+            padding: "16px 20px",
+            marginBottom: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "12px",
+            boxShadow: "0 0 20px rgba(139, 92, 246, 0.15)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.3) 100%)",
+                border: "1px solid rgba(139, 92, 246, 0.4)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Sparkles size={20} style={{ color: "#a78bfa" }} />
+            </div>
+            <div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--white)" }}>
+                Generate Article with AI & Publish Directly to Production
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--muted)" }}>
+                Automatically writes 1,500+ words, sources featured cover photo, sets FAQs, and publishes live to production.
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="ai"
+            type="button"
+            onClick={handleAiGenerateAndPublish}
+            disabled={isGeneratingAi || isSaving}
+            loading={isGeneratingAi}
+          >
+            <Sparkles size={15} />
+            <span>{isGeneratingAi ? "Generating & Publishing..." : "⚡ Generate & Publish Live"}</span>
+          </Button>
+        </div>
+
         {/* Basic Details Card */}
         <div className="glass-card">
           <div className="glass-card-label mb-12">Basic Details</div>
@@ -599,7 +802,7 @@ export function CreateBlog({
             className="hidden-file-input hidden"
             onChange={handleFileUpload}
           />
-          <div className="flex gap-2 mb-3">
+          <div className="editor-image-actions" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", width: "100%" }}>
             <Button
               variant="gold"
               className="flex-1"

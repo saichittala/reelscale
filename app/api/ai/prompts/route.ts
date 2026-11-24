@@ -31,11 +31,11 @@ export async function GET(request: NextRequest) {
         );
       }
       const versions = await getPromptVersionHistory(id);
-      return NextResponse.json({ success: true, template, versions });
+      return NextResponse.json({ success: true, template, prompt: template, versions });
     }
 
     const templates = await getAllPromptTemplates();
-    return NextResponse.json({ success: true, templates });
+    return NextResponse.json({ success: true, templates, prompts: templates });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch prompts" },
@@ -55,17 +55,20 @@ export async function POST(request: NextRequest) {
     const { action, id, templateId, ...payload } = body;
     const targetId = id || templateId;
 
+    const userTemplate = payload.user_template || payload.user_prompt_template;
+
     switch (action) {
+      case "save":
       case "update": {
-        if (!targetId || !payload.system_prompt || !payload.user_template) {
+        if (!targetId || !payload.system_prompt || !userTemplate) {
           return NextResponse.json(
-            { success: false, message: "Missing required fields (id, system_prompt, user_template)" },
+            { success: false, message: "Missing required fields (id, system_prompt, user_template/user_prompt_template)" },
             { status: 400 }
           );
         }
         const updated = await updatePromptTemplate(targetId, {
           system_prompt: payload.system_prompt,
-          user_template: payload.user_template,
+          user_template: userTemplate,
           change_summary: payload.change_summary,
           updated_by: rbac.email || "Admin",
         });
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
           success: true,
           message: `Prompt template '${targetId}' updated successfully to version ${updated.current_version_number}`,
           template: updated,
+          prompt: updated,
           versions,
         });
       }
@@ -96,10 +100,12 @@ export async function POST(request: NextRequest) {
           success: true,
           message: `Rolled back to version ${versionNumber}`,
           template: rolledBack,
+          prompt: rolledBack,
           versions,
         });
       }
 
+      case "restore_default":
       case "restore-default": {
         if (!targetId) {
           return NextResponse.json(
@@ -113,6 +119,7 @@ export async function POST(request: NextRequest) {
           success: true,
           message: `Restored '${targetId}' to factory default`,
           template: restored,
+          prompt: restored,
           versions,
         });
       }
@@ -127,7 +134,7 @@ export async function POST(request: NextRequest) {
         const result = await testPromptExecution({
           templateId: targetId,
           system_prompt: payload.system_prompt,
-          user_template: payload.user_template,
+          user_template: userTemplate,
           testVariables: payload.test_variables,
           model: payload.model,
         });

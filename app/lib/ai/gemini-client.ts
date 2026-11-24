@@ -48,6 +48,16 @@ export async function getEffectiveGeminiApiKey(): Promise<string> {
   const envKey = getGeminiApiKey();
   if (envKey) return envKey;
 
+  // Check Sanity Environment Variables
+  try {
+    const { getEnvironmentVariablesFromSanity } = await import("../../sanity/env-sync");
+    const envVars = await getEnvironmentVariablesFromSanity();
+    if (envVars?.geminiApiKey) {
+      process.env.GEMINI_API_KEY = envVars.geminiApiKey;
+      return envVars.geminiApiKey;
+    }
+  } catch {}
+
   try {
     const sql = getDb();
     const rows = await sql.query("SELECT gemini_api_key FROM ai_automation_settings LIMIT 1;");
@@ -65,14 +75,32 @@ export async function getEffectiveGeminiApiKey(): Promise<string> {
 }
 
 /**
+ * Active, supported Gemini models ranked by speed, quota availability, and response quality
+ */
+export const GEMINI_ACTIVE_MODELS = [
+  "gemini-3.5-flash-lite",
+  "gemini-3-flash-preview",
+  "gemini-flash-lite-latest",
+  "gemini-2.5-flash",
+];
+
+/**
  * Maps any model name to a suitable Gemini model
  */
 export function mapModelToGemini(model?: string): string {
   if (model && model.startsWith("gemini-")) {
+    // If it's an obsolete model or one with strictly restricted free quotas, route to active modern flash-lite
+    if (
+      model === "gemini-1.5-flash" ||
+      model === "gemini-2.0-flash" ||
+      model === "gemini-2.5-flash"
+    ) {
+      return "gemini-3.5-flash-lite";
+    }
     return model;
   }
-  // Default high-performance, generous token limit model for blog writing
-  return "gemini-2.5-flash";
+  // Default high-performance, generous quota model
+  return "gemini-3.5-flash-lite";
 }
 
 export interface GeminiCompletionOptions {
@@ -97,7 +125,7 @@ export interface GeminiCompletionResult {
 }
 
 /**
- * Call Gemini API using Google's OpenAI-compatible endpoint with automatic retry
+ * Call Gemini API using Google's OpenAI-compatible endpoint with automatic multi-model failover
  */
 export async function callGemini(
   options: GeminiCompletionOptions
@@ -109,13 +137,15 @@ export async function callGemini(
     );
   }
 
-  const model = mapModelToGemini(options.model);
-  const maxRetries = 2;
-  let attempt = 0;
+  const primaryModel = mapModelToGemini(options.model);
+  const candidateModels = [
+    primaryModel,
+    ...GEMINI_ACTIVE_MODELS.filter((m) => m !== primaryModel),
+  ];
+
   let lastError: any = null;
 
-  while (attempt < maxRetries) {
-    attempt++;
+  for (const model of candidateModels) {
     const start = Date.now();
     try {
       const payload: Record<string, any> = {
@@ -145,6 +175,19 @@ export async function callGemini(
 
       if (!response.ok) {
         const errorText = await response.text();
+        const isQuotaOrDemand =
+          response.status === 429 ||
+          response.status === 503 ||
+          response.status === 404 ||
+          /quota|exhausted|resource_exhausted|demand/i.test(errorText);
+
+        if (isQuotaOrDemand) {
+          console.warn(
+            `[Gemini Fallback] Model "${model}" returned ${response.status} (${errorText.slice(0, 80)}). Trying next candidate Gemini model...`
+          );
+          lastError = new Error(`Gemini API HTTP ${response.status}: ${errorText}`);
+          continue;
+        }
         throw new Error(`Gemini API HTTP ${response.status}: ${errorText}`);
       }
 
@@ -181,12 +224,7 @@ export async function callGemini(
       };
     } catch (err: any) {
       lastError = err;
-      console.warn(
-        `Gemini API attempt ${attempt}/${maxRetries} failed: ${err.message}`
-      );
-      if (attempt < maxRetries) {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-      }
+      console.warn(`[Gemini Attempt] "${model}" failed: ${err.message}`);
     }
   }
 
@@ -194,14 +232,14 @@ export async function callGemini(
   if (options.stage) {
     logGeminiUsage({
       provider: "gemini",
-      model,
+      model: primaryModel,
       stage: options.stage,
       prompt_tokens: 0,
       completion_tokens: 0,
       total_tokens: 0,
       latency_ms: 0,
       status: "error",
-      error_message: lastError?.message || "Gemini completion failed",
+      error_message: lastError?.message || "Gemini completion failed across all candidate models",
     }).catch(() => {});
   }
 
@@ -209,7 +247,7 @@ export async function callGemini(
   const openrouterKey = await getEffectiveOpenRouterApiKey();
   if (openrouterKey) {
     console.warn(
-      `[AI Failover Tier 2 -> 3] Gemini backup failed (${lastError?.message}). Seamlessly escalating to OpenRouter tertiary backup...`
+      `[AI Failover Tier 2 -> 3] All Gemini models exhausted (${lastError?.message}). Seamlessly escalating to OpenRouter tertiary backup...`
     );
     try {
       return (await callOpenRouter({
@@ -221,7 +259,7 @@ export async function callGemini(
     }
   }
 
-  throw lastError || new Error("Failed to execute Gemini completion after retries");
+  throw lastError || new Error("Failed to execute Gemini completion after testing all models");
 }
 
 /**
@@ -241,51 +279,55 @@ export async function checkGeminiHealth(): Promise<{
       return {
         status: "error",
         latencyMs: null,
-        activeModel: "gemini-2.5-flash",
+        activeModel: "gemini-3.5-flash-lite",
         isBackup: true,
         message: "GEMINI_API_KEY not configured",
       };
     }
 
-    const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "ping" }],
-          max_tokens: 10,
-        }),
-      }
-    );
+    // Ping candidates to find active model
+    for (const model of GEMINI_ACTIVE_MODELS) {
+      const modelStart = Date.now();
+      try {
+        const res = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: "ping" }],
+              max_tokens: 10,
+            }),
+          }
+        );
 
-    const latencyMs = Date.now() - start;
-    if (!res.ok) {
-      const err = await res.text();
-      return {
-        status: "error",
-        latencyMs,
-        activeModel: "gemini-2.5-flash",
-        isBackup: true,
-        message: `HTTP ${res.status}: ${err.slice(0, 100)}`,
-      };
+        if (res.ok) {
+          return {
+            status: "connected",
+            latencyMs: Date.now() - modelStart,
+            activeModel: model,
+            isBackup: true,
+          };
+        }
+      } catch {}
     }
 
     return {
-      status: "connected",
-      latencyMs,
-      activeModel: "gemini-2.5-flash",
+      status: "error",
+      latencyMs: Date.now() - start,
+      activeModel: "gemini-3.5-flash-lite",
       isBackup: true,
+      message: "All Gemini model endpoints exhausted or unavailable",
     };
   } catch (err: any) {
     return {
       status: "error",
       latencyMs: Date.now() - start,
-      activeModel: "gemini-2.5-flash",
+      activeModel: "gemini-3.5-flash-lite",
       isBackup: true,
       message: err.message || "Failed to communicate with Gemini API",
     };
@@ -295,12 +337,12 @@ export async function checkGeminiHealth(): Promise<{
 async function logGeminiUsage(record: {
   provider: string;
   model: string;
-  stage: string;
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-  latency_ms: number;
-  status: string;
+  stage?: string;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  total_tokens?: number;
+  latency_ms?: number;
+  status?: string;
   error_message?: string;
 }) {
   try {
@@ -312,16 +354,14 @@ async function logGeminiUsage(record: {
       [
         record.provider,
         record.model,
-        record.stage,
-        record.prompt_tokens,
-        record.completion_tokens,
-        record.total_tokens,
-        record.latency_ms,
-        record.status,
+        record.stage || "general",
+        record.prompt_tokens || 0,
+        record.completion_tokens || 0,
+        record.total_tokens || 0,
+        record.latency_ms || 0,
+        record.status || "success",
         record.error_message || null,
       ]
     );
-  } catch (e) {
-    // Non-blocking telemetry
-  }
+  } catch {}
 }

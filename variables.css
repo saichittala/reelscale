@@ -291,6 +291,23 @@
     --shadow-floating: var(--shadow-lg);
 
     --duration-spring: var(--duration-fast, 150ms);
+
+    /* Selection controls (switch, checkbox, radio, slider) */
+    --control-track: var(--white-10);
+    --control-track-hover: var(--white-15);
+    --control-fill: var(--red);
+    --control-thumb: #ffffff;
+    --control-thumb-on: #ffffff;
+    --control-glyph: #ffffff;
+    --control-thumb-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 10px var(--red-40);
+
+    /* Magic UI Rainbow Button Tokens */
+    --color-1: oklch(66.2% 0.225 25.9);
+    --color-2: oklch(60.4% 0.26 302);
+    --color-3: oklch(69.6% 0.165 251);
+    --color-4: oklch(80.2% 0.134 225);
+    --color-5: oklch(90.7% 0.231 133);
+    --speed: 3s;
 }
 
 /* ─────────────────────────── LIGHT THEME ─────────────────────────── */
@@ -334,4 +351,12 @@
     --text-primary: var(--foreground, var(--white));
     --text-placeholder: color-mix(in oklab, var(--text-primary) 40%, transparent);
     --text-field: var(--text-sm, 14px);
+
+    --control-track: rgba(0, 0, 0, 0.08);
+    --control-track-hover: rgba(0, 0, 0, 0.12);
+    --control-fill: var(--red);
+    --control-thumb: #ffffff;
+    --control-thumb-on: #ffffff;
+    --control-glyph: #ffffff;
+    --control-thumb-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.15);
 }

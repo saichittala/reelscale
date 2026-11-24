@@ -1,4 +1,4 @@
-import { User, Client, Lead, Blog, DeliveredReel } from "../types";
+import { User, Client, Lead, Blog, DeliveredReel, EditorialValidationReport } from "../types";
 import { client } from "../../sanity/client";
 import {
   syncBlogToSanity,
@@ -325,7 +325,7 @@ export async function apiDeleteLead(id: string | number): Promise<void> {
 export async function fetchBlogs(): Promise<Blog[]> {
   // 1. Fetch live directly from Sanity (works both on localhost and deployed static hosting)
   try {
-    const sanityQuery = `*[_type == "post"] | order(publishedDate desc, _createdAt desc) {
+    const sanityQuery = `*[_type == "post"] | order(publishedDate desc, updatedDate desc, _updatedAt desc, _createdAt desc) {
       _id,
       title,
       slug,
@@ -390,7 +390,7 @@ export async function fetchBlogs(): Promise<Blog[]> {
   return [];
 }
 
-export async function apiSaveBlog(blog: Blog): Promise<void> {
+export async function apiSaveBlog(blog: Blog): Promise<{ blog: Blog; validation?: EditorialValidationReport }> {
   let apiSuccess = false;
   let lastError: any = null;
 
@@ -408,12 +408,15 @@ export async function apiSaveBlog(blog: Blog): Promise<void> {
     if (res.ok) {
       const json = await res.json();
       if (json.success) {
-        apiSuccess = true;
-        return;
+        return {
+          blog: json.blog || blog,
+          validation: json.validation,
+        };
       }
     } else {
       const errJson = await res.json().catch(() => ({}));
       lastError = new Error(errJson.message || `API server returned ${res.status}`);
+      throw lastError;
     }
   } catch (apiErr: any) {
     lastError = apiErr;
@@ -421,14 +424,36 @@ export async function apiSaveBlog(blog: Blog): Promise<void> {
   }
 
   // 2. Fallback: Direct Sanity Sync (for static environments like GitHub Pages or when API server is unreachable)
-  if (!apiSuccess) {
-    try {
-      await syncBlogToSanity(blog);
-    } catch (sanityErr: any) {
-      console.error("Direct Sanity save error:", sanityErr);
-      throw new Error(sanityErr.message || lastError?.message || "Failed to save blog to Sanity");
-    }
+  try {
+    const synced = await syncBlogToSanity(blog);
+    return { blog: synced };
+  } catch (sanityErr: any) {
+    console.error("Direct Sanity save error:", sanityErr);
+    throw new Error(sanityErr.message || lastError?.message || "Failed to save blog to Sanity");
   }
+}
+
+export async function apiValidateBlog(blog: Partial<Blog>): Promise<EditorialValidationReport | null> {
+  try {
+    const res = await customFetch(API_ROUTES.BLOGS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "validate",
+        ...blog,
+      }),
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.validation) {
+        return json.validation;
+      }
+    }
+  } catch (valErr) {
+    console.warn("Failed to validate blog via API:", valErr);
+  }
+  return null;
 }
 
 export async function apiDeleteBlog(id: string | number): Promise<void> {

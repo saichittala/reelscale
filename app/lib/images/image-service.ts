@@ -101,8 +101,16 @@ export async function getImageApiKeys(): Promise<{
     }
   } catch {}
 
-  // Check Sanity / local json
+  // Check Sanity Environment Variables & AI Settings
   if (!unsplashKey || !pexelsKey || !pixabayKey) {
+    try {
+      const { getEnvironmentVariablesFromSanity } = await import("../../sanity/env-sync");
+      const envVars = await getEnvironmentVariablesFromSanity();
+      if (!unsplashKey && envVars?.unsplashAccessKey) unsplashKey = envVars.unsplashAccessKey;
+      if (!pexelsKey && envVars?.pexelsApiKey) pexelsKey = envVars.pexelsApiKey;
+      if (!pixabayKey && envVars?.pixabayApiKey) pixabayKey = envVars.pixabayApiKey;
+    } catch {}
+
     try {
       const { getAiSettingsFromSanity } = await import("../../sanity/ai-sync");
       const settings = await getAiSettingsFromSanity();

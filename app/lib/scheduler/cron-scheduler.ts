@@ -432,7 +432,35 @@ export async function evaluateAndTriggerScheduler(): Promise<{
   }
 
   const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  
+  // Format current date and time in the schedule's timezone (default "Asia/Kolkata")
+  let todayStr = "";
+  let currentHoursMinutes = "";
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: schedule.timezone || "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(now);
+
+    const year = parts.find((p) => p.type === "year")?.value;
+    const month = parts.find((p) => p.type === "month")?.value;
+    const day = parts.find((p) => p.type === "day")?.value;
+    const hour = parts.find((p) => p.type === "hour")?.value;
+    const minute = parts.find((p) => p.type === "minute")?.value;
+
+    todayStr = `${year}-${month}-${day}`;
+    currentHoursMinutes = `${hour}:${minute}`;
+  } catch {
+    todayStr = now.toISOString().split("T")[0];
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    currentHoursMinutes = `${h}:${m}`;
+  }
 
   // Check if today is active
   const preview = calculate30DayPreview(schedule, now);
@@ -445,12 +473,36 @@ export async function evaluateAndTriggerScheduler(): Promise<{
     };
   }
 
+  // Check if current time has reached or passed scheduled generation_time
+  const targetTime = schedule.generation_time || "09:00";
+  if (currentHoursMinutes < targetTime) {
+    return {
+      triggered: false,
+      message: `Scheduled time (${targetTime}) for today has not arrived yet. Current time is ${currentHoursMinutes} (${schedule.timezone || "Asia/Kolkata"}).`,
+    };
+  }
+
   // Prevent duplicate run on the same day
   if (schedule.last_run_at) {
     const lastRunDateStr = new Date(schedule.last_run_at).toISOString().split("T")[0];
     if (lastRunDateStr === todayStr) {
       return { triggered: false, message: `Batch for today (${todayStr}) has already been scheduled` };
     }
+  }
+
+  // 1. Check if rolling 30-blog buffer has staged blogs ready for daily 1-by-1 publishing
+  try {
+    const { getRollingBufferState, publishNextDailyBlog } = await import("./rolling-buffer");
+    const bufferState = getRollingBufferState();
+    if (bufferState.autoPublishDaily && bufferState.stagedBlogs.length > 0) {
+      const pubResult = await publishNextDailyBlog();
+      return {
+        triggered: true,
+        message: `Published daily blog "${pubResult.publishedBlog.title}" from 30-blog buffer to production! Replenished buffer with: "${pubResult.replenishedBlog?.title || 'queued blog'}".`,
+      };
+    }
+  } catch (bufferErr: any) {
+    console.warn("Notice checking rolling buffer during cron evaluation:", bufferErr?.message);
   }
 
   // Find or generate topics for the batch
@@ -489,15 +541,31 @@ export async function evaluateAndTriggerScheduler(): Promise<{
     jobs: jobsToCreate,
   });
 
-  // Update schedule last_run_at and next_run_at
-  await sql.query(
-    `UPDATE ai_schedule_configs
-     SET last_run_at = NOW(),
-         next_run_at = NOW() + INTERVAL '1 day',
-         updated_at = NOW()
-     WHERE id = $1;`,
-    [schedule.id]
-  );
+  // Update schedule last_run_at and next_run_at in SQL and Sanity/JSON
+  const runTimestamp = new Date().toISOString();
+  try {
+    await sql.query(
+      `UPDATE ai_schedule_configs
+       SET last_run_at = NOW(),
+           next_run_at = NOW() + INTERVAL '1 day',
+           updated_at = NOW()
+       WHERE id = $1;`,
+      [schedule.id]
+    );
+  } catch (sqlErr: any) {
+    console.warn("Notice updating SQL schedule last_run_at:", sqlErr?.message);
+  }
+
+  try {
+    const { getAiScheduleFromSanity, saveAiScheduleToSanity } = await import("../../sanity/ai-sync");
+    const current = await getAiScheduleFromSanity();
+    if (current) {
+      current.last_run_at = runTimestamp;
+      await saveAiScheduleToSanity(current);
+    }
+  } catch (sanityErr: any) {
+    console.warn("Notice updating Sanity schedule last_run_at:", sanityErr?.message);
+  }
 
   // Trigger processing of the first job asynchronously
   processNextJob().catch(() => { });

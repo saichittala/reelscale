@@ -5,7 +5,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { SortIcon } from "../components/SortIcon";
 import { IconEye, IconSearch } from "../components/Icons";
 import { Button, Input } from "@/components/ui";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, ShieldCheck } from "lucide-react";
 
 interface BlogsProps {
   blogs: Blog[];
@@ -17,6 +17,8 @@ interface BlogsProps {
   onDeleteBlog: (id: string | number) => void;
   onCreateBlog: () => void;
   onManageCategories: () => void;
+  onGenerateAiBlog?: () => void;
+  onValidateBlog?: (blog: Blog) => void;
   setConfirmModal: React.Dispatch<
     React.SetStateAction<{
       title: string;
@@ -40,6 +42,10 @@ export function Blogs({
   setSelectedBlogIds,
   onEditBlog,
   onDeleteBlog,
+  onCreateBlog,
+  onManageCategories,
+  onGenerateAiBlog,
+  onValidateBlog,
   setConfirmModal,
   search: externalSearch,
   onSearchChange,
@@ -57,7 +63,7 @@ export function Blogs({
   const [internalCategoryFilter, setInternalCategoryFilter] = useState("all");
   const blogCategoryFilter = externalCategoryFilter !== undefined ? externalCategoryFilter : internalCategoryFilter;
   const setBlogCategoryFilter = onCategoryFilterChange || setInternalCategoryFilter;
-  const [blogSortKey, setBlogSortKey] = useState<"title" | "date">("date");
+  const [blogSortKey, setBlogSortKey] = useState<"title" | "date" | "updated">("date");
   const [blogSortDir, setBlogSortDir] = useState<-1 | 1>(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -92,7 +98,7 @@ export function Blogs({
     );
   }
 
-  const handleSort = (key: "title" | "date") => {
+  const handleSort = (key: "title" | "date" | "updated") => {
     if (blogSortKey === key) {
       setBlogSortDir((dir) => (dir === -1 ? 1 : -1));
     } else {
@@ -107,9 +113,31 @@ export function Blogs({
       const valB = b.title || "";
       return valA.localeCompare(valB) * blogSortDir;
     }
-    const valA = a.publishedDate || "";
-    const valB = b.publishedDate || "";
-    return valA.localeCompare(valB) * blogSortDir;
+
+    if (blogSortKey === "updated") {
+      const valA = a.updatedDate || a.publishedDate || "";
+      const valB = b.updatedDate || b.publishedDate || "";
+      if (valA !== valB) {
+        return valA.localeCompare(valB) * blogSortDir;
+      }
+      return 0;
+    }
+
+    // Default: Sort by publishedDate descending, with updatedDate tie-breaker
+    // Ensures the most recently published or updated blog appears at the very top!
+    const dateA = a.publishedDate || a.updatedDate || "";
+    const dateB = b.publishedDate || b.updatedDate || "";
+    if (dateA !== dateB) {
+      return dateA.localeCompare(dateB) * blogSortDir;
+    }
+
+    const upA = a.updatedDate || "";
+    const upB = b.updatedDate || "";
+    if (upA !== upB) {
+      return upA.localeCompare(upB) * blogSortDir;
+    }
+
+    return 0;
   });
 
   const totalItems = filteredBlogs.length;
@@ -217,6 +245,19 @@ export function Blogs({
             align="right"
           />
         </div>
+
+        {onGenerateAiBlog && (
+          <div style={{ marginTop: "8px", width: "100%" }}>
+            <Button
+              variant="ai"
+              onClick={onGenerateAiBlog}
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              <Sparkles size={16} />
+              <span>Generate with AI & Publish</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Blogs Table */}
@@ -254,7 +295,15 @@ export function Blogs({
                     <SortIcon active={blogSortKey === "date"} dir={blogSortDir} />
                   </div>
                 </th>
-                <th className="th-date">Last Updated</th>
+                <th
+                  onClick={() => handleSort("updated")}
+                  className="sortable-header th-sortable th-date"
+                >
+                  <div className="th-header-inner">
+                    <span>Last Updated</span>
+                    <SortIcon active={blogSortKey === "updated"} dir={blogSortDir} />
+                  </div>
+                </th>
                 <th className="th-actions">Actions</th>
               </tr>
             </thead>
@@ -265,6 +314,14 @@ export function Blogs({
                     <div className="empty">
                       <div className="empty-icon">◎</div>
                       <div className="empty-text">No articles found</div>
+                      {onGenerateAiBlog && (
+                        <div style={{ marginTop: "12px" }}>
+                          <Button variant="ai" size="sm" onClick={onGenerateAiBlog}>
+                            <Sparkles size={14} />
+                            <span>Generate with AI & Publish</span>
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -300,10 +357,27 @@ export function Blogs({
                       </div>
                     </td>
                     <td className="td-title">
-                      <div className="blog-title-cell">
+                      <div className="blog-title-cell" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                         <div className="blog-title-text" title={b.title}>
                           {b.title}
                         </div>
+                        {(b.publishedDate === new Date().toISOString().split("T")[0] ||
+                          b.updatedDate === new Date().toISOString().split("T")[0]) && (
+                          <span
+                            className="badge badge-green"
+                            style={{
+                              fontSize: "10px",
+                              padding: "1px 6px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "3px",
+                              lineHeight: 1.4,
+                            }}
+                            title="Recently published or updated"
+                          >
+                            ● Recent
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="td-category">
@@ -325,6 +399,22 @@ export function Blogs({
                     </td>
                     <td className="th-actions" onClick={(e) => e.stopPropagation()}>
                       <div className="action-btns">
+                        {onValidateBlog && (
+                          <button
+                            type="button"
+                            className="edit-client tracker-btn validate-blog-btn"
+                            title="Inspect Editorial & SEO Quality Validation"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onValidateBlog(b);
+                            }}
+                            style={{
+                              color: "#10b981",
+                            }}
+                          >
+                            <ShieldCheck size={18} />
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="edit-client tracker-btn preview-blog-btn"

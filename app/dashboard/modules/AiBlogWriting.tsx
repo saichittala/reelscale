@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Blog } from "../types";
+import { Blog, EditorialValidationReport } from "../types";
 import { customFetch } from "../services/api";
 import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
@@ -18,6 +18,11 @@ import {
   Search,
   ExternalLink,
   Edit3,
+  Calendar,
+  Clock,
+  Trash2,
+  ArrowRight,
+  Image as ImageIcon,
 } from "lucide-react";
 
 interface AiBlogWritingProps {
@@ -26,8 +31,9 @@ interface AiBlogWritingProps {
   onEditBlog?: (blog: Blog) => void;
   onCreateBlog?: () => void;
   onNavigateTab?: (page: string) => void;
-  showToast?: (msg: string, type?: "success" | "error") => void;
+  showToast?: (msg: string, type?: "success" | "error" | "loading") => void;
   onHeaderChange?: (left: React.ReactNode, right: React.ReactNode) => void;
+  onBlogPublished?: (blog: Blog, validation?: EditorialValidationReport) => void;
 }
 
 export function AiBlogWriting({
@@ -38,14 +44,15 @@ export function AiBlogWriting({
   onNavigateTab,
   showToast,
   onHeaderChange,
+  onBlogPublished,
 }: AiBlogWritingProps) {
   const [topicLoading, setTopicLoading] = useState(false);
   const [suggestedTopics, setSuggestedTopics] = useState<any[]>([]);
   const [generatingCustom, setGeneratingCustom] = useState(false);
   const [customTitle, setCustomTitle] = useState("");
-  const [customCategory, setCustomCategory] = useState("Production");
+  const [customCategory, setCustomCategory] = useState("Marketing");
   const [customKeyword, setCustomKeyword] = useState("");
-  const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
+  const [selectedModel, setSelectedModel] = useState("gemini-3.5-flash-lite");
   const [generationQueue, setGenerationQueue] = useState<any[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"research" | "studio" | "queue">("research");
@@ -54,10 +61,22 @@ export function AiBlogWriting({
   const fetchTopics = async () => {
     setTopicLoading(true);
     try {
-      const res = await customFetch("/api/ai/topics");
+      const res = await customFetch("/api/ai/topics?status=suggested");
       const json = await res.json();
       if (json.success && json.topics) {
-        setSuggestedTopics(json.topics);
+        // Filter out any topics whose headlines or slugs match existing published blogs
+        const publishedTitles = new Set(
+          blogs.map((b) => (b.title || "").toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean)
+        );
+        const publishedSlugs = new Set(blogs.map((b) => (b.slug || "").toLowerCase()).filter(Boolean));
+
+        const fresh = json.topics.filter((t: any) => {
+          const norm = (t.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          const slug = (t.slug || t.proposed_slug || "").toLowerCase();
+          return !publishedTitles.has(norm) && !publishedSlugs.has(slug);
+        });
+
+        setSuggestedTopics(fresh);
       }
     } catch {
       showToast?.("Failed to fetch suggested topics", "error");
@@ -84,68 +103,172 @@ export function AiBlogWriting({
   useEffect(() => {
     fetchTopics();
     fetchQueue();
-    const interval = setInterval(fetchQueue, 12000);
+    const interval = setInterval(() => {
+      fetchQueue();
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
 
   // Generate article from suggested topic
-  const handleGenerateFromTopic = async (topic: any) => {
+  const [generatingTopicId, setGeneratingTopicId] = useState<string | number | null>(null);
+
+  const handleGenerateAndPublishTopic = async (topic: any) => {
+    setGeneratingTopicId(topic.id || topic.title);
+    showToast?.("Queuing blog generation...");
+
+    const timer = setTimeout(() => {
+      showToast?.("Processing AI article & verified photography...");
+    }, 1500);
+
     try {
-      showToast?.(`Queued generation for: "${topic.title}"`, "success");
-      const res = await customFetch("/api/ai/jobs", {
+      const res = await customFetch("/api/ai/generate", {
         method: "POST",
         body: JSON.stringify({
-          action: "create",
           title: topic.title,
-          category: topic.category || "Production",
-          slug: topic.proposed_slug,
+          category: topic.category || "Marketing",
           primary_keyword: topic.primary_keyword,
+          topic_id: topic.id,
+          model: selectedModel,
+          publish_directly: true,
         }),
       });
+      clearTimeout(timer);
       const json = await res.json();
-      if (json.success) {
-        showToast?.("Generation job added to queue & started!", "success");
+      if (json.success && json.blog) {
+        showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
+        onBlogPublished?.(json.blog, json.validation);
+        fetchTopics();
         fetchQueue();
-        setActiveSubTab("queue");
       } else {
-        showToast?.(json.message || "Failed to schedule generation", "error");
+        showToast?.(json.message || "Failed to generate blog", "error");
       }
-    } catch {
-      showToast?.("Error queuing generation job", "error");
+    } catch (err: any) {
+      clearTimeout(timer);
+      showToast?.(err.message || "Error generating blog", "error");
+    } finally {
+      setGeneratingTopicId(null);
     }
   };
 
+  const handleGenerateFromTopic = async (topic: any) => {
+    return handleGenerateAndPublishTopic(topic);
+  };
+
   // Generate custom article from studio input
-  const handleGenerateCustom = async () => {
-    if (!customTitle.trim()) {
-      showToast?.("Please enter an article title", "error");
-      return;
+  const handleGenerateCustom = async (publishDirectly: boolean = true) => {
+    let titleToSend = customTitle.trim();
+    let keywordToSend = customKeyword.trim();
+    let categoryToSend = customCategory;
+    let topicIdToSend: number | undefined = undefined;
+
+    if (!titleToSend && suggestedTopics.length > 0) {
+      const publishedTitles = new Set(
+        blogs.map((b) => (b.title || "").toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean)
+      );
+      const top = suggestedTopics.find(
+        (t) => !publishedTitles.has((t.title || "").toLowerCase().replace(/[^a-z0-9]/g, ""))
+      ) || suggestedTopics[0];
+      titleToSend = top.title;
+      keywordToSend = top.primary_keyword || "";
+      categoryToSend = top.category || categoryToSend;
+      topicIdToSend = top.id;
+      setCustomTitle(top.title);
+      if (top.primary_keyword) setCustomKeyword(top.primary_keyword);
     }
+
     setGeneratingCustom(true);
+    showToast?.("Queuing AI generation & researching search intent...", "loading");
+
+    const timer = setTimeout(() => {
+      showToast?.("Processing AI article & verified photography...", "loading");
+    }, 1500);
+
     try {
-      const res = await customFetch("/api/ai/jobs", {
+      const res = await customFetch("/api/ai/generate", {
         method: "POST",
         body: JSON.stringify({
-          action: "create",
-          title: customTitle,
-          category: customCategory,
-          primary_keyword: customKeyword || customTitle,
+          title: titleToSend || undefined,
+          category: categoryToSend || "Video Production",
+          primary_keyword: keywordToSend || undefined,
+          topic_id: topicIdToSend,
+          model: selectedModel,
+          publish_directly: true,
         }),
       });
+      clearTimeout(timer);
       const json = await res.json();
-      if (json.success) {
-        showToast?.("Article created and queued for generation!", "success");
+      if (json.success && json.blog) {
+        showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
+        onBlogPublished?.(json.blog, json.validation);
         setCustomTitle("");
         setCustomKeyword("");
         fetchQueue();
-        setActiveSubTab("queue");
+        if (topicIdToSend) {
+          setSuggestedTopics((prev) => prev.filter((t) => t.id !== topicIdToSend));
+        }
       } else {
-        showToast?.(json.message || "Failed to create generation job", "error");
+        showToast?.(json.message || "Failed to generate blog", "error");
       }
     } catch {
+      clearTimeout(timer);
       showToast?.("Error submitting generation job", "error");
     } finally {
       setGeneratingCustom(false);
+    }
+  };
+
+  const [directGenerating, setDirectGenerating] = useState(false);
+
+  // Directly auto-generate headline, full article and publish live without manual typing
+  const handleDirectGenerateWithAi = async () => {
+    if (directGenerating || generatingCustom || Boolean(generatingTopicId)) return;
+    setDirectGenerating(true);
+    showToast?.("AI is researching search intent & generating winning headline...", "loading");
+
+    const timer = setTimeout(() => {
+      showToast?.("Writing 1,500+ word article & attaching verified photography...", "loading");
+    }, 1500);
+
+    try {
+      // Pick top suggested topic that is NOT already in published/posted blogs
+      const publishedTitles = new Set(
+        blogs.map((b) => (b.title || "").toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean)
+      );
+      const topTopic = (suggestedTopics && suggestedTopics.length > 0)
+        ? suggestedTopics.find((t) => !publishedTitles.has((t.title || "").toLowerCase().replace(/[^a-z0-9]/g, ""))) || null
+        : null;
+
+      const res = await customFetch("/api/ai/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          title: topTopic?.title || undefined,
+          category: topTopic?.category || "Video Production",
+          primary_keyword: topTopic?.primary_keyword || undefined,
+          topic_id: topTopic?.id,
+          model: selectedModel,
+          publish_directly: true,
+        }),
+      });
+
+      clearTimeout(timer);
+      const json = await res.json();
+
+      if (json.success && json.blog) {
+        showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
+        onBlogPublished?.(json.blog, json.validation);
+        if (topTopic?.id) {
+          setSuggestedTopics((prev) => prev.filter((t) => t.id !== topTopic.id));
+        }
+        fetchQueue();
+        setActiveSubTab("queue");
+      } else {
+        showToast?.(json.message || "Failed to generate blog", "error");
+      }
+    } catch (err: any) {
+      clearTimeout(timer);
+      showToast?.(err.message || "Error generating blog", "error");
+    } finally {
+      setDirectGenerating(false);
     }
   };
 
@@ -185,6 +308,11 @@ export function AiBlogWriting({
     handleProcessNextRef.current = handleProcessNext;
   });
 
+  const handleDirectGenerateWithAiRef = useRef(handleDirectGenerateWithAi);
+  useEffect(() => {
+    handleDirectGenerateWithAiRef.current = handleDirectGenerateWithAi;
+  });
+
   const onCreateBlogRef = useRef(onCreateBlog);
   useEffect(() => {
     onCreateBlogRef.current = onCreateBlog;
@@ -195,7 +323,17 @@ export function AiBlogWriting({
       null,
       <div className="df-g8 al-c">
         <Button
-          variant="gold"
+          variant="ai"
+          onClick={() => handleDirectGenerateWithAiRef.current()}
+          disabled={directGenerating || generatingCustom || Boolean(generatingTopicId)}
+          loading={directGenerating}
+          title="Directly auto-generate headline, 1,500+ words and publish live to production"
+        >
+          <Sparkles size={16} />
+          <span>{directGenerating ? "Generating Live..." : "Generate with AI"}</span>
+        </Button>
+        <Button
+          variant="secondary"
           onClick={() => handleProcessNextRef.current()}
           disabled={processingNext}
           title="Trigger execution of next pending generation job"
@@ -213,7 +351,7 @@ export function AiBlogWriting({
         </Button>
       </div>
     );
-  }, [processingNext]);
+  }, [processingNext, directGenerating, generatingCustom, generatingTopicId]);
 
   useEffect(() => {
     return () => {
@@ -248,20 +386,19 @@ export function AiBlogWriting({
         </div>
 
         <div className="stat-card white">
-          <div className="stat-label">Running Queue Jobs</div>
-          <div className="stat-value">
-            <span>{generationQueue.filter((j) => j.status === "processing" || j.status === "pending" || j.status === "queued").length}</span>
-            <span className="stat-unit">Active</span>
+          <div className="stat-label">Daily Auto-Publish</div>
+          <div className="stat-value text-base">
+            <span style={{ color: "var(--green)", fontWeight: 700 }}>Active Backend</span>
           </div>
           <div className="stat-icon">
-            <Layers size={20} />
+            <Calendar size={20} className="text-[#a78bfa]" />
           </div>
         </div>
 
         <div className="stat-card red">
-          <div className="stat-label">Inference Engine</div>
-          <div className="stat-value text-lg">
-            <span>Groq LPU</span>
+          <div className="stat-label">Primary AI Engine</div>
+          <div className="stat-value text-base">
+            <span>Gemini 3.5</span>
           </div>
           <div className="stat-icon">
             <Cpu size={20} className="text-[var(--red)]" />
@@ -281,12 +418,9 @@ export function AiBlogWriting({
                 AI Content Generation Studio
               </h2>
             </div>
-            <p className="ai-section-desc">
-              Researches search intent, generates 1,200–1,800 word articles, attaches verified royalty-free imagery, links Hyderabad geo-targets, and connects directly to Sanity Studio.
-            </p>
           </div>
 
-          <div className="df-g8 al-c">
+          <div className="df-g8 al-c flex-wrap">
             <Tabs
               value={activeSubTab}
               onValueChange={(val) => setActiveSubTab(val as "research" | "studio" | "queue")}
@@ -297,6 +431,15 @@ export function AiBlogWriting({
                 <TabsTrigger value="queue">Live Queue ({generationQueue.length})</TabsTrigger>
               </TabsList>
             </Tabs>
+
+            <Button
+              variant="secondary"
+              onClick={() => onNavigateTab?.("ai-blog-settings")}
+              title="View and edit blog automation schedule and prompt settings"
+            >
+              <Clock size={15} />
+              <span>Automation & Prompt Settings</span>
+            </Button>
           </div>
         </div>
       </div>
@@ -304,14 +447,9 @@ export function AiBlogWriting({
       {/* ─── SUB-PANEL 1: TOPIC RESEARCH & GAP DISCOVERY ─── */}
       {activeSubTab === "research" && (
         <div className="ai-view-container">
-          <div className="df-g8 al-c jc-sb flex-wrap">
-            <div>
-              <div className="glass-card-label">
-                Identified Search Intents & High-ROI Opportunities
-              </div>
-              <p className="ai-section-desc">
-                Evaluates existing articles to discover untargeted search intents across Hyderabad commercial areas.
-              </p>
+          <div className="df-g8 al-c jc-sb flex-wrap glass-card">
+            <div className="glass-card-label m-0">
+              Identified Search Intents & High-ROI Opportunities
             </div>
             <Button
               variant="secondary"
@@ -334,7 +472,7 @@ export function AiBlogWriting({
                   <div className="ai-topic-body">
                     <div className="ai-topic-header">
                       <span className="badge badge-gold">{t.category || "Production"}</span>
-                      <span className="badge badge-green">Priority: {t.content_priority || "High"}</span>
+                      <span className="badge badge-green">{t.content_priority || "High"}</span>
                     </div>
 
                     <h3 className="ai-topic-title">{t.title}</h3>
@@ -361,14 +499,26 @@ export function AiBlogWriting({
                     ) : null}
                   </div>
 
-                  <div className="ai-topic-card-footer">
+                  <div className="ai-topic-card-footer" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      onClick={() => handleGenerateAndPublishTopic(t)}
+                      disabled={generatingTopicId === (t.id || t.title)}
+                      loading={generatingTopicId === (t.id || t.title)}
+                      title="Generate complete article with AI and publish directly to production"
+                    >
+                      <Sparkles size={14} />
+                      <span>Generate & Publish Live</span>
+                    </Button>
                     <Button
                       variant="secondary"
                       size="sm"
                       onClick={() => handleGenerateFromTopic(t)}
+                      title="Add to background automation queue"
                     >
                       <Zap size={14} />
-                      <span>Generate Full Article</span>
+                      <span>Queue Job</span>
                     </Button>
                   </div>
                 </div>
@@ -392,11 +542,38 @@ export function AiBlogWriting({
 
           <div className="ai-form-grid">
             <div className="ai-form-field ai-form-full">
-              <label className="ai-field-label">
-                Target Article Title
-              </label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <label className="ai-field-label" style={{ margin: 0 }}>
+                  Target Article Title
+                </label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const publishedTitles = new Set(
+                      blogs.map((b) => (b.title || "").toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean)
+                    );
+                    const freshTopics = suggestedTopics.filter(
+                      (t) => !publishedTitles.has((t.title || "").toLowerCase().replace(/[^a-z0-9]/g, ""))
+                    );
+                    if (freshTopics.length > 0) {
+                      const pick = freshTopics[Math.floor(Math.random() * freshTopics.length)];
+                      setCustomTitle(pick.title);
+                      if (pick.primary_keyword) setCustomKeyword(pick.primary_keyword);
+                      if (pick.category) setCustomCategory(pick.category);
+                    } else {
+                      setCustomTitle("High-Converting Video Content Strategies for Hyderabad Businesses");
+                      setCustomKeyword("video production hyderabad");
+                    }
+                  }}
+                  style={{ fontSize: "11px", height: "24px", padding: "0 8px", gap: "4px" }}
+                >
+                  <Sparkles size={12} className="text-purple-400" />
+                  <span>AI Auto-Pick Headline</span>
+                </Button>
+              </div>
               <Input
-                placeholder="e.g. 10-Minute Video Reels for Jubilee Hills Restaurants: Complete Production Guide"
+                placeholder="e.g. 10-Minute Video Reels (or leave blank for AI to auto-generate winning headline)"
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
               />
@@ -426,17 +603,16 @@ export function AiBlogWriting({
 
             <div className="ai-form-field ai-form-full">
               <label className="ai-field-label">
-                Groq AI Inference Model
+                Primary AI Engine & Model
               </label>
               <CustomSelect
                 value={selectedModel}
                 onChange={(v) => setSelectedModel(v)}
                 options={[
-                  { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile (Recommended • Fast & Creative)" },
-                  { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant (Ultra Low Latency)" },
-                  { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768 (High Context Depth)" },
-                  { value: "gemini-2.5-flash", label: "gemini-2.5-flash (Google Gemini • 2nd Backup)" },
-                  { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct (OpenRouter • 3rd Backup)" },
+                  { value: "gemini-3.5-flash-lite", label: "gemini-3.5-flash-lite (Google Gemini • Tier 1 Primary • Ultra-Fast)" },
+                  { value: "gemini-3-flash-preview", label: "gemini-3-flash-preview (Google Gemini • Frontier Reasoning)" },
+                  { value: "openai/gpt-oss-120b", label: "openai/gpt-oss-120b (Groq LPU • Tier 2 Fallback)" },
+                  { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct (OpenRouter • Tier 3 Fallback)" },
                 ]}
               />
             </div>
@@ -444,19 +620,23 @@ export function AiBlogWriting({
 
           <div className="ai-pipeline-banner">
             <div>
-              <span className="ai-pipeline-title">8-Stage AI Generation Pipeline Ready</span>
+              <span className="ai-pipeline-title">Direct Production Publishing</span>
               <span className="ai-pipeline-desc">
-                Research → Keywords → Outline → Long-form Writing → SEO Meta → Linking → Validation → Sanity Studio Sync.
+                Generates a market-leading 1,500+ word authority guide, attaches verified royalty-free photography, and publishes immediately to production.
               </span>
             </div>
-            <Button
-              variant="primary"
-              onClick={handleGenerateCustom}
-              disabled={generatingCustom}
-            >
-              <Zap size={16} />
-              <span>{generatingCustom ? "Generating..." : "Generate & Queue Article"}</span>
-            </Button>
+            <div className="df-g8 al-c">
+              <Button
+                variant="ai"
+                onClick={() => handleGenerateCustom(true)}
+                disabled={generatingCustom}
+                loading={generatingCustom}
+                title="Generate with AI and publish directly to production"
+              >
+                <Sparkles size={16} />
+                <span>{generatingCustom ? "Generating & Publishing..." : "Generate & Publish to Production"}</span>
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -499,10 +679,10 @@ export function AiBlogWriting({
                       <div className="ai-queue-title-row">
                         <span
                           className={`badge ${job.status === "completed"
-                              ? "badge-green"
-                              : job.status === "failed"
-                                ? "badge-red"
-                                : "badge-gold"
+                            ? "badge-green"
+                            : job.status === "failed"
+                              ? "badge-red"
+                              : "badge-gold"
                             }`}
                         >
                           {job.status.toUpperCase()}

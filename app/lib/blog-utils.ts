@@ -18,19 +18,72 @@ export function slugify(text: string): string {
     .replace(/-+$/, ""); // Trim - from end
 }
 
+/**
+ * Strips any leading H1/H2 heading that duplicates or mirrors the article title,
+ * and normalizes any remaining # H1 headings to ## H2 because the layout
+ * component already renders the article title as the solitary page H1.
+ */
+export function stripDuplicateTitleHeading(markdown: string, title?: string): string {
+  if (!markdown) return "";
+  let clean = markdown.trim();
+
+  const lines = clean.split("\n");
+  if (lines.length > 0) {
+    const firstLine = lines[0].trim();
+    if (/^#{1,3}\s+/.test(firstLine)) {
+      const headingText = firstLine
+        .replace(/^#{1,3}\s+/, "")
+        .replace(/[*_`]/g, "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+
+      let shouldStrip = false;
+      if (title) {
+        const normTitle = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (
+          headingText === normTitle ||
+          normTitle.includes(headingText) ||
+          headingText.includes(normTitle) ||
+          (normTitle.length > 15 && headingText.startsWith(normTitle.slice(0, 15))) ||
+          (headingText.length > 15 && normTitle.startsWith(headingText.slice(0, 15)))
+        ) {
+          shouldStrip = true;
+        }
+      } else if (firstLine.startsWith("# ")) {
+        // If no title provided but markdown begins with an H1 (#), strip leading H1
+        shouldStrip = true;
+      }
+
+      if (shouldStrip) {
+        lines.shift();
+        while (lines.length > 0 && lines[0].trim() === "") {
+          lines.shift();
+        }
+        clean = lines.join("\n");
+      }
+    }
+  }
+
+  // Demote any remaining # H1 headings to ## H2 for semantic SEO (single H1 per page)
+  clean = clean.replace(/^#\s+(.+)$/gm, "## $1");
+  return clean;
+}
+
 export interface HeadingItem {
   text: string;
   id: string;
   level: number;
 }
 
-export function generateTableOfContents(markdown: string): HeadingItem[] {
+export function generateTableOfContents(markdown: string, title?: string): HeadingItem[] {
+  const cleanMarkdown = stripDuplicateTitleHeading(markdown, title);
   const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const headings: HeadingItem[] = [];
   const usedIds: Record<string, number> = {};
   let match;
 
-  while ((match = headingRegex.exec(markdown)) !== null) {
+  while ((match = headingRegex.exec(cleanMarkdown)) !== null) {
     const level = match[1].length;
     const text = match[2].replace(/[#*`_\[\]]/g, "").trim();
 
@@ -55,10 +108,10 @@ export function generateTableOfContents(markdown: string): HeadingItem[] {
   return headings;
 }
 
-export function parseMarkdown(markdown: string): string {
+export function parseMarkdown(markdown: string, title?: string): string {
   if (!markdown) return "";
 
-  let html = markdown;
+  let html = stripDuplicateTitleHeading(markdown, title);
 
   // Escape HTML entities to prevent raw HTML injections
   html = html

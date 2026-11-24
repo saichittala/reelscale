@@ -71,8 +71,8 @@ export default function LiveArticle({ initialPost }: LiveArticleProps) {
     };
   }, [initialPost.slug]);
 
-  const htmlContent = parseMarkdown(post.content);
-  const headings = generateTableOfContents(post.content);
+  const htmlContent = parseMarkdown(post.content, post.title);
+  const headings = generateTableOfContents(post.content, post.title);
   const readTime = getReadingTime(post.content);
 
   const sharePostData = {
