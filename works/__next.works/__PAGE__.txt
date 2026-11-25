@@ -2,7 +2,7 @@
 2:I[37384,["/_next/static/chunks/2z9m04zeziwjf.js","/_next/static/chunks/3erittf13qp03.js","/_next/static/chunks/0pjoaoh6oc8jc.js","/_next/static/chunks/1tk8-i7g1ckjj.js","/_next/static/chunks/0s_nk94h8w3uz.js"],"default"]
 9:I[97367,["/_next/static/chunks/2z9m04zeziwjf.js","/_next/static/chunks/3erittf13qp03.js","/_next/static/chunks/0pjoaoh6oc8jc.js","/_next/static/chunks/1tk8-i7g1ckjj.js"],"OutletBoundary"]
 a:"$Sreact.suspense"
-:HL["/_next/static/chunks/2_x8pa6wsagpo.css","style"]
+:HL["/_next/static/chunks/1bf9bg5s_7ud2.css","style"]
 3:T6ca,<header id="header">
     <div class="logo-wrapper" style="display: flex; align-items: center; gap: 8px;">
       <button class="mobile-menu-btn" aria-label="Toggle navigation"
@@ -157,8 +157,8 @@ a:"$Sreact.suspense"
       <span class="footer-copy">© 2026 ReelScale Co. All Rights Reserved. Specialised Content Creation Agency in
         Hyderabad.</span>
     </div>
-  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"WebPage\",\"@id\":\"https://reelscale.in/works#webpage\",\"url\":\"https://reelscale.in/works\",\"name\":\"Portfolio | ReelScale — Reels that perform.\",\"description\":\"Explore our portfolio of high-retention cinematic Reels and professional video production work in Hyderabad.\"},{\"@type\":\"BreadcrumbList\",\"@id\":\"https://reelscale.in/works#breadcrumbs\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://reelscale.in\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"Works\",\"item\":\"https://reelscale.in/works\"}]}]}"}}],["$","$L2",null,{"headerHtml":"$3","worksHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"noe8FGEsqjgOvQ2RvITo2"}
-6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2_x8pa6wsagpo.css","precedence":"next"}]
+  </footer>0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"WebPage\",\"@id\":\"https://reelscale.in/works#webpage\",\"url\":\"https://reelscale.in/works\",\"name\":\"Portfolio | ReelScale — Reels that perform.\",\"description\":\"Explore our portfolio of high-retention cinematic Reels and professional video production work in Hyderabad.\"},{\"@type\":\"BreadcrumbList\",\"@id\":\"https://reelscale.in/works#breadcrumbs\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://reelscale.in\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"Works\",\"item\":\"https://reelscale.in/works\"}]}]}"}}],["$","$L2",null,{"headerHtml":"$3","worksHtml":"$4","footerHtml":"$5"}]],["$L6","$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"-yHX6nBmVRlZg9fRfZo-W"}
+6:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/1bf9bg5s_7ud2.css","precedence":"next"}]
 7:["$","script","script-0",{"src":"/_next/static/chunks/0s_nk94h8w3uz.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
 b:null
