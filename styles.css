@@ -1677,6 +1677,17 @@ footer {
     border-radius: var(--radius-xs);
 }
 
+/* Tabs: remove focus-visible focus state on tabs component main elements and text */
+[role="tab"]:focus-visible,
+[role="tablist"]:focus-visible,
+[role="tabpanel"]:focus-visible,
+[role="tab"] *:focus-visible,
+[class*="tabs_"]:focus-visible,
+[class*="tabs_"] *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 /* Navigation links */
 nav a:focus-visible {
     outline: 2px solid var(--red);

@@ -1,6 +1,6 @@
 import { getDb } from "../db";
 import { createGenerationBatch, processNextJob } from "../queue/job-queue";
-import { getSeoTopics, researchAndSuggestTopics } from "../seo/topic-engine";
+import { getSeoTopics, researchAndSuggestTopics, filterOutDuplicateTopics, getExistingContentCatalog } from "../seo/topic-engine";
 import { getAiScheduleFromSanity, saveAiScheduleToSanity } from "../../sanity/ai-sync";
 
 export interface ScheduleConfig {
@@ -505,13 +505,18 @@ export async function evaluateAndTriggerScheduler(): Promise<{
     console.warn("Notice checking rolling buffer during cron evaluation:", bufferErr?.message);
   }
 
-  // Find or generate topics for the batch
-  let availableTopics = await getSeoTopics("suggested");
+  // Find or generate topics for the batch with strict anti-cannibalization filtering
+  const catalog = await getExistingContentCatalog().catch(() => ({ titles: [], slugs: [], keywords: [], categories: [], summaryText: "" }));
+  const existingBlogsForFilter = catalog.titles.map((t) => ({ title: t }));
+  const rawTopics = await getSeoTopics("suggested");
+  let availableTopics = filterOutDuplicateTopics(rawTopics, existingBlogsForFilter);
+
   if (availableTopics.length < todayPreview.quantity) {
     try {
       const needed = todayPreview.quantity - availableTopics.length;
       await researchAndSuggestTopics(Math.max(needed, 5));
-      availableTopics = await getSeoTopics("suggested");
+      const updatedRaw = await getSeoTopics("suggested");
+      availableTopics = filterOutDuplicateTopics(updatedRaw, existingBlogsForFilter);
     } catch (err: any) {
       console.warn("Topic auto-research warning:", err.message);
     }

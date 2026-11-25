@@ -1,5 +1,15 @@
-.field { display: grid; min-width: 0; }
-.label { margin-bottom: 6px; color: var(--foreground); font-size: var(--text-xs); font-weight: 500; line-height: var(--leading-body); }
+.field {
+  display: grid;
+  min-width: 0;
+}
+
+.label {
+  margin-bottom: 6px;
+  color: var(--foreground);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: var(--leading-body);
+}
 
 .inputWrapper {
   position: relative;
@@ -9,13 +19,48 @@
 }
 
 /* Focus answers with brand border and subtle focus shadow; the field itself never changes size. */
-.input { width: 100%; min-height: var(--control-height-md); padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-input, 14px); background: transparent; color: var(--foreground); font: inherit; font-size: var(--text-field); line-height: var(--leading-body); letter-spacing: var(--tracking-body); outline: none; transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
-.input::placeholder { color: var(--text-placeholder, color-mix(in oklab, var(--text-primary, var(--foreground, var(--white))) 40%, transparent)); }
-@media (hover: hover) and (pointer: fine) { .input:hover:not(:disabled, :focus, :focus-visible, [aria-invalid="true"]) { border-color: var(--border-strong); } }
+.input {
+  width: 100%;
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input, 14px);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-field);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.input::placeholder {
+  color: var(--text-placeholder, color-mix(in oklab, var(--text-primary, var(--foreground, var(--white))) 40%, transparent));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .input:hover:not(:disabled, :focus, :focus-visible, [aria-invalid="true"]) {
+    border-color: var(--border-strong);
+  }
+}
+
 .input:focus,
-.input:focus-visible { border-color: var(--red-40); box-shadow: var(--shadow-focus-red); }
-.input[aria-invalid="true"] { border-color: var(--danger); box-shadow: var(--shadow-focus-red); }
-.input:disabled { cursor: not-allowed; opacity: .5; background: transparent; }
+.input:focus-visible {
+  border-color: var(--red-40);
+  box-shadow: var(--shadow-focus-red);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: var(--shadow-focus-red);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+  background: transparent;
+}
 
 .startIcon {
   position: absolute;
@@ -68,14 +113,61 @@
 }
 
 /* The row's space is padding inside the clipped slot, so the height animates from a true zero. */
-.messageSlot { display: block; overflow: hidden; }
-.description, .error { display: block; padding-top: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-body); }
-.description { color: var(--text-muted); } .error { color: var(--danger); }
+.messageSlot {
+  display: block;
+  overflow: hidden;
+}
+
+.description,
+.error {
+  display: block;
+  padding-top: var(--space-2);
+  font-size: var(--text-xs);
+  line-height: var(--leading-body);
+}
+
+.description {
+  color: var(--text-muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
 /* Words are measured against this box when they pop out to leave, so it must be the positioned parent. */
-.words { position: relative; display: block; }
-.word { display: inline-block; white-space: pre; }
+.words {
+  position: relative;
+  display: block;
+}
+
+.word {
+  display: inline-block;
+  white-space: pre;
+}
+
 /* One column per character of a count. Tabular digits keep columns equal, so only a gained or lost digit changes the width. */
-.column { position: relative; display: inline-flex; justify-content: center; font-variant-numeric: tabular-nums; }
-.column > span { display: inline-block; }
-.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-@media (prefers-reduced-motion: reduce) { .input { transition-duration: .01ms; } }
+.column {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.column>span {
+  display: inline-block;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition-duration: .01ms;
+  }
+}

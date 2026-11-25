@@ -58,13 +58,134 @@ export async function getExistingContentCatalog(): Promise<{
 }
 
 /**
+ * Normalizes text by replacing synonyms for short-form video platforms, conversion intents,
+ * real estate/business entities, and cities so duplicate search intents match cleanly.
+ */
+export function normalizeSemanticTokens(text: string): string[] {
+  if (!text) return [];
+  let s = text.toLowerCase().replace(/[^a-z0-9\s]/g, " ");
+
+  // 1. Format / Channel synonyms
+  s = s.replace(/\b(short[\s\-]?form video|instagram reels?|reels?|tiktok|youtube shorts?|shorts?)\b/g, " tokenvideo ");
+  s = s.replace(/\b(video production|reel makers?|video shoots?|reel creators?)\b/g, " tokenprod ");
+  s = s.replace(/\b(paid ads|reel ads|instagram reel ads|meta ads|advertising)\b/g, " tokenads ");
+
+  // 2. Goal / Intent synonyms
+  s = s.replace(/\b(close deals? faster|close more deals?|close deals?|sell properties faster|sell properties|land clients|generate leads|lead generation|inbound leads?)\b/g, " tokendeals ");
+  s = s.replace(/\b(drive footfall|table reservations|drive reservations|fill tables?)\b/g, " tokenfootfall ");
+  s = s.replace(/\b(step[\s\-]?by[\s\-]?step guide|complete guide|blueprint|playbook|strategies|tactics|framework)\b/g, " tokenguide ");
+
+  // 3. Industry synonyms
+  s = s.replace(/\b(real estate agents?|real estate brokers?|realtors?|property agents?|real estate|realty)\b/g, " tokenrealestate ");
+  s = s.replace(/\b(restaurants?|cafes?|bistros?|dining)\b/g, " tokenrestaurant ");
+  s = s.replace(/\b(tech founders?|startup founders?|executives?|entrepreneurs?)\b/g, " tokenfounder ");
+  s = s.replace(/\b(interior designers?|interior design studios?|home decor)\b/g, " tokeninterior ");
+  s = s.replace(/\b(small businesses?|smbs?|local businesses?|local brands?)\b/g, " tokensmb ");
+
+  // 4. Geo synonyms
+  s = s.replace(/\b(hyderabad|cyberabad|secunderabad)\b/g, " tokenhyd ");
+
+  const stopWords = new Set([
+    "the", "for", "and", "with", "how", "why", "what", "to", "in", "a", "an", "of", "on", "can", "use", "using", "your", "more"
+  ]);
+
+  return s
+    .split(/\s+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 2 && !stopWords.has(w));
+}
+
+export interface TopicCluster {
+  industry: string;
+  location: string;
+  format: string;
+  intent: string;
+}
+
+/**
+ * Extracts the 4-tuple Topic Cluster [industry, location, format, intent]
+ * to prevent keyword cannibalization on local search engines.
+ */
+export function extractTopicCluster(title: string): TopicCluster {
+  const lower = (title || "").toLowerCase();
+
+  // Industry detection
+  let industry = "general_business";
+  if (/real estate|realtor|propert|housing|apartment|villa/i.test(lower)) industry = "real_estate";
+  else if (/restaurant|cafe|food|dining|reservation/i.test(lower)) industry = "restaurant";
+  else if (/tech founder|startup|executive|b2b/i.test(lower)) industry = "tech_founder";
+  else if (/interior design|decor|home styling/i.test(lower)) industry = "interior_design";
+  else if (/clinic|dental|aesthetic|doctor|hospital/i.test(lower)) industry = "healthcare";
+  else if (/gym|fitness|crossfit|workout/i.test(lower)) industry = "fitness";
+  else if (/smb|small business|local business/i.test(lower)) industry = "smb";
+
+  // Location detection
+  let location = "general";
+  if (/hyderabad|cyberabad|secunderabad/i.test(lower)) location = "hyderabad";
+  if (/kokapet|tellapur|mokila|gachibowli|hitec city|madhapur|jubilee hills|banjara hills|kondapur/i.test(lower)) {
+    location = "hyderabad_micro";
+  }
+
+  // Format detection
+  let format = "reels_shortform";
+  if (/paid ad|reel ad|advertising|meta ad/i.test(lower)) format = "paid_ads";
+  else if (/location|spots?|shooting spot/i.test(lower)) format = "shooting_spots";
+  else if (/hashtag/i.test(lower)) format = "hashtags";
+  else if (/pricing|cost|how much/i.test(lower)) format = "pricing";
+  else if (/diy|professional vs/i.test(lower)) format = "diy_vs_pro";
+  else if (/scripting|sound design/i.test(lower)) format = "technical_craft";
+
+  // Intent detection
+  let intent = "brand_growth";
+  if (/close deal|sell propert|deal|land client|lead|client/i.test(lower)) intent = "conversion_sales";
+  else if (/footfall|reservation|fill table/i.test(lower)) intent = "footfall";
+  else if (/pricing|cost|rates/i.test(lower)) intent = "cost_inquiry";
+  else if (/how to|step by step|guide|playbook|blueprint/i.test(lower)) intent = "how_to_guide";
+
+  return { industry, location, format, intent };
+}
+
+/**
+ * Checks whether candidate title belongs to an existing [industry + location + format + intent] cluster.
+ */
+export function isTopicClusterDuplicate(
+  candidateTitle: string,
+  existingTitles: string[]
+): boolean {
+  if (!candidateTitle) return false;
+  const candCluster = extractTopicCluster(candidateTitle);
+
+  // If candidate is a generic topic without specific industry or location, skip cluster check
+  if (candCluster.industry === "general_business" && candCluster.location === "general") {
+    return false;
+  }
+
+  for (const existing of existingTitles) {
+    if (!existing) continue;
+    const existCluster = extractTopicCluster(existing);
+
+    if (
+      candCluster.industry === existCluster.industry &&
+      candCluster.location === existCluster.location &&
+      candCluster.format === existCluster.format &&
+      candCluster.intent === existCluster.intent
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Check whether a candidate headline matches any existing published/posted blog.
- * Performs exact normalized matching, slug matching, and token overlap similarity.
+ * Performs exact normalized matching, slug matching, semantic token overlap,
+ * and topic cluster intent deduplication.
  */
 export function isHeadlineDuplicate(
   candidateTitle: string,
   existingBlogs: { title?: string; slug?: string }[],
-  similarityThreshold = 0.75
+  similarityThreshold = 0.55
 ): boolean {
   if (!candidateTitle || !candidateTitle.trim()) return false;
 
@@ -73,58 +194,52 @@ export function isHeadlineDuplicate(
   if (!normCandidate) return false;
 
   const candidateSlug = slugify(candidateTitle);
-  const stopWords = new Set(["the", "for", "and", "with", "how", "why", "what", "to", "in", "a", "an", "of", "on"]);
-  const candidateWords = new Set(
-    cleanCandidate
-      .replace(/[^a-z0-9\s]/g, " ")
-      .split(/\s+/)
-      .filter((w) => w.length > 2 && !stopWords.has(w))
-  );
+  const candidateSemantic = new Set(normalizeSemanticTokens(candidateTitle));
+  const candidateTitlesList = existingBlogs.map((b) => b.title || "").filter(Boolean);
+
+  // 1. Topic Cluster intent check
+  if (isTopicClusterDuplicate(candidateTitle, candidateTitlesList)) {
+    return true;
+  }
 
   for (const b of existingBlogs) {
     const cleanExisting = (b.title || "").trim().toLowerCase();
     const normExisting = cleanExisting.replace(/[^a-z0-9]/g, "");
     const existingSlug = b.slug || slugify(b.title || "");
 
-    // 1. Exact normalized match
+    // 2. Exact normalized match
     if (normCandidate === normExisting) {
       return true;
     }
 
-    // 2. Slug match
+    // 3. Slug match
     if (candidateSlug === existingSlug) {
       return true;
     }
 
-    // 3. Substring containment for long titles
+    // 4. Substring containment for long titles
     if (normCandidate.length > 20 && normExisting.length > 20) {
       if (normCandidate.includes(normExisting) || normExisting.includes(normCandidate)) {
         return true;
       }
     }
 
-    // 4. Token overlap similarity
-    const existingWords = new Set(
-      cleanExisting
-        .replace(/[^a-z0-9\s]/g, " ")
-        .split(/\s+/)
-        .filter((w) => w.length > 2 && !stopWords.has(w))
-    );
-
-    if (candidateWords.size > 0 && existingWords.size > 0) {
+    // 5. Semantic token overlap similarity
+    const existingSemantic = new Set(normalizeSemanticTokens(cleanExisting));
+    if (candidateSemantic.size > 0 && existingSemantic.size > 0) {
       let intersection = 0;
-      for (const w of candidateWords) {
-        if (existingWords.has(w)) intersection++;
+      for (const w of candidateSemantic) {
+        if (existingSemantic.has(w)) intersection++;
       }
-      const union = new Set([...candidateWords, ...existingWords]).size;
+      const union = new Set([...candidateSemantic, ...existingSemantic]).size;
       const jaccard = union > 0 ? intersection / union : 0;
 
       if (jaccard >= similarityThreshold) {
         return true;
       }
 
-      // If at least 5 meaningful words match and it's >= 70% of the candidate's words
-      if (intersection >= 5 && intersection / candidateWords.size >= 0.7) {
+      // If at least 4 meaningful semantic tokens match and it is >= 60% of candidate tokens
+      if (intersection >= 4 && intersection / candidateSemantic.size >= 0.6) {
         return true;
       }
     }
@@ -140,7 +255,12 @@ export function filterOutDuplicateTopics(
   topics: SeoTopic[],
   existingBlogs: { title?: string; slug?: string }[]
 ): SeoTopic[] {
-  return topics.filter((t) => !isHeadlineDuplicate(t.title, existingBlogs));
+  const existingTitles = existingBlogs.map((b) => b.title || "").filter(Boolean);
+  return topics.filter(
+    (t) =>
+      !isHeadlineDuplicate(t.title, existingBlogs) &&
+      !isTopicClusterDuplicate(t.title, existingTitles)
+  );
 }
 
 /**
@@ -154,8 +274,15 @@ export async function getUniqueNextTopic(
   requestedTitle?: string,
   preferredCategory?: string
 ): Promise<{ title: string; category: string; primary_keyword: string; topic_id?: number }> {
+  const existingTitles = existingBlogs.map((b) => b.title || "").filter(Boolean);
+
   // 1. Check if the requested title is provided and completely unique
-  if (requestedTitle && requestedTitle.trim() && !isHeadlineDuplicate(requestedTitle, existingBlogs)) {
+  if (
+    requestedTitle &&
+    requestedTitle.trim() &&
+    !isHeadlineDuplicate(requestedTitle, existingBlogs) &&
+    !isTopicClusterDuplicate(requestedTitle, existingTitles)
+  ) {
     return {
       title: requestedTitle.trim(),
       category: preferredCategory || "Video Production",
@@ -224,11 +351,22 @@ export async function researchAndSuggestTopics(targetCount = 5): Promise<SeoTopi
     template?.system_prompt ||
     `You are an SEO Content Strategist for ReelScale Hyderabad. Discover high-performing short-form video topics with zero keyword cannibalization. Output valid JSON array with proposed topics.`;
 
+  const existingClusters = Array.from(
+    new Set(catalog.titles.map((t) => {
+      const c = extractTopicCluster(t);
+      return `${c.industry} in ${c.location} (${c.format} -> ${c.intent})`;
+    }))
+  ).slice(0, 15);
+
+  const clusterConstraint = existingClusters.length > 0
+    ? `\n\nCRITICAL ANTI-CANNIBALIZATION CONSTRAINT:\nThe following topic clusters ALREADY EXIST. You MUST NOT propose any topic that shares the same industry, location, and intent:\n${existingClusters.map((c) => `- ALREADY COVERED: ${c}`).join("\n")}\n\nInstead, target completely UNTAPPED industries in Hyderabad (e.g., Aesthetic & Dental Clinics, High-End Jewellery, Bridal Couture, Specialty Coffee Roasters, Fitness & Combat Gyms, Pre-Schools, Coworking Spaces).`
+    : "";
+
   const renderedUserPrompt = renderPrompt(
     template?.user_template ||
     `Existing Published & Draft Titles/Slugs:\n{{existing_articles}}\n\nAnalyze these existing assets and propose {{target_count}} unique, high-priority blog topics in valid JSON format.`,
     {
-      existing_articles: catalog.summaryText || "None yet. Initializing content catalog.",
+      existing_articles: (catalog.summaryText || "None yet. Initializing content catalog.") + clusterConstraint,
       target_count: targetCount,
     }
   );
@@ -265,17 +403,21 @@ export async function researchAndSuggestTopics(targetCount = 5): Promise<SeoTopi
     const normTitle = trimmedTitle.toLowerCase().replace(/[^a-z0-9]/g, "");
     if (!normTitle || normTitle.length < 10) continue;
 
-    // Strict deduplication: check against existing catalog and topics created in this run
-    const isDuplicateTitle =
-      catalog.titles.some(
-        (t) => t.trim().toLowerCase().replace(/[^a-z0-9]/g, "") === normTitle
-      ) ||
-      insertedTopics.some(
-        (t) => t.title.trim().toLowerCase().replace(/[^a-z0-9]/g, "") === normTitle
-      );
+    // Strict multi-layer deduplication: exact, semantic, cluster, and slug against catalog + newly inserted
+    const existingBlogsToCheck = [
+      ...catalog.titles.map((t) => ({ title: t })),
+      ...insertedTopics.map((t) => ({ title: t.title })),
+    ];
+    const existingTitlesToCheck = [
+      ...catalog.titles,
+      ...insertedTopics.map((t) => t.title),
+    ];
 
-    if (isDuplicateTitle) {
-      console.log(`[TopicEngine] Discarding duplicate title: "${trimmedTitle}"`);
+    if (
+      isHeadlineDuplicate(trimmedTitle, existingBlogsToCheck) ||
+      isTopicClusterDuplicate(trimmedTitle, existingTitlesToCheck)
+    ) {
+      console.log(`[TopicEngine] Discarding duplicate/cannibalizing topic: "${trimmedTitle}"`);
       continue;
     }
 

@@ -40,7 +40,7 @@ const STAGES = [
   { id: 2, label: "Generating 1,500+ word reader-retention article", atSec: 3 },
   { id: 3, label: "Sourcing royalty-free featured landscape photo", atSec: 12 },
   { id: 4, label: "Injecting verified internal links & schema FAQs", atSec: 18 },
-  { id: 5, label: "Publishing directly to Sanity production Content Lake", atSec: 25 },
+  { id: 5, label: "Publishing live to Sanity CMS & website", atSec: 25 },
 ];
 
 export function GenerateAiBlogModal({
@@ -266,19 +266,6 @@ export function GenerateAiBlogModal({
           boxShadow: "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.15)",
         }}
       >
-        {/* Animated Top Gradient Line (Green -> Violet -> Blue) */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "3px",
-            background: "linear-gradient(90deg, #10b981 0%, #8b5cf6 50%, #3b82f6 100%)",
-            borderTopLeftRadius: "var(--radius-panel, 20px)",
-            borderTopRightRadius: "var(--radius-panel, 20px)",
-          }}
-        />
 
         {/* Header */}
         <div
@@ -297,7 +284,6 @@ export function GenerateAiBlogModal({
                 height: "44px",
                 borderRadius: "12px",
                 background: "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.25) 50%, rgba(59, 130, 246, 0.2) 100%)",
-                border: "1px solid rgba(139, 92, 246, 0.4)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -321,19 +307,6 @@ export function GenerateAiBlogModal({
                 }}
               >
                 <span>AI Blog Generator</span>
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    padding: "3px 10px",
-                    borderRadius: "99px",
-                    background: "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.25) 50%, rgba(59, 130, 246, 0.2) 100%)",
-                    color: "#ffffff",
-                    border: "1px solid rgba(139, 92, 246, 0.4)",
-                  }}
-                >
-                  Direct Production Publish
-                </span>
               </h2>
             </div>
           </div>
@@ -392,9 +365,6 @@ export function GenerateAiBlogModal({
               <h3 style={{ fontSize: "18px", fontWeight: 600, color: "var(--white)", margin: "0 0 6px 0" }}>
                 Blog Published Directly to Production!
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--muted)", margin: 0 }}>
-                Live on ReelScale website and permanently synced to Sanity Studio Content Lake.
-              </p>
             </div>
 
             {/* Published Article Summary Card */}
@@ -477,11 +447,10 @@ export function GenerateAiBlogModal({
                     validationReport.status === "passed"
                       ? "rgba(16, 185, 129, 0.08)"
                       : "rgba(245, 158, 11, 0.08)",
-                  border: `1px solid ${
-                    validationReport.status === "passed"
-                      ? "rgba(16, 185, 129, 0.3)"
-                      : "rgba(245, 158, 11, 0.3)"
-                  }`,
+                  border: `1px solid ${validationReport.status === "passed"
+                    ? "rgba(16, 185, 129, 0.3)"
+                    : "rgba(245, 158, 11, 0.3)"
+                    }`,
                   borderRadius: "12px",
                   padding: "16px",
                   marginBottom: "20px",
@@ -697,9 +666,6 @@ export function GenerateAiBlogModal({
               <h3 style={{ fontSize: "18px", fontWeight: 600, color: "var(--white)", margin: "0 0 6px 0" }}>
                 Generating Full Article & Publishing Live...
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--muted)", margin: "0 0 12px 0" }}>
-                AI is compiling markdown, sourcing high-res imagery, and publishing to Sanity Lake.
-              </p>
 
               {/* Elapsed Time Badge */}
               <div
@@ -771,13 +737,13 @@ export function GenerateAiBlogModal({
                       background: isCurrent
                         ? "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(139, 92, 246, 0.12) 50%, rgba(59, 130, 246, 0.1) 100%)"
                         : isPassed
-                        ? "rgba(16, 185, 129, 0.06)"
-                        : "transparent",
+                          ? "rgba(16, 185, 129, 0.06)"
+                          : "transparent",
                       border: isCurrent
                         ? "1px solid rgba(139, 92, 246, 0.4)"
                         : isPassed
-                        ? "1px solid rgba(16, 185, 129, 0.25)"
-                        : "1px solid rgba(255, 255, 255, 0.05)",
+                          ? "1px solid rgba(16, 185, 129, 0.25)"
+                          : "1px solid rgba(255, 255, 255, 0.05)",
                       transition: "all 0.3s ease",
                     }}
                   >
@@ -794,8 +760,8 @@ export function GenerateAiBlogModal({
                         background: isPassed
                           ? "linear-gradient(135deg, #10b981, #059669)"
                           : isCurrent
-                          ? "linear-gradient(135deg, #8b5cf6, #3b82f6)"
-                          : "rgba(255, 255, 255, 0.1)",
+                            ? "linear-gradient(135deg, #8b5cf6, #3b82f6)"
+                            : "rgba(255, 255, 255, 0.1)",
                         color: "#ffffff",
                         flexShrink: 0,
                       }}
@@ -809,8 +775,8 @@ export function GenerateAiBlogModal({
                         color: isCurrent
                           ? "var(--white)"
                           : isPassed
-                          ? "rgba(255, 255, 255, 0.85)"
-                          : "var(--muted)",
+                            ? "rgba(255, 255, 255, 0.85)"
+                            : "var(--muted)",
                       }}
                     >
                       {s.label}
@@ -1134,7 +1100,7 @@ export function GenerateAiBlogModal({
             >
               <CheckCircle2 size={18} style={{ color: "#10b981", flexShrink: 0 }} />
               <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.9)" }}>
-                <strong>Direct Production Publish:</strong> The generated article is automatically synced to Sanity Content Lake and published live to <span style={{ color: "#10b981", fontWeight: 600 }}>https://reelscale.in/blog/</span> with status &quot;Published&quot;.
+                <strong>Direct Production Publish:</strong> The generated article is automatically synced to Sanity CMS and published live to <span style={{ color: "#10b981", fontWeight: 600 }}>https://reelscale.in/blog/</span> with status &quot;Published&quot;.
               </div>
             </div>
 

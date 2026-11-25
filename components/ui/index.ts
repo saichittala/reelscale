@@ -51,6 +51,12 @@ export {
   type SliderMark,
 } from "./slider";
 export { RainbowButton, type RainbowButtonProps } from "./rainbow-button";
+export {
+  HoverBorderGradient,
+  type HoverBorderGradientProps,
+  type HoverBorderGradientSize,
+} from "./hover-border-gradient";
+
 
 
 

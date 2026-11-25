@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { revalidatePath } from "next/cache";
 import { executeMultiStageBlogGeneration } from "../ai/ai-pipeline";
 import { syncBlogToSanity } from "../../sanity/blog-sync";
-import { getSeoTopics, researchAndSuggestTopics, getExistingContentCatalog } from "../seo/topic-engine";
+import { getSeoTopics, researchAndSuggestTopics, getExistingContentCatalog, isHeadlineDuplicate, isTopicClusterDuplicate, filterOutDuplicateTopics } from "../seo/topic-engine";
 import { saveSeoTopicToSanity } from "../../sanity/ai-sync";
 import { slugify, stripDuplicateTitleHeading } from "../blog-utils";
 import { redisInvalidatePattern } from "../redis";
@@ -178,11 +178,22 @@ export async function generateSingleStagedBlog(params?: {
         topics = await getSeoTopics("suggested");
       }
 
+      const existingBlogObjects = [
+        ...catalog.titles.map((t) => ({ title: t })),
+        ...state.stagedBlogs.map((b) => ({ title: b.title })),
+        ...state.publishedHistory.map((b) => ({ title: b.title })),
+      ];
+      const existingTitlesList = [
+        ...catalog.titles,
+        ...state.stagedBlogs.map((b) => b.title),
+        ...state.publishedHistory.map((b) => b.title),
+      ];
+
       const available = (topics || []).filter((t) => {
         if (t.status && t.status !== "suggested") return false;
-        const normTopicTitle = norm(t.title);
+        if (isHeadlineDuplicate(t.title, existingBlogObjects)) return false;
+        if (isTopicClusterDuplicate(t.title, existingTitlesList)) return false;
         const normTopicSlug = (t.slug || slugify(t.title)).toLowerCase().trim();
-        if (existingTitles.has(normTopicTitle)) return false;
         if (existingSlugs.has(normTopicSlug)) return false;
         return true;
       });

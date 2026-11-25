@@ -35,17 +35,16 @@ import {
 import { Users } from "./modules/Users";
 import { Sales } from "./modules/Sales";
 import { Blogs } from "./modules/Blogs";
-import { AiBlogWriting } from "./modules/AiBlogWriting";
 import { AiBlogSettings } from "./modules/AiBlogSettings";
 import { CreateBlog } from "./modules/CreateBlog";
 import { BlogCategories } from "./modules/BlogCategories";
 import { Resources } from "./modules/Resources";
 import { SystemStatus } from "./modules/SystemStatus";
-import { Button, Input, DatePicker, toast } from "@/components/ui";
-import { AlertTriangle, Sparkles } from "lucide-react";
+import { Button, Input, DatePicker, toast, DropdownMenu, type DropdownItem } from "@/components/ui";
+import { AlertTriangle, Sparkles, Calendar, ChevronDown, RefreshCw } from "lucide-react";
 import { GenerateAiBlogModal } from "./components/GenerateAiBlogModal";
 import { BlogValidationModal } from "./components/BlogValidationModal";
-import { IconSearch, IconLogOut } from "./components/Icons";
+import { IconSearch, IconLogOut, IconDotsHorizontal } from "./components/Icons";
 import { CustomSelect } from "./components/CustomSelect";
 import { STORAGE_KEYS } from "./constants";
 
@@ -104,18 +103,8 @@ export default function DashboardMainPage() {
     []
   );
 
-  const [aiWritingHeaderLeft, setAiWritingHeaderLeft] = useState<React.ReactNode>(null);
-  const [aiWritingActionsBtn, setAiWritingActionsBtn] = useState<React.ReactNode>(null);
   const [aiSettingsHeaderLeft, setAiSettingsHeaderLeft] = useState<React.ReactNode>(null);
   const [aiSettingsActionsBtn, setAiSettingsActionsBtn] = useState<React.ReactNode>(null);
-
-  const handleAiWritingHeaderChange = useCallback(
-    (left: React.ReactNode, right: React.ReactNode) => {
-      setAiWritingHeaderLeft(left);
-      setAiWritingActionsBtn(right);
-    },
-    []
-  );
 
   const handleAiSettingsHeaderChange = useCallback(
     (left: React.ReactNode, right: React.ReactNode) => {
@@ -135,7 +124,6 @@ export default function DashboardMainPage() {
       "users",
       "sales",
       "blogs",
-      "ai-blog-writing",
       "ai-blog-settings",
       "create-blog",
       "blog-categories",
@@ -413,7 +401,6 @@ export default function DashboardMainPage() {
     } else if (
       role === "blogger" &&
       page !== "blogs" &&
-      page !== "ai-blog-writing" &&
       page !== "ai-blog-settings" &&
       page !== "create-blog" &&
       page !== "blog-categories"
@@ -879,95 +866,248 @@ export default function DashboardMainPage() {
     return null;
   }
 
+  // ── Helper handlers for batch deletion prompts ──
+  const handleDeleteSelectedClientsPrompt = () => {
+    setConfirmModal({
+      title: "Delete Selected Clients",
+      message: `Are you sure you want to delete the ${selectedClientIds.length} selected clients?`,
+      onConfirm: async () => {
+        try {
+          showToast(`Deleting ${selectedClientIds.length} selected clients...`);
+          await Promise.all(
+            selectedClientIds.map((id) => handleDeleteClient(id))
+          );
+          setSelectedClientIds([]);
+          showToast(`Deleted ${selectedClientIds.length} clients successfully`, "success");
+        } catch (err: any) {
+          showToast(
+            err.message || "Failed to delete some selected clients",
+            "error"
+          );
+        }
+      }
+    });
+  };
+
+  const handleDeleteSelectedLeadsPrompt = () => {
+    setConfirmModal({
+      title: "Delete Selected Leads",
+      message: `Are you sure you want to delete the ${selectedLeadIds.length} selected leads?`,
+      onConfirm: async () => {
+        try {
+          showToast(`Deleting ${selectedLeadIds.length} selected leads...`);
+          await Promise.all(
+            selectedLeadIds.map((id) => handleDeleteLead(id))
+          );
+          setSelectedLeadIds([]);
+          showToast(`Deleted ${selectedLeadIds.length} leads successfully`, "success");
+        } catch (err: any) {
+          showToast(
+            err.message || "Failed to delete some selected leads",
+            "error"
+          );
+        }
+      }
+    });
+  };
+
+  const handleDeleteSelectedUsersPrompt = () => {
+    setConfirmModal({
+      title: "Delete Selected Users",
+      message: `Are you sure you want to delete the ${selectedUserIds.length} selected users?`,
+      onConfirm: async () => {
+        try {
+          showToast(`Deleting ${selectedUserIds.length} selected users...`);
+          await Promise.all(
+            selectedUserIds.map((id) => handleDeleteUser(id))
+          );
+          setSelectedUserIds([]);
+          showToast(`Deleted ${selectedUserIds.length} users successfully`, "success");
+        } catch (err: any) {
+          showToast(
+            err.message || "Failed to delete some selected users",
+            "error"
+          );
+        }
+      }
+    });
+  };
+
   // Define dynamic action elements for the Layout topbar portal
-  const clientFiltersBtn = selectedClientIds.length > 0 && (
-    <Button
-      variant="danger"
-      onClick={() => {
-        setConfirmModal({
-          title: "Delete Selected Clients",
-          message: `Are you sure you want to delete the ${selectedClientIds.length} selected clients?`,
-          onConfirm: async () => {
-            try {
-              showToast(`Deleting ${selectedClientIds.length} selected clients...`);
-              await Promise.all(
-                selectedClientIds.map((id) => handleDeleteClient(id))
-              );
-              setSelectedClientIds([]);
-              showToast(`Deleted ${selectedClientIds.length} clients successfully`, "success");
-            } catch (err: any) {
-              showToast(
-                err.message || "Failed to delete some selected clients",
-                "error"
-              );
-            }
-          }
-        });
-      }}
-    >
-      <img
-        src="/assets/icons/delete.svg"
-        width="16"
-        className="icon-red"
-        alt=""
-      />
-      <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
-    </Button>
-  );
+  const clientFiltersBtn = selectedClientIds.length > 0 ? (
+    <div className="header-actions-desktop df-g8 al-c">
+      <Button
+        variant="danger"
+        onClick={handleDeleteSelectedClientsPrompt}
+      >
+        <img
+          src="/assets/icons/delete.svg"
+          width="16"
+          className="icon-red"
+          alt=""
+        />
+        <span><span className="hide-mobile">Delete Selected </span>({selectedClientIds.length})</span>
+      </Button>
+    </div>
+  ) : null;
 
   const addClientBtn = (
-    <Button
-      variant="primary"
-      onClick={() => {
-        setNewClientRow(true);
-      }}
-    >
-      <img
-        src="/assets/icons/add.svg"
-        alt="Add"
-        width="18"
-        height="18"
-      />
-      <span>Add Client</span>
-    </Button>
+    <>
+      <div className="header-actions-desktop df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => {
+            setNewClientRow(true);
+          }}
+        >
+          <img
+            src="/assets/icons/add.svg"
+            alt="Add"
+            width="18"
+            height="18"
+          />
+          <span>Add Client</span>
+        </Button>
+      </div>
+
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => {
+            setNewClientRow(true);
+          }}
+        >
+          <img
+            src="/assets/icons/add.svg"
+            alt="Add"
+            width="18"
+            height="18"
+          />
+          <span>Add Client</span>
+        </Button>
+
+        {selectedClientIds.length > 0 && (
+          <DropdownMenu
+            items={[
+              {
+                label: `Delete Selected (${selectedClientIds.length})`,
+                icon: (
+                  <img
+                    src="/assets/icons/delete.svg"
+                    width="16"
+                    className="icon-red"
+                    alt=""
+                  />
+                ),
+                destructive: true,
+                onSelect: handleDeleteSelectedClientsPrompt,
+              },
+            ]}
+            align="end"
+            trigger={
+              <Button
+                variant="secondary"
+                size="icon"
+                pill
+                className="btn-secondary header-more-btn"
+                title="More actions"
+                aria-label="More actions"
+              >
+                <IconDotsHorizontal size={18} />
+              </Button>
+            }
+          />
+        )}
+      </div>
+    </>
   );
 
-  const addSaleBtn = (
-    <Button
-      variant="primary"
-      onClick={() => setNewLeadRow(true)}
-    >
-      <img src="/assets/icons/add.svg" width="18" alt="" />
-      <span>Add Lead</span>
-    </Button>
+  // Sales Date Filter Popover Element
+  const salesDateFilterNode = (
+    <div ref={dateFilterPopoverRef} style={{ position: "relative" }}>
+      <Button
+        variant={salesDateFrom || salesDateTo ? "primary" : "secondary"}
+        className="df-g8 al-c"
+        onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
+      >
+        <Calendar size={15} className="opacity-70" />
+        <span>
+          {salesDateFrom || salesDateTo
+            ? `${salesDateFrom || "..."} → ${salesDateTo || "..."}`
+            : "Filter by Date"}
+        </span>
+        <ChevronDown
+          size={12}
+          className={`chevron-icon-rotatable${salesFilterExpanded ? " chevron-rotated" : ""}`}
+        />
+      </Button>
+
+      {salesFilterExpanded && (
+        <div
+          style={{
+            position: "absolute",
+            top: "calc(100% + 8px)",
+            right: 0,
+            zIndex: 1000,
+            background: "var(--bg2, #141414)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--border-radius-2)",
+            padding: "16px",
+            boxShadow: "0 16px 40px rgba(0,0,0,0.8)",
+            minWidth: "290px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
+              Filter Leads by Date
+            </span>
+            {(salesDateFrom || salesDateTo) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSalesDateFrom("");
+                  setSalesDateTo("");
+                }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--red)",
+                  fontSize: "var(--text-xs)",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                Clear Filter
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <DatePicker
+              label="From Date"
+              value={salesDateFrom}
+              onChange={(e: any) => setSalesDateFrom(e?.target?.value ?? e)}
+            />
+            <DatePicker
+              label="To Date"
+              value={salesDateTo}
+              onChange={(e: any) => setSalesDateTo(e?.target?.value ?? e)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   const salesFiltersBtn = (
-    <div className="df-g8 al-c">
+    <div className="header-actions-desktop df-g8 al-c">
       {selectedLeadIds.length > 0 && (
         <Button
           variant="danger"
-          onClick={() => {
-            setConfirmModal({
-              title: "Delete Selected Leads",
-              message: `Are you sure you want to delete the ${selectedLeadIds.length} selected leads?`,
-              onConfirm: async () => {
-                try {
-                  showToast(`Deleting ${selectedLeadIds.length} selected leads...`);
-                  await Promise.all(
-                    selectedLeadIds.map((id) => handleDeleteLead(id))
-                  );
-                  setSelectedLeadIds([]);
-                  showToast(`Deleted ${selectedLeadIds.length} leads successfully`, "success");
-                } catch (err: any) {
-                  showToast(
-                    err.message || "Failed to delete some selected leads",
-                    "error"
-                  );
-                }
-              }
-            });
-          }}
+          onClick={handleDeleteSelectedLeadsPrompt}
         >
           <img
             src="/assets/icons/delete.svg"
@@ -979,106 +1119,7 @@ export default function DashboardMainPage() {
         </Button>
       )}
 
-      <div ref={dateFilterPopoverRef} style={{ position: "relative" }}>
-        <Button
-          variant={salesDateFrom || salesDateTo ? "primary" : "secondary"}
-          className="df-g8 al-c"
-          onClick={() => setSalesFilterExpanded(!salesFilterExpanded)}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="opacity-70"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>
-            {salesDateFrom || salesDateTo
-              ? `${salesDateFrom || "..."} → ${salesDateTo || "..."}`
-              : "Filter by Date"}
-          </span>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`chevron-icon-rotatable${salesFilterExpanded ? " chevron-rotated" : ""}`}
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </Button>
-
-        {salesFilterExpanded && (
-          <div
-            style={{
-              position: "absolute",
-              top: "calc(100% + 8px)",
-              left: 0,
-              zIndex: 1000,
-              background: "var(--bg2, #141414)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--border-radius-2)",
-              padding: "16px",
-              boxShadow: "0 16px 40px rgba(0,0,0,0.8)",
-              minWidth: "290px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--white)" }}>
-                Filter Leads by Date
-              </span>
-              {(salesDateFrom || salesDateTo) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSalesDateFrom("");
-                    setSalesDateTo("");
-                  }}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--red)",
-                    fontSize: "var(--text-xs)",
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
-                >
-                  Clear Filter
-                </button>
-              )}
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <DatePicker
-                label="From Date"
-                value={salesDateFrom}
-                onChange={(e: any) => setSalesDateFrom(e?.target?.value ?? e)}
-              />
-              <DatePicker
-                label="To Date"
-                value={salesDateTo}
-                onChange={(e: any) => setSalesDateTo(e?.target?.value ?? e)}
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      {salesDateFilterNode}
 
       <Button
         variant="secondary"
@@ -1095,234 +1136,546 @@ export default function DashboardMainPage() {
     </div>
   );
 
-  const userFiltersBtn = selectedUserIds.length > 0 && (
-    <Button
-      variant="danger"
-      onClick={() => {
-        setConfirmModal({
-          title: "Delete Selected Users",
-          message: `Are you sure you want to delete the ${selectedUserIds.length} selected users?`,
-          onConfirm: async () => {
-            try {
-              showToast(`Deleting ${selectedUserIds.length} selected users...`);
-              await Promise.all(
-                selectedUserIds.map((id) => handleDeleteUser(id))
-              );
-              setSelectedUserIds([]);
-              showToast(`Deleted ${selectedUserIds.length} users successfully`, "success");
-            } catch (err: any) {
-              showToast(
-                err.message || "Failed to delete some selected users",
-                "error"
-              );
-            }
-          }
-        });
-      }}
-    >
-      <img
-        src="/assets/icons/delete.svg"
-        width="16"
-        className="icon-red"
-        alt=""
-      />
-      <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
-    </Button>
-  );
-
-  const addUserBtn = (
-    <Button
-      variant="primary"
-      onClick={() => setNewUserRow(true)}
-    >
-      <img src="/assets/icons/add.svg" width="18" alt="" />
-      <span>Add User</span>
-    </Button>
-  );
-
-  const blogActionsBtn = (
-    <div className="df-g8 al-c">
-      {selectedBlogIds.length > 0 && (
+  const addSaleBtn = (
+    <>
+      <div className="header-actions-desktop df-g8 al-c">
         <Button
-          variant="danger"
-          onClick={() => {
-            setConfirmModal({
-              title: "Delete Selected Blog Posts",
-              message: `Are you sure you want to delete the ${selectedBlogIds.length} selected blog posts?`,
-              onConfirm: async () => {
-                try {
-                  showToast(`Deleting ${selectedBlogIds.length} selected blog posts...`);
-                  await Promise.all(
-                    selectedBlogIds.map((id) => apiDeleteBlog(id))
-                  );
-                  setSelectedBlogIds([]);
-                  const data = await fetchBlogs();
-                  setBlogs(data);
-                  showToast(`Deleted ${selectedBlogIds.length} blogs successfully`, "success");
-                } catch (err: any) {
-                  showToast(
-                    err.message || "Failed to delete some selected blogs",
-                    "error"
-                  );
-                }
-              }
-            });
-          }}
+          variant="primary"
+          onClick={() => setNewLeadRow(true)}
         >
-          <img
-            src="/assets/icons/delete.svg"
-            width="16"
-            className="icon-red"
-            alt=""
-          />
-          <span><span className="hide-mobile">Delete Selected </span>({selectedBlogIds.length})</span>
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span>Add Lead</span>
         </Button>
-      )}
+      </div>
 
-      <CustomSelect
-        id="topbar-blog-status-filter"
-        value={blogStatusFilter}
-        onChange={(v) => setBlogStatusFilter(v)}
-        options={[
-          { value: "all", label: "All Statuses" },
-          { value: "Draft", label: "Draft" },
-          { value: "Published", label: "Published" },
-        ]}
-        size="md"
-      />
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => setNewLeadRow(true)}
+        >
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span>Add Lead</span>
+        </Button>
 
-      <CustomSelect
-        id="topbar-blog-category-filter"
-        value={blogCategoryFilter}
-        onChange={(v) => setBlogCategoryFilter(v)}
-        options={[
-          { value: "all", label: "All Categories" },
-          ...blogCategories.map((c) => ({ value: c, label: c })),
-        ]}
-        size="md"
-        align="right"
-      />
+        {/* Anchor point if date filter was triggered from menu */}
+        {salesFilterExpanded && salesDateFilterNode}
 
+        <DropdownMenu
+          items={[
+            ...(selectedLeadIds.length > 0
+              ? [
+                  {
+                    label: `Delete Selected (${selectedLeadIds.length})`,
+                    icon: (
+                      <img
+                        src="/assets/icons/delete.svg"
+                        width="16"
+                        className="icon-red"
+                        alt=""
+                      />
+                    ),
+                    destructive: true,
+                    onSelect: handleDeleteSelectedLeadsPrompt,
+                  },
+                ]
+              : []),
+            {
+              label: salesDateFrom || salesDateTo ? `Filter by Date (Active)` : "Filter by Date",
+              icon: <Calendar size={16} className="opacity-70" />,
+              onSelect: () => setSalesFilterExpanded(true),
+            },
+            {
+              label: "Import XLS",
+              icon: <img src="/assets/icons/upload.svg" width="16" alt="" />,
+              onSelect: () => {
+                const trigger = document.getElementById("import-sales-btn-trigger");
+                if (trigger) trigger.click();
+              },
+            },
+          ]}
+          align="end"
+          trigger={
+            <Button
+              variant="secondary"
+              size="icon"
+              pill
+              className="btn-secondary header-more-btn"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <IconDotsHorizontal size={18} />
+            </Button>
+          }
+        />
+      </div>
+    </>
+  );
+
+  const userFiltersBtn = selectedUserIds.length > 0 ? (
+    <div className="header-actions-desktop df-g8 al-c">
       <Button
-        variant="secondary"
-        pill
-        className="btn-secondary"
-        onClick={() => setPage("blog-categories")}
+        variant="danger"
+        onClick={handleDeleteSelectedUsersPrompt}
       >
         <img
+          src="/assets/icons/delete.svg"
+          width="16"
+          className="icon-red"
+          alt=""
+        />
+        <span><span className="hide-mobile">Delete Selected </span>({selectedUserIds.length})</span>
+      </Button>
+    </div>
+  ) : null;
+
+  const addUserBtn = (
+    <>
+      <div className="header-actions-desktop df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => setNewUserRow(true)}
+        >
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span>Add User</span>
+        </Button>
+      </div>
+
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => setNewUserRow(true)}
+        >
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span>Add User</span>
+        </Button>
+
+        {selectedUserIds.length > 0 && (
+          <DropdownMenu
+            items={[
+              {
+                label: `Delete Selected (${selectedUserIds.length})`,
+                icon: (
+                  <img
+                    src="/assets/icons/delete.svg"
+                    width="16"
+                    className="icon-red"
+                    alt=""
+                  />
+                ),
+                destructive: true,
+                onSelect: handleDeleteSelectedUsersPrompt,
+              },
+            ]}
+            align="end"
+            trigger={
+              <Button
+                variant="secondary"
+                size="icon"
+                pill
+                className="btn-secondary header-more-btn"
+                title="More actions"
+                aria-label="More actions"
+              >
+                <IconDotsHorizontal size={18} />
+              </Button>
+            }
+          />
+        )}
+      </div>
+    </>
+  );
+
+  const blogMoreItems: DropdownItem[] = [
+    {
+      label: "Generate with AI",
+      icon: <Sparkles size={16} className="text-[var(--red)]" />,
+      onSelect: () => {
+        setAiModalAutoStart(true);
+        setShowAiGenerateModal(true);
+      },
+    },
+    {
+      label: "Manage Categories",
+      icon: (
+        <img
           src="/assets/icons/nav-analytics.svg"
-          width="18"
+          width="16"
           className="opacity-70"
           alt=""
         />
-        <span>Categories</span>
-      </Button>
-    </div>
+      ),
+      onSelect: () => setPage("blog-categories"),
+    },
+    ...(selectedBlogIds.length > 0
+      ? [
+          {
+            label: `Delete Selected (${selectedBlogIds.length})`,
+            icon: <img src="/assets/icons/delete.svg" width="16" className="icon-red" alt="" />,
+            destructive: true,
+            separatorBefore: true,
+            onSelect: () => {
+              setConfirmModal({
+                title: "Delete Selected Blog Posts",
+                message: `Are you sure you want to delete the ${selectedBlogIds.length} selected blog posts?`,
+                onConfirm: async () => {
+                  try {
+                    showToast(`Deleting ${selectedBlogIds.length} selected blog posts...`);
+                    await Promise.all(
+                      selectedBlogIds.map((id) => apiDeleteBlog(id))
+                    );
+                    setSelectedBlogIds([]);
+                    const data = await fetchBlogs();
+                    setBlogs(data);
+                    showToast(`Deleted ${selectedBlogIds.length} blogs successfully`, "success");
+                  } catch (err: any) {
+                    showToast(
+                      err.message || "Failed to delete some selected blogs",
+                      "error"
+                    );
+                  }
+                },
+              });
+            },
+          },
+        ]
+      : []),
+  ];
+
+  const blogActionsBtn = (
+    <>
+      {/* Desktop view (> 1180px): inline filters and delete */}
+      <div className="header-actions-desktop df-g8 al-c">
+        {selectedBlogIds.length > 0 && (
+          <Button
+            variant="danger"
+            onClick={() => {
+              setConfirmModal({
+                title: "Delete Selected Blog Posts",
+                message: `Are you sure you want to delete the ${selectedBlogIds.length} selected blog posts?`,
+                onConfirm: async () => {
+                  try {
+                    showToast(`Deleting ${selectedBlogIds.length} selected blog posts...`);
+                    await Promise.all(
+                      selectedBlogIds.map((id) => apiDeleteBlog(id))
+                    );
+                    setSelectedBlogIds([]);
+                    const data = await fetchBlogs();
+                    setBlogs(data);
+                    showToast(`Deleted ${selectedBlogIds.length} blogs successfully`, "success");
+                  } catch (err: any) {
+                    showToast(
+                      err.message || "Failed to delete some selected blogs",
+                      "error"
+                    );
+                  }
+                },
+              });
+            }}
+          >
+            <img
+              src="/assets/icons/delete.svg"
+              width="16"
+              className="icon-red"
+              alt=""
+            />
+            <span><span className="hide-mobile">Delete Selected </span>({selectedBlogIds.length})</span>
+          </Button>
+        )}
+
+        <CustomSelect
+          id="topbar-blog-status-filter"
+          value={blogStatusFilter}
+          onChange={(v) => setBlogStatusFilter(v)}
+          options={[
+            { value: "all", label: "All Statuses" },
+            { value: "Draft", label: "Draft" },
+            { value: "Published", label: "Published" },
+          ]}
+          size="md"
+        />
+
+        <CustomSelect
+          id="topbar-blog-category-filter"
+          value={blogCategoryFilter}
+          onChange={(v) => setBlogCategoryFilter(v)}
+          options={[
+            { value: "all", label: "All Categories" },
+            ...blogCategories.map((c) => ({ value: c, label: c })),
+          ]}
+          size="md"
+          align="right"
+        />
+
+        <Button
+          variant="secondary"
+          pill
+          className="btn-secondary"
+          onClick={() => setPage("blog-categories")}
+        >
+          <img
+            src="/assets/icons/nav-analytics.svg"
+            width="18"
+            className="opacity-70"
+            alt=""
+          />
+          <span>Categories</span>
+        </Button>
+      </div>
+
+      {/* Compact / Overflow view (<= 1180px): filters kept on tablet, collapsed into controls on phone */}
+      <div className="header-actions-compact df-g8 al-c">
+        <div className="topbar-blog-filters-compact hide-mobile df-g8 al-c">
+          <CustomSelect
+            id="topbar-blog-status-filter-compact"
+            value={blogStatusFilter}
+            onChange={(v) => setBlogStatusFilter(v)}
+            options={[
+              { value: "all", label: "All Statuses" },
+              { value: "Draft", label: "Draft" },
+              { value: "Published", label: "Published" },
+            ]}
+            size="md"
+          />
+
+          <CustomSelect
+            id="topbar-blog-category-filter-compact"
+            value={blogCategoryFilter}
+            onChange={(v) => setBlogCategoryFilter(v)}
+            options={[
+              { value: "all", label: "All Categories" },
+              ...blogCategories.map((c) => ({ value: c, label: c })),
+            ]}
+            size="md"
+            align="right"
+          />
+        </div>
+      </div>
+    </>
   );
 
   const createBlogBtn = (
-    <div className="df-g8 al-c">
-      <Button
-        variant="ai"
-        onClick={() => {
-          setAiModalAutoStart(true);
-          setShowAiGenerateModal(true);
-        }}
-        title="Directly auto-generate AI Blog and publish to production"
-      >
-        <Sparkles size={16} />
-        <span>Generate with AI</span>
-      </Button>
+    <>
+      {/* Desktop view (> 1180px): Both AI Generate and Create Blog visible */}
+      <div className="header-actions-desktop df-g8 al-c">
+        <Button
+          variant="ai"
+          onClick={() => {
+            setAiModalAutoStart(true);
+            setShowAiGenerateModal(true);
+          }}
+          title="Directly auto-generate AI Blog and publish to production"
+        >
+          <Sparkles size={16} />
+          <span>Generate with AI</span>
+        </Button>
 
-      <Button
-        variant="primary"
-        onClick={() => {
-          setEditingBlog(null);
-          setPage("create-blog");
-        }}
-      >
-        <img src="/assets/icons/add.svg" width="18" alt="" />
-        <span>Create Blog</span>
-      </Button>
-    </div>
+        <Button
+          variant="primary"
+          onClick={() => {
+            setEditingBlog(null);
+            setPage("create-blog");
+          }}
+        >
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span>Create Blog</span>
+        </Button>
+      </div>
+
+      {/* Compact / Overflow view (<= 1180px): Create Blog + Secondary Three-Dot Menu */}
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={() => {
+            setEditingBlog(null);
+            setPage("create-blog");
+          }}
+        >
+          <img src="/assets/icons/add.svg" width="18" alt="" />
+          <span><span className="hide-mobile">Create </span>Blog</span>
+        </Button>
+
+        <DropdownMenu
+          items={blogMoreItems}
+          align="end"
+          trigger={
+            <Button
+              variant="secondary"
+              size="icon"
+              pill
+              className="btn-secondary header-more-btn"
+              title="More options"
+              aria-label="More options"
+            >
+              <IconDotsHorizontal size={18} />
+            </Button>
+          }
+        />
+      </div>
+    </>
   );
 
   const systemStatusActionsBtn = (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-      {/* Status Pill: Dot + Perfect/Issues + Checked Timestamp */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "7px 14px",
-          borderRadius: "var(--border-radius-99, 99px)",
-          background: "transparent",
-          border: "1px solid var(--border)",
-          fontSize: "var(--text-xs)",
-        }}
-      >
-        {sysIsOperational === false ? (
-          <AlertTriangle
-            size={14}
-            style={{
-              color: "var(--red)",
-              display: "inline-block",
-              flexShrink: 0,
-            }}
-          />
-        ) : (
-          <span
-            style={{
-              width: "8px",
-              height: "8px",
-              borderRadius: "50%",
-              backgroundColor: "var(--green)",
-              boxShadow: "0 0 6px var(--green)",
-              display: "inline-block",
-              flexShrink: 0,
-            }}
-          />
-        )}
-        <span style={{ color: "var(--white)", fontWeight: 600 }}>
-          {sysIsOperational === false ? sysLabel || "Issues" : "Perfect"}
-        </span>
-        {sysTimestamp && (
-          <span style={{ color: "var(--muted)", fontSize: "11px" }}>
-            (Checked: {new Date(sysTimestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })})
+    <>
+      <div className="header-actions-desktop df-g8 al-c">
+        {/* Status Pill: Dot + Perfect/Issues + Checked Timestamp */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "7px 14px",
+            borderRadius: "var(--border-radius-99, 99px)",
+            background: "transparent",
+            border: "1px solid var(--border)",
+            fontSize: "var(--text-xs)",
+          }}
+        >
+          {sysIsOperational === false ? (
+            <AlertTriangle
+              size={14}
+              style={{
+                color: "var(--red)",
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                backgroundColor: "var(--green)",
+                boxShadow: "0 0 6px var(--green)",
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <span style={{ color: "var(--white)", fontWeight: 600 }}>
+            {sysIsOperational === false ? sysLabel || "Issues" : "Perfect"}
           </span>
-        )}
+          {sysTimestamp && (
+            <span style={{ color: "var(--muted)", fontSize: "11px" }}>
+              (Checked: {new Date(sysTimestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })})
+            </span>
+          )}
+        </div>
+
+        {/* Flush Cache Button */}
+        <Button
+          variant="secondary"
+          onClick={() => setSysTriggerFlush((c) => c + 1)}
+          disabled={sysFlushing || !sysRedisOk}
+          style={{ fontSize: "var(--text-xs)" }}
+        >
+          <img src="/assets/icons/delete.svg" width="14" alt="" className="opacity-70" />
+          <span>{sysFlushing ? "Flushing..." : "Flush Cache"}</span>
+        </Button>
+
+        {/* Refresh Button */}
+        <Button
+          variant="primary"
+          onClick={() => setSysTriggerRefresh((c) => c + 1)}
+          disabled={sysRefreshing}
+          style={{ fontSize: "var(--text-xs)" }}
+        >
+          <img
+            src="/assets/icons/nav-status.svg"
+            width="14"
+            alt=""
+            style={{
+              animation: sysRefreshing ? "spin 1s linear infinite" : "none",
+            }}
+          />
+          <span>{sysRefreshing ? "Checking..." : "Refresh"}</span>
+        </Button>
       </div>
 
-      {/* Flush Cache Button */}
-      <Button
-        variant="secondary"
-        onClick={() => setSysTriggerFlush((c) => c + 1)}
-        disabled={sysFlushing || !sysRedisOk}
-        style={{ fontSize: "var(--text-xs)" }}
-      >
-        <img src="/assets/icons/delete.svg" width="14" alt="" className="opacity-70" />
-        <span>{sysFlushing ? "Flushing..." : "Flush Cache"}</span>
-      </Button>
-
-      {/* Refresh Button */}
-      <Button
-        variant="primary"
-        onClick={() => setSysTriggerRefresh((c) => c + 1)}
-        disabled={sysRefreshing}
-        style={{ fontSize: "var(--text-xs)" }}
-      >
-        <img
-          src="/assets/icons/nav-status.svg"
-          width="14"
-          alt=""
+      <div className="header-actions-compact df-g8 al-c">
+        {/* Compact Status Pill */}
+        <div
           style={{
-            animation: sysRefreshing ? "spin 1s linear infinite" : "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "7px 12px",
+            borderRadius: "var(--border-radius-99, 99px)",
+            background: "transparent",
+            border: "1px solid var(--border)",
+            fontSize: "var(--text-xs)",
           }}
+        >
+          {sysIsOperational === false ? (
+            <AlertTriangle
+              size={14}
+              style={{
+                color: "var(--red)",
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                backgroundColor: "var(--green)",
+                boxShadow: "0 0 6px var(--green)",
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <span style={{ color: "var(--white)", fontWeight: 600 }}>
+            {sysIsOperational === false ? sysLabel || "Issues" : "Perfect"}
+          </span>
+        </div>
+
+        {/* Refresh Button */}
+        <Button
+          variant="primary"
+          onClick={() => setSysTriggerRefresh((c) => c + 1)}
+          disabled={sysRefreshing}
+          style={{ fontSize: "var(--text-xs)" }}
+        >
+          <img
+            src="/assets/icons/nav-status.svg"
+            width="14"
+            alt=""
+            style={{
+              animation: sysRefreshing ? "spin 1s linear infinite" : "none",
+            }}
+          />
+          <span>{sysRefreshing ? "Checking..." : "Refresh"}</span>
+        </Button>
+
+        <DropdownMenu
+          items={[
+            {
+              label: sysFlushing ? "Flushing Cache..." : "Flush Cache",
+              icon: <img src="/assets/icons/delete.svg" width="14" alt="" className="opacity-70" />,
+              disabled: sysFlushing || !sysRedisOk,
+              onSelect: () => setSysTriggerFlush((c) => c + 1),
+            },
+          ]}
+          align="end"
+          trigger={
+            <Button
+              variant="secondary"
+              size="icon"
+              pill
+              className="btn-secondary header-more-btn"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <IconDotsHorizontal size={18} />
+            </Button>
+          }
         />
-        <span>{sysRefreshing ? "Checking..." : "Refresh"}</span>
-      </Button>
-    </div>
+      </div>
+    </>
   );
 
   const searchBar = ["clients", "sales", "users", "blogs"].includes(page) ? (
@@ -1379,8 +1732,6 @@ export default function DashboardMainPage() {
         systemStatusOperational={sysIsOperational}
         resourcesHeaderLeft={resourcesHeaderLeft}
         resourcesActionsBtn={resourcesActionsBtn}
-        aiWritingHeaderLeft={aiWritingHeaderLeft}
-        aiWritingActionsBtn={aiWritingActionsBtn}
         aiSettingsHeaderLeft={aiSettingsHeaderLeft}
         aiSettingsActionsBtn={aiSettingsActionsBtn}
         selectedMonth={selectedMonth}
@@ -1491,25 +1842,6 @@ export default function DashboardMainPage() {
               categoryFilter={blogCategoryFilter}
               onCategoryFilterChange={setBlogCategoryFilter}
               onValidateBlog={handleInspectBlogValidation}
-            />
-          )}
-
-          {page === "ai-blog-writing" && (
-            <AiBlogWriting
-              blogs={blogs}
-              blogCategories={blogCategories}
-              onEditBlog={(blog) => {
-                setEditingBlog(blog);
-                setPage("create-blog");
-              }}
-              onCreateBlog={() => {
-                setEditingBlog(null);
-                setPage("create-blog");
-              }}
-              onNavigateTab={(tab) => setPage(tab as DashboardPage)}
-              showToast={showToast}
-              onHeaderChange={handleAiWritingHeaderChange}
-              onBlogPublished={handleAiBlogPublished}
             />
           )}
 

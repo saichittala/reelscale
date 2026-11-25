@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Blog } from "../types";
-import { Button, Input, Slider, Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { SkeletonLoader } from "../components/SkeletonLoader";
+import { Button, HoverBorderGradient, Input, Slider, Tabs, TabsList, TabsTrigger, DropdownMenu, type DropdownItem } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
+import { IconDotsHorizontal } from "../components/Icons";
 import { customFetch } from "../services/api";
 import {
   Zap,
@@ -16,25 +18,36 @@ import {
   Clock,
   Cpu,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  AlertCircle,
+  Copy,
+  History,
+  Sliders,
+  Check,
 } from "lucide-react";
 
 interface AiBlogSettingsProps {
   blogs?: Blog[];
+  isLoading?: boolean;
   onNavigateTab?: (page: string) => void;
-  showToast?: (msg: string, type?: "success" | "error") => void;
+  showToast?: (msg: string, type?: "success" | "error" | "loading") => void;
   onHeaderChange?: (left: React.ReactNode, right: React.ReactNode) => void;
 }
 
 export function AiBlogSettings({
   blogs = [],
+  isLoading = false,
   onNavigateTab,
   showToast,
   onHeaderChange,
 }: AiBlogSettingsProps) {
-  // Main Tab State
+  // Navigation / View State
   const [activeTab, setActiveTab] = useState<"controls" | "prompts">("controls");
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Scheduling State
+  // Core Scheduling State
   const [scheduleType, setScheduleType] = useState<string>("daily");
   const [blogsPerActiveDay, setBlogsPerActiveDay] = useState<number>(15);
   const [maxGenerationQty, setMaxGenerationQty] = useState<number>(50);
@@ -61,7 +74,11 @@ export function AiBlogSettings({
   const [selectedModel, setSelectedModel] = useState<string>("gemini-3.5-flash-lite");
   const [savingSchedule, setSavingSchedule] = useState(false);
 
-  // Dynamic 30-day Preview
+  // Initial loaded config state for tracking dirty changes
+  const initialConfigRef = useRef<any>(null);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // Forecast & Projections
   const [dynamicPreview, setDynamicPreview] = useState<{
     days: { date: string; dayOfWeek: string; isActive: boolean; quantity: number }[];
     activeDaysCount: number;
@@ -69,6 +86,7 @@ export function AiBlogSettings({
     expectedMonthlyTotal: number;
     estimatedTotalTokens: number;
   } | null>(null);
+  const [showCalendarBreakdown, setShowCalendarBreakdown] = useState(false);
 
   // Automation Master Switch
   const [automationActive, setAutomationActive] = useState<boolean>(true);
@@ -81,6 +99,7 @@ export function AiBlogSettings({
   const [editingUsrTemplate, setEditingUsrTemplate] = useState<string>("");
   const [changeSummary, setChangeSummary] = useState<string>("");
   const [promptVersions, setPromptVersions] = useState<any[]>([]);
+  const [showVersions, setShowVersions] = useState(false);
   const [savingPrompt, setSavingPrompt] = useState(false);
   const [testingPrompt, setTestingPrompt] = useState(false);
   const [testOutput, setTestOutput] = useState<{ output: string; latency: number; tokens: number } | null>(null);
@@ -91,10 +110,10 @@ export function AiBlogSettings({
   const [triggeringBatch, setTriggeringBatch] = useState(false);
 
   const supportedModelsList = [
-    { value: "gemini-3.5-flash-lite", label: "Google Gemini 3.5 Flash Lite (Tier 1 Primary Engine)" },
-    { value: "gemini-3-flash-preview", label: "Google Gemini 3 Flash Preview (Tier 1 High Capacity)" },
-    { value: "openai/gpt-oss-120b", label: "Groq LPU: GPT-OSS 120B (Tier 2 Fast Fallback)" },
-    { value: "meta-llama/llama-3.3-70b-instruct", label: "OpenRouter: LLaMA 3.3 70B (Tier 3 Tertiary)" },
+    { value: "gemini-3.5-flash-lite", label: "Google Gemini 3.5 Flash Lite (Recommended • Ultra-Fast)" },
+    { value: "gemini-3-flash-preview", label: "Google Gemini 3 Flash Preview (Frontier Reasoning)" },
+    { value: "openai/gpt-oss-120b", label: "Groq LPU: GPT-OSS 120B (High-Speed Fallback)" },
+    { value: "meta-llama/llama-3.3-70b-instruct", label: "OpenRouter: LLaMA 3.3 70B (Tertiary)" },
     { value: "qwen/qwen3.8-27b", label: "Groq LPU: Qwen 3.8 27B" },
   ];
 
@@ -105,25 +124,74 @@ export function AiBlogSettings({
       const json = await res.json();
       const s = json.schedule || json.activeSchedule;
       if (json.success && s) {
-        setScheduleType(s.schedule_type || "daily");
-        if (s.blogs_per_active_day !== undefined && s.blogs_per_active_day !== null) {
-          setBlogsPerActiveDay(Number(s.blogs_per_active_day));
-        }
-        if (s.max_daily_generation_limit || s.max_generation_quantity) {
-          setMaxGenerationQty(Number(s.max_daily_generation_limit || s.max_generation_quantity));
-        }
-        if (Array.isArray(s.active_weekdays)) setActiveWeekdays(s.active_weekdays);
-        if (s.interval_days) setIntervalDays(Number(s.interval_days));
-        if (s.weekday_quantities) setWeekdayQuantities(s.weekday_quantities);
-        if (s.generation_time) setGenerationTime(s.generation_time);
-        setAutoPublish(s.auto_publish_to_sanity ?? s.auto_publish ?? true);
-        if (s.groq_model || s.model) setSelectedModel(s.groq_model || s.model);
-        if (s.is_active !== undefined) setAutomationActive(Boolean(s.is_active));
+        const type = s.schedule_type || "daily";
+        const dailyQty = s.blogs_per_active_day !== undefined && s.blogs_per_active_day !== null
+          ? Number(s.blogs_per_active_day)
+          : 15;
+        const maxLimit = Number(s.max_daily_generation_limit || s.max_generation_quantity || 50);
+        const days = Array.isArray(s.active_weekdays) ? s.active_weekdays : ["monday", "tuesday", "wednesday", "thursday", "friday"];
+        const interval = Number(s.interval_days || 2);
+        const weekQuantities = s.weekday_quantities || {
+          monday: 20, tuesday: 0, wednesday: 20, thursday: 0, friday: 20, saturday: 0, sunday: 0
+        };
+        const genTime = s.generation_time || "09:00";
+        const autoPub = s.auto_publish_to_sanity ?? s.auto_publish ?? true;
+        const model = s.groq_model || s.model || "gemini-3.5-flash-lite";
+        const active = s.is_active !== undefined ? Boolean(s.is_active) : true;
+
+        setScheduleType(type);
+        setBlogsPerActiveDay(dailyQty);
+        setMaxGenerationQty(maxLimit);
+        setActiveWeekdays(days);
+        setIntervalDays(interval);
+        setWeekdayQuantities(weekQuantities);
+        setGenerationTime(genTime);
+        setAutoPublish(autoPub);
+        setSelectedModel(model);
+        setAutomationActive(active);
+
+        initialConfigRef.current = {
+          scheduleType: type,
+          blogsPerActiveDay: dailyQty,
+          maxGenerationQty: maxLimit,
+          activeWeekdays: days,
+          intervalDays: interval,
+          generationTime: genTime,
+          autoPublish: autoPub,
+          selectedModel: model,
+        };
+        setIsDirty(false);
       }
     } catch {
-      // ignore
+      // silent load fallback
     }
   }, []);
+
+  // Check Dirty State
+  useEffect(() => {
+    if (!initialConfigRef.current) return;
+    const initial = initialConfigRef.current;
+    const changed =
+      scheduleType !== initial.scheduleType ||
+      blogsPerActiveDay !== initial.blogsPerActiveDay ||
+      maxGenerationQty !== initial.maxGenerationQty ||
+      generationTime !== initial.generationTime ||
+      autoPublish !== initial.autoPublish ||
+      selectedModel !== initial.selectedModel ||
+      intervalDays !== initial.intervalDays ||
+      JSON.stringify(activeWeekdays.slice().sort()) !== JSON.stringify(initial.activeWeekdays.slice().sort());
+
+    setIsDirty(changed);
+  }, [
+    scheduleType,
+    blogsPerActiveDay,
+    maxGenerationQty,
+    generationTime,
+    autoPublish,
+    selectedModel,
+    intervalDays,
+    activeWeekdays,
+  ]);
 
   // Fetch 30-Day Dynamic Preview
   const fetchPreview = useCallback(async () => {
@@ -179,12 +247,27 @@ export function AiBlogSettings({
   }, []);
 
   useEffect(() => {
-    fetchScheduleConfig();
-    fetchPrompts();
+    let mounted = true;
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        await Promise.allSettled([fetchScheduleConfig(), fetchPrompts()]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    loadInitialData();
+    return () => {
+      mounted = false;
+    };
   }, [fetchScheduleConfig, fetchPrompts]);
 
+  // Debounced preview fetch on change
   useEffect(() => {
-    fetchPreview();
+    const timer = setTimeout(() => {
+      fetchPreview();
+    }, 250);
+    return () => clearTimeout(timer);
   }, [fetchPreview]);
 
   useEffect(() => {
@@ -217,6 +300,17 @@ export function AiBlogSettings({
       const json = await res.json();
       if (json.success) {
         showToast?.("AI Automation Schedule configuration saved!", "success");
+        initialConfigRef.current = {
+          scheduleType,
+          blogsPerActiveDay,
+          maxGenerationQty,
+          activeWeekdays,
+          intervalDays,
+          generationTime,
+          autoPublish,
+          selectedModel,
+        };
+        setIsDirty(false);
         fetchPreview();
       } else {
         showToast?.(json.message || "Failed to update configuration", "error");
@@ -261,7 +355,7 @@ export function AiBlogSettings({
     }
   };
 
-  // Switch Selected Prompt in Editor
+  // Switch Selected Prompt
   const handleSelectPrompt = (id: string) => {
     setSelectedPromptId(id);
     const p = prompts.find((item) => item.id === id);
@@ -273,7 +367,7 @@ export function AiBlogSettings({
     }
   };
 
-  // Save Prompt Changes
+  // Save Prompt
   const handleSavePrompt = async () => {
     setSavingPrompt(true);
     try {
@@ -285,7 +379,7 @@ export function AiBlogSettings({
           id: selectedPromptId,
           system_prompt: editingSysPrompt,
           user_prompt_template: editingUsrTemplate,
-          change_summary: changeSummary || "Updated via Prompt Management Studio",
+          change_summary: changeSummary || "Updated via Prompt Studio",
         }),
       });
       const json = await res.json();
@@ -333,7 +427,7 @@ export function AiBlogSettings({
     }
   };
 
-  // Rollback Prompt to Version
+  // Rollback Prompt
   const handleRollbackPrompt = async (versionNumber: number) => {
     if (!confirm(`Rollback this prompt to version v${versionNumber}?`)) return;
     try {
@@ -393,7 +487,7 @@ export function AiBlogSettings({
     }
   };
 
-  // Trigger Manual Batch Run
+  // Trigger Manual Batch
   const handleTriggerManualBatch = async () => {
     setTriggeringBatch(true);
     try {
@@ -407,7 +501,7 @@ export function AiBlogSettings({
       });
       const json = await res.json();
       if (json.success) {
-        showToast?.(`Queued batch of ${manualBatchQty} blog articles for creation!`, "success");
+        showToast?.(`Queued batch of ${manualBatchQty} articles for creation!`, "success");
         setShowTriggerModal(false);
       } else {
         showToast?.(json.message || "Failed to schedule batch", "error");
@@ -419,26 +513,114 @@ export function AiBlogSettings({
     }
   };
 
+  // Insert variable tag into textarea at cursor position
+  const insertVariable = (variable: string) => {
+    setEditingUsrTemplate((prev) => `${prev} ${variable}`);
+    showToast?.(`Inserted ${variable}`, "success");
+  };
+
+  // Sync actions with Topbar
   const onHeaderChangeRef = useRef(onHeaderChange);
   useEffect(() => {
     onHeaderChangeRef.current = onHeaderChange;
   });
 
+  const handleSaveScheduleConfigRef = useRef(handleSaveScheduleConfig);
+  useEffect(() => {
+    handleSaveScheduleConfigRef.current = handleSaveScheduleConfig;
+  });
+
+  const handleToggleAutomationRef = useRef(handleToggleAutomation);
+  useEffect(() => {
+    handleToggleAutomationRef.current = handleToggleAutomation;
+  });
+
+  const fetchScheduleConfigRef = useRef(fetchScheduleConfig);
+  useEffect(() => {
+    fetchScheduleConfigRef.current = fetchScheduleConfig;
+  });
+
   useEffect(() => {
     onHeaderChangeRef.current?.(
       null,
-      <div className="df-g8 al-c">
-        <Button
-          variant="gold"
-          onClick={() => setShowTriggerModal(true)}
-          title="Trigger Batch Generation"
-        >
-          <Zap size={16} />
-          <span>Trigger Batch</span>
-        </Button>
-      </div>
+      <>
+        {/* Desktop Header Actions (> 768px) */}
+        <div className="header-actions-desktop df-g8 al-c">
+          <Button
+            variant="secondary"
+            onClick={() => setShowTriggerModal(true)}
+            title="Trigger on-demand batch generation"
+          >
+            <Zap size={15} />
+            <span>Run Batch Now</span>
+          </Button>
+          <Button
+            variant={isDirty ? "primary" : "secondary"}
+            onClick={() => handleSaveScheduleConfigRef.current()}
+            disabled={savingSchedule}
+            className={isDirty ? "relative animate-pulse" : ""}
+            title="Save all configuration changes"
+          >
+            <CheckCircle2 size={15} />
+            <span>{savingSchedule ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+          </Button>
+        </div>
+
+        {/* Compact / Overflow Header Actions (<= 768px): Save + Secondary Three-Dot Menu */}
+        <div className="header-actions-compact df-g8 al-c">
+          <Button
+            variant={isDirty ? "primary" : "secondary"}
+            onClick={() => handleSaveScheduleConfigRef.current()}
+            disabled={savingSchedule}
+            className={isDirty ? "relative animate-pulse" : ""}
+            title="Save all configuration changes"
+          >
+            <CheckCircle2 size={15} />
+            <span>{savingSchedule ? "Saving..." : isDirty ? "Save" : "Saved"}</span>
+          </Button>
+
+          <DropdownMenu
+            items={[
+              {
+                label: "Run Batch Now",
+                icon: <Zap size={14} className="text-[var(--red)]" />,
+                onSelect: () => setShowTriggerModal(true),
+              },
+              {
+                label: automationActive ? "Pause Automation Engine" : "Resume Automation Engine",
+                icon: automationActive ? <Pause size={14} /> : <Play size={14} className="text-[var(--green)]" />,
+                onSelect: () => handleToggleAutomationRef.current(),
+              },
+              ...(isDirty
+                ? [
+                  {
+                    label: "Discard Unsaved Changes",
+                    icon: <RotateCcw size={14} />,
+                    destructive: true,
+                    separatorBefore: true,
+                    onSelect: () => fetchScheduleConfigRef.current(),
+                  },
+                ]
+                : []),
+            ]}
+            align="end"
+            trigger={
+              <Button
+                variant="secondary"
+                size="icon"
+                pill
+                className="btn-secondary header-more-btn"
+                title="More options"
+                aria-label="More options"
+              >
+                <IconDotsHorizontal size={18} />
+              </Button>
+            }
+          />
+        </div>
+      </>
     );
-  }, []);
+  }, [isDirty, savingSchedule, automationActive]);
 
   useEffect(() => {
     return () => {
@@ -446,7 +628,7 @@ export function AiBlogSettings({
     };
   }, []);
 
-  // Autonomous schedule evaluation heartbeat (every 30s while dashboard is active)
+  // Background Heartbeat for Autonomous Scheduling
   useEffect(() => {
     if (!automationActive) return;
 
@@ -466,7 +648,7 @@ export function AiBlogSettings({
           fetchPreview();
         }
       } catch {
-        // silent background check
+        // silent
       } finally {
         isEvaluating = false;
       }
@@ -477,53 +659,18 @@ export function AiBlogSettings({
     return () => clearInterval(intervalId);
   }, [automationActive, fetchPreview, showToast]);
 
+  const currentPromptObj = useMemo(
+    () => prompts.find((p) => p.id === selectedPromptId) || prompts[0] || null,
+    [prompts, selectedPromptId]
+  );
+
+  if (isLoading || loading) {
+    return <SkeletonLoader type="ai-settings" />;
+  }
+
   return (
-    <div className="ai-view-container">
-      {/* ─── Unified Metrics Row (ReelScale Standard .stat-grid) ─── */}
-      <div className="stat-grid">
-        <div className="stat-card white">
-          <div className="stat-label">Daily Target Quota</div>
-          <div className="stat-value">
-            <span>{blogsPerActiveDay}</span>
-            <span className="stat-unit">Blogs/Day</span>
-          </div>
-          <div className="stat-icon">
-            <Clock size={20} className="text-zinc-300" />
-          </div>
-        </div>
-
-        <div className="stat-card gold">
-          <div className="stat-label">Active Strategy</div>
-          <div className="stat-value gold text-lg capitalize">
-            <span>{scheduleType.replace("_", " ")}</span>
-          </div>
-          <div className="stat-icon">
-            <Calendar size={20} className="text-[var(--gold)]" />
-          </div>
-        </div>
-
-        <div className="stat-card green">
-          <div className="stat-label">Automation Status</div>
-          <div className="stat-value green text-lg">
-            <span>{automationActive ? "Operational" : "Paused"}</span>
-          </div>
-          <div className="stat-icon">
-            <CheckCircle2 size={20} className="text-[var(--green)]" />
-          </div>
-        </div>
-
-        <div className="stat-card red">
-          <div className="stat-label">AI Inference Engine</div>
-          <div className="stat-value text-lg">
-            <span>Gemini (Primary Tier 1)</span>
-          </div>
-          <div className="stat-icon">
-            <Cpu size={20} className="text-[var(--red)]" />
-          </div>
-        </div>
-      </div>
-
-      {/* ─── Master Automation Header Panel with Integrated Section Switcher ─── */}
+    <div className="ai-view-container ai-settings-container">
+      {/* ─── Master Automation Header Panel with Existing Radix Tabs ─── */}
       <div className="glass-card ai-header-card">
         <div className="ai-header-content">
           <div className="ai-title-group">
@@ -533,7 +680,7 @@ export function AiBlogSettings({
             <h2 className="page-section-title">
               AI Blog Automation Engine
             </h2>
-            <span className={`badge ${automationActive ? "badge-green" : "badge-red"}`}>
+            <span className={`badge ${automationActive ? "badge-green" : "badge-gold"}`}>
               {automationActive ? "ACTIVE" : "PAUSED"}
             </span>
             <Button
@@ -556,481 +703,300 @@ export function AiBlogSettings({
             </Button>
           </div>
 
-          <div className="df-g8 al-c">
+          <div className="df-g8 al-c ai-header-tabs-wrap">
             <Tabs
               value={activeTab}
               onValueChange={(val) => setActiveTab(val as "controls" | "prompts")}
+              className="tabs-full-width"
+              fullWidth
             >
-              <TabsList>
-                <TabsTrigger value="controls">Scheduling & Controls</TabsTrigger>
-                <TabsTrigger value="prompts">Prompt Management Studio</TabsTrigger>
+              <TabsList shellClassName="tabs-shell-full-width" fullWidth>
+                <TabsTrigger value="controls">Schedule Config</TabsTrigger>
+                <TabsTrigger value="prompts">Prompt Studio</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </div>
       </div>
 
-      {/* ─── TAB 1: SCHEDULING CONTROLS & 30-DAY PREVIEW ─── */}
+      {/* ─── TAB 1: CADENCE & SCHEDULING ─── */}
       {activeTab === "controls" && (
         <div className="ai-view-container">
-          <div className="ai-settings-layout">
-            {/* Left Col: Schedule Strategy & Parameters */}
-            <div className="glass-card ai-settings-card">
-              <div className="ai-card-header">
-                <div className="ai-card-header-text">
-                  <div className="glass-card-label">Generation Strategy & Frequency</div>
-                </div>
-                <Button
-                  variant="secondary"
-                  onClick={handleSaveScheduleConfig}
-                  disabled={savingSchedule}
+          {/* Card 1: Scheduling Mode & Timing */}
+          <div className="glass-card ai-settings-card-compact">
+            <div className="ai-cadence-header">
+              <div>
+                <h3 className="ai-cadence-title">
+                  Publish Configuration
+                </h3>
+              </div>
+              <div className="ai-cadence-tabs-wrap">
+                <Tabs
+                  value={scheduleType}
+                  onValueChange={(val) => setScheduleType(val)}
+                  className="tabs-full-width"
+                  fullWidth
                 >
-                  <CheckCircle2 size={16} />
-                  <span>{savingSchedule ? "Saving..." : "Save Configuration"}</span>
-                </Button>
+                  <TabsList shellClassName="tabs-shell-full-width" fullWidth>
+                    <TabsTrigger value="daily">Daily Production</TabsTrigger>
+                    <TabsTrigger value="selected_weekdays">Selected Weekdays</TabsTrigger>
+                    <TabsTrigger value="every_n_days">Interval Cadence</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
+            </div>
 
-              {/* Mode Selection */}
-              <div className="ai-settings-section">
-                <label className="ai-field-label">
-                  Select Scheduling Mode
-                </label>
-                <div className="schedule-mode-grid">
-                  {[
-                    { id: "daily", label: "Daily Production Publishing", desc: "Automated daily creation" },
-                    { id: "selected_weekdays", label: "Selected Weekdays", desc: "Mon, Wed, Fri etc." },
-                    { id: "alternate_days", label: "Alternate Days", desc: "Day on, day off" },
-                    { id: "every_n_days", label: "Every N Days", desc: "Every 2, 3, 5, 7 days" },
-                    { id: "weekly_custom", label: "Weekly Schedule", desc: "Custom qty per weekday" },
-                    { id: "custom_dates", label: "Custom Dates", desc: "Exact calendar dates" },
-                    { id: "one_time", label: "One-Time Batch", desc: "Single execution" },
-                  ].map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setScheduleType(m.id)}
-                      className={`schedule-mode-card ${scheduleType === m.id ? "active" : ""}`}
-                    >
-                      <div className="schedule-mode-title">{m.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {/* Mode Selection with Existing Tab Structure */}
 
-              {/* Mode-Specific Controls */}
-              {scheduleType === "selected_weekdays" && (
-                <div className="ai-subpanel-box">
-                  <label className="ai-field-label">
+
+            {/* Mode Specific Configuration */}
+            {scheduleType === "selected_weekdays" && (
+              <div className="ai-weekdays-box">
+                <div className="ai-weekdays-header">
+                  <label className="ai-field-label m-0">
                     Active Weekdays
                   </label>
-                  <div className="ai-chips-wrap">
-                    {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => {
-                      const isSel = activeWeekdays.includes(day);
-                      return (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => {
-                            setActiveWeekdays((prev) =>
-                              isSel ? prev.filter((d) => d !== day) : [...prev, day]
-                            );
-                          }}
-                          className={`option-chip-btn ${isSel ? "active" : ""}`}
-                        >
-                          {day.charAt(0).toUpperCase() + day.slice(1)}
-                        </button>
-                      );
-                    })}
+                  <div className="ai-weekdays-presets">
+                    <button
+                      type="button"
+                      className="ai-preset-btn"
+                      onClick={() => setActiveWeekdays(["monday", "tuesday", "wednesday", "thursday", "friday"])}
+                    >
+                      Mon–Fri Only
+                    </button>
+                    <span className="ai-preset-sep">•</span>
+                    <button
+                      type="button"
+                      className="ai-preset-btn"
+                      onClick={() => setActiveWeekdays(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"])}
+                    >
+                      All 7 Days
+                    </button>
                   </div>
                 </div>
-              )}
 
-              {scheduleType === "every_n_days" && (
-                <div className="ai-subpanel-box">
-                  <label className="ai-field-label">
-                    Interval Frequency
-                  </label>
-                  <div className="ai-chips-wrap">
-                    {[2, 3, 4, 5, 7].map((num) => (
+                <div className="ai-weekdays-row">
+                  {[
+                    { id: "monday", label: "Mon" },
+                    { id: "tuesday", label: "Tue" },
+                    { id: "wednesday", label: "Wed" },
+                    { id: "thursday", label: "Thu" },
+                    { id: "friday", label: "Fri" },
+                    { id: "saturday", label: "Sat" },
+                    { id: "sunday", label: "Sun" },
+                  ].map((day) => {
+                    const isSelected = activeWeekdays.includes(day.id);
+                    return (
                       <button
-                        key={num}
+                        key={day.id}
                         type="button"
-                        onClick={() => setIntervalDays(num)}
-                        className={`option-chip-btn ${intervalDays === num ? "active" : ""}`}
+                        onClick={() => {
+                          setActiveWeekdays((prev) =>
+                            isSelected ? prev.filter((d) => d !== day.id) : [...prev, day.id]
+                          );
+                        }}
+                        className={`ai-weekday-pill ${isSelected ? "active" : ""}`}
                       >
-                        Every {num} Days
+                        {day.label}
                       </button>
-                    ))}
-                    <div className="ai-custom-input-wrap">
-                      <span className="text-xs text-[var(--muted)]">Custom:</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="30"
-                        value={intervalDays}
-                        onChange={(e) => setIntervalDays(Number(e.target.value) || 1)}
-                        className="w-20"
-                      />
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {scheduleType === "every_n_days" && (
+              <div className="ai-interval-box">
+                <div>
+                  <div className="ai-interval-title">Cadence Interval</div>
+                  <div className="ai-interval-desc">
+                    Runs once every {intervalDays} calendar days
                   </div>
                 </div>
-              )}
 
-              {scheduleType === "weekly_custom" && (
-                <div className="ai-subpanel-box">
-                  <label className="ai-field-label">
-                    Custom Blogs Per Weekday
-                  </label>
-                  <div className="ai-weekday-grid">
-                    {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
-                      <div key={day} className="ai-weekday-cell">
-                        <span className="ai-weekday-cell-label">
-                          {day.slice(0, 3)}
-                        </span>
-                        <Input
-                          type="number"
-                          min="0"
-                          max={maxGenerationQty}
-                          value={weekdayQuantities[day] ?? 0}
-                          onChange={(e) => {
-                            const val = Number(e.target.value) || 0;
-                            setWeekdayQuantities((prev) => ({ ...prev, [day]: val }));
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Core Quantity & Timing Controls */}
-              <div className="ai-controls-grid">
-                <div className="ai-control-field">
-                  <Slider
-                    label="Blogs Per Active Day"
-                    min={1}
-                    max={maxGenerationQty}
-                    step={1}
-                    value={blogsPerActiveDay}
-                    onValueChange={(val) => setBlogsPerActiveDay(typeof val === "number" ? val : val[0])}
-                    format={(val) => `${val} blogs`}
-                  />
-                  <p className="ai-field-hint">Configurable daily target quota</p>
-                </div>
-
-                <div className="ai-control-field">
-                  <div className="ai-field-header">
-                    <label>Daily Generation Time</label>
-                  </div>
-                  <Input
-                    type="time"
-                    value={generationTime}
-                    onChange={(e) => setGenerationTime(e.target.value)}
-                  />
-                  <p className="ai-field-hint">Runs in timezone: {timezone}</p>
-                </div>
-
-                <div className="ai-control-field">
-                  <div className="ai-field-header">
-                    <label>Maximum Daily Limit</label>
-                  </div>
+                <div className="ai-interval-controls">
+                  {[2, 3, 5, 7].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setIntervalDays(num)}
+                      className={`ai-interval-chip ${intervalDays === num ? "active" : ""}`}
+                    >
+                      Every {num}d
+                    </button>
+                  ))}
                   <Input
                     type="number"
-                    min="5"
-                    max="100"
-                    value={maxGenerationQty}
-                    onChange={(e) => setMaxGenerationQty(Number(e.target.value) || 50)}
-                  />
-                  <p className="ai-field-hint">Hard daily safety threshold</p>
-                </div>
-              </div>
-
-              {/* Publishing & Provider Config */}
-              <div className="ai-provider-grid">
-                <div className="ai-control-field">
-                  <label className="ai-field-label">Active Primary AI Model</label>
-                  <CustomSelect
-                    value={selectedModel}
-                    onChange={(val) => setSelectedModel(val)}
-                    options={supportedModelsList.map((m) => ({
-                      value: m.value,
-                      label: m.label,
-                    }))}
-                  />
-                  <p className="ai-field-hint">Primary: Google Gemini (Tier 1) · Auto-failover: Groq LPU & OpenRouter</p>
-                </div>
-
-                <div className="ai-checkbox-card">
-                  <div className="ai-checkbox-info">
-                    <span className="ai-checkbox-title">Auto-Publish to Sanity</span>
-                    <span className="ai-checkbox-desc dn">
-                      {autoPublish
-                        ? "Publishes to Sanity Studio when validation score >= 80"
-                        : "Saves as Draft in Sanity for editorial review"}
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={autoPublish}
-                    onChange={(e) => setAutoPublish(e.target.checked)}
-                    className="ai-checkbox-input"
+                    min="1"
+                    max="30"
+                    value={intervalDays}
+                    onChange={(e) => setIntervalDays(Number(e.target.value) || 1)}
+                    className="ai-interval-input"
                   />
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Right Column: Projections & Safeguards */}
-            <div className="glass-card ai-projections-card">
-              <div className="ai-projections-header">
-                <div className="glass-card-label">Execution Projections</div>
-                <p className="ai-section-desc">Estimated over the next 30 calendar days</p>
-              </div>
-
-              <div className="ai-projection-list">
-                <div className="ai-projection-box">
-                  <span className="ai-projection-label">Active Generation Days</span>
-                  <span className="ai-projection-val text-[var(--green)]">
-                    {dynamicPreview?.activeDaysCount || 0} / 30 days
-                  </span>
-                </div>
-
-                <div className="ai-projection-box">
-                  <span className="ai-projection-label">Expected 7-Day Total</span>
-                  <span className="ai-projection-val text-[var(--gold)]">
-                    {dynamicPreview?.expectedWeeklyTotal || 0} blogs
-                  </span>
-                </div>
-
-                <div className="ai-projection-box">
-                  <span className="ai-projection-label">Expected 30-Day Total</span>
-                  <span className="ai-projection-val">
-                    {dynamicPreview?.expectedMonthlyTotal || 0} blogs
-                  </span>
-                </div>
-
-                <div className="ai-projection-box">
-                  <span className="ai-projection-label">Estimated AI Token Usage</span>
-                  <span className="ai-projection-val text-[var(--gold)]">
-                    ~{((dynamicPreview?.estimatedTotalTokens || 0) / 1000).toFixed(0)}k tokens
-                  </span>
-                </div>
-              </div>
-
-              <div className="ai-safeguard-box">
-                <div className="ai-safeguard-header">
-                  <ShieldCheck size={16} />
-                  <span>Production Safeguards Active</span>
-                </div>
-                <p className="ai-safeguard-desc">
-                  Persistent queue architecture guarantees zero lost jobs. Generated articles sync directly to Sanity Studio Content Lake.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* ─── 30-Day Interactive Calendar Preview ─── */}
-          <div className="glass-card ai-calendar-card">
-            <div className="ai-calendar-header">
-              <div className="df-g8 al-c">
-                <Calendar size={18} className="text-[var(--red)]" />
-                <div className="glass-card-label mb-0 text-white">30-Day Dynamic Schedule Forecast</div>
-              </div>
-              <div className="ai-calendar-legend">
-                <div className="ai-legend-item">
-                  <span className="calendar-legend-dot active" />
-                  <span>Active Day</span>
-                </div>
-                <div className="ai-legend-item">
-                  <span className="calendar-legend-dot skip" />
-                  <span>Skipped Day</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="ai-calendar-grid">
-              {dynamicPreview?.days.map((day) => (
-                <div
-                  key={day.date}
-                  className={`calendar-day-tile ${day.isActive ? "active" : ""}`}
-                >
-                  <span className="calendar-day-name">
-                    {day.dayOfWeek.slice(0, 3)}
-                  </span>
-                  <span className="calendar-day-date">
-                    {day.date.split("-").slice(1).join("/")}
-                  </span>
-                  {day.isActive ? (
-                    <span className="calendar-day-badge">
-                      +{day.quantity}
-                    </span>
-                  ) : (
-                    <span className="calendar-day-skip">Skip</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── TAB 2: PROMPT MANAGEMENT STUDIO ─── */}
-      {activeTab === "prompts" && (
-        <div className="ai-prompt-studio-grid">
-          {/* Left Column: 12 Prompt Categories */}
-          <div className="glass-card ai-prompt-list-card">
-            <div className="ai-prompt-list-header">
-              <div className="glass-card-label">
-                Configurable Prompts
-              </div>
-              <p className="ai-section-desc">
-                12 Database Categories • Zero Hardcoding
-              </p>
-            </div>
-            <div className="ai-prompt-list">
-              {prompts.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => handleSelectPrompt(p.id)}
-                  className={`prompt-card-btn ${selectedPromptId === p.id ? "active" : ""}`}
-                >
-                  <div className="ai-prompt-item-header">
-                    <span className="ai-prompt-item-title">{p.name}</span>
-                    <span className="ai-prompt-item-version">
-                      v{p.current_version_number}
-                    </span>
-                  </div>
-                  <span className="ai-prompt-item-cat">{p.category}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Column: Prompt Editor & Test Studio */}
-          <div className="glass-card ai-prompt-editor-card">
-            <div className="ai-prompt-editor-header">
-              <div className="ai-prompt-editor-title-group">
-                <h3 className="card-section-title">
-                  {prompts.find((p) => p.id === selectedPromptId)?.name || selectedPromptId}
-                </h3>
-                <p className="ai-section-desc">
-                  {prompts.find((p) => p.id === selectedPromptId)?.description}
-                </p>
-              </div>
-              <div className="df-g8 al-c">
-                <Button
-                  variant="secondary"
-                  onClick={handleRestoreDefaultPrompt}
-                >
-                  <RotateCcw size={16} />
-                  <span>Restore Default</span>
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSavePrompt}
-                  disabled={savingPrompt}
-                >
-                  <CheckCircle2 size={16} />
-                  <span>{savingPrompt ? "Saving..." : "Save Prompt"}</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Editor Textareas */}
-            <div className="ai-prompt-fields-stack">
+            {/* 3 Core Fields Grid: Target Quota, Time, Max Safety Limit */}
+            <div className="ai-timing-grid">
               <div>
-                <label className="ai-field-label">
-                  System Directive Prompt
-                </label>
-                <textarea
-                  rows={6}
-                  value={editingSysPrompt}
-                  onChange={(e) => setEditingSysPrompt(e.target.value)}
-                  className="ai-prompt-textarea"
+                <Slider
+                  label="Target Output per Active Day"
+                  min={1}
+                  max={maxGenerationQty}
+                  step={1}
+                  value={blogsPerActiveDay}
+                  onValueChange={(val) => setBlogsPerActiveDay(typeof val === "number" ? val : val[0])}
+                  format={(val) => `${val} blogs/day`}
                 />
               </div>
 
               <div>
-                <label className="ai-field-label">
-                  User Prompt Template (Supports variables like &#123;&#123;title&#125;&#125;, &#123;&#123;category&#125;&#125;)
-                </label>
-                <textarea
-                  rows={5}
-                  value={editingUsrTemplate}
-                  onChange={(e) => setEditingUsrTemplate(e.target.value)}
-                  className="ai-prompt-textarea"
-                />
-              </div>
-
-              <div>
-                <label className="ai-field-label">Change Summary (for version audit trail)</label>
+                <label className="ai-field-label">Daily Generation Time</label>
                 <Input
-                  placeholder="e.g. Added Hyderabad Jubilee Hills context and strict word count constraint"
-                  value={changeSummary}
-                  onChange={(e) => setChangeSummary(e.target.value)}
+                  type="time"
+                  value={generationTime}
+                  onChange={(e) => setGenerationTime(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="ai-field-label">Safety Generation Cap</label>
+                <Input
+                  type="number"
+                  min="5"
+                  max="100"
+                  value={maxGenerationQty}
+                  onChange={(e) => setMaxGenerationQty(Number(e.target.value) || 50)}
                 />
               </div>
             </div>
+          </div>
 
-            {/* Testing & Output Area */}
-            <div className="ai-prompt-test-panel">
-              <div className="ai-prompt-test-header">
-                <span className="ai-field-label">
-                  Test Prompt Live with AI Model
-                </span>
-                <Button
-                  variant="gold"
-                  onClick={handleTestPrompt}
-                  disabled={testingPrompt}
-                >
-                  <Send size={16} className={testingPrompt ? "animate-spin" : ""} />
-                  <span>{testingPrompt ? "Testing..." : "Test Prompt"}</span>
-                </Button>
+          {/* Card 2: AI Engine & Publishing Rule (2 Side-by-Side Cards) */}
+          <div className="ai-cards-grid">
+            {/* AI Model Picker */}
+            <div className="glass-card ai-sub-card">
+              <div className="ai-sub-card-header">
+                <Cpu size={16} className="text-[var(--red)]" />
+                <h4 className="ai-sub-card-title">
+                  Primary AI Model
+                </h4>
               </div>
-
-              {testOutput && (
-                <div className="ai-prompt-output-box">
-                  <div className="ai-prompt-output-meta">
-                    <span>AI Model Output Preview</span>
-                    <span>
-                      Latency: <strong className="text-white">{testOutput.latency}ms</strong> • Tokens:{" "}
-                      <strong className="text-white">{testOutput.tokens}</strong>
-                    </span>
-                  </div>
-                  <pre className="ai-prompt-output-code">
-                    {testOutput.output}
-                  </pre>
-                </div>
-              )}
+              <CustomSelect
+                value={selectedModel}
+                onChange={(val) => setSelectedModel(val)}
+                options={supportedModelsList.map((m) => ({
+                  value: m.value,
+                  label: m.label,
+                }))}
+              />
             </div>
 
-            {/* Version History Table */}
-            {promptVersions.length > 0 && (
-              <div className="ai-version-section">
-                <div className="glass-card-label">
-                  Version History & Rollback ({promptVersions.length} versions)
+            {/* Production Publishing Switch with Design System Checkbox */}
+            <div className="glass-card ai-sub-card">
+              <div className="ai-publish-toggle-row">
+                <div className="df-g8 al-c">
+                  <ShieldCheck size={16} className={autoPublish ? "text-[var(--green)]" : "text-[var(--muted)]"} />
+                  <h4 className="ai-sub-card-title">
+                    Auto-Publish to Production
+                  </h4>
                 </div>
-                <div className="ai-version-list">
-                  {promptVersions.map((v) => (
+                <input
+                  type="checkbox"
+                  className="custom-checkbox green"
+                  checked={autoPublish}
+                  onChange={(e) => setAutoPublish(e.target.checked)}
+                />
+              </div>
+
+              <p className="ai-publish-status-text">
+                {autoPublish ? (
+                  <span className="ai-publish-status-active">
+                    ✓ Generates articles, sources photos, and publishes directly to production.
+                  </span>
+                ) : (
+                  <span>
+                    Saved as &quot;Draft&quot; in Sanity CMS for manual review before going live.
+                  </span>
+                )}
+              </p>
+              <div className="ai-publish-safeguard-hint">
+                Strict 15-point quality checks ensure articles scoring &lt;80 are never published.
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Minimal Projection Summary & Optional Calendar Breakdown */}
+          <div className="glass-card ai-settings-card-compact">
+            <div className="ai-projections-summary-header">
+              <div>
+                <h4 className="ai-sub-card-title">
+                  Cadence Output Projections
+                </h4>
+                <p className="ai-section-desc">
+                  Calculated dynamically across the next 30 calendar days
+                </p>
+              </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCalendarBreakdown((prev) => !prev)}
+                className="text-[#a78bfa] text-xs"
+              >
+                <span>{showCalendarBreakdown ? "Hide Calendar Breakdown" : "View 30-Day Breakdown"}</span>
+                {showCalendarBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </Button>
+            </div>
+
+            {/* Compact 4-Stat Strip */}
+            <div className="ai-projections-strip">
+              <div className="ai-projection-card">
+                <div className="ai-projection-metric-label">Active Days</div>
+                <div className="ai-projection-metric-val text-[var(--green)]">
+                  {dynamicPreview?.activeDaysCount || 0} / 30
+                </div>
+              </div>
+
+              <div className="ai-projection-card">
+                <div className="ai-projection-metric-label">7-Day Output</div>
+                <div className="ai-projection-metric-val text-[var(--gold)]">
+                  {dynamicPreview?.expectedWeeklyTotal || 0} blogs
+                </div>
+              </div>
+
+              <div className="ai-projection-card">
+                <div className="ai-projection-metric-label">30-Day Forecast</div>
+                <div className="ai-projection-metric-val text-white">
+                  {dynamicPreview?.expectedMonthlyTotal || 0} blogs
+                </div>
+              </div>
+
+              <div className="ai-projection-card">
+                <div className="ai-projection-metric-label">Estimated Tokens</div>
+                <div className="ai-projection-metric-val text-[#a78bfa]">
+                  ~{((dynamicPreview?.estimatedTotalTokens || 0) / 1000).toFixed(0)}k
+                </div>
+              </div>
+            </div>
+
+            {/* Collapsible 30-Day Tile View */}
+            {showCalendarBreakdown && (
+              <div className="ai-calendar-breakdown-wrap">
+                <div className="ai-calendar-grid">
+                  {dynamicPreview?.days.map((day) => (
                     <div
-                      key={v.id}
-                      className="ai-version-row"
+                      key={day.date}
+                      className={`calendar-day-tile ${day.isActive ? "active" : ""}`}
                     >
-                      <div className="ai-version-meta">
-                        <span className="font-bold text-[var(--gold)]">v{v.version_number}</span>
-                        <span className="text-zinc-300">{v.change_summary || "Updated"}</span>
-                        <span className="text-[var(--muted)] text-[11px]">
-                          • {new Date(v.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleRollbackPrompt(v.version_number)}
-                      >
-                        <RotateCcw size={13} />
-                        <span>Rollback</span>
-                      </Button>
+                      <span className="calendar-day-name">{day.dayOfWeek.slice(0, 3)}</span>
+                      <span className="calendar-day-date">{day.date.split("-").slice(1).join("/")}</span>
+                      {day.isActive ? (
+                        <span className="calendar-day-badge">+{day.quantity}</span>
+                      ) : (
+                        <span className="calendar-day-skip">Skip</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1040,14 +1006,275 @@ export function AiBlogSettings({
         </div>
       )}
 
-      {/* ─── Manual Trigger Modal ─── */}
+      {/* ─── TAB 2: BRAND VOICE & PROMPTS ─── */}
+      {activeTab === "prompts" && (
+        <div className="ai-view-container">
+          <div className="glass-card ai-settings-card-compact">
+            {/* Category Switcher Row */}
+            <div className="ai-prompt-studio-header">
+              <div>
+                <div className="ai-prompt-cat-label">
+                  Prompt Template Category
+                </div>
+                <div className="mt-6">
+                  <CustomSelect
+                    value={selectedPromptId}
+                    onChange={(val) => handleSelectPrompt(val)}
+                    options={prompts.map((p) => ({
+                      value: p.id,
+                      label: `${p.name} (v${p.current_version_number || 1})`,
+                    }))}
+                  />
+                </div>
+              </div>
+
+              {/* Desktop view (> 900px): All 3 buttons shown */}
+              <div className="ai-prompt-actions-desktop df-g8 al-c">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowVersions((prev) => !prev)}
+                >
+                  <History size={14} />
+                  <span>Version History ({promptVersions.length})</span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleRestoreDefaultPrompt}
+                >
+                  <RotateCcw size={14} />
+                  <span>Restore Factory Default</span>
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSavePrompt}
+                  disabled={savingPrompt}
+                >
+                  <CheckCircle2 size={14} />
+                  <span>{savingPrompt ? "Saving..." : "Save Prompt"}</span>
+                </Button>
+              </div>
+
+              {/* Compact / Overflow view (<= 900px): Save Prompt + Secondary Three-Dot Menu */}
+              <div className="ai-prompt-actions-compact df-g8 al-c">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSavePrompt}
+                  disabled={savingPrompt}
+                >
+                  <CheckCircle2 size={14} />
+                  <span>{savingPrompt ? "Saving..." : "Save"}</span>
+                </Button>
+
+                <DropdownMenu
+                  items={[
+                    {
+                      label: `Version History (${promptVersions.length})`,
+                      icon: <History size={14} />,
+                      onSelect: () => setShowVersions((prev) => !prev),
+                    },
+                    {
+                      label: "Restore Factory Default",
+                      icon: <RotateCcw size={14} />,
+                      onSelect: handleRestoreDefaultPrompt,
+                    },
+                  ]}
+                  align="end"
+                  trigger={
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      pill
+                      className="btn-secondary header-more-btn-sm"
+                      title="More prompt actions"
+                      aria-label="More prompt actions"
+                    >
+                      <IconDotsHorizontal size={16} />
+                    </Button>
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Prompt Description */}
+            {currentPromptObj?.description && (
+              <div className="ai-prompt-desc-banner">
+                {currentPromptObj.description}
+              </div>
+            )}
+
+            {/* Version History Drawer/Section */}
+            {showVersions && promptVersions.length > 0 && (
+              <div className="ai-versions-panel">
+                <div className="ai-versions-title">
+                  Version History & Instant Rollback
+                </div>
+                <div className="ai-versions-list">
+                  {promptVersions.map((v) => (
+                    <div key={v.id} className="ai-version-item">
+                      <div className="df-g8 al-c">
+                        <span className="font-bold text-[var(--gold)]">v{v.version_number}</span>
+                        <span className="text-white">{v.change_summary || "Updated"}</span>
+                        <span className="text-[var(--muted)] text-[11px]">
+                          • {new Date(v.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleRollbackPrompt(v.version_number)}
+                        className="h-6 text-xs"
+                      >
+                        <RotateCcw size={12} />
+                        <span>Rollback</span>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Prompt Textareas Stack */}
+            <div className="ai-prompt-textareas-stack">
+              <div>
+                <div className="ai-prompt-field-header">
+                  <label className="ai-field-label m-0">
+                    System Directive & Tone of Voice
+                  </label>
+                  <span className="text-xs text-[var(--muted)]">
+                    {editingSysPrompt.length} characters
+                  </span>
+                </div>
+                <textarea
+                  rows={5}
+                  value={editingSysPrompt}
+                  onChange={(e) => setEditingSysPrompt(e.target.value)}
+                  className="ai-prompt-textarea-field"
+                />
+              </div>
+
+              <div>
+                <div className="ai-prompt-field-header">
+                  <label className="ai-field-label m-0">
+                    User Prompt Template
+                  </label>
+                  <div className="df-g6 al-c">
+                    <span className="text-xs text-[var(--muted)] mr-4">Click to insert:</span>
+                    {["{{title}}", "{{category}}", "{{keywords}}"].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => insertVariable(tag)}
+                        className="ai-variable-chip"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <textarea
+                  rows={4}
+                  value={editingUsrTemplate}
+                  onChange={(e) => setEditingUsrTemplate(e.target.value)}
+                  className="ai-prompt-textarea-field"
+                />
+              </div>
+
+              <div>
+                <label className="ai-field-label">Audit Log Change Summary</label>
+                <Input
+                  placeholder="e.g. Reinforced Hyderabad commercial intent & added Jubilee Hills restaurant context"
+                  value={changeSummary}
+                  onChange={(e) => setChangeSummary(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Test Prompt Live Section */}
+            <div className="ai-test-panel-wrap">
+              <div className="ai-test-panel-header">
+                <div>
+                  <div className="ai-interval-title">Live AI Evaluation</div>
+                  <div className="ai-section-desc">
+                    Executes this prompt against Google Gemini with sample test variables
+                  </div>
+                </div>
+
+                <HoverBorderGradient
+                  size="sm"
+                  onClick={handleTestPrompt}
+                  disabled={testingPrompt}
+                  loading={testingPrompt}
+                  title="Run sample test prompt"
+                >
+                  <Send size={13} />
+                  <span>{testingPrompt ? "Evaluating with AI..." : "Test Prompt Live"}</span>
+                </HoverBorderGradient>
+              </div>
+
+              {testOutput && (
+                <div className="ai-test-output-card">
+                  <div className="ai-test-output-meta">
+                    <span className="text-white font-semibold">Sample Generation Output</span>
+                    <span>
+                      Latency: <strong className="text-white">{testOutput.latency}ms</strong> • Tokens:{" "}
+                      <strong className="text-white">{testOutput.tokens}</strong>
+                    </span>
+                  </div>
+                  <pre className="ai-test-output-pre">
+                    {testOutput.output}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── 3. Floating Unsaved Changes Alert Bar ─── */}
+      {isDirty && (
+        <div className="ai-dirty-banner">
+          <div className="df-g8 al-c">
+            <span className="ai-dirty-dot" />
+            <span className="ai-dirty-text">
+              You have unsaved schedule changes
+            </span>
+          </div>
+          <div className="df-g8 al-c">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => fetchScheduleConfig()}
+            >
+              Discard
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSaveScheduleConfig}
+              disabled={savingSchedule}
+            >
+              <CheckCircle2 size={14} />
+              <span>{savingSchedule ? "Saving..." : "Save Changes"}</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── 4. Minimal On-Demand Batch Trigger Modal ─── */}
       {showTriggerModal && (
-        <div className="modal-overlay active" onClick={() => setShowTriggerModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay active z-modal" onClick={() => setShowTriggerModal(false)}>
+          <div
+            className="modal ai-batch-modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header mb-12">
               <div className="modal-title df-g8 al-c">
                 <Zap size={18} className="text-[var(--red)]" />
-                <span>Trigger On-Demand Generation</span>
+                <span>Trigger On-Demand Batch</span>
               </div>
               <button
                 type="button"
@@ -1058,12 +1285,26 @@ export function AiBlogSettings({
               </button>
             </div>
 
-            <p className="ai-section-desc mb-4">
-              Pulls top suggested content gaps and dispatches generation jobs to create markdown articles and sync them directly to Sanity Studio.
+            <p className="ai-section-desc mb-16">
+              Instantly schedules high-ROI article generations using your active brand guidelines.
             </p>
 
-            <div className="form-group">
-              <label className="form-label">Number of Articles to Generate</label>
+            <div className="mb-16">
+              <label className="form-label mb-8">
+                Number of Articles to Generate
+              </label>
+              <div className="df-g8 mb-10">
+                {[5, 10, 15, 25].map((qty) => (
+                  <button
+                    key={qty}
+                    type="button"
+                    onClick={() => setManualBatchQty(qty)}
+                    className={`ai-batch-preset-btn ${manualBatchQty === qty ? "active" : ""}`}
+                  >
+                    {qty}
+                  </button>
+                ))}
+              </div>
               <Input
                 type="number"
                 min="1"
@@ -1071,24 +1312,27 @@ export function AiBlogSettings({
                 value={manualBatchQty}
                 onChange={(e) => setManualBatchQty(Number(e.target.value) || 1)}
               />
-              <span className="ai-field-hint">Configured safety limit: {maxGenerationQty} articles</span>
+              <span className="ai-field-hint mt-4 block">
+                Safety generation limit: {maxGenerationQty} articles
+              </span>
             </div>
 
-            <div className="modal-actions">
+            <div className="modal-actions mt-16">
               <Button
                 variant="secondary"
                 onClick={() => setShowTriggerModal(false)}
               >
                 Cancel
               </Button>
-              <Button
-                variant="primary"
+              <HoverBorderGradient
                 onClick={handleTriggerManualBatch}
                 disabled={triggeringBatch}
+                loading={triggeringBatch}
+                title={`Queue ${manualBatchQty} AI Blogs`}
               >
-                <Zap size={16} />
-                <span>{triggeringBatch ? "Scheduling..." : `Queue ${manualBatchQty} Blogs`}</span>
-              </Button>
+                <Zap size={15} />
+                <span>{triggeringBatch ? "Queuing..." : `Queue ${manualBatchQty} Blogs`}</span>
+              </HoverBorderGradient>
             </div>
           </div>
         </div>

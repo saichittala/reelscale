@@ -209,7 +209,7 @@ export function Blogs({
     <>
       {/* Controls: Search and Filters (fallback for mobile) */}
       <div className="controls hide-desktop">
-        <div className="search-wrap" style={{ flex: 1, maxWidth: "420px" }}>
+        <div className="search-wrap blog-mobile-search-wrap">
           <Input
             id="blog-search-input"
             type="search"
@@ -220,7 +220,7 @@ export function Blogs({
           />
         </div>
 
-        <div className="df-g8">
+        <div className="df-g8 blog-mobile-filters-row">
           <CustomSelect
             id="blog-status-filter"
             value={blogStatusFilter}
@@ -231,6 +231,7 @@ export function Blogs({
               { value: "Published", label: "Published" },
             ]}
             size="md"
+            fullWidth={true}
           />
 
           <CustomSelect
@@ -243,6 +244,7 @@ export function Blogs({
             ]}
             size="md"
             align="right"
+            fullWidth={true}
           />
         </div>
 

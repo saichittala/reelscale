@@ -32,6 +32,40 @@ const nextConfig = {
   },
   transpilePackages: [],
   ...(!isStaticExport && {
+    async redirects() {
+      return [
+        {
+          source: "/blog/shortform-video-blueprint-for-hyderabad-real-estate-agents-sell-properties-faster",
+          destination: "/blog/instagram-reels-for-real-estate-hyderabad",
+          permanent: true,
+        },
+        {
+          source: "/blog/instagram-reels-strategies-for-hyderabad-real-estate-agents-to-close-deals-faster",
+          destination: "/blog/instagram-reels-for-real-estate-hyderabad",
+          permanent: true,
+        },
+        {
+          source: "/blog/stepbystep-guide-paid-instagram-reel-ads-hyderabad-smbs",
+          destination: "/blog/instagram-reel-ads-guide-hyderabad",
+          permanent: true,
+        },
+        {
+          source: "/blog/instagram-reels-advertising-for-hyderabad-businesses",
+          destination: "/blog/instagram-reel-ads-guide-hyderabad",
+          permanent: true,
+        },
+        {
+          source: "/blog/reel-makers-video-production-services-hyderabad",
+          destination: "/blog/reel-makers-video-production-hyderabad-guide",
+          permanent: true,
+        },
+        {
+          source: "/blog/hyderabad-restaurants-drive-reservations-with-instagram-reels",
+          destination: "/blog/instagram-reels-advertising-hyderabad-restaurants",
+          permanent: true,
+        },
+      ];
+    },
     async headers() {
       return [
         {

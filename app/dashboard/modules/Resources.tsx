@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Client, BusinessDocument, DocumentLineItem } from "../types";
 import { toDateStr, formatDisplayDate } from "../utils/format";
 import { CustomSelect } from "../components/CustomSelect";
-import { Button, Tabs, TabsList, TabsTrigger, DatePicker } from "@/components/ui";
+import { Button, Tabs, TabsList, TabsTrigger, DatePicker, DropdownMenu } from "@/components/ui";
+import { IconDotsHorizontal } from "../components/Icons";
 import {
   Receipt,
   FileText,
@@ -477,40 +478,85 @@ https://reelscale.in`;
   );
 
   const rightHeaderContent = (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-      <Button
-        variant="secondary"
-        onClick={handleSendEmail}
-        title={activeDoc.clientEmail ? `Send email to ${activeDoc.clientEmail}` : "Send via Email"}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          minHeight: "38px",
-          height: "38px",
-          background: "transparent",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <Mail size={16} />
-        <span>Email</span>
-      </Button>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      {/* Desktop view: both buttons visible */}
+      <div className="header-actions-desktop df-g8 al-c">
+        <Button
+          variant="secondary"
+          onClick={handleSendEmail}
+          title={activeDoc.clientEmail ? `Send email to ${activeDoc.clientEmail}` : "Send via Email"}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            minHeight: "38px",
+            height: "38px",
+            background: "transparent",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <Mail size={16} />
+          <span>Email</span>
+        </Button>
 
-      <Button
-        variant="primary"
-        onClick={handlePrint}
-        title="Print or Save PDF"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          minHeight: "38px",
-          height: "38px",
-        }}
-      >
-        <Printer size={16} />
-        <span>Print PDF</span>
-      </Button>
+        <Button
+          variant="primary"
+          onClick={handlePrint}
+          title="Print or Save PDF"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            minHeight: "38px",
+            height: "38px",
+          }}
+        >
+          <Printer size={16} />
+          <span>Print PDF</span>
+        </Button>
+      </div>
+
+      {/* Compact / Overflow view: Primary Print + Secondary Three-Dot Menu */}
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          onClick={handlePrint}
+          title="Print or Save PDF"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            minHeight: "38px",
+            height: "38px",
+          }}
+        >
+          <Printer size={16} />
+          <span>Print PDF</span>
+        </Button>
+
+        <DropdownMenu
+          items={[
+            {
+              label: "Send via Email",
+              icon: <Mail size={16} />,
+              onSelect: handleSendEmail,
+            },
+          ]}
+          align="end"
+          trigger={
+            <Button
+              variant="secondary"
+              size="icon"
+              pill
+              className="btn-secondary header-more-btn"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <IconDotsHorizontal size={18} />
+            </Button>
+          }
+        />
+      </div>
     </div>
   );
 

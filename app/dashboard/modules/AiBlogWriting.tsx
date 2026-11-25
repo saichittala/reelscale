@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Blog, EditorialValidationReport } from "../types";
 import { customFetch } from "../services/api";
-import { Button, Input, Tabs, TabsList, TabsTrigger } from "@/components/ui";
+import { Button, HoverBorderGradient, Input, Tabs, TabsList, TabsTrigger, DropdownMenu } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
+import { IconDotsHorizontal } from "../components/Icons";
 import {
   Sparkles,
   Zap,
@@ -322,33 +323,77 @@ export function AiBlogWriting({
     onHeaderChangeRef.current?.(
       null,
       <div className="df-g8 al-c">
-        <Button
-          variant="ai"
-          onClick={() => handleDirectGenerateWithAiRef.current()}
-          disabled={directGenerating || generatingCustom || Boolean(generatingTopicId)}
-          loading={directGenerating}
-          title="Directly auto-generate headline, 1,500+ words and publish live to production"
-        >
-          <Sparkles size={16} />
-          <span>{directGenerating ? "Generating Live..." : "Generate with AI"}</span>
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => handleProcessNextRef.current()}
-          disabled={processingNext}
-          title="Trigger execution of next pending generation job"
-        >
-          <Play size={16} />
-          <span>{processingNext ? "Processing..." : "Process Next"}</span>
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => onCreateBlogRef.current?.()}
-          title="Open standard manual blog editor"
-        >
-          <Plus size={16} />
-          <span>Manual Editor</span>
-        </Button>
+        {/* Desktop view: All three action buttons */}
+        <div className="header-actions-desktop df-g8 al-c">
+          <HoverBorderGradient
+            onClick={() => handleDirectGenerateWithAiRef.current()}
+            disabled={directGenerating || generatingCustom || Boolean(generatingTopicId)}
+            loading={directGenerating}
+            title="Directly auto-generate headline, 1,500+ words and publish live to production"
+          >
+            <Sparkles size={16} />
+            <span>{directGenerating ? "Generating Live..." : "Generate with AI"}</span>
+          </HoverBorderGradient>
+          <Button
+            variant="secondary"
+            onClick={() => handleProcessNextRef.current()}
+            disabled={processingNext}
+            title="Trigger execution of next pending generation job"
+          >
+            <Play size={16} />
+            <span>{processingNext ? "Processing..." : "Process Next"}</span>
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => onCreateBlogRef.current?.()}
+            title="Open standard manual blog editor"
+          >
+            <Plus size={16} />
+            <span>Manual Editor</span>
+          </Button>
+        </div>
+
+        {/* Compact / Overflow view: Primary AI Generate + Secondary Three-Dot Menu */}
+        <div className="header-actions-compact df-g8 al-c">
+          <HoverBorderGradient
+            onClick={() => handleDirectGenerateWithAiRef.current()}
+            disabled={directGenerating || generatingCustom || Boolean(generatingTopicId)}
+            loading={directGenerating}
+            title="Directly auto-generate headline, 1,500+ words and publish live to production"
+          >
+            <Sparkles size={16} />
+            <span>{directGenerating ? "Generating..." : "Generate with AI"}</span>
+          </HoverBorderGradient>
+
+          <DropdownMenu
+            items={[
+              {
+                label: processingNext ? "Processing Next Job..." : "Process Next Pending Job",
+                icon: <Play size={16} />,
+                disabled: processingNext,
+                onSelect: () => handleProcessNextRef.current(),
+              },
+              {
+                label: "Open Manual Blog Editor",
+                icon: <Plus size={16} />,
+                onSelect: () => onCreateBlogRef.current?.(),
+              },
+            ]}
+            align="end"
+            trigger={
+              <Button
+                variant="secondary"
+                size="icon"
+                pill
+                className="btn-secondary header-more-btn"
+                title="More actions"
+                aria-label="More actions"
+              >
+                <IconDotsHorizontal size={18} />
+              </Button>
+            }
+          />
+        </div>
       </div>
     );
   }, [processingNext, directGenerating, generatingCustom, generatingTopicId]);
@@ -462,7 +507,42 @@ export function AiBlogWriting({
           </div>
 
           <div className="ai-topics-grid">
-            {suggestedTopics.length === 0 ? (
+            {topicLoading && suggestedTopics.length === 0 ? (
+              [0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="glass-card ai-topic-card">
+                  <div className="ai-topic-body">
+                    <div className="ai-topic-header">
+                      <div
+                        className="skeleton skeleton-w-var skeleton-h-var"
+                        style={{ "--w": "70px", "--h": "20px", borderRadius: "99px" } as any}
+                      />
+                      <div
+                        className="skeleton skeleton-w-var skeleton-h-var"
+                        style={{ "--w": "50px", "--h": "20px", borderRadius: "99px" } as any}
+                      />
+                    </div>
+                    <div
+                      className="skeleton skeleton-line skeleton-w-var skeleton-h-var"
+                      style={{ "--w": "85%", "--h": "18px", marginTop: "12px", marginBottom: "12px" } as any}
+                    />
+                    <div className="ai-topic-details">
+                      <div
+                        className="skeleton skeleton-line skeleton-w-var skeleton-h-var mb-6"
+                        style={{ "--w": "65%", "--h": "11px" } as any}
+                      />
+                      <div
+                        className="skeleton skeleton-line skeleton-w-var skeleton-h-var mb-6"
+                        style={{ "--w": "75%", "--h": "11px" } as any}
+                      />
+                      <div
+                        className="skeleton skeleton-line skeleton-w-var skeleton-h-var"
+                        style={{ "--w": "55%", "--h": "11px" } as any}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : suggestedTopics.length === 0 ? (
               <div className="glass-card ai-empty-box" style={{ gridColumn: "1 / -1" }}>
                 <p className="text-sm text-[var(--muted)]">No content gaps found. Click &quot;Re-scan Content Lake&quot; to generate new topics.</p>
               </div>
@@ -500,17 +580,16 @@ export function AiBlogWriting({
                   </div>
 
                   <div className="ai-topic-card-footer" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    <Button
-                      variant="ai"
+                    <HoverBorderGradient
                       size="sm"
                       onClick={() => handleGenerateAndPublishTopic(t)}
-                      disabled={generatingTopicId === (t.id || t.title)}
+                      disabled={generatingTopicId === (t.id || t.title) || directGenerating}
                       loading={generatingTopicId === (t.id || t.title)}
                       title="Generate complete article with AI and publish directly to production"
                     >
                       <Sparkles size={14} />
                       <span>Generate & Publish Live</span>
-                    </Button>
+                    </HoverBorderGradient>
                     <Button
                       variant="secondary"
                       size="sm"
@@ -626,16 +705,15 @@ export function AiBlogWriting({
               </span>
             </div>
             <div className="df-g8 al-c">
-              <Button
-                variant="ai"
+              <HoverBorderGradient
                 onClick={() => handleGenerateCustom(true)}
-                disabled={generatingCustom}
+                disabled={generatingCustom || directGenerating}
                 loading={generatingCustom}
                 title="Generate with AI and publish directly to production"
               >
                 <Sparkles size={16} />
                 <span>{generatingCustom ? "Generating & Publishing..." : "Generate & Publish to Production"}</span>
-              </Button>
+              </HoverBorderGradient>
             </div>
           </div>
         </div>

@@ -50,14 +50,14 @@ export function BlogValidationModal({
     status === "passed"
       ? "rgba(16, 185, 129, 0.15)"
       : status === "flagged"
-      ? "rgba(245, 158, 11, 0.15)"
-      : "rgba(239, 68, 68, 0.15)";
+        ? "rgba(245, 158, 11, 0.15)"
+        : "rgba(239, 68, 68, 0.15)";
   const statusBorder =
     status === "passed"
       ? "rgba(16, 185, 129, 0.4)"
       : status === "flagged"
-      ? "rgba(245, 158, 11, 0.4)"
-      : "rgba(239, 68, 68, 0.4)";
+        ? "rgba(245, 158, 11, 0.4)"
+        : "rgba(239, 68, 68, 0.4)";
 
   const checks = Array.isArray(report.checks) ? report.checks : [];
   const filteredChecks =
@@ -85,19 +85,6 @@ export function BlogValidationModal({
           boxShadow: `0 24px 60px rgba(0, 0, 0, 0.7), 0 0 35px ${statusBg}`,
         }}
       >
-        {/* Top Gradient Highlight Bar */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "3px",
-            background: "linear-gradient(90deg, #10b981 0%, #8b5cf6 50%, #3b82f6 100%)",
-            borderTopLeftRadius: "var(--radius-panel, 20px)",
-            borderTopRightRadius: "var(--radius-panel, 20px)",
-          }}
-        />
 
         {/* Modal Header */}
         <div
@@ -116,7 +103,6 @@ export function BlogValidationModal({
                 height: "44px",
                 borderRadius: "12px",
                 background: statusBg,
-                border: `1px solid ${statusBorder}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -141,8 +127,7 @@ export function BlogValidationModal({
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
+                    textTransform: "capitalize",
                     padding: "3px 10px",
                     borderRadius: "99px",
                     background: statusBg,
@@ -150,22 +135,9 @@ export function BlogValidationModal({
                     border: `1px solid ${statusBorder}`,
                   }}
                 >
-                  {status} ({passedChecksCount}/{totalChecksCount} passed)
+                  {passedChecksCount}/{totalChecksCount} {status}
                 </span>
               </div>
-              <p
-                style={{
-                  fontSize: "13px",
-                  color: "var(--muted, #94a3b8)",
-                  margin: "4px 0 0 0",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: "520px",
-                }}
-              >
-                {blog.title}
-              </p>
             </div>
           </div>
 
@@ -520,7 +492,7 @@ export function BlogValidationModal({
 
           {onEditBlog && (
             <Button
-              variant="ghost"
+              variant="secondary"
               onClick={() => {
                 onClose();
                 onEditBlog(blog);

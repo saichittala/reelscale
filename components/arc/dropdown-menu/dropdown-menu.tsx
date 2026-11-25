@@ -18,7 +18,7 @@ export interface DropdownItem {
 }
 
 export interface DropdownMenuProps {
-  label: string;
+  label?: string;
   items: DropdownItem[];
   icon?: ReactNode;
   align?: "start" | "end" | "center";
@@ -26,6 +26,7 @@ export interface DropdownMenuProps {
   fullWidth?: boolean;
   className?: string;
   disabled?: boolean;
+  trigger?: ReactNode;
 }
 
 type Highlight = { top: number; height: number; danger: boolean; glide: boolean };
@@ -39,6 +40,7 @@ export function DropdownMenu({
   fullWidth = false,
   className = "",
   disabled = false,
+  trigger,
 }: DropdownMenuProps) {
   const reduced = useReducedMotion();
   const [highlight, setHighlight] = useState<Highlight | null>(null);
@@ -87,17 +89,23 @@ export function DropdownMenu({
         }
       }}
     >
-      <DropdownPrimitive.Trigger className={triggerClasses} type="button" disabled={disabled}>
-        {icon && (
-          <span className={styles.triggerIcon} aria-hidden="true">
-            {icon}
+      {trigger ? (
+        <DropdownPrimitive.Trigger asChild disabled={disabled}>
+          {trigger}
+        </DropdownPrimitive.Trigger>
+      ) : (
+        <DropdownPrimitive.Trigger className={triggerClasses} type="button" disabled={disabled}>
+          {icon && (
+            <span className={styles.triggerIcon} aria-hidden="true">
+              {icon}
+            </span>
+          )}
+          <span className={styles.label}>
+            <span className={styles.labelText}>{label}</span>
           </span>
-        )}
-        <span className={styles.label}>
-          <span className={styles.labelText}>{label}</span>
-        </span>
-        <ChevronDown className={styles.chevron} size={14} strokeWidth={2} aria-hidden="true" />
-      </DropdownPrimitive.Trigger>
+          <ChevronDown className={styles.chevron} size={14} strokeWidth={2} aria-hidden="true" />
+        </DropdownPrimitive.Trigger>
+      )}
 
       <DropdownPrimitive.Portal>
         <DropdownPrimitive.Content

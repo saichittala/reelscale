@@ -387,3 +387,48 @@ export function IconSidebar({ size = 18, strokeWidth = 2, className = "", ...pro
     </svg>
   );
 }
+
+// ── Untitled UI: Dots-Horizontal (Three Dot Menu / More Horizontal) ──
+export function IconDotsHorizontal({ size = 18, strokeWidth = 2, className = "", ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="19" cy="12" r="1" fill="currentColor" />
+      <circle cx="5" cy="12" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+// ── Untitled UI: Dots-Vertical (Three Dot Menu / More Vertical) ──
+export function IconDotsVertical({ size = 18, strokeWidth = 2, className = "", ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="12" cy="5" r="1" fill="currentColor" />
+      <circle cx="12" cy="19" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+

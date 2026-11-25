@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { User, DashboardPage } from "../types";
 import { CustomSelect } from "./CustomSelect";
 import { Button } from "@/components/ui";
@@ -86,6 +86,53 @@ export function Layout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
+  const topbarRef = useRef<HTMLDivElement>(null);
+  const topbarLeftRef = useRef<HTMLDivElement>(null);
+  const topbarActionsRef = useRef<HTMLDivElement>(null);
+  const [isTopbarOverflowing, setIsTopbarOverflowing] = useState(false);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (!topbarRef.current || !topbarLeftRef.current || !topbarActionsRef.current) return;
+      const topbarWidth = topbarRef.current.clientWidth;
+      const leftWidth = topbarLeftRef.current.scrollWidth;
+      const actionsWidth = topbarActionsRef.current.scrollWidth;
+      const overflow = leftWidth + actionsWidth + 24 > topbarWidth;
+      setIsTopbarOverflowing(overflow);
+    };
+
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(checkOverflow);
+      if (topbarRef.current) observer.observe(topbarRef.current);
+      if (topbarLeftRef.current) observer.observe(topbarLeftRef.current);
+      if (topbarActionsRef.current) observer.observe(topbarActionsRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+      observer?.disconnect();
+    };
+  }, [
+    page,
+    clientFiltersBtn,
+    addClientBtn,
+    salesFiltersBtn,
+    addSaleBtn,
+    userFiltersBtn,
+    addUserBtn,
+    blogActionsBtn,
+    createBlogBtn,
+    createBlogActionsBtn,
+    systemStatusActionsBtn,
+    resourcesActionsBtn,
+    aiSettingsActionsBtn,
+    searchBar,
+    selectedMonth,
+  ]);
+
   const role = user?.role?.toLowerCase();
 
   const toggleSidebar = useCallback(() => {
@@ -93,7 +140,7 @@ export function Layout({
       const next = !prev;
       try {
         localStorage.setItem(STORAGE_KEYS.SIDEBAR_COLLAPSED, String(next));
-      } catch (e) {}
+      } catch (e) { }
       return next;
     });
   }, []);
@@ -105,7 +152,7 @@ export function Layout({
         if (savedCollapsed !== null) {
           setSidebarCollapsed(savedCollapsed === "true");
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }, []);
 
@@ -137,7 +184,6 @@ export function Layout({
 
   const isBlogsActive =
     page === "blogs" ||
-    page === "ai-blog-writing" ||
     page === "ai-blog-settings" ||
     page === "create-blog" ||
     page === "blog-categories";
@@ -169,11 +215,6 @@ export function Layout({
                 id: "blogs",
                 icon: "/assets/icons/nav-blog-manage.svg",
                 label: "Blog Management",
-              },
-              {
-                id: "ai-blog-writing",
-                icon: "/assets/icons/nav-ai-writing.svg",
-                label: "AI Blog Writing",
               },
               {
                 id: "ai-blog-settings",
@@ -216,11 +257,6 @@ export function Layout({
                 label: "Blog Management",
               },
               {
-                id: "ai-blog-writing",
-                icon: "/assets/icons/nav-ai-writing.svg",
-                label: "AI Blog Writing",
-              },
-              {
                 id: "ai-blog-settings",
                 icon: "/assets/icons/nav-ai-settings.svg",
                 label: "AI Blog Settings",
@@ -246,7 +282,6 @@ export function Layout({
     users: "Users",
     sales: "Sales",
     blogs: "Blog Management",
-    "ai-blog-writing": "AI Blog Writing Studio",
     "ai-blog-settings": "AI Blog Automation Settings",
     "create-blog": "Create Blog Post",
     "blog-categories": "Blog Categories",
@@ -510,8 +545,8 @@ export function Layout({
       {/* Main Content Area */}
       <div className={`main ${sidebarCollapsed ? "collapsed" : ""}`}>
         {/* Topbar Header */}
-        <div className="topbar">
-          <div className="topbar-left mobile-topbar-left">
+        <div className={`topbar ${isTopbarOverflowing ? "topbar-overflow" : ""}`} ref={topbarRef}>
+          <div className="topbar-left mobile-topbar-left" ref={topbarLeftRef}>
             <button
               type="button"
               className="mobile-menu-btn"
@@ -524,8 +559,6 @@ export function Layout({
               resourcesHeaderLeft
             ) : page === "create-blog" && createBlogHeaderLeft ? (
               createBlogHeaderLeft
-            ) : page === "ai-blog-writing" && aiWritingHeaderLeft ? (
-              aiWritingHeaderLeft
             ) : page === "ai-blog-settings" && aiSettingsHeaderLeft ? (
               aiSettingsHeaderLeft
             ) : (
@@ -533,7 +566,7 @@ export function Layout({
             )}
           </div>
 
-          <div className="topbar-actions">
+          <div className="topbar-actions" ref={topbarActionsRef}>
             <div className="df-g8 al-c">
               {/* Search bar beside left from all primary, secondary, tertiary elements and dropdowns */}
               {searchBar && (
@@ -584,7 +617,6 @@ export function Layout({
               {page === "blogs" && createBlogBtn}
               {page === "system-status" && systemStatusActionsBtn}
               {page === "resources" && resourcesActionsBtn}
-              {page === "ai-blog-writing" && aiWritingActionsBtn}
               {page === "ai-blog-settings" && aiSettingsActionsBtn}
 
               {/* Theme Toggle Button - Made consistently visible for premium feel */}

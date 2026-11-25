@@ -151,7 +151,6 @@ export type DashboardPage =
   | "users"
   | "sales"
   | "blogs"
-  | "ai-blog-writing"
   | "ai-blog-settings"
   | "create-blog"
   | "blog-categories"

@@ -1,25 +1,21 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import { Button, type ButtonProps } from "@/components/ui/button";
-import styles from "./rainbow-button.module.css";
+import {
+  HoverBorderGradient,
+  type HoverBorderGradientProps,
+} from "./hover-border-gradient";
 
-export interface RainbowButtonProps extends Omit<ButtonProps, "variant"> {
+export interface RainbowButtonProps extends HoverBorderGradientProps {
   variant?: "default" | "outline";
 }
 
-export const RainbowButton = forwardRef<HTMLButtonElement, RainbowButtonProps>(
-  function RainbowButton({ variant = "outline", className, ...props }, ref) {
+export const RainbowButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, RainbowButtonProps>(
+  function RainbowButton({ variant, className, ...props }, ref) {
     return (
-      <Button
-        variant="ai"
-        className={[
-          variant === "outline" ? styles.outline : styles.default,
-          className,
-        ]
-          .filter(Boolean)
-          .join(" ")}
+      <HoverBorderGradient
         ref={ref}
+        className={className}
         {...props}
       />
     );

@@ -56,6 +56,20 @@ export async function createGenerationJob(params: {
   scheduled_for?: Date;
 }): Promise<GenerationJobRow> {
   const slug = params.slug ? slugify(params.slug) : slugify(params.title);
+
+  // 1. Check if a job for this slug is already active in local/Sanity queue
+  try {
+    const existingJobs = await getAiJobsFromSanity().catch(() => []);
+    const activeMatch = existingJobs.find(
+      (j: any) => j.slug === slug && (j.status === "queued" || j.status === "processing")
+    );
+    if (activeMatch) {
+      throw new Error(`A generation job for slug '${slug}' is already active (Job ID: ${activeMatch.id})`);
+    }
+  } catch (checkErr: any) {
+    if (checkErr.message?.includes("already active")) throw checkErr;
+  }
+
   const jobId = `job_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
   let jobRow: GenerationJobRow = {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Blog, FAQ, EditorialValidationReport } from "../types";
 import { CustomSelect } from "../components/CustomSelect";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Input, Textarea, DropdownMenu, type DropdownItem } from "@/components/ui";
+import { IconDotsHorizontal } from "../components/Icons";
 import { STORAGE_KEYS, API_ROUTES } from "../constants";
 import { customFetch, apiValidateBlog } from "../services/api";
 import {
@@ -172,7 +173,7 @@ export function CreateBlog({
           const user = JSON.parse(userStr);
           if (user?.role) headers["x-user-role"] = user.role;
           if (user?.email) headers["x-user-email"] = user.email;
-        } catch {}
+        } catch { }
       }
 
       const res = await fetch(API_ROUTES.UPLOAD, {
@@ -456,43 +457,91 @@ export function CreateBlog({
         />
       </div>
 
-      <Button
-        variant="ai"
-        id="ai-generate-publish-btn"
-        type="button"
-        disabled={isGeneratingAi || isSaving}
-        loading={isGeneratingAi}
-        onClick={handleAiGenerateAndPublish}
-        title="Generate article with AI and publish directly to production"
-      >
-        <Sparkles size={16} />
-        <span>{isGeneratingAi ? "Generating & Publishing..." : "AI Generate & Publish"}</span>
-      </Button>
+      {/* Desktop Actions (> 960px) */}
+      <div className="header-actions-desktop df-g8 al-c">
+        <Button
+          variant="ai"
+          id="ai-generate-publish-btn"
+          type="button"
+          disabled={isGeneratingAi || isSaving}
+          loading={isGeneratingAi}
+          onClick={handleAiGenerateAndPublish}
+          title="Generate article with AI and publish directly to production"
+        >
+          <Sparkles size={16} />
+          <span>{isGeneratingAi ? "Generating & Publishing..." : "AI Generate & Publish"}</span>
+        </Button>
 
-      <Button
-        variant="secondary"
-        id="validate-blog-btn"
-        type="button"
-        disabled={isValidating || isSaving || isGeneratingAi}
-        loading={isValidating}
-        onClick={handleValidate}
-        title="Run 15-point editorial and SEO quality validation"
-      >
-        <ShieldCheck size={16} />
-        <span>{isValidating ? "Validating..." : "Validate"}</span>
-      </Button>
+        <Button
+          variant="secondary"
+          id="validate-blog-btn"
+          type="button"
+          disabled={isValidating || isSaving || isGeneratingAi}
+          loading={isValidating}
+          onClick={handleValidate}
+          title="Run 15-point editorial and SEO quality validation"
+        >
+          <ShieldCheck size={16} />
+          <span>{isValidating ? "Validating..." : "Validate"}</span>
+        </Button>
 
-      <Button
-        variant="primary"
-        id="save-blog-btn"
-        type="button"
-        disabled={isSaving || isGeneratingAi || isValidating}
-        loading={isSaving}
-        onClick={handleSave}
-      >
-        <Check size={16} />
-        <span>Save & Apply Changes</span>
-      </Button>
+        <Button
+          variant="primary"
+          id="save-blog-btn"
+          type="button"
+          disabled={isSaving || isGeneratingAi || isValidating}
+          loading={isSaving}
+          onClick={handleSave}
+        >
+          <Check size={16} />
+          <span>Save & Apply Changes</span>
+        </Button>
+      </div>
+
+      {/* Compact Actions (<= 960px): Primary Save + Secondary Three-Dot Menu */}
+      <div className="header-actions-compact df-g8 al-c">
+        <Button
+          variant="primary"
+          id="save-blog-btn-compact"
+          type="button"
+          disabled={isSaving || isGeneratingAi || isValidating}
+          loading={isSaving}
+          onClick={handleSave}
+        >
+          <Check size={16} />
+          <span>Save</span>
+        </Button>
+
+        <DropdownMenu
+          items={[
+            {
+              label: isGeneratingAi ? "Generating & Publishing..." : "AI Generate & Publish",
+              icon: <Sparkles size={16} className="text-[var(--red)]" />,
+              disabled: isGeneratingAi || isSaving,
+              onSelect: handleAiGenerateAndPublish,
+            },
+            {
+              label: isValidating ? "Validating..." : "Validate SEO & Quality",
+              icon: <ShieldCheck size={16} className="text-[var(--green)]" />,
+              disabled: isValidating || isSaving || isGeneratingAi,
+              onSelect: handleValidate,
+            },
+          ]}
+          align="end"
+          trigger={
+            <Button
+              variant="secondary"
+              size="icon"
+              pill
+              className="btn-secondary header-more-btn"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <IconDotsHorizontal size={18} />
+            </Button>
+          }
+        />
+      </div>
     </div>
   );
 
@@ -576,7 +625,7 @@ export function CreateBlog({
             loading={isGeneratingAi}
           >
             <Sparkles size={15} />
-            <span>{isGeneratingAi ? "Generating & Publishing..." : "⚡ Generate & Publish Live"}</span>
+            <span>{isGeneratingAi ? "Generating & Publishing..." : "Generate & Publish Live"}</span>
           </Button>
         </div>
 
