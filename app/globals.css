@@ -2,7 +2,7 @@
 
 html {
   scroll-behavior: smooth;
-  font-family: var(--font); 
+  font-family: var(--font);
 }
 
 body {
@@ -226,8 +226,9 @@ body {
   padding-top: 56.25%;
   /* 16:9 Aspect Ratio */
   background: var(--bg);
-  border-radius: 14px;
+  border-radius: var(--border-radius-3);
   overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .blog-card-img {
@@ -766,22 +767,36 @@ body {
 }
 
 @keyframes shareModalFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes shareModalSlideUp {
-  from { opacity: 0; transform: scale(0.95) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @media (max-width: 520px) {
   .share-modal-grid {
     grid-template-columns: 1fr;
   }
+
   .share-modal-content {
     padding: 20px;
   }
+
   .blog-post-meta-actions {
     margin-left: 0;
     margin-top: 8px;
