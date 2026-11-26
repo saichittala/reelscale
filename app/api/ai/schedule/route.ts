@@ -78,10 +78,25 @@ export async function GET(request: NextRequest) {
       preview = calculate30DayPreview(activeSchedule);
     }
 
+    let aiSettings = null;
+    try {
+      const { getAiSettingsFromSanity } = await import("../../../sanity/ai-sync");
+      aiSettings = await getAiSettingsFromSanity();
+    } catch {}
+
     return NextResponse.json({
       success: true,
-      schedule: activeSchedule,
-      activeSchedule,
+      schedule: {
+        ...(activeSchedule || {}),
+        image_provider: aiSettings?.image_provider || "pexels",
+        image_priority: aiSettings?.image_priority || ["pexels", "unsplash", "pixabay"],
+      },
+      activeSchedule: {
+        ...(activeSchedule || {}),
+        image_provider: aiSettings?.image_provider || "pexels",
+        image_priority: aiSettings?.image_priority || ["pexels", "unsplash", "pixabay"],
+      },
+      aiSettings,
       allSchedules,
       preview,
     });
@@ -141,6 +156,11 @@ export async function POST(request: NextRequest) {
           settingsUpdate.auto_publish = Boolean(inputData.auto_publish);
         }
         if (inputData.groq_model) settingsUpdate.model = inputData.groq_model;
+        if (inputData.model) settingsUpdate.model = inputData.model;
+        if (inputData.image_provider) settingsUpdate.image_provider = inputData.image_provider;
+        if (inputData.image_priority && Array.isArray(inputData.image_priority)) {
+          settingsUpdate.image_priority = inputData.image_priority;
+        }
         if (blogsPerActiveDay !== undefined) settingsUpdate.daily_target = blogsPerActiveDay;
         if (maxQty !== undefined) settingsUpdate.max_daily_limit = maxQty;
         if (inputData.is_active !== undefined) settingsUpdate.is_paused = !Boolean(inputData.is_active);

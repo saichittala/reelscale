@@ -19,6 +19,8 @@ export interface SanityAiSettings {
   daily_target: number;
   max_daily_limit: number;
   auto_publish: boolean;
+  image_provider?: "pexels" | "unsplash" | "pixabay";
+  image_priority?: Array<"pexels" | "unsplash" | "pixabay">;
   groq_api_key?: string;
   gemini_api_key?: string;
   openrouter_api_key?: string;
@@ -101,6 +103,8 @@ const DEFAULT_SETTINGS: SanityAiSettings = {
   daily_target: 1,
   max_daily_limit: 5,
   auto_publish: true,
+  image_provider: 'pexels',
+  image_priority: ['pexels', 'unsplash', 'pixabay'],
   updated_at: new Date().toISOString(),
 };
 
@@ -144,6 +148,8 @@ export async function getAiSettingsFromSanity(): Promise<SanityAiSettings> {
         daily_target: doc.daily_target || DEFAULT_SETTINGS.daily_target,
         max_daily_limit: doc.max_daily_limit || DEFAULT_SETTINGS.max_daily_limit,
         auto_publish: Boolean(doc.auto_publish),
+        image_provider: doc.image_provider || DEFAULT_SETTINGS.image_provider,
+        image_priority: doc.image_priority || DEFAULT_SETTINGS.image_priority,
         groq_api_key: doc.groq_api_key,
         gemini_api_key: doc.gemini_api_key,
         openrouter_api_key: doc.openrouter_api_key,

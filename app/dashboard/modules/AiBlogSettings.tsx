@@ -26,6 +26,7 @@ import {
   History,
   Sliders,
   Check,
+  Image as ImageIcon,
 } from "lucide-react";
 
 interface AiBlogSettingsProps {
@@ -72,6 +73,12 @@ export function AiBlogSettings({
   const [timezone] = useState<string>("Asia/Kolkata");
   const [autoPublish, setAutoPublish] = useState<boolean>(true);
   const [selectedModel, setSelectedModel] = useState<string>("gemini-3.5-flash-lite");
+  const [imageProvider, setImageProvider] = useState<"pexels" | "unsplash" | "pixabay">("pexels");
+  const [imagePriority, setImagePriority] = useState<Array<"pexels" | "unsplash" | "pixabay">>([
+    "pexels",
+    "unsplash",
+    "pixabay",
+  ]);
   const [savingSchedule, setSavingSchedule] = useState(false);
 
   // Initial loaded config state for tracking dirty changes
@@ -138,6 +145,8 @@ export function AiBlogSettings({
         const autoPub = s.auto_publish_to_sanity ?? s.auto_publish ?? true;
         const model = s.groq_model || s.model || "gemini-3.5-flash-lite";
         const active = s.is_active !== undefined ? Boolean(s.is_active) : true;
+        const imgProv = s.image_provider || json.aiSettings?.image_provider || "pexels";
+        const imgPrio = s.image_priority || json.aiSettings?.image_priority || ["pexels", "unsplash", "pixabay"];
 
         setScheduleType(type);
         setBlogsPerActiveDay(dailyQty);
@@ -148,6 +157,8 @@ export function AiBlogSettings({
         setGenerationTime(genTime);
         setAutoPublish(autoPub);
         setSelectedModel(model);
+        setImageProvider(imgProv);
+        setImagePriority(imgPrio);
         setAutomationActive(active);
 
         initialConfigRef.current = {
@@ -159,6 +170,8 @@ export function AiBlogSettings({
           generationTime: genTime,
           autoPublish: autoPub,
           selectedModel: model,
+          imageProvider: imgProv,
+          imagePriority: imgPrio,
         };
         setIsDirty(false);
       }
@@ -178,6 +191,8 @@ export function AiBlogSettings({
       generationTime !== initial.generationTime ||
       autoPublish !== initial.autoPublish ||
       selectedModel !== initial.selectedModel ||
+      imageProvider !== initial.imageProvider ||
+      JSON.stringify(imagePriority) !== JSON.stringify(initial.imagePriority) ||
       intervalDays !== initial.intervalDays ||
       JSON.stringify(activeWeekdays.slice().sort()) !== JSON.stringify(initial.activeWeekdays.slice().sort());
 
@@ -189,6 +204,8 @@ export function AiBlogSettings({
     generationTime,
     autoPublish,
     selectedModel,
+    imageProvider,
+    imagePriority,
     intervalDays,
     activeWeekdays,
   ]);
@@ -295,6 +312,8 @@ export function AiBlogSettings({
           auto_publish_to_sanity: autoPublish,
           groq_model: selectedModel,
           is_active: automationActive,
+          image_provider: imageProvider,
+          image_priority: imagePriority,
         }),
       });
       const json = await res.json();
@@ -309,6 +328,8 @@ export function AiBlogSettings({
           generationTime,
           autoPublish,
           selectedModel,
+          imageProvider,
+          imagePriority,
         };
         setIsDirty(false);
         fetchPreview();
@@ -923,6 +944,189 @@ export function AiBlogSettings({
               </p>
               <div className="ai-publish-safeguard-hint">
                 Strict 15-point quality checks ensure articles scoring &lt;80 are never published.
+              </div>
+            </div>
+
+            {/* Featured Image Sourcing Engine & Cascade Policy */}
+            <div className="glass-card ai-sub-card">
+              <div className="ai-sub-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div className="df-g8 al-c">
+                  <ImageIcon size={16} className="text-[var(--red)]" />
+                  <h4 className="ai-sub-card-title">
+                    Image Sourcing Engine
+                  </h4>
+                </div>
+                <span className="badge badge-green" style={{ fontSize: "11px", padding: "2px 8px" }}>
+                  3-Tier Failover
+                </span>
+              </div>
+
+              <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div>
+                  <label className="ai-field-label" style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "4px", display: "block" }}>
+                    Primary Image Engine
+                  </label>
+                  <CustomSelect
+                    value={imageProvider}
+                    onChange={(val) => {
+                      const selected = val as "pexels" | "unsplash" | "pixabay";
+                      setImageProvider(selected);
+                      const rest = (["pexels", "unsplash", "pixabay"] as const).filter((p) => p !== selected);
+                      // Preserve existing relative order of the remaining providers
+                      const currentRest = imagePriority.filter((p) => p !== selected);
+                      const newPriority = [selected, ...(currentRest.length === 2 ? currentRest : rest)];
+                      setImagePriority(newPriority);
+                    }}
+                    options={[
+                      { value: "pexels", label: "Pexels (Primary • 4K HD Cinematic Photography)" },
+                      { value: "unsplash", label: "Unsplash (Editorial Photography)" },
+                      { value: "pixabay", label: "Pixabay (Stock Photography)" },
+                    ]}
+                  />
+                </div>
+
+                {/* Priority Pipeline Visualization */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <label className="ai-field-label" style={{ fontSize: "11px", color: "var(--muted)" }}>
+                      Failover Sourcing Pipeline
+                    </label>
+                    <span style={{ fontSize: "10px", color: "var(--green)", fontWeight: 500 }}>
+                      ● Auto-Cascades on 0 Results
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                    {imagePriority.map((prov, idx) => (
+                      <React.Fragment key={prov}>
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "4px 10px",
+                            borderRadius: "99px",
+                            fontSize: "11px",
+                            fontWeight: idx === 0 ? 600 : 500,
+                            background: idx === 0 ? "rgba(255, 1, 38, 0.12)" : "rgba(255, 255, 255, 0.04)",
+                            border: idx === 0 ? "1px solid rgba(255, 1, 38, 0.35)" : "1px solid rgba(255, 255, 255, 0.09)",
+                            color: idx === 0 ? "#FF3B5C" : "var(--muted)",
+                          }}
+                        >
+                          <span style={{ fontSize: "10px", color: idx === 0 ? "#FF0126" : "rgba(255,255,255,0.4)" }}>
+                            #{idx + 1}
+                          </span>
+                          <span style={{ textTransform: "capitalize", color: idx === 0 ? "#ffffff" : "var(--white)" }}>
+                            {prov}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "9px",
+                              padding: "1px 5px",
+                              borderRadius: "99px",
+                              background: idx === 0 ? "rgba(255, 1, 38, 0.25)" : "rgba(255, 255, 255, 0.06)",
+                              color: idx === 0 ? "#FF3B5C" : "var(--muted)",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {idx === 0 ? "PRIMARY" : idx === 1 ? "2ND" : "3RD"}
+                          </span>
+                        </div>
+                        {idx < imagePriority.length - 1 && (
+                          <span style={{ color: "var(--muted)", fontSize: "12px" }}>&rarr;</span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+
+                  {/* Preset Quick Swaps */}
+                  <div style={{ marginTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageProvider("pexels");
+                        setImagePriority(["pexels", "unsplash", "pixabay"]);
+                      }}
+                      style={{
+                        background:
+                          imagePriority.join(",") === "pexels,unsplash,pixabay"
+                            ? "rgba(255, 1, 38, 0.15)"
+                            : "rgba(255, 255, 255, 0.03)",
+                        border:
+                          imagePriority.join(",") === "pexels,unsplash,pixabay"
+                            ? "1px solid rgba(255, 1, 38, 0.35)"
+                            : "1px solid rgba(255, 255, 255, 0.08)",
+                        color:
+                          imagePriority.join(",") === "pexels,unsplash,pixabay"
+                            ? "#FF3B5C"
+                            : "var(--muted)",
+                        borderRadius: "99px",
+                        padding: "3px 9px",
+                        fontSize: "10px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Pexels &rarr; Unsplash &rarr; Pixabay (Recommended)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageProvider("pexels");
+                        setImagePriority(["pexels", "pixabay", "unsplash"]);
+                      }}
+                      style={{
+                        background:
+                          imagePriority.join(",") === "pexels,pixabay,unsplash"
+                            ? "rgba(255, 1, 38, 0.15)"
+                            : "rgba(255, 255, 255, 0.03)",
+                        border:
+                          imagePriority.join(",") === "pexels,pixabay,unsplash"
+                            ? "1px solid rgba(255, 1, 38, 0.35)"
+                            : "1px solid rgba(255, 255, 255, 0.08)",
+                        color:
+                          imagePriority.join(",") === "pexels,pixabay,unsplash"
+                            ? "#FF3B5C"
+                            : "var(--muted)",
+                        borderRadius: "99px",
+                        padding: "3px 9px",
+                        fontSize: "10px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Pexels &rarr; Pixabay &rarr; Unsplash
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageProvider("unsplash");
+                        setImagePriority(["unsplash", "pexels", "pixabay"]);
+                      }}
+                      style={{
+                        background:
+                          imagePriority.join(",") === "unsplash,pexels,pixabay"
+                            ? "rgba(255, 1, 38, 0.15)"
+                            : "rgba(255, 255, 255, 0.03)",
+                        border:
+                          imagePriority.join(",") === "unsplash,pexels,pixabay"
+                            ? "1px solid rgba(255, 1, 38, 0.35)"
+                            : "1px solid rgba(255, 255, 255, 0.08)",
+                        color:
+                          imagePriority.join(",") === "unsplash,pexels,pixabay"
+                            ? "#FF3B5C"
+                            : "var(--muted)",
+                        borderRadius: "99px",
+                        padding: "3px 9px",
+                        fontSize: "10px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Unsplash &rarr; Pexels &rarr; Pixabay
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

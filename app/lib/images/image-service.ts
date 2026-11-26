@@ -271,9 +271,26 @@ export async function searchPexels(query: string, apiKey: string): Promise<Sourc
       }
     );
 
-    if (!res.ok) return null;
-    const data = await res.json();
-    const photos = data.photos || [];
+    let photos: any[] = [];
+    if (res.ok) {
+      const data = await res.json();
+      photos = data.photos || [];
+    }
+
+    // If a long query yields 0 results, retry with the most impactful first 3 words
+    if (photos.length === 0 && query.trim().includes(" ")) {
+      const words = query.trim().split(/\s+/).filter(Boolean);
+      const simplified = encodeURIComponent(words.slice(0, 3).join(" "));
+      const fallbackRes = await fetch(
+        `https://api.pexels.com/v1/search?query=${simplified}&orientation=landscape&per_page=12`,
+        { headers: { Authorization: apiKey } }
+      );
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        photos = fallbackData.photos || [];
+      }
+    }
+
     if (photos.length === 0) return null;
 
     // Pick a random photo from the results
@@ -306,9 +323,24 @@ export async function searchPixabay(query: string, apiKey: string): Promise<Sour
       `https://pixabay.com/api/?key=${apiKey}&q=${cleanQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`
     );
 
-    if (!res.ok) return null;
-    const data = await res.json();
-    const hits = data.hits || [];
+    let hits: any[] = [];
+    if (res.ok) {
+      const data = await res.json();
+      hits = data.hits || [];
+    }
+
+    // Fallback to simplified query if 0 results
+    if (hits.length === 0 && query.trim().includes(" ")) {
+      const simplified = encodeURIComponent(query.trim().split(/\s+/).slice(0, 2).join(" "));
+      const fallbackRes = await fetch(
+        `https://pixabay.com/api/?key=${apiKey}&q=${simplified}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`
+      );
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        hits = fallbackData.hits || [];
+      }
+    }
+
     if (hits.length === 0) return null;
 
     // Pick a random photo from results
@@ -339,45 +371,66 @@ export async function searchPixabay(query: string, apiKey: string): Promise<Sour
 }
 
 /**
- * Sourcing strategy:
- * 1. Unsplash Random image first (user provided Unsplash API key)
- * 2. Pexels random image fallback (user provided Pexels API key)
- * 3. Pixabay random image fallback (user provided Pixabay API key)
+ * Sourcing strategy (Default: Pexels Primary → Unsplash 2nd Backup → Pixabay 3rd Backup):
+ * Customizable dynamically via AI Automation Settings (image_provider & image_priority).
+ * 1. Pexels HD / 4K Photo (PRIMARY)
+ * 2. Unsplash Editorial Photo (SECONDARY)
+ * 3. Pixabay Stock Library (TERTIARY)
  * 4. High-resolution curated stock photo fallback
  */
-export async function sourceFeaturedImage(keywords: string[]): Promise<SourcedImage> {
+export async function sourceFeaturedImage(
+  keywords: string[],
+  customPriority?: Array<"pexels" | "unsplash" | "pixabay">
+): Promise<SourcedImage> {
   const { pexelsKey, unsplashKey, pixabayKey } = await getImageApiKeys();
   const searchTerms = keywords.length > 0 ? keywords : ["video production smartphone", "hyderabad cafe", "instagram reels"];
 
-  // 1. Unsplash Random Image (PRIMARY - per user instruction)
-  if (unsplashKey) {
-    const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
-    const unsplashRandom = await getRandomUnsplashImage(randomTerm, unsplashKey);
-    if (unsplashRandom) return unsplashRandom;
+  // 1. Determine active priority cascade (from argument or saved Sanity/JSON settings)
+  let priorityOrder = customPriority;
+  if (!priorityOrder || priorityOrder.length === 0) {
+    try {
+      const { getAiSettingsFromSanity } = await import("../../sanity/ai-sync");
+      const settings = await getAiSettingsFromSanity();
+      if (settings?.image_priority && Array.isArray(settings.image_priority) && settings.image_priority.length > 0) {
+        priorityOrder = settings.image_priority;
+      } else if (settings?.image_provider) {
+        const primary = settings.image_provider;
+        const rest = (["pexels", "unsplash", "pixabay"] as const).filter((p) => p !== primary);
+        priorityOrder = [primary, ...rest];
+      }
+    } catch {}
+  }
 
-    for (const term of searchTerms) {
-      const unsplashResult = await searchUnsplash(term, unsplashKey);
-      if (unsplashResult) return unsplashResult;
+  // Default priority: Pexels (Primary) → Unsplash (2nd) → Pixabay (3rd)
+  if (!priorityOrder || priorityOrder.length === 0) {
+    priorityOrder = ["pexels", "unsplash", "pixabay"];
+  }
+
+  // 2. Cascade through priority order
+  for (const provider of priorityOrder) {
+    if (provider === "pexels" && pexelsKey) {
+      for (const term of searchTerms) {
+        const pexelsResult = await searchPexels(term, pexelsKey);
+        if (pexelsResult) return pexelsResult;
+      }
+    } else if (provider === "unsplash" && unsplashKey) {
+      const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+      const unsplashRandom = await getRandomUnsplashImage(randomTerm, unsplashKey);
+      if (unsplashRandom) return unsplashRandom;
+
+      for (const term of searchTerms) {
+        const unsplashResult = await searchUnsplash(term, unsplashKey);
+        if (unsplashResult) return unsplashResult;
+      }
+    } else if (provider === "pixabay" && pixabayKey) {
+      for (const term of searchTerms) {
+        const pixabayResult = await searchPixabay(term, pixabayKey);
+        if (pixabayResult) return pixabayResult;
+      }
     }
   }
 
-  // 2. Pexels Random Image (SECONDARY)
-  if (pexelsKey) {
-    for (const term of searchTerms) {
-      const pexelsResult = await searchPexels(term, pexelsKey);
-      if (pexelsResult) return pexelsResult;
-    }
-  }
-
-  // 3. Pixabay Random Image (TERTIARY)
-  if (pixabayKey) {
-    for (const term of searchTerms) {
-      const pixabayResult = await searchPixabay(term, pixabayKey);
-      if (pixabayResult) return pixabayResult;
-    }
-  }
-
-  // 4. Fallback to random curated photo
+  // 3. Fallback to random curated photo
   const randomIndex = Math.floor(Math.random() * CURATED_REELSCALE_IMAGES.length);
   return CURATED_REELSCALE_IMAGES[randomIndex];
 }
