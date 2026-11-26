@@ -181,7 +181,13 @@ export async function uploadImageToSanity(
  * Maps a Sanity post document to the Dashboard Blog interface
  */
 export function sanityDocToBlog(doc: any): Blog {
-  const imageUrl = doc.featuredImageUrl || doc.featuredImage?.asset?.url || ''
+  const imageUrl =
+    doc.featuredImageUrl ||
+    doc.featuredImage?.asset?.url ||
+    (typeof doc.featuredImage === 'string' ? doc.featuredImage : '') ||
+    doc.ogImageUrl ||
+    doc.ogImage?.asset?.url ||
+    ''
   const contentMarkdown = Array.isArray(doc.body) ? blocksToMarkdown(doc.body) : (typeof doc.body === 'string' ? doc.body : '')
 
   return {
@@ -246,14 +252,11 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
     }
   }
 
-  // Handle Image: If it's already an HTTPS CDN URL (Unsplash/Pexels), store directly
-  // for blazing-fast instant publishing (~200ms) without blocking binary upload.
+  // Handle Image: Upload remote photos (Pexels / Unsplash / Pixabay / etc.) to Sanity Asset Lake
   let imageAsset: { assetId: string; url: string } | null = null
   const rawImage = blog.featuredImage ? blog.featuredImage.trim() : ''
-  const isCdnUrl = rawImage.startsWith('http://') || rawImage.startsWith('https://')
 
-  // Only upload to Sanity asset lake if it's a data URI or local binary
-  if (rawImage && !isCdnUrl) {
+  if (rawImage) {
     imageAsset = await uploadImageToSanity(rawImage, `${cleanSlug}.jpg`)
   }
 
@@ -306,10 +309,12 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
         _ref: imageAsset.assetId,
       },
     }
-  } else if (blog.featuredImage && blog.featuredImage.trim()) {
-    sanityDoc.featuredImageUrl = blog.featuredImage.trim()
-    if (blog.ogImage || blog.featuredImage) {
-      sanityDoc.ogImageUrl = (blog.ogImage || blog.featuredImage).trim()
+    sanityDoc.featuredImageUrl = imageAsset.url
+    sanityDoc.ogImageUrl = imageAsset.url
+  } else if (rawImage) {
+    sanityDoc.featuredImageUrl = rawImage
+    if (blog.ogImage || rawImage) {
+      sanityDoc.ogImageUrl = (blog.ogImage || rawImage).trim()
     }
   }
 
@@ -325,7 +330,8 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
     ...blog,
     id: saved._id.replace(/^post-/, ''),
     slug: cleanSlug,
-    featuredImage: imageAsset ? imageAsset.url : blog.featuredImage,
+    featuredImage: imageAsset ? imageAsset.url : (rawImage || blog.featuredImage),
+    ogImage: imageAsset ? imageAsset.url : (blog.ogImage || rawImage || blog.featuredImage),
     updatedDate: today,
   }
 }

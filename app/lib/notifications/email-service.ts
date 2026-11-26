@@ -45,7 +45,7 @@ function readKeyFromLocalEnv(keyName: string): string {
         return match[1].trim().replace(/^["']|["']$/g, "");
       }
     }
-  } catch {}
+  } catch { }
   return "";
 }
 
@@ -238,12 +238,12 @@ function generateEmailHtml(params: {
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #050608; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #ffffff; -webkit-font-smoothing: antialiased;">
+<body style="margin: 0; padding: 0; background-color: #050608; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e0e0e0; -webkit-font-smoothing: antialiased;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #050608; padding: 40px 14px;">
     <tr>
       <td align="center">
         <!-- Main Dashboard Panel (Strict --radius-panel: 24px) -->
-        <table role="presentation" width="100%" style="max-width: 620px; background-color: #0b0c10; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.03);">
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: ##080808; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.03);">
           
           <!-- ReelScale Dashboard Header -->
           <tr>
@@ -253,18 +253,9 @@ function generateEmailHtml(params: {
                   <td valign="middle">
                     <table role="presentation" cellspacing="0" cellpadding="0">
                       <tr>
-                        <!-- Iconic Red Brandmark Badge -->
-                        <td valign="middle" style="padding-right: 12px;">
-                          <div style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #FF0126 0%, #E50914 100%); display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 32px; box-shadow: 0 4px 14px rgba(255, 1, 38, 0.45);">
-                            <span style="color: #ffffff; font-size: 15px; font-weight: 800; display: inline-block;">▶</span>
-                          </div>
-                        </td>
                         <td valign="middle">
                           <span style="font-size: 21px; font-weight: 700; letter-spacing: -0.025em; color: #F5F5F0;">
                             Reel<span style="color: #FF0126;">Scale</span>
-                          </span>
-                          <span style="display: block; font-size: 11px; color: #94a3b8; margin-top: 1px; font-weight: 500; letter-spacing: 0.02em;">
-                            Autonomous AI Publishing Studio
                           </span>
                         </td>
                       </tr>
@@ -273,8 +264,8 @@ function generateEmailHtml(params: {
                   <td align="right" valign="middle">
                     <!-- Live on Production Badge -->
                     <span style="display: inline-flex; align-items: center; padding: 5px 12px; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: 99px; font-size: 11px; font-weight: 600; color: #10b981; line-height: 1;">
-                      <span style="display: inline-block; width: 6px; height: 6px; border-radius: 99px; background-color: #10b981; margin-right: 6px; box-shadow: 0 0 8px #10b981;"></span>
-                      Live on Production
+                      <span style="display: inline-block; width: 6px; height: 6px; border-radius: 99px; background-color: #10b981; margin-right: 6px; box-shadow: 0 0 8px #10b981; display: flex; align-items: center;"></span>
+                      Live
                     </span>
                   </td>
                 </tr>
@@ -287,20 +278,20 @@ function generateEmailHtml(params: {
             <td style="padding: 18px 28px 10px 28px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 99px; padding: 9px 18px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);">
                 <tr>
-                  <td valign="middle" style="font-size: 12px; color: #94a3b8;">
+                  <td valign="middle" style="font-size: 12px; color: #a2a2a2;">
                     <span style="display: inline-block; width: 7px; height: 7px; border-radius: 99px; background-color: #10b981; margin-right: 7px; box-shadow: 0 0 8px #10b981;"></span>
                     <span style="color: #64748b; font-weight: 400;">Connected Agent:</span>
-                    <strong style="color: #ffffff; font-weight: 600; margin-left: 3px;">Groq LPU Engine</strong>
-                    <span style="display: inline-block; padding: 2px 8px; background-color: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 99px; font-size: 11px; font-weight: 500; color: #ffffff; margin-left: 5px;">
+                    <strong style="color: #e0e0e0; font-weight: 600; margin-left: 3px;">Groq LPU Engine</strong>
+                    <span style="display: inline-block; padding: 2px 8px; background-color: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 99px; font-size: 11px; font-weight: 500; color: #e0e0e0; margin-left: 5px;">
                       ${modelUsed.includes("120b") ? "GPT-OSS 120B" : "Qwen 27B"}
                     </span>
                   </td>
-                  <td align="right" valign="middle" style="font-size: 12px; color: #94a3b8;">
+                  <td align="right" valign="middle" style="font-size: 12px; color: #a2a2a2;">
                     <span style="color: #f59e0b; margin-right: 3px;">⚡</span>
                     <span style="color: #64748b; font-weight: 400;">Telemetry:</span>
-                    <strong style="color: #ffffff; font-weight: 600; margin-left: 3px; font-variant-numeric: tabular-nums;">${tokensUsed.toLocaleString()} tokens</strong>
+                    <strong style="color: #e0e0e0; font-weight: 600; margin-left: 3px; font-variant-numeric: tabular-nums;">${tokensUsed.toLocaleString()} tokens</strong>
                     <span style="color: rgba(255, 255, 255, 0.15); margin: 0 6px;">|</span>
-                    <span style="color: #ffffff; font-weight: 600; font-variant-numeric: tabular-nums;">${seconds}s</span>
+                    <span style="color: #e0e0e0; font-weight: 600; font-variant-numeric: tabular-nums;">${seconds}s</span>
                   </td>
                 </tr>
               </table>
@@ -318,10 +309,10 @@ function generateEmailHtml(params: {
                     </div>
                   </td>
                   <td style="padding-left: 14px;" valign="middle">
-                    <div style="font-size: 15px; font-weight: 600; color: #ffffff; letter-spacing: -0.015em;">
-                      Blog Published Directly to Production
+                    <div style="font-size: 15px; font-weight: 600; color: #e0e0e0; letter-spacing: -0.015em;">
+                      Blog Published to Production
                     </div>
-                    <div style="font-size: 12px; color: #94a3b8; margin-top: 3px; line-height: 1.4;">
+                    <div style="font-size: 12px; color: #a2a2a2; margin-top: 3px; line-height: 1.4;">
                       Synced live to Sanity CMS Content Lake and live on <span style="color: #FF0126; font-weight: 600;">reelscale.in</span>
                     </div>
                   </td>
@@ -335,15 +326,14 @@ function generateEmailHtml(params: {
             <td style="padding: 6px 28px 18px 28px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; overflow: hidden; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);">
                 
-                ${
-                  blog.featuredImage
-                    ? `<tr>
+                ${blog.featuredImage
+      ? `<tr>
                   <td style="padding: 0; background-color: #000000;">
                     <img src="${blog.featuredImage}" alt="${blog.title}" style="width: 100%; max-height: 280px; object-fit: cover; display: block; border-bottom: 1px solid rgba(255, 255, 255, 0.08);" />
                   </td>
                 </tr>`
-                    : ""
-                }
+      : ""
+    }
 
                 <tr>
                   <td style="padding: 24px;">
@@ -372,7 +362,7 @@ function generateEmailHtml(params: {
                     </table>
 
                     <!-- Headline -->
-                    <h2 style="font-size: 20px; font-weight: 700; line-height: 1.35; color: #ffffff; margin: 0 0 10px 0; letter-spacing: -0.02em;">
+                    <h2 style="font-size: 20px; font-weight: 700; line-height: 1.35; color: #e0e0e0; margin: 0 0 10px 0; letter-spacing: -0.02em;">
                       ${blog.title}
                     </h2>
 
@@ -382,7 +372,7 @@ function generateEmailHtml(params: {
                     </div>
 
                     <!-- Excerpt -->
-                    <p style="font-size: 13.5px; line-height: 1.65; color: #94a3b8; margin: 0 0 22px 0; font-weight: 400;">
+                    <p style="font-size: 13.5px; line-height: 1.65; color: #a2a2a2; margin: 0 0 22px 0; font-weight: 400;">
                       ${blog.description || "The generated long-form article has been validated across 15 editorial standards, enriched with schema FAQs, and deployed to production."}
                     </p>
 
@@ -390,7 +380,7 @@ function generateEmailHtml(params: {
                     <table role="presentation" cellspacing="0" cellpadding="0" width="100%">
                       <tr>
                         <td>
-                          <a href="${liveUrl}" target="_blank" style="display: inline-block; width: 100%; box-sizing: border-box; text-align: center; background: linear-gradient(135deg, #FF0126 0%, #E50914 100%); color: #ffffff; padding: 14px 24px; border-radius: 99px; font-size: 13.5px; font-weight: 700; text-decoration: none; letter-spacing: 0.01em; box-shadow: 0 4px 20px rgba(255, 1, 38, 0.4); border: 1px solid #FF0126;">
+                          <a href="${liveUrl}" target="_blank" style="display: inline-block; width: 100%; box-sizing: border-box; text-align: center; background: linear-gradient(135deg, #FF0126 0%, #E50914 100%); color: #e0e0e0; padding: 14px 24px; border-radius: 99px; font-size: 13.5px; font-weight: 700; text-decoration: none; letter-spacing: 0.01em; box-shadow: 0 4px 20px rgba(255, 1, 38, 0.4); border: 1px solid #FF0126;">
                             Read Live Article on Website &rarr;
                           </a>
                         </td>
@@ -410,20 +400,20 @@ function generateEmailHtml(params: {
                 <tr>
                   <td width="31%" style="background-color: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 14px; text-align: left;">
                     <div style="font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Word Count</div>
-                    <div style="font-size: 17px; font-weight: 700; color: #ffffff; letter-spacing: -0.01em;">${wordCount.toLocaleString()}</div>
+                    <div style="font-size: 17px; font-weight: 700; color: #e0e0e0; letter-spacing: -0.01em;">${wordCount.toLocaleString()}</div>
                     <div style="font-size: 11px; color: #10b981; font-weight: 500; margin-top: 3px;">1,500+ standard</div>
                   </td>
                   <td width="3.5%"></td>
                   <td width="31%" style="background-color: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 14px; text-align: left;">
                     <div style="font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">SEO Score</div>
                     <div style="font-size: 17px; font-weight: 700; color: #10b981; letter-spacing: -0.01em;">${seoScore}<span style="font-size: 12px; color: #64748b; font-weight: 500;">/100</span></div>
-                    <div style="font-size: 11px; color: #94a3b8; margin-top: 3px;">15/15 passed</div>
+                    <div style="font-size: 11px; color: #a2a2a2; margin-top: 3px;">15/15 passed</div>
                   </td>
                   <td width="3.5%"></td>
                   <td width="31%" style="background-color: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 14px; text-align: left;">
                     <div style="font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Internal Links</div>
-                    <div style="font-size: 17px; font-weight: 700; color: #ffffff; letter-spacing: -0.01em;">${backlinkCount} links</div>
-                    <div style="font-size: 11px; color: #94a3b8; margin-top: 3px;">verified reelscale.in</div>
+                    <div style="font-size: 17px; font-weight: 700; color: #e0e0e0; letter-spacing: -0.01em;">${backlinkCount} links</div>
+                    <div style="font-size: 11px; color: #a2a2a2; margin-top: 3px;">verified reelscale.in</div>
                   </td>
                 </tr>
               </table>
@@ -436,13 +426,13 @@ function generateEmailHtml(params: {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 16px 20px;">
                 <tr>
                   <td style="padding-bottom: 10px;">
-                    <span style="font-size: 11px; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 0.04em;">
+                    <span style="font-size: 11px; font-weight: 600; color: #e0e0e0; text-transform: uppercase; letter-spacing: 0.04em;">
                       🛡️ Automated Quality Verification Checklist
                     </span>
                   </td>
                 </tr>
                 <tr>
-                  <td style="font-size: 12px; color: #94a3b8; line-height: 1.85;">
+                  <td style="font-size: 12px; color: #a2a2a2; line-height: 1.85;">
                     <div style="margin-bottom: 3px;">
                       <span style="color: #10b981; font-weight: bold; margin-right: 7px;">✓</span> Search intent & Hyderabad local gap analysis validated
                     </div>
@@ -465,7 +455,7 @@ function generateEmailHtml(params: {
           <tr>
             <td style="padding: 0 28px 28px 28px; text-align: center;">
               <a href="https://reelscale.in/dashboard?tab=blogs" target="_blank" style="display: inline-block; font-size: 12px; font-weight: 500; color: #cbd5e1; text-decoration: none; padding: 9px 20px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 99px; background-color: rgba(255, 255, 255, 0.04); transition: all 0.2s ease;">
-                Open ReelScale Dashboard &rarr;
+                Open Dashboard &rarr;
               </a>
             </td>
           </tr>

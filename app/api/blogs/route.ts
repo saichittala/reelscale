@@ -56,7 +56,7 @@ export async function GET() {
       category,
       tags,
       featuredImage,
-      "featuredImageUrl": featuredImage.asset->url,
+      "featuredImageUrl": coalesce(featuredImageUrl, featuredImage.asset->url),
       publishedDate,
       updatedDate,
       status,
@@ -68,7 +68,7 @@ export async function GET() {
       focusKeyword,
       canonicalUrl,
       ogImage,
-      "ogImageUrl": ogImage.asset->url
+      "ogImageUrl": coalesce(ogImageUrl, ogImage.asset->url, featuredImageUrl, featuredImage.asset->url)
     }`;
 
     const sanityPosts = await client.fetch(sanityQuery);

@@ -156,6 +156,12 @@ export async function POST(request: NextRequest) {
     let sanityDocId: string | null = null;
     try {
       syncedBlog = await syncBlogToSanity(blogToSave);
+      if (!syncedBlog.featuredImage && blogToSave.featuredImage) {
+        syncedBlog.featuredImage = blogToSave.featuredImage;
+      }
+      if (!syncedBlog.ogImage && (blogToSave.ogImage || blogToSave.featuredImage)) {
+        syncedBlog.ogImage = blogToSave.ogImage || blogToSave.featuredImage;
+      }
       sanityDocId = syncedBlog.id ? String(syncedBlog.id) : null;
     } catch (sanityErr: any) {
       console.warn("Sanity sync notice during manual AI generation:", sanityErr?.message || sanityErr);

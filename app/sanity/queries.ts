@@ -96,7 +96,7 @@ export const LANDING_PAGE_QUERY = defineQuery(`{
     description,
     category,
     tags,
-    "featuredImage": featuredImage.asset->url,
+    "featuredImage": coalesce(featuredImageUrl, featuredImage.asset->url),
     publishedDate,
     updatedDate,
     status
