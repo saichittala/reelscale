@@ -140,6 +140,7 @@ export async function callOpenRouter(
           "X-Title": "ReelScale AI Studio",
         },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(18000),
       });
 
       const latencyMs = Date.now() - start;

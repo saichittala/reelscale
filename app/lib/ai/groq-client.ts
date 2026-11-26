@@ -498,6 +498,13 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
           });
         } catch (groqErr: any) {
           console.warn(`[Groq Failover Failed] ${groqErr.message}. Escalating to OpenRouter...`);
+          const openrouterKey = await getEffectiveOpenRouterApiKey();
+          if (openrouterKey) {
+            return await callOpenRouter({
+              ...options,
+              model: mapModelToOpenRouter(options.model),
+            });
+          }
         }
       }
     }
@@ -506,7 +513,7 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
   // Determine active provider configured in settings
   const activeProvider = await getActiveAiProvider();
 
-  // If Gemini is active provider: Gemini First -> Groq Backup -> OpenRouter Tertiary
+  // Tier 1: Gemini Primary -> Tier 2: Groq Backup -> Tier 3: OpenRouter Tertiary
   if (activeProvider === "gemini") {
     const geminiKey = await getEffectiveGeminiApiKey();
     if (geminiKey) {
@@ -526,7 +533,7 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
         model: options.model && !options.model.startsWith("gemini-") ? options.model : undefined,
       });
     } catch (groqErr: any) {
-      console.warn(`[Groq Backup Failed] ${groqErr.message}. Escalating to OpenRouter...`);
+      console.warn(`[Groq Backup Failed] ${groqErr.message}. Escalating to OpenRouter tertiary backup...`);
     }
 
     const openrouterKey = await getEffectiveOpenRouterApiKey();
@@ -540,7 +547,42 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
     throw new Error("All AI providers (Gemini primary, Groq backup, OpenRouter tertiary) failed.");
   }
 
-  // Default flow (Groq primary -> Gemini backup -> OpenRouter tertiary)
+  // Tier 1: OpenRouter Primary -> Tier 2: Gemini Backup -> Tier 3: Groq Tertiary
+  if (activeProvider === "openrouter") {
+    const openrouterKey = await getEffectiveOpenRouterApiKey();
+    if (openrouterKey) {
+      try {
+        return await callOpenRouter({
+          ...options,
+          model: mapModelToOpenRouter(options.model),
+        });
+      } catch (orErr: any) {
+        console.warn(`[OpenRouter Primary Failed] ${orErr.message}. Escalating to Gemini backup...`);
+      }
+    }
+
+    const geminiKey = await getEffectiveGeminiApiKey();
+    if (geminiKey) {
+      try {
+        return await callGemini({
+          ...options,
+          model: mapModelToGemini(options.model),
+        });
+      } catch (geminiErr: any) {
+        console.warn(`[Gemini Backup Failed] ${geminiErr.message}. Escalating to Groq tertiary...`);
+      }
+    }
+
+    try {
+      return await executeGroq(options);
+    } catch (groqErr: any) {
+      console.warn(`[Groq Tertiary Failed] ${groqErr.message}. All providers exhausted.`);
+    }
+
+    throw new Error("All AI providers (OpenRouter primary, Gemini backup, Groq tertiary) failed.");
+  }
+
+  // Default flow: Tier 1: Groq Primary -> Tier 2: Gemini Backup -> Tier 3: OpenRouter Tertiary
   try {
     return await executeGroq(options);
   } catch (groqErr: any) {
@@ -549,7 +591,7 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
     );
   }
 
-  // BACKUP: Google Gemini
+  // BACKUP TIER 2: Google Gemini
   const geminiKey = await getEffectiveGeminiApiKey();
   if (geminiKey) {
     try {
@@ -559,12 +601,12 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
       });
     } catch (geminiErr: any) {
       console.warn(
-        `[AI Failover Gemini -> OpenRouter] Gemini backup failed (${geminiErr.message}). Escalating to OpenRouter...`
+        `[AI Failover Gemini -> OpenRouter] Gemini backup failed (${geminiErr.message}). Escalating immediately to OpenRouter tertiary...`
       );
     }
   }
 
-  // TERTIARY: OpenRouter
+  // TERTIARY TIER 3: OpenRouter Multi-Provider
   const openrouterKey = await getEffectiveOpenRouterApiKey();
   if (openrouterKey) {
     return await callOpenRouter({
