@@ -236,7 +236,7 @@
 
     /* Neutrals */
     --white: oklch(92.046% 0.01066 100.933);
-    --muted: oklab(71.2% 0 0);
+    --muted: oklch(71.224% 0.00008 271.152);
     --border: oklch(0.92 0.01 95 / 0.13);
     --button-white: oklch(92.046% 0.01066 100.933);
 

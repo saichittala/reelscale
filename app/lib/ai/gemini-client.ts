@@ -173,6 +173,7 @@ export async function callGemini(
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(18000),
         }
       );
 
@@ -233,6 +234,9 @@ export async function callGemini(
       };
     } catch (err: any) {
       lastError = err;
+      if (err.message?.includes("Quota Exhausted") || err.message?.includes("RESOURCE_EXHAUSTED")) {
+        throw err;
+      }
       console.warn(`[Gemini Attempt] "${model}" failed: ${err.message}`);
     }
   }

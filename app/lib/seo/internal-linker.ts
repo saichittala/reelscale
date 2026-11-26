@@ -74,7 +74,7 @@ export async function generateInternalLinks(params: {
     });
 
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Internal linking AI timeout (2s)")), 2000)
+      setTimeout(() => reject(new Error("Internal linking AI timeout (6s)")), 6000)
     );
 
     const res = (await Promise.race([aiPromise, timeoutPromise])) as any;

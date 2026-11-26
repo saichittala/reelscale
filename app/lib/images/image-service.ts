@@ -205,6 +205,7 @@ export async function getRandomUnsplashImage(query: string, accessKey: string): 
           Authorization: `Client-ID ${accessKey}`,
           "Accept-Version": "v1",
         },
+        signal: AbortSignal.timeout(3500),
       }
     );
 
@@ -217,6 +218,7 @@ export async function getRandomUnsplashImage(query: string, accessKey: string): 
             Authorization: `Client-ID ${accessKey}`,
             "Accept-Version": "v1",
           },
+          signal: AbortSignal.timeout(3500),
         }
       );
       if (!broadRes.ok) return null;
@@ -242,6 +244,7 @@ export async function searchUnsplash(query: string, accessKey: string): Promise<
           Authorization: `Client-ID ${accessKey}`,
           "Accept-Version": "v1",
         },
+        signal: AbortSignal.timeout(3500),
       }
     );
 
@@ -268,6 +271,7 @@ export async function searchPexels(query: string, apiKey: string): Promise<Sourc
       `https://api.pexels.com/v1/search?query=${cleanQuery}&orientation=landscape&per_page=12`,
       {
         headers: { Authorization: apiKey },
+        signal: AbortSignal.timeout(3500),
       }
     );
 
@@ -283,7 +287,10 @@ export async function searchPexels(query: string, apiKey: string): Promise<Sourc
       const simplified = encodeURIComponent(words.slice(0, 3).join(" "));
       const fallbackRes = await fetch(
         `https://api.pexels.com/v1/search?query=${simplified}&orientation=landscape&per_page=12`,
-        { headers: { Authorization: apiKey } }
+        {
+          headers: { Authorization: apiKey },
+          signal: AbortSignal.timeout(3500),
+        }
       );
       if (fallbackRes.ok) {
         const fallbackData = await fallbackRes.json();
@@ -320,7 +327,8 @@ export async function searchPixabay(query: string, apiKey: string): Promise<Sour
   try {
     const cleanQuery = encodeURIComponent(query.trim());
     const res = await fetch(
-      `https://pixabay.com/api/?key=${apiKey}&q=${cleanQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`
+      `https://pixabay.com/api/?key=${apiKey}&q=${cleanQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`,
+      { signal: AbortSignal.timeout(3500) }
     );
 
     let hits: any[] = [];
@@ -333,7 +341,8 @@ export async function searchPixabay(query: string, apiKey: string): Promise<Sour
     if (hits.length === 0 && query.trim().includes(" ")) {
       const simplified = encodeURIComponent(query.trim().split(/\s+/).slice(0, 2).join(" "));
       const fallbackRes = await fetch(
-        `https://pixabay.com/api/?key=${apiKey}&q=${simplified}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`
+        `https://pixabay.com/api/?key=${apiKey}&q=${simplified}&image_type=photo&orientation=horizontal&safesearch=true&per_page=15`,
+        { signal: AbortSignal.timeout(3500) }
       );
       if (fallbackRes.ok) {
         const fallbackData = await fallbackRes.json();

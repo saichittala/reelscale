@@ -82,11 +82,11 @@ export function GenerateAiBlogModal({
 
   // Connected Agent Telemetry
   const [agentInfo, setAgentInfo] = useState<ConnectedAgentInfo>({
-    provider: "groq",
-    model: "qwen/qwen3.8-27b",
-    displayName: "Groq LPU Engine",
+    provider: "gemini",
+    model: "gemini-3.5-flash-lite",
+    displayName: "Google Gemini Engine",
     status: "connected",
-    speed: "Ultra-Fast (LPU)",
+    speed: "Ultra-Fast (Flash Lite • Generous Quota)",
   });
 
   // Custom Form fields
@@ -605,11 +605,19 @@ export function GenerateAiBlogModal({
               })}
             </div>
 
-            {elapsedSeconds >= 10 && (
+            {elapsedSeconds >= 35 ? (
               <p className={styles.generatingHint}>
-                Publishing live to Sanity CMS & invalidating edge caches... almost ready!
+                Finalizing publication & Sanity Asset Lake synchronization... almost ready!
               </p>
-            )}
+            ) : elapsedSeconds >= 18 ? (
+              <p className={styles.generatingHint}>
+                Uploading high-res featured photo to Sanity & updating edge caches...
+              </p>
+            ) : elapsedSeconds >= 9 ? (
+              <p className={styles.generatingHint}>
+                Publishing live to Sanity CMS & invalidating edge caches...
+              </p>
+            ) : null}
 
             <button
               type="button"

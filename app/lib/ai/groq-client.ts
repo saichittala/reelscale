@@ -156,15 +156,16 @@ export async function getGroqClient(): Promise<GroqLikeClient> {
 }
 
 export async function getActiveAiProvider(): Promise<string> {
+  // Check Sanity CMS
   try {
-    const sql = getDb();
-    const rows = await sql.query("SELECT provider FROM ai_automation_settings LIMIT 1;");
-    if (rows.length > 0 && rows[0].provider) {
-      return String(rows[0].provider).trim().toLowerCase();
+    const { getAiSettingsFromSanity } = await import("../../sanity/ai-sync");
+    const sanitySettings = await getAiSettingsFromSanity();
+    if (sanitySettings?.provider) {
+      return String(sanitySettings.provider).trim().toLowerCase();
     }
-  } catch (err) {
-    console.warn("Failed to get active provider from db:", err);
-  }
+  } catch {}
+
+  // Check content/ai-settings.json
   try {
     const settingsPath = join(process.cwd(), "content", "ai-settings.json");
     if (existsSync(settingsPath)) {
@@ -172,20 +173,48 @@ export async function getActiveAiProvider(): Promise<string> {
       if (data.provider) return String(data.provider).trim().toLowerCase();
     }
   } catch {}
-  return "groq";
+
+  // Check Neon DB
+  try {
+    const sql = getDb();
+    const rows = await sql.query("SELECT provider FROM ai_automation_settings LIMIT 1;");
+    if (rows.length > 0 && rows[0].provider) {
+      return String(rows[0].provider).trim().toLowerCase();
+    }
+  } catch {}
+
+  return "gemini";
 }
 
 export async function getActiveAiModel(): Promise<string> {
+  // Check Sanity CMS
+  try {
+    const { getAiSettingsFromSanity } = await import("../../sanity/ai-sync");
+    const sanitySettings = await getAiSettingsFromSanity();
+    if (sanitySettings?.model) {
+      return String(sanitySettings.model).trim();
+    }
+  } catch {}
+
+  // Check content/ai-settings.json
+  try {
+    const settingsPath = join(process.cwd(), "content", "ai-settings.json");
+    if (existsSync(settingsPath)) {
+      const data = JSON.parse(readFileSync(settingsPath, "utf-8"));
+      if (data.model) return String(data.model).trim();
+    }
+  } catch {}
+
+  // Check Neon DB
   try {
     const sql = getDb();
     const rows = await sql.query("SELECT model FROM ai_automation_settings LIMIT 1;");
     if (rows.length > 0 && rows[0].model) {
-      return rows[0].model;
+      return String(rows[0].model).trim();
     }
-  } catch (err) {
-    console.warn("Failed to get active model from db:", err);
-  }
-  return "openai/gpt-oss-120b";
+  } catch {}
+
+  return "gemini-3.5-flash-lite";
 }
 
 export async function getSupportedGroqModels(): Promise<{
@@ -218,8 +247,8 @@ export async function getSupportedGroqModels(): Promise<{
     // Fallbacks if list is filtered out
     const finalChatList =
       chatModels.length > 0
-        ? [...chatModels, "gemini-3.5-flash-lite", "meta-llama/llama-3.3-70b-instruct"]
-        : ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "gemini-3.5-flash-lite", "meta-llama/llama-3.3-70b-instruct"];
+        ? chatModels
+        : ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"];
 
     supportedModelsCache = {
       models: finalChatList,
@@ -252,9 +281,17 @@ export async function checkGroqHealth(): Promise<{
     const activeModel = await getActiveAiModel();
     const { chatModels } = await getSupportedGroqModels();
 
+    // Use a native Groq model for the health ping
+    const testModel =
+      chatModels.includes(activeModel) && !activeModel.startsWith("gemini-")
+        ? activeModel
+        : chatModels.includes("qwen/qwen3.8-27b")
+          ? "qwen/qwen3.8-27b"
+          : chatModels[0] || "openai/gpt-oss-120b";
+
     // Quick light test completion
     await client.chat.completions.create({
-      model: chatModels.includes(activeModel) ? activeModel : chatModels[0] || "openai/gpt-oss-120b",
+      model: testModel,
       messages: [{ role: "user", content: "ping" }],
       max_tokens: 5,
     });
@@ -263,7 +300,7 @@ export async function checkGroqHealth(): Promise<{
     return {
       status: "connected",
       latencyMs,
-      activeModel,
+      activeModel: testModel,
       availableChatModels: chatModels,
     };
   } catch (err: any) {
@@ -326,13 +363,18 @@ async function executeGroq(options: GroqCompletionOptions): Promise<{
   const requestedMaxTokens = options.max_tokens ?? 4096;
   const isJson = options.response_format?.type === "json_object";
 
-  // For JSON tasks, qwen/qwen3.8-27b is the fast reliable engine (max 1000 tokens).
-  // For long-form text (writing stage), openai/gpt-oss-120b is the 4096-token powerhouse.
-  const candidateModels = options.model
-    ? [options.model]
-    : isJson
-      ? ["qwen/qwen3.8-27b"]
-      : ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
+  // Sanitize candidate models: never pass Gemini or OpenRouter model IDs to Groq
+  let candidateModels: string[];
+  if (isJson) {
+    candidateModels = ["qwen/qwen3.8-27b", "openai/gpt-oss-20b"];
+  } else {
+    const rawReq = options.model && !options.model.startsWith("gemini-") && !options.model.startsWith("meta-llama/")
+      ? options.model
+      : "openai/gpt-oss-120b";
+    candidateModels = [rawReq, "openai/gpt-oss-120b", "openai/gpt-oss-20b"].filter(
+      (m, i, arr) => arr.indexOf(m) === i && !m.startsWith("gemini-")
+    );
+  }
 
   let lastError: any = null;
 
@@ -344,13 +386,20 @@ async function executeGroq(options: GroqCompletionOptions): Promise<{
           ? 1000
           : requestedMaxTokens;
 
-      const response = await client.chat.completions.create({
+      const completionPromise = client.chat.completions.create({
         model,
         messages: options.messages,
         temperature: options.temperature ?? 0.7,
         max_tokens: effectiveMaxTokens,
         response_format: options.response_format,
       });
+
+      // Strict 10-second timeout per Groq call so it fails over to Gemini fast without hanging
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Groq request timed out (10s) on ${model}`)), 10000)
+      );
+
+      const response = await Promise.race([completionPromise, timeoutPromise]);
 
       const latencyMs = Date.now() - start;
       const content = response.choices[0]?.message?.content || "";
@@ -390,14 +439,16 @@ async function executeGroq(options: GroqCompletionOptions): Promise<{
       lastError = err;
       const isOtpLimit = /expected output tokens exceed/i.test(err?.message || "");
       if (!isOtpLimit && (err?.status === 429 || /rate_limit/i.test(err?.message || ""))) {
-        // If it's a general rate limit, proceed to next candidate model before setting full cooldown
+        groqRateLimitedUntil = Date.now() + 60 * 1000;
+        console.warn(`[Groq Quota / Rate-Limit (429)] Escalating immediately to Gemini backup...`);
+        throw err;
       }
       console.warn(`[Groq Attempt] "${model}" failed: ${err?.message?.slice(0, 80)}. Trying next candidate model...`);
     }
   }
 
   if (lastError?.status === 429) {
-    groqRateLimitedUntil = Date.now() + 30 * 1000;
+    groqRateLimitedUntil = Date.now() + 60 * 1000;
   }
   throw lastError || new Error("Groq execution failed across all candidate models");
 }
@@ -429,36 +480,8 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
     return await callOpenRouter(options);
   }
 
-  // 2. Explicit Groq routing
-  if (
-    options.model &&
-    (options.model.startsWith("llama-") ||
-      options.model.startsWith("openai/gpt-oss") ||
-      options.model.startsWith("qwen/") ||
-      options.model.startsWith("gsk_"))
-  ) {
-    try {
-      return await executeGroq(options);
-    } catch (err: any) {
-      console.warn(`[Groq Explicit Failed] ${err.message}. Falling back...`);
-    }
-  }
-
-  // Determine active provider configured in settings (defaults to Groq)
-  const activeProvider = await getActiveAiProvider();
-
-  // Route through Groq first if active provider is groq
-  if (activeProvider === "groq") {
-    // 1. PRIMARY: Groq LPU
-    try {
-      return await executeGroq(options);
-    } catch (groqErr: any) {
-      console.warn(
-        `[AI Failover Groq -> Gemini] Groq primary failed (${groqErr.message}). Escalating to Gemini backup...`
-      );
-    }
-
-    // 2. BACKUP: Google Gemini
+  // 2. Explicit Gemini routing
+  if (options.model && options.model.startsWith("gemini-")) {
     const geminiKey = await getEffectiveGeminiApiKey();
     if (geminiKey) {
       try {
@@ -467,13 +490,45 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
           model: mapModelToGemini(options.model),
         });
       } catch (geminiErr: any) {
-        console.warn(
-          `[AI Failover Gemini -> OpenRouter] Gemini backup failed (${geminiErr.message}). Escalating to OpenRouter...`
-        );
+        console.warn(`[Gemini Failed] ${geminiErr.message}. Falling back immediately to Groq LPU...`);
+        try {
+          return await executeGroq({
+            ...options,
+            model: undefined,
+          });
+        } catch (groqErr: any) {
+          console.warn(`[Groq Failover Failed] ${groqErr.message}. Escalating to OpenRouter...`);
+        }
+      }
+    }
+  }
+
+  // Determine active provider configured in settings
+  const activeProvider = await getActiveAiProvider();
+
+  // If Gemini is active provider: Gemini First -> Groq Backup -> OpenRouter Tertiary
+  if (activeProvider === "gemini") {
+    const geminiKey = await getEffectiveGeminiApiKey();
+    if (geminiKey) {
+      try {
+        return await callGemini({
+          ...options,
+          model: mapModelToGemini(options.model),
+        });
+      } catch (geminiErr: any) {
+        console.warn(`[Gemini Primary Failed] ${geminiErr.message}. Escalating immediately to Groq LPU backup...`);
       }
     }
 
-    // 3. TERTIARY: OpenRouter
+    try {
+      return await executeGroq({
+        ...options,
+        model: options.model && !options.model.startsWith("gemini-") ? options.model : undefined,
+      });
+    } catch (groqErr: any) {
+      console.warn(`[Groq Backup Failed] ${groqErr.message}. Escalating to OpenRouter...`);
+    }
+
     const openrouterKey = await getEffectiveOpenRouterApiKey();
     if (openrouterKey) {
       return await callOpenRouter({
@@ -482,10 +537,19 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
       });
     }
 
-    throw new Error("All AI providers (Groq primary, Gemini backup, OpenRouter tertiary) exhausted or unavailable.");
+    throw new Error("All AI providers (Gemini primary, Groq backup, OpenRouter tertiary) failed.");
   }
 
-  // Default provider flow: Gemini Primary -> Groq Backup (Tier 2) -> OpenRouter Tertiary (Tier 3)
+  // Default flow (Groq primary -> Gemini backup -> OpenRouter tertiary)
+  try {
+    return await executeGroq(options);
+  } catch (groqErr: any) {
+    console.warn(
+      `[AI Failover Groq -> Gemini] Groq primary failed (${groqErr.message}). Escalating immediately to Gemini backup...`
+    );
+  }
+
+  // BACKUP: Google Gemini
   const geminiKey = await getEffectiveGeminiApiKey();
   if (geminiKey) {
     try {
@@ -495,21 +559,12 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
       });
     } catch (geminiErr: any) {
       console.warn(
-        `[AI Failover Tier 1 -> 2] Gemini primary failed (${geminiErr.message}). Escalating to Groq LPU backup...`
+        `[AI Failover Gemini -> OpenRouter] Gemini backup failed (${geminiErr.message}). Escalating to OpenRouter...`
       );
     }
   }
 
-  // TIER 2 (FALLBACK): Groq LPU
-  try {
-    return await executeGroq(options);
-  } catch (groqErr: any) {
-    console.warn(
-      `[AI Failover Tier 2 -> 3] Groq backup failed (${groqErr.message}). Escalating to OpenRouter tertiary backup...`
-    );
-  }
-
-  // TIER 3 (TERTIARY FALLBACK): OpenRouter Multi-Provider
+  // TERTIARY: OpenRouter
   const openrouterKey = await getEffectiveOpenRouterApiKey();
   if (openrouterKey) {
     return await callOpenRouter({
@@ -518,7 +573,7 @@ export async function callGroqWithRetry(options: GroqCompletionOptions): Promise
     });
   }
 
-  throw new Error("All AI providers (Gemini Tier 1, Groq Tier 2, OpenRouter Tier 3) exhausted or unavailable.");
+  throw new Error("All AI providers (Groq primary, Gemini backup, OpenRouter tertiary) exhausted or unavailable.");
 }
 
 async function logProviderUsage(record: {

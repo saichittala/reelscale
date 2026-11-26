@@ -64,20 +64,20 @@ export async function GET(request: NextRequest) {
       agent: {
         provider,
         model,
-        displayName: providerNames[provider] || "Groq LPU Engine",
+        displayName: providerNames[provider] || "Google Gemini Engine",
         status: "connected",
-        speed: provider === "groq" ? "Ultra-Fast (LPU)" : "Standard",
+        speed: provider === "gemini" ? "Ultra-Fast (Flash Lite • High Quota)" : provider === "groq" ? "Ultra-Fast (LPU)" : "Standard",
       },
     });
   } catch (err: any) {
     return NextResponse.json({
       success: true,
       agent: {
-        provider: "groq",
-        model: "qwen/qwen3.8-27b",
-        displayName: "Groq LPU Engine",
+        provider: "gemini",
+        model: "gemini-3.5-flash-lite",
+        displayName: "Google Gemini Engine",
         status: "connected",
-        speed: "Ultra-Fast (LPU)",
+        speed: "Ultra-Fast (Flash Lite • High Quota)",
       },
     });
   }
