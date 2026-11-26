@@ -282,7 +282,7 @@ export function Layout({
     users: "Users",
     sales: "Sales",
     blogs: "Blog Management",
-    "ai-blog-settings": "AI Blog Automation Settings",
+    "ai-blog-settings": "AI Blog Settings",
     "create-blog": "Create Blog Post",
     "blog-categories": "Blog Categories",
     resources: "Resources",

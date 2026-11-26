@@ -68,16 +68,19 @@ type Target = { y: number; scale: number; height: number; width: number; opacity
 
 let measureCanvas: HTMLCanvasElement | null = null;
 function getIntrinsicToastWidth(title: string, description?: string, actionLabel?: string): number {
-  if (typeof document === "undefined") return 220;
+  if (typeof document === "undefined") return 240;
   if (!measureCanvas) {
     measureCanvas = document.createElement("canvas");
   }
   const ctx = measureCanvas.getContext("2d");
-  if (!ctx) return 220;
+  if (!ctx) return 240;
 
   ctx.font = '400 13px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  const titleW = ctx.measureText(title).width;
-  const descW = description ? ctx.measureText(description).width : 0;
+  const measureLines = (text: string) => {
+    return text.split("\n").reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0);
+  };
+  const titleW = measureLines(title);
+  const descW = description ? measureLines(description) : 0;
   const textW = Math.max(titleW, descW);
 
   let actionW = 0;
@@ -89,7 +92,8 @@ function getIntrinsicToastWidth(title: string, description?: string, actionLabel
   // icon(18) + gap(12) + text + padding(14 left + 36 right for close btn) + safety buffer(16px) + border(2)
   const chrome = 18 + 12 + 14 + 36 + 16 + 2 + (actionW > 0 ? actionW + 8 : 0);
   const natural = Math.ceil(textW + chrome);
-  return Math.min(300, Math.max(130, natural));
+  const maxAllowed = typeof window !== "undefined" ? Math.min(540, Math.max(260, window.innerWidth - 32)) : 540;
+  return Math.min(maxAllowed, Math.max(160, natural));
 }
 
 /** Each tucked toast shows this many pixels above the one in front of it. */
@@ -101,7 +105,7 @@ const STEP = .05;
 /** The card's top and bottom borders, added to the measured content height. */
 const BORDER = 2;
 /** A swipe this far right has faded most of the way out. */
-const SWIPE_FADE = 280;
+const SWIPE_FADE = 360;
 const EMPTY: ToastRecord[] = [];
 const typeLabels: Record<ToastType, string> = { success: "Success", info: "Info", warning: "Warning", error: "Error", loading: "In progress" };
 const icons = { success: CircleCheck, info: Info, warning: TriangleAlert, error: CircleX };

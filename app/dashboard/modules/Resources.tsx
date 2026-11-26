@@ -455,7 +455,7 @@ https://reelscale.in`;
         </TabsList>
       </Tabs>
 
-      <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap", minWidth: 0 }}>
+      {/* <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap", minWidth: 0 }}>
         <span
           style={{
             fontSize: "13px",
@@ -465,7 +465,7 @@ https://reelscale.in`;
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-          }}
+          }}  
           title={getDocumentSlug(activeDoc)}
         >
           {getDocumentSlug(activeDoc)}
@@ -473,7 +473,7 @@ https://reelscale.in`;
         <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--green)" }}>
           {formatRupees(activeDoc.total)}
         </span>
-      </div>
+      </div> */}
     </div>
   );
 
@@ -612,10 +612,9 @@ https://reelscale.in`;
           <div className="glass-card">
             <div
               className="glass-card-label"
+
               style={{
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
+                fontWeight: 400,
                 fontSize: "12px",
                 marginBottom: "14px",
                 color: "var(--muted)",
@@ -717,10 +716,9 @@ https://reelscale.in`;
           <div className="glass-card">
             <div
               className="glass-card-label"
+
               style={{
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
+                fontWeight: 400,
                 fontSize: "12px",
                 marginBottom: "14px",
                 color: "var(--muted)",
@@ -795,9 +793,7 @@ https://reelscale.in`;
             <div
               className="glass-card-label"
               style={{
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
+                fontWeight: 400,
                 fontSize: "12px",
                 marginBottom: "14px",
                 color: "var(--muted)",
@@ -947,12 +943,11 @@ https://reelscale.in`;
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <div
                   className="glass-card-label"
+
                   style={{
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
+                    fontWeight: 400,
                     fontSize: "12px",
-                    margin: 0,
+                    marginBottom: "14px",
                     color: "var(--muted)",
                   }}
                 >

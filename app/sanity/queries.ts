@@ -238,7 +238,7 @@ export const POSTS_QUERY = defineQuery(`
     category,
     tags,
     featuredImage,
-    "featuredImageUrl": featuredImage.asset->url,
+    "featuredImageUrl": coalesce(featuredImageUrl, featuredImage.asset->url),
     publishedDate,
     updatedDate,
     status,
@@ -249,7 +249,7 @@ export const POSTS_QUERY = defineQuery(`
     focusKeyword,
     canonicalUrl,
     ogImage,
-    "ogImageUrl": ogImage.asset->url,
+    "ogImageUrl": coalesce(ogImageUrl, ogImage.asset->url, featuredImageUrl, featuredImage.asset->url),
     faq
   }
 `)
@@ -263,7 +263,7 @@ export const POST_BY_SLUG_QUERY = defineQuery(`
     category,
     tags,
     featuredImage,
-    "featuredImageUrl": featuredImage.asset->url,
+    "featuredImageUrl": coalesce(featuredImageUrl, featuredImage.asset->url),
     publishedDate,
     updatedDate,
     status,
@@ -275,7 +275,7 @@ export const POST_BY_SLUG_QUERY = defineQuery(`
     focusKeyword,
     canonicalUrl,
     ogImage,
-    "ogImageUrl": ogImage.asset->url
+    "ogImageUrl": coalesce(ogImageUrl, ogImage.asset->url, featuredImageUrl, featuredImage.asset->url)
   }
 `)
 

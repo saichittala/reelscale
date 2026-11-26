@@ -3102,10 +3102,18 @@ input:autofill:focus,
     max-width: 420px;
     padding: var(--space-10);
 
-    background: var(--bg2);
-    border: 1px solid var(--border) !important;
+    background: rgba(14, 14, 16, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
     border-radius: var(--border-radius-2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .login-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .login-logo {
@@ -3270,12 +3278,14 @@ button.login-submit-btn,
 
 
     .login-card {
-        background: var(--bg2);
-        border: 1px solid var(--border-strong) !important;
+        background: rgba(14, 14, 16, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
         border-radius: var(--border-radius-2);
         padding: var(--space-10);
         width: 100%;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
     .filter-btn {
@@ -3427,7 +3437,7 @@ button.login-submit-btn,
     .login-card {
         width: calc(100% - 40px);
         padding: 28px;
-        border: 1px solid var(--border-strong) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
     }
 
     @keyframes slideMenu {
@@ -8078,7 +8088,6 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
     background: var(--white-02);
     padding: 16px;
     border-radius: var(--radius-input, 12px);
-    border: 1px solid var(--border);
     margin-bottom: 16px;
 }
 
@@ -8612,8 +8621,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
     align-items: center !important;
 }
 
-.blog-mobile-filters-row > *,
-.blog-mobile-filters-row > div,
+.blog-mobile-filters-row>*,
+.blog-mobile-filters-row>div,
 .blog-mobile-filters-row button,
 .blog-mobile-filters-row [class*="trigger"] {
     flex: 1 1 0% !important;
@@ -8655,8 +8664,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
         width: 100% !important;
     }
 
-    .controls.hide-desktop .df-g8 > div,
-    .controls.hide-desktop .df-g8 > *,
+    .controls.hide-desktop .df-g8>div,
+    .controls.hide-desktop .df-g8>*,
     .controls.hide-desktop button,
     .controls.hide-desktop [class*="trigger"] {
         flex: 1 1 0% !important;
@@ -8801,8 +8810,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
         display: flex !important;
     }
 
-    .ai-header-tabs-wrap > *,
-    .ai-cadence-tabs-wrap > * {
+    .ai-header-tabs-wrap>*,
+    .ai-cadence-tabs-wrap>* {
         width: 100% !important;
         flex: 1 1 100% !important;
         display: flex !important;
@@ -9053,8 +9062,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
     align-items: center !important;
 }
 
-.blog-mobile-filters-row > *,
-.blog-mobile-filters-row > div,
+.blog-mobile-filters-row>*,
+.blog-mobile-filters-row>div,
 .blog-mobile-filters-row button,
 .blog-mobile-filters-row [class*="trigger"] {
     flex: 1 1 0% !important;
@@ -9096,8 +9105,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
         width: 100% !important;
     }
 
-    .controls.hide-desktop .df-g8 > div,
-    .controls.hide-desktop .df-g8 > *,
+    .controls.hide-desktop .df-g8>div,
+    .controls.hide-desktop .df-g8>*,
     .controls.hide-desktop button,
     .controls.hide-desktop [class*="trigger"] {
         flex: 1 1 0% !important;
@@ -9242,8 +9251,8 @@ button[class*="trigger"]:not([role="tab"]):not([class*="tabs_"]):not([class*="ta
         display: flex !important;
     }
 
-    .ai-header-tabs-wrap > *,
-    .ai-cadence-tabs-wrap > * {
+    .ai-header-tabs-wrap>*,
+    .ai-cadence-tabs-wrap>* {
         width: 100% !important;
         flex: 1 1 100% !important;
         display: flex !important;

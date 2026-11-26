@@ -1,8 +1,8 @@
 {
   "schedule_type": "daily",
-  "blogs_per_active_day": 1,
+  "blogs_per_active_day": 2,
   "blogs_per_execution": 10,
-  "max_generation_qty": 1,
+  "max_generation_qty": 2,
   "generation_time": "09:30",
   "timezone": "Asia/Kolkata",
   "active_weekdays": [
@@ -12,7 +12,7 @@
     "thursday",
     "friday"
   ],
-  "interval_days": 1,
+  "interval_days": 2,
   "weekly_quantities": {
     "friday": 1,
     "monday": 1,
@@ -25,7 +25,7 @@
   "custom_dates": [],
   "is_active": true,
   "skip_missed_runs": true,
-  "last_run_at": "2026-11-25T04:27:46.555Z",
+  "last_run_at": "2026-11-26T04:02:39.705Z",
   "next_run_at": null,
-  "updated_at": "2026-11-25T04:27:47.027Z"
+  "updated_at": "2026-11-26T04:02:40.195Z"
 }

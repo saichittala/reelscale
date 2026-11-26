@@ -8,6 +8,7 @@ import {
 } from "./openrouter-client";
 
 let cachedKey: string | null = null;
+let geminiQuotaExhaustedUntil = 0;
 
 function readKeyFromLocalEnvFile(keyName: string): string {
   try {
@@ -130,6 +131,10 @@ export interface GeminiCompletionResult {
 export async function callGemini(
   options: GeminiCompletionOptions
 ): Promise<GeminiCompletionResult> {
+  if (Date.now() < geminiQuotaExhaustedUntil) {
+    throw new Error("Gemini quota exhaustion cooldown active (429 RESOURCE_EXHAUSTED)");
+  }
+
   const apiKey = await getEffectiveGeminiApiKey();
   if (!apiKey) {
     throw new Error(
@@ -182,6 +187,10 @@ export async function callGemini(
           /quota|exhausted|resource_exhausted|demand/i.test(errorText);
 
         if (isQuotaOrDemand) {
+          if (response.status === 429 || /quota|exhausted|resource_exhausted/i.test(errorText)) {
+            geminiQuotaExhaustedUntil = Date.now() + 15 * 60 * 1000;
+            throw new Error(`Gemini API Quota Exhausted: ${errorText.slice(0, 100)}`);
+          }
           console.warn(
             `[Gemini Fallback] Model "${model}" returned ${response.status} (${errorText.slice(0, 80)}). Trying next candidate Gemini model...`
           );
@@ -241,22 +250,6 @@ export async function callGemini(
       status: "error",
       error_message: lastError?.message || "Gemini completion failed across all candidate models",
     }).catch(() => {});
-  }
-
-  // Check if OpenRouter tertiary backup is available before failing
-  const openrouterKey = await getEffectiveOpenRouterApiKey();
-  if (openrouterKey) {
-    console.warn(
-      `[AI Failover Tier 2 -> 3] All Gemini models exhausted (${lastError?.message}). Seamlessly escalating to OpenRouter tertiary backup...`
-    );
-    try {
-      return (await callOpenRouter({
-        ...options,
-        model: mapModelToOpenRouter(options.model),
-      })) as any;
-    } catch (orErr: any) {
-      console.error("OpenRouter tertiary backup also failed:", orErr.message);
-    }
   }
 
   throw lastError || new Error("Failed to execute Gemini completion after testing all models");

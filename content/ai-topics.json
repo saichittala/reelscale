@@ -1,5 +1,81 @@
 [
   {
+    "id": 1795677651621,
+    "title": "Hyderabad Corporate Training & HR Tech Firms: B2B Lead Generation via LinkedIn & Instagram Reels",
+    "slug": "blogb2b-corporate-training-marketing-hyderabad-reels",
+    "primary_keyword": "b2b corporate training marketing hyderabad reels",
+    "secondary_keywords": [
+      "hr tech social media strategy",
+      "corporate workshop video marketing",
+      "b2b lead generation reels"
+    ],
+    "search_intent": "Commercial",
+    "target_audience": "Corporate Training Providers, HR Tech Startups, and Professional Development Institutes in Hyderabad",
+    "category": "B2B Services",
+    "business_relevance": "Most existing content targets B2C (consumers) or tech founders (personal branding). This topic targets B2B service providers selling to other companies. It addresses the specific challenge of using short-form video for B2B lead generation, a high-value niche in Hyderabad's IT corridor that is currently underserved in the content library.",
+    "content_priority": "Medium",
+    "status": "suggested",
+    "existing_related_articles": [
+      "How Hyderabad Gyms Can Double Memberships with Reels",
+      "On-Location iPhone Shoot Guide: 10-Minute Delivery for Gachibowli Businesses (2026)",
+      "Reel Strategies for Tech Startups in Hyderabad to Showcase Innovation and Attract Investors"
+    ],
+    "reason_for_creation": "Shifts the focus from B2C consumer marketing to B2B service marketing, targeting a distinct audience (HR Directors, L&D Managers) and intent (lead generation for high-ticket corporate contracts) that is not covered by the general 'Tech Startups' or 'Founder Branding' articles.",
+    "created_at": "2026-11-26T07:20:51.003Z",
+    "updated_at": "2026-11-26T07:20:51.003Z"
+  },
+  {
+    "id": 1795666414944,
+    "title": "Reel Strategies for Tech Startups in Hyderabad to Showcase Innovation and Attract Investors",
+    "slug": "bloginstagram-reels-tech-startups-hyderabad",
+    "primary_keyword": "Instagram Reels for Tech Startups Hyderabad",
+    "secondary_keywords": [
+      "tech startup marketing",
+      "short-form video investor outreach",
+      "Hyderabad tech startups",
+      "reels for innovation showcase"
+    ],
+    "search_intent": "Informational",
+    "target_audience": "Tech startup founders and marketing teams in Hyderabad",
+    "category": "Marketing",
+    "business_relevance": "High",
+    "content_priority": "High",
+    "status": "suggested",
+    "existing_related_articles": [
+      "Pet Grooming Parlors in Hyderabad: Boost Client Loyalty with Short-Form Video",
+      "Maximizing ROI for Hyderabad's Home Decor Stores with Short-Form Video Advertising",
+      "How to Scale Inbound Customer Footfall with 10-Minute Video Reels for Jubilee Hills Businesses (2026)"
+    ],
+    "reason_for_creation": "Tech startups can use reels to demonstrate products; no existing guide.",
+    "created_at": "2026-11-26T04:13:34.861Z",
+    "updated_at": "2026-11-26T04:13:34.861Z"
+  },
+  {
+    "id": 1795665858498,
+    "title": "Pet Grooming Parlors in Hyderabad: Boost Client Loyalty with Short-Form Video",
+    "slug": "blogpet-grooming-parlors-hyderabad-instagram-reels",
+    "primary_keyword": "pet grooming hyderabad reels",
+    "secondary_keywords": [
+      "short-form video pet care",
+      "instagram reels pet grooming",
+      "client retention marketing"
+    ],
+    "search_intent": "Informational|Commercial",
+    "target_audience": "Pet grooming owners and managers",
+    "category": "Marketing",
+    "business_relevance": "Medium-High",
+    "content_priority": "High",
+    "status": "suggested",
+    "existing_related_articles": [
+      "Maximizing ROI for Hyderabad's Home Decor Stores with Short-Form Video Advertising",
+      "How to Scale Inbound Customer Footfall with 10-Minute Video Reels for Jubilee Hills Businesses (2026)",
+      "Aesthetic Dermatology & Dental Clinics in Hyderabad: Patient Acquisition via Instagram Reels"
+    ],
+    "reason_for_creation": "Untapped niche; pet owners seek grooming services via engaging reels.",
+    "created_at": "2026-11-26T04:04:18.456Z",
+    "updated_at": "2026-11-26T04:04:18.456Z"
+  },
+  {
     "id": 1795583522918,
     "title": "Coworking Spaces & Business Hubs in Gachibowli: How to Drive Desk Bookings via Short-Form Video",
     "slug": "blogcoworking-space-marketing-hyderabad-reels",

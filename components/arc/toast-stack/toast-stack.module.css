@@ -1,7 +1,7 @@
 .viewport {
   position: fixed;
   z-index: var(--z-toast, 10000);
-  width: min(300px, calc(100vw - var(--space-8, 32px)));
+  width: min(540px, calc(100vw - var(--space-8, 32px)));
   pointer-events: none;
   box-sizing: border-box;
 }
@@ -73,7 +73,7 @@
   left: var(--space-4);
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 36rem) {
   .viewport:not(.contained) {
     right: 0;
     left: 0;
@@ -259,7 +259,7 @@
 .copy {
   position: relative;
   min-width: 0;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: var(--tracking-body);

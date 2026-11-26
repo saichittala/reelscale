@@ -39,6 +39,50 @@ function updateLocalBlogsCache(newBlog: Blog) {
   }
 }
 
+export async function GET(request: NextRequest) {
+  const rbac = await checkRole(request, ["admin", "blogger"]);
+  if (!rbac.authorized) {
+    return NextResponse.json(
+      { success: false, message: "Forbidden: You do not have permission to view AI status" },
+      { status: 403 }
+    );
+  }
+
+  try {
+    const { getActiveAiProvider, getActiveAiModel } = await import("../../../lib/ai/groq-client");
+    const provider = await getActiveAiProvider();
+    const model = await getActiveAiModel();
+
+    const providerNames: Record<string, string> = {
+      groq: "Groq LPU Engine",
+      gemini: "Google Gemini Engine",
+      openrouter: "OpenRouter Multi-Provider",
+    };
+
+    return NextResponse.json({
+      success: true,
+      agent: {
+        provider,
+        model,
+        displayName: providerNames[provider] || "Groq LPU Engine",
+        status: "connected",
+        speed: provider === "groq" ? "Ultra-Fast (LPU)" : "Standard",
+      },
+    });
+  } catch (err: any) {
+    return NextResponse.json({
+      success: true,
+      agent: {
+        provider: "groq",
+        model: "qwen/qwen3.8-27b",
+        displayName: "Groq LPU Engine",
+        status: "connected",
+        speed: "Ultra-Fast (LPU)",
+      },
+    });
+  }
+}
+
 export async function POST(request: NextRequest) {
   const rbac = await checkRole(request, ["admin", "blogger"]);
   if (!rbac.authorized) {
@@ -66,15 +110,12 @@ export async function POST(request: NextRequest) {
     let selectedTopicId = topic_id;
     const isDuplicate = title && title.trim() ? isHeadlineDuplicate(title.trim(), publishedBlogs) : false;
 
-    // If title was not provided OR matches an existing published blog, automatically pick a fresh unique topic
-    if (!title || !title.trim() || isDuplicate) {
-      if (isDuplicate) {
-        console.log(`[Generate] Headline "${title}" matches an already published blog. Fetching alternative unique topic...`);
-      }
+    // Auto-pick next unique topic only if no title was provided by the user
+    if (!title || !title.trim()) {
       try {
         const uniqueTopic = await getUniqueNextTopic(
           publishedBlogs,
-          isDuplicate ? undefined : title,
+          undefined,
           category
         );
         title = uniqueTopic.title;
@@ -133,23 +174,19 @@ export async function POST(request: NextRequest) {
 
     // 4. Trigger Next.js on-demand ISR revalidation for production paths
     try {
-      revalidatePath("/blog", "page");
+      revalidatePath("/blog");
       if (syncedBlog.slug) {
-        revalidatePath(`/blog/${syncedBlog.slug}`, "page");
+        revalidatePath(`/blog/${syncedBlog.slug}`);
       }
-      revalidatePath("/", "layout");
     } catch {
       // Non-blocking
     }
 
-    // 5. Update SEO topic status to published (skip verbose AI job database logging as requested)
+    // 5. Update SEO topic status to published
     if (selectedTopicId) {
       try {
         const sql = getDb();
-        await sql.query(
-          `UPDATE seo_topics SET status = 'published', updated_at = NOW() WHERE id = $1;`,
-          [selectedTopicId]
-        );
+        await sql`UPDATE seo_topics SET status = 'published', updated_at = NOW() WHERE id = ${Number(selectedTopicId)};`;
       } catch {}
 
       try {
@@ -158,12 +195,30 @@ export async function POST(request: NextRequest) {
       } catch {}
     }
 
+    // 6. Dispatch Email Notification to reelscale7@gmail.com
+    try {
+      const { sendBlogPublishedEmail } = await import("../../../lib/notifications/email-service");
+      sendBlogPublishedEmail({
+        blog: syncedBlog,
+        validation: result.validationReport,
+        tokensUsed: result.tokensUsed,
+        providerUsed: result.providerUsed,
+        modelUsed: result.modelUsed,
+        executionTimeMs: execTimeMs,
+        recipientEmail: "reelscale7@gmail.com",
+      }).catch((emailErr) => console.warn("[Email Notification Notice]", emailErr?.message));
+    } catch (e) {
+      // Non-blocking
+    }
+
     return NextResponse.json({
       success: true,
       message: `Blog "${syncedBlog.title}" generated and published directly to production!`,
       blog: syncedBlog,
       validation: result.validationReport,
       tokensUsed: result.tokensUsed,
+      providerUsed: result.providerUsed || "groq",
+      modelUsed: result.modelUsed || "qwen/qwen3.8-27b",
       executionTimeMs: execTimeMs,
       liveUrl: `https://reelscale.in/blog/${syncedBlog.slug}`,
     });

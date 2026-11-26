@@ -1,0 +1,54 @@
+[
+  {
+    "id": "notif_1795689068309",
+    "timestamp": "2026-11-26T10:31:08.309Z",
+    "channel": "resend",
+    "recipient": "reelscale7@gmail.com",
+    "title": "Why High-End Brands in Hyderabad Are Switching to 4K Cinematic Reels",
+    "slug": "why-high-end-brands-hyderabad-switching-4k-cinematic-reels",
+    "status": "delivered",
+    "messageId": "01a21768-b62b-7860-bb2f-8b1195f5f055"
+  },
+  {
+    "id": "notif_1795688002283",
+    "timestamp": "2026-11-26T10:13:22.283Z",
+    "channel": "resend",
+    "recipient": "reelscale7@gmail.com",
+    "title": "Aesthetic Dental & Dermatology Clinics in Jubilee Hills: Patient Acquisition via Instagram Reels",
+    "slug": "hyderabad-aesthetic-dental-dermatology-reels-patient-acquisition",
+    "status": "delivered",
+    "messageId": "01a21758-7240-706a-881c-20b7a1284eed"
+  },
+  {
+    "id": "notif_1795687593550",
+    "timestamp": "2026-11-26T10:06:33.550Z",
+    "channel": "resend",
+    "recipient": "reelscale7@gmail.com",
+    "title": "How Hyderabad Gyms Double Memberships with Instagram Reels",
+    "slug": "hyderabad-gym-reels-double-memberships",
+    "status": "delivered",
+    "messageId": "01a21752-3558-7e32-8e31-fd3118ad1f48"
+  },
+  {
+    "id": "notif_1795687566016",
+    "timestamp": "2026-11-26T10:06:06.016Z",
+    "channel": "outbox_queued",
+    "recipient": "reelscale7@gmail.com",
+    "title": "How Hyderabad Gyms Double Memberships with Instagram Reels",
+    "slug": "hyderabad-gym-reels-double-memberships",
+    "liveUrl": "https://reelscale.in/blog/hyderabad-gym-reels-double-memberships",
+    "status": "logged_in_dashboard",
+    "notice": "To receive directly in your Gmail inbox, add GMAIL_APP_PASSWORD or RESEND_API_KEY to .env.local"
+  },
+  {
+    "id": "notif_1795687022444",
+    "timestamp": "2026-11-26T09:57:02.444Z",
+    "channel": "outbox_queued",
+    "recipient": "reelscale7@gmail.com",
+    "title": "How Hyderabad Gyms Double Memberships with Instagram Reels",
+    "slug": "hyderabad-gym-reels-double-memberships",
+    "liveUrl": "https://reelscale.in/blog/hyderabad-gym-reels-double-memberships",
+    "status": "logged_in_dashboard",
+    "notice": "To receive directly in your Gmail inbox, add GMAIL_APP_PASSWORD or RESEND_API_KEY to .env.local"
+  }
+]

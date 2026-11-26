@@ -423,10 +423,18 @@ export async function publishNextDailyBlog(): Promise<{
     if (syncedBlog.slug) {
       revalidatePath(`/blog/${syncedBlog.slug}`, "page");
     }
-    revalidatePath("/", "layout");
   } catch { }
 
-  // 6. Record to published history
+  // 6. Dispatch Email Notification to reelscale7@gmail.com
+  try {
+    const { sendBlogPublishedEmail } = await import("../notifications/email-service");
+    sendBlogPublishedEmail({
+      blog: syncedBlog,
+      recipientEmail: "reelscale7@gmail.com",
+    }).catch((e) => console.warn("[Scheduled Email Notice]", e?.message));
+  } catch { }
+
+  // 7. Record to published history
   const publishedItem: StagedBlogItem = {
     ...blogToPublishItem,
     status: "published",

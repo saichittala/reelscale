@@ -244,31 +244,6 @@ export function Overview({
 
       {/* Unified Metrics Row */}
       <div className="stat-grid">
-        <div className="stat-card white">
-          <div className="stat-label">Monthly Revenue (MRR)</div>
-          <div className="stat-value green">
-            <span>{fmtFull(monthlyRevenue)}</span>
-            {selectedMonth && selectedMonth !== "all" && prevClients.length > 0 && (
-              <MetricInfoTooltip
-                content={`${revenueDiff >= 0 ? `+₹${Math.abs(revenueDiff).toLocaleString("en-IN")} (+${revenueGrowth}%)` : `-₹${Math.abs(revenueDiff).toLocaleString("en-IN")} (${revenueGrowth}%)`} MoM vs previous month`}
-              />
-            )}
-          </div>
-          <div className="stat-icon">
-            <img src="/assets/icons/revenue.svg" alt="MRR Icon" />
-          </div>
-        </div>
-
-        <div className="stat-card green">
-          <div className="stat-label" title="Annual Recurring Revenue">ARR</div>
-          <div className="stat-value green">
-            <span>{fmtFull(annualRevenue)}</span>
-          </div>
-          <div className="stat-icon">
-            <img src="/assets/icons/revenue.svg" alt="ARR Icon" />
-          </div>
-        </div>
-
         <div className="stat-card red">
           <div className="stat-label">Active Clients</div>
           <div className="stat-value">
@@ -284,13 +259,38 @@ export function Overview({
           </div>
         </div>
 
-        <div className="stat-card gold">
+        <div className="stat-card white">
+          <div className="stat-label">Monthly Revenue</div>
+          <div className="stat-value green">
+            <span>{fmtFull(monthlyRevenue)}</span>
+            {selectedMonth && selectedMonth !== "all" && prevClients.length > 0 && (
+              <MetricInfoTooltip
+                content={`${revenueDiff >= 0 ? `+₹${Math.abs(revenueDiff).toLocaleString("en-IN")} (+${revenueGrowth}%)` : `-₹${Math.abs(revenueDiff).toLocaleString("en-IN")} (${revenueGrowth}%)`} MoM vs previous month`}
+              />
+            )}
+          </div>
+          <div className="stat-icon">
+            <img src="/assets/icons/revenue.svg" alt="MRR Icon" />
+          </div>
+        </div>
+
+        {/* <div className="stat-card green">
+          <div className="stat-label" title="Annual Recurring Revenue">ARR</div>
+          <div className="stat-value green">
+            <span>{fmtFull(annualRevenue)}</span>
+          </div>
+          <div className="stat-icon">
+            <img src="/assets/icons/revenue.svg" alt="ARR Icon" />
+          </div>
+        </div> */}
+
+        <div className="stat-card white">
           <div className="stat-label">
             {selectedMonth && selectedMonth !== "all"
               ? "Monthly Reels Target"
               : "Monthly Reels Quota"}
           </div>
-          <div className="stat-value gold" style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+          <div className="stat-value" style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
             <span>{totalDeliveredInMonth}</span>
             <span style={{ fontSize: "16px", color: "var(--muted)", fontWeight: 500 }}>
               / {totalReels} Del.
@@ -312,9 +312,9 @@ export function Overview({
           </div>
         </div>
 
-        <div className="stat-card blue">
+        <div className="stat-card green">
           <div className="stat-label">Avg Rev / Client</div>
-          <div className="stat-value blue">
+          <div className="stat-value green">
             <span>₹{avgMonthlyRevenue ? fmt(avgMonthlyRevenue) : "0"}</span>
           </div>
           <div className="stat-icon">
@@ -324,7 +324,7 @@ export function Overview({
 
         <div className="stat-card white">
           <div className="stat-label">Avg Rate / Reel</div>
-          <div className="stat-value gold">
+          <div className="stat-value white">
             <span>₹{avgPricePerReel ? avgPricePerReel.toLocaleString("en-IN") : "0"}</span>
           </div>
           <div className="stat-icon">

@@ -417,13 +417,13 @@ export function CreateBlog({
       {onBack && (
         <Button
           variant="secondary"
+          size="icon"
           type="button"
           className="topbar-back-btn"
           onClick={onBack}
           title="Back to blogs"
         >
           <ArrowLeft size={16} />
-          <span>Back</span>
         </Button>
       )}
       <div className="page-title">{editingBlog ? "Edit Article" : "Create Article"}</div>

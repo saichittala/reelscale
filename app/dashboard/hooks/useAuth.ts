@@ -3,7 +3,10 @@ import { User } from "../types";
 import { loginUser, getCurrentUser } from "../services/api";
 import { STORAGE_KEYS } from "../constants";
 
-const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 minutes inactivity threshold
+const AUTO_LOGOUT_TIME =
+  process.env.NODE_ENV === "development"
+    ? 24 * 60 * 60 * 1000 // 24 hours in local development
+    : 30 * 60 * 1000; // 30 minutes in production
 
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);

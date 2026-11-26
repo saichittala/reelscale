@@ -55,7 +55,7 @@ export async function generateInternalLinks(params: {
   let recommendations: InternalLinkRecommendation[] = [];
 
   try {
-    const res = await callGroqWithRetry({
+    const aiPromise = callGroqWithRetry({
       messages: [
         {
           role: "system",
@@ -70,7 +70,14 @@ export async function generateInternalLinks(params: {
       temperature: 0.2,
       max_tokens: 1500,
       stage: "internal_linking",
+      response_format: { type: "json_object" },
     });
+
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Internal linking AI timeout (2s)")), 2000)
+    );
+
+    const res = (await Promise.race([aiPromise, timeoutPromise])) as any;
 
     try {
       const parsed = JSON.parse(res.content);

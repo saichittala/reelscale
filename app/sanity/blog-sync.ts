@@ -147,12 +147,17 @@ export async function uploadImageToSanity(
           throw new Error(`Failed to fetch image: ${res.statusText}`);
         }
         const mime = res.headers.get('content-type') || contentType;
-        const blob = await res.blob();
+        const arrayBuffer = await res.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        const asset = await writeClient.assets.upload('image', blob, {
+        const uploadPromise = writeClient.assets.upload('image', buffer, {
           filename,
           contentType: mime,
         });
+        const uploadTimeout = new Promise<null>((_, reject) =>
+          setTimeout(() => reject(new Error('Sanity image asset upload timed out (4s)')), 4000)
+        );
+        const asset = (await Promise.race([uploadPromise, uploadTimeout])) as any;
         return { assetId: asset._id, url: asset.url };
       } catch (dlErr: any) {
         clearTimeout(timeoutId);
@@ -241,10 +246,15 @@ export async function syncBlogToSanity(blog: Blog): Promise<Blog> {
     }
   }
 
-  // Handle Image Upload if provided
+  // Handle Image: If it's already an HTTPS CDN URL (Unsplash/Pexels), store directly
+  // for blazing-fast instant publishing (~200ms) without blocking binary upload.
   let imageAsset: { assetId: string; url: string } | null = null
-  if (blog.featuredImage && blog.featuredImage.trim()) {
-    imageAsset = await uploadImageToSanity(blog.featuredImage.trim(), `${cleanSlug}.jpg`)
+  const rawImage = blog.featuredImage ? blog.featuredImage.trim() : ''
+  const isCdnUrl = rawImage.startsWith('http://') || rawImage.startsWith('https://')
+
+  // Only upload to Sanity asset lake if it's a data URI or local binary
+  if (rawImage && !isCdnUrl) {
+    imageAsset = await uploadImageToSanity(rawImage, `${cleanSlug}.jpg`)
   }
 
   const today = new Date().toISOString().split('T')[0]

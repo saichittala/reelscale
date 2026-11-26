@@ -67,9 +67,14 @@ export async function checkRole(
   const role = request.headers.get("x-user-role");
   const email = request.headers.get("x-user-email");
 
-  // In local development, permit authenticated role header directly if present
-  if (process.env.NODE_ENV === "development" && role && allowedRoles.map((r) => r.toLowerCase()).includes(role.toLowerCase())) {
-    return { authorized: true, role, email: email || "dev@reelscale.in" };
+  // In local development, permit authenticated role header directly, or default to local admin so dev is never blocked
+  if (process.env.NODE_ENV === "development") {
+    if (role && allowedRoles.map((r) => r.toLowerCase()).includes(role.toLowerCase())) {
+      return { authorized: true, role, email: email || "admin@reelscale.in" };
+    }
+    if (!role && !email) {
+      return { authorized: true, role: "admin", email: "admin@reelscale.in" };
+    }
   }
 
   if (!role || !email) {

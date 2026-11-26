@@ -678,7 +678,7 @@ export function AiBlogSettings({
               className={`ai-status-indicator ${automationActive ? "active" : "paused"}`}
             />
             <h2 className="page-section-title">
-              AI Blog Automation Engine
+              AI Automation Engine
             </h2>
             <span className={`badge ${automationActive ? "badge-green" : "badge-gold"}`}>
               {automationActive ? "ACTIVE" : "PAUSED"}
@@ -851,7 +851,7 @@ export function AiBlogSettings({
                 />
               </div>
 
-              <div>
+              <div className="df-g8 fd-c">
                 <label className="ai-field-label">Daily Generation Time</label>
                 <Input
                   type="time"
@@ -860,7 +860,7 @@ export function AiBlogSettings({
                 />
               </div>
 
-              <div>
+              <div className="df-g8 fd-c">
                 <label className="ai-field-label">Safety Generation Cap</label>
                 <Input
                   type="number"
@@ -934,13 +934,10 @@ export function AiBlogSettings({
                 <h4 className="ai-sub-card-title">
                   Cadence Output Projections
                 </h4>
-                <p className="ai-section-desc">
-                  Calculated dynamically across the next 30 calendar days
-                </p>
               </div>
 
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 onClick={() => setShowCalendarBreakdown((prev) => !prev)}
                 className="text-[#a78bfa] text-xs"
