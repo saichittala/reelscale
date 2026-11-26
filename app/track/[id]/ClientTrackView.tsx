@@ -50,9 +50,13 @@ export default function ClientTrackView({ clientId }: { clientId: string }) {
       setErrorMsg("");
       try {
         const res = await fetch(`/api/track/${clientId}?month=${selectedMonth}`);
-        const data = await res.json();
-        if (!data.success) {
-          setErrorMsg(data.message || "Unable to locate client tracking portal");
+        if (!res.ok) {
+          setErrorMsg(`Unable to locate client tracking portal (Status ${res.status})`);
+          return;
+        }
+        const data = await res.json().catch(() => null);
+        if (!data || !data.success) {
+          setErrorMsg(data?.message || "Unable to locate client tracking portal");
           return;
         }
 

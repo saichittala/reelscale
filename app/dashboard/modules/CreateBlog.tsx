@@ -4,7 +4,7 @@ import { CustomSelect } from "../components/CustomSelect";
 import { Button, Input, Textarea, DropdownMenu, type DropdownItem } from "@/components/ui";
 import { IconDotsHorizontal } from "../components/Icons";
 import { STORAGE_KEYS, API_ROUTES } from "../constants";
-import { customFetch, apiValidateBlog } from "../services/api";
+import { customFetch, apiValidateBlog, safeJsonResponse } from "../services/api";
 import {
   ArrowLeft,
   Calendar,
@@ -83,7 +83,7 @@ export function CreateBlog({
         }),
       });
 
-      const json = await res.json();
+      const json = await safeJsonResponse(res, "Failed to generate blog");
       if (json.success && json.blog) {
         const b = json.blog;
         setTitle(b.title || "");
@@ -137,7 +137,7 @@ export function CreateBlog({
         }),
       });
 
-      const data = await res.json();
+      const data = await safeJsonResponse(res, "Failed to source image");
       if (data.success && data.image) {
         setFeaturedImage(data.image.imageUrl);
         setAltText(data.image.altText || `${title.trim()} - ReelScale`);
@@ -182,7 +182,7 @@ export function CreateBlog({
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await safeJsonResponse(res, "Failed to source image");
       if (data.success && data.url) {
         setFeaturedImage(data.url);
         if (!altText) setAltText(file.name.replace(/\.[^/.]+$/, ""));

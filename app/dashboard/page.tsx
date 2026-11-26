@@ -7,6 +7,7 @@ import { Layout } from "./components/Layout";
 import { Client, User, Lead, Blog, DashboardPage, EditorialValidationReport } from "./types";
 import {
   customFetch,
+  safeJsonResponse,
   fetchClients,
   fetchUsers,
   fetchLeads,
@@ -306,7 +307,7 @@ export default function DashboardMainPage() {
     const checkSystemHealth = async () => {
       try {
         const res = await customFetch("/api/system-status");
-        const json = await res.json();
+        const json = await safeJsonResponse(res);
         if (mounted && json?.success) {
           setSysIsOperational(json.overall?.status === "operational");
         }

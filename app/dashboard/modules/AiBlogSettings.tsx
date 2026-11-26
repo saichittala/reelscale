@@ -6,7 +6,7 @@ import { SkeletonLoader } from "../components/SkeletonLoader";
 import { Button, HoverBorderGradient, Input, Slider, Tabs, TabsList, TabsTrigger, DropdownMenu, type DropdownItem } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
 import { IconDotsHorizontal } from "../components/Icons";
-import { customFetch } from "../services/api";
+import { customFetch, safeJsonResponse } from "../services/api";
 import {
   Zap,
   Calendar,
@@ -128,7 +128,7 @@ export function AiBlogSettings({
   const fetchScheduleConfig = useCallback(async () => {
     try {
       const res = await customFetch("/api/ai/schedule");
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       const s = json.schedule || json.activeSchedule;
       if (json.success && s) {
         const type = s.schedule_type || "daily";
@@ -222,7 +222,7 @@ export function AiBlogSettings({
         weekday_quantities: JSON.stringify(weekdayQuantities),
       });
       const res = await customFetch(`/api/ai/schedule?preview=30days&${params.toString()}`);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.preview) {
         setDynamicPreview(json.preview);
       }
@@ -235,7 +235,7 @@ export function AiBlogSettings({
   const fetchPrompts = useCallback(async () => {
     try {
       const res = await customFetch("/api/ai/prompts");
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.prompts) {
         setPrompts(json.prompts);
         const current = json.prompts.find((p: any) => p.id === selectedPromptId) || json.prompts[0];
@@ -254,7 +254,7 @@ export function AiBlogSettings({
   const fetchPromptVersions = useCallback(async (id: string) => {
     try {
       const res = await customFetch(`/api/ai/prompts?view=versions&id=${id}`);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.versions) {
         setPromptVersions(json.versions);
       }
@@ -316,7 +316,7 @@ export function AiBlogSettings({
           image_priority: imagePriority,
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         showToast?.("AI Automation Schedule configuration saved!", "success");
         initialConfigRef.current = {
@@ -356,7 +356,7 @@ export function AiBlogSettings({
           is_active: nextState,
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         setAutomationActive(nextState);
         showToast?.(
@@ -403,7 +403,7 @@ export function AiBlogSettings({
           change_summary: changeSummary || "Updated via Prompt Studio",
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         showToast?.("Prompt updated and new version committed!", "success");
         setChangeSummary("");
@@ -433,7 +433,7 @@ export function AiBlogSettings({
           id: selectedPromptId,
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.prompt) {
         setEditingSysPrompt(json.prompt.system_prompt);
         setEditingUsrTemplate(json.prompt.user_prompt_template);
@@ -461,7 +461,7 @@ export function AiBlogSettings({
           version_number: versionNumber,
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.prompt) {
         setEditingSysPrompt(json.prompt.system_prompt);
         setEditingUsrTemplate(json.prompt.user_prompt_template);
@@ -494,7 +494,7 @@ export function AiBlogSettings({
           },
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.result) {
         setTestOutput(json.result);
         showToast?.("Test execution completed successfully!", "success");
@@ -520,7 +520,7 @@ export function AiBlogSettings({
           count: manualBatchQty,
         }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         showToast?.(`Queued batch of ${manualBatchQty} articles for creation!`, "success");
         setShowTriggerModal(false);
@@ -663,7 +663,7 @@ export function AiBlogSettings({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "evaluate-schedule" }),
         });
-        const json = await res.json();
+        const json = await safeJsonResponse(res);
         if (json.success && json.result?.triggered) {
           showToast?.(`AI Automation: ${json.result.message}`, "success");
           fetchPreview();

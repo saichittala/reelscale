@@ -38,6 +38,61 @@ export async function customFetch(
   return fetch(url, updatedOptions);
 }
 
+/**
+ * Safely parse a fetch Response as JSON with defense against HTML, text, or proxy error pages.
+ * Prevents "Unexpected token 'A', 'An error o'... is not valid JSON" crashes.
+ */
+export async function safeJsonResponse<T = any>(
+  res: Response,
+  fallbackMessage = "Request failed"
+): Promise<T> {
+  const contentType = (res.headers.get("content-type") || "").toLowerCase();
+  const isJson = contentType.includes("application/json");
+
+  let rawText = "";
+  try {
+    rawText = await res.text();
+  } catch (readErr: any) {
+    throw new Error(`Failed to read response from server: ${readErr?.message || fallbackMessage}`);
+  }
+
+  // If response is not JSON or is empty
+  if (!isJson) {
+    const cleanSnippet = rawText
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<[^>]*>?/gm, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 160);
+
+    const errorMsg = cleanSnippet
+      ? `${cleanSnippet}`
+      : `${fallbackMessage} (Status ${res.status})`;
+
+    if (!res.ok) {
+      throw new Error(errorMsg);
+    }
+    return { success: true, message: cleanSnippet || rawText } as unknown as T;
+  }
+
+  // Attempt JSON parsing safely
+  let data: any;
+  try {
+    data = JSON.parse(rawText);
+  } catch {
+    const snippet = rawText.replace(/\s+/g, " ").trim().slice(0, 120);
+    throw new Error(`Server returned invalid JSON (${res.status}): ${snippet || fallbackMessage}`);
+  }
+
+  if (!res.ok && data && typeof data === "object") {
+    const msg = data.message || data.error || `${fallbackMessage} (Status ${res.status})`;
+    throw new Error(msg);
+  }
+
+  return data as T;
+}
+
 // ==============================
 // USER API SERVICES (Database-backed)
 // ==============================
@@ -50,7 +105,7 @@ export async function loginUser(
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
-    const data = await response.json();
+    const data = await safeJsonResponse(response, "Failed to log in");
     if (data.success) {
       if (typeof window !== "undefined") {
         localStorage.setItem(STORAGE_KEYS.AUTH, "1");
@@ -68,7 +123,7 @@ export async function loginUser(
 export async function fetchUsers(): Promise<User[]> {
   try {
     const response = await customFetch(API_ROUTES.USERS);
-    const data = await response.json();
+    const data = await safeJsonResponse(response, "Failed to fetch users");
     if (data.success) {
       return data.users || [];
     }
@@ -90,7 +145,7 @@ export async function apiAddUser(user: Omit<User, "id">): Promise<any> {
       role: user.role,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Add user failed");
   if (!result.success) {
     throw new Error(result.message || "Add failed");
   }
@@ -112,7 +167,7 @@ export async function apiUpdateUser(
       role: user.role,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Update user failed");
   if (!result.success) {
     throw new Error(result.message || "Update failed");
   }
@@ -126,7 +181,7 @@ export async function apiDeleteUser(id: string | number): Promise<void> {
       id,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Delete user failed");
   if (!result.success) {
     throw new Error(result.message || "Delete failed");
   }
@@ -138,7 +193,7 @@ export async function apiDeleteUser(id: string | number): Promise<void> {
 export async function fetchClients(): Promise<Client[]> {
   try {
     const response = await customFetch(API_ROUTES.CLIENTS);
-    const data = await response.json();
+    const data = await safeJsonResponse(response, "Failed to fetch clients");
     const list = data.clients || data || [];
 
     if (Array.isArray(list)) {
@@ -193,7 +248,7 @@ export async function apiAddClient(
       status: client.status || "Active",
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Add client failed");
   if (!result.success) {
     throw new Error(result.message || "Add client failed");
   }
@@ -226,7 +281,7 @@ export async function apiUpdateClient(
       status: client.status || "Active",
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Update client failed");
   if (!result.success) {
     throw new Error(result.message || "Update client failed");
   }
@@ -240,7 +295,7 @@ export async function apiDeleteClient(id: string | number): Promise<void> {
       id,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Delete client failed");
   if (!result.success) {
     throw new Error(result.message || "Delete client failed");
   }
@@ -252,7 +307,7 @@ export async function apiDeleteClient(id: string | number): Promise<void> {
 export async function fetchLeads(): Promise<Lead[]> {
   try {
     const response = await customFetch(API_ROUTES.SALES);
-    const result = await response.json();
+    const result = await safeJsonResponse(response, "Failed to fetch leads");
     return result.leads || [];
   } catch (error) {
     console.error("fetchLeads Error:", error);
@@ -275,7 +330,7 @@ export async function apiAddLead(
       contacted: lead.contacted,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Add lead failed");
   if (!result.success) {
     throw new Error(result.message || "Add lead failed");
   }
@@ -299,7 +354,7 @@ export async function apiUpdateLead(
       contacted: lead.contacted,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Update lead failed");
   if (!result.success) {
     throw new Error(result.message || "Update lead failed");
   }
@@ -313,7 +368,7 @@ export async function apiDeleteLead(id: string | number): Promise<void> {
       id,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Delete lead failed");
   if (!result.success) {
     throw new Error(result.message || "Delete lead failed");
   }
@@ -406,7 +461,7 @@ export async function apiSaveBlog(blog: Blog): Promise<{ blog: Blog; validation?
     });
 
     if (res.ok) {
-      const json = await res.json();
+      const json = await safeJsonResponse(res, "Save blog failed");
       if (json.success) {
         return {
           blog: json.blog || blog,
@@ -414,7 +469,7 @@ export async function apiSaveBlog(blog: Blog): Promise<{ blog: Blog; validation?
         };
       }
     } else {
-      const errJson = await res.json().catch(() => ({}));
+      const errJson = await safeJsonResponse(res, "Failed to save blog").catch((e) => ({ message: e.message }));
       lastError = new Error(errJson.message || `API server returned ${res.status}`);
       throw lastError;
     }
@@ -445,7 +500,7 @@ export async function apiValidateBlog(blog: Partial<Blog>): Promise<EditorialVal
     });
 
     if (res.ok) {
-      const json = await res.json();
+      const json = await safeJsonResponse(res, "Validation failed");
       if (json.success && json.validation) {
         return json.validation;
       }
@@ -471,7 +526,7 @@ export async function apiDeleteBlog(id: string | number): Promise<void> {
       }),
     });
     if (res.ok) {
-      const json = await res.json();
+      const json = await safeJsonResponse(res, "Delete blog failed");
       if (json.success) {
         apiSuccess = true;
         return;
@@ -506,7 +561,7 @@ export async function fetchDeliveries(
     if (month && month !== "all") params.append("month", month);
 
     const response = await fetch(`${API_ROUTES.DELIVERIES}?${params.toString()}`);
-    const data = await response.json();
+    const data = await safeJsonResponse(response, "Failed to load deliveries");
     if (data.success && Array.isArray(data.deliveries)) {
       if (typeof window !== "undefined") {
         // Cache in localStorage for offline / fast fallback
@@ -553,7 +608,7 @@ export async function apiSaveMonthDriveLink(
       showDriveLink,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Failed to save monthly drive link");
   if (!result.success) {
     throw new Error(result.message || "Failed to save monthly drive link");
   }
@@ -570,7 +625,7 @@ export async function apiAddDelivery(
       delivery,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Failed to add delivery");
   if (!result.success) {
     throw new Error(result.message || "Failed to add delivery");
   }
@@ -586,7 +641,7 @@ export async function apiUpdateDelivery(delivery: DeliveredReel): Promise<void> 
       delivery,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Failed to update delivery");
   if (!result.success) {
     throw new Error(result.message || "Failed to update delivery");
   }
@@ -601,7 +656,7 @@ export async function apiDeleteDelivery(id: string): Promise<void> {
       id,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonResponse(response, "Failed to delete delivery");
   if (!result.success) {
     throw new Error(result.message || "Failed to delete delivery");
   }

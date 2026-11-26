@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui";
-import { customFetch } from "../services/api";
+import { customFetch, safeJsonResponse } from "../services/api";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 
 interface SystemStatusProps {
@@ -171,7 +171,7 @@ export function SystemStatus({
     if (isManual) setRefreshing(true);
     try {
       const res = await customFetch("/api/system-status");
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         setData(json);
         if (isManual) showToast?.("Status updated", "success");
@@ -197,7 +197,7 @@ export function SystemStatus({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "flush-redis" }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success) {
         showToast?.("Redis cache flushed", "success");
         await fetchStatus();

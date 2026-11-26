@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Blog, EditorialValidationReport } from "../types";
-import { customFetch } from "../services/api";
+import { customFetch, safeJsonResponse } from "../services/api";
 import { API_ROUTES } from "../constants";
 import { Button, Input } from "@/components/ui";
 import { CustomSelect } from "./CustomSelect";
@@ -157,7 +157,7 @@ export function GenerateAiBlogModal({
     try {
       const res = await customFetch(API_ROUTES.AI_GENERATE);
       if (res.ok) {
-        const data = await res.json();
+        const data = await safeJsonResponse(res);
         if (data.agent) {
           setAgentInfo(data.agent);
         }
@@ -171,7 +171,7 @@ export function GenerateAiBlogModal({
     setLoadingTopics(true);
     try {
       const res = await customFetch(`${API_ROUTES.AI_TOPICS}?status=suggested`);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && Array.isArray(json.topics) && json.topics.length > 0) {
         setTopics(json.topics);
         setCurrentTopicIndex(0);
@@ -256,7 +256,7 @@ export function GenerateAiBlogModal({
         }),
       });
 
-      const json = await res.json();
+      const json = await safeJsonResponse(res, "Failed to generate blog");
 
       if (json.success && json.blog) {
         setPublishedBlog(json.blog);

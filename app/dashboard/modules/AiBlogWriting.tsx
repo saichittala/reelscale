@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Blog, EditorialValidationReport } from "../types";
-import { customFetch } from "../services/api";
+import { customFetch, safeJsonResponse } from "../services/api";
 import { Button, HoverBorderGradient, Input, Tabs, TabsList, TabsTrigger, DropdownMenu } from "@/components/ui";
 import { CustomSelect } from "../components/CustomSelect";
 import { IconDotsHorizontal } from "../components/Icons";
@@ -63,7 +63,7 @@ export function AiBlogWriting({
     setTopicLoading(true);
     try {
       const res = await customFetch("/api/ai/topics?status=suggested");
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.topics) {
         // Filter out any topics whose headlines or slugs match existing published blogs
         const publishedTitles = new Set(
@@ -90,7 +90,7 @@ export function AiBlogWriting({
     setQueueLoading(true);
     try {
       const res = await customFetch("/api/ai/jobs?view=stats");
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.jobs) {
         setGenerationQueue(json.jobs);
       }
@@ -134,7 +134,7 @@ export function AiBlogWriting({
         }),
       });
       clearTimeout(timer);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.blog) {
         showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
         onBlogPublished?.(json.blog, json.validation);
@@ -197,7 +197,7 @@ export function AiBlogWriting({
         }),
       });
       clearTimeout(timer);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.blog) {
         showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
         onBlogPublished?.(json.blog, json.validation);
@@ -252,7 +252,7 @@ export function AiBlogWriting({
       });
 
       clearTimeout(timer);
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
 
       if (json.success && json.blog) {
         showToast?.(`Published directly to production: "${json.blog.title}"!`, "success");
@@ -285,7 +285,7 @@ export function AiBlogWriting({
         method: "POST",
         body: JSON.stringify({ action: "process-next" }),
       });
-      const json = await res.json();
+      const json = await safeJsonResponse(res);
       if (json.success && json.job) {
         showToast?.(`Generated: "${json.job.title}" successfully!`, "success");
         fetchQueue();
